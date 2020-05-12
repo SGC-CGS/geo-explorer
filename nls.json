@@ -1,0 +1,58 @@
+{
+	"Overlay_Close" : {
+		"en" : "Close",
+		"fr" : "Fermer"
+	},
+	"Legend_Title" : {
+		"en" : "Map Legend",
+		"fr" : "Légende de la carte"
+	},
+	"Selector_Title" : {
+		"en" : "Select Data",
+		"fr" : "Sélectionner des données"
+	},
+	"Selector_Subject" : {
+		"en" : "Subject",
+		"fr" : "Sujet"
+	},
+	"Selector_Theme" : {
+		"en" : "Theme",
+		"fr" : "Thème"
+	},
+	"Selector_Category" : {
+		"en" : "Category (Product)",
+		"fr" : "Catégorie (Produit)"
+	},
+	"Selector_Date" : {
+		"en" : "Date",
+		"fr" : "Date"
+	},
+	"Selector_AgeGroup" : {
+		"en" : "Age Group",
+		"fr" : "Groupe d'âge"
+	},
+	"Selector_Sex" : {
+		"en" : "Sex",
+		"fr" : "Sexe"
+	},
+	"Selector_Indicator" : {
+		"en" : "Indicators",
+		"fr" : "Indicateurs"
+	},
+	"Selector_Valeur" : {
+		"en" : "Value to Display",
+		"fr" : "Valeur à afficher"
+	},
+	"Selector_Geography" : {
+		"en" : "Geographic Level",
+		"fr" : "Niveau géographique"
+	},
+	"Search_Typeahead_Title" : {
+		"en" : "Find a place on the map...",
+		"fr" : "Rechercher un endroit sur la carte..."
+	},
+	"Search_Icon_Alt" : {
+		"en" : "Magnifying glass",
+		"fr" : "Loupe"
+	}
+}
