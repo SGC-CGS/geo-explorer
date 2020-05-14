@@ -72,6 +72,11 @@ function LoadEsri() {
 					FeatureLayer : FeatureLayer
 				}
 			}
+
+			urlUtils.addProxyRule({
+				urlPrefix: "www97.statcan.gc.ca",
+				proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.ashx`
+			});
 			
 			d.Resolve();
 		});

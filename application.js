@@ -24,19 +24,13 @@ export default class Main extends Templated {
 		this.Node('selector').On('Hide', this.OnOverlay_Hide.bind(this, this.Elem('bSelect')));
 		this.Node('legend').On('Hide', this.OnOverlay_Hide.bind(this, this.Elem('bLegend')));
 		
-		// TEMP STUFF
-		var proxy = "http://localhost/geo-explorer-proxy/proxy.ashx";
-		
-		ESRI.core.urlUtils.addProxyRule({
-			urlPrefix: "www97.statcan.gc.ca",
-			proxyUrl: proxy
-		});
-		
+		this.Node('selector').On('Ready', this.OnSelector_Ready.bind(this));
+		/*
 		// Sample feature layer
 		const qLayer = new ESRI.layers.FeatureLayer({
 			url: "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/3"
 		});
-		/*
+		
 		// Sample query to feature layer
 		var query = qLayer.createQuery();
 		
@@ -48,6 +42,7 @@ export default class Main extends Templated {
 
 		})
 		*/
+		
 		// Generate Renderer test
 		// DATA
 		var layer = {"id":7,"minScale":null,"name":"dyn_layer","source":{"dataSource":{"type":"queryTable","workspaceId":"stcdv_dyn_service","query":"SELECT iv.value AS Value, CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'en-US') END AS FormattedValue_EN,  CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'fr-CA') END AS FormattedValue_FR, grfi.GeographyReferenceId, g.DisplayNameShort_EN, g.DisplayNameShort_FR, g.DisplayNameLong_EN, g.DisplayNameLong_FR, g.ProvTerrName_EN, g.ProvTerrName_FR, g.Shape, i.IndicatorName_EN, i.IndicatorName_FR, i.IndicatorId, i.IndicatorDisplay_EN, i.IndicatorDisplay_FR, i.UOM_EN, i.UOM_FR, g.GeographicLevelId, gl.LevelName_EN, gl.LevelName_FR, gl.LevelDescription_EN, gl.LevelDescription_FR, g.EntityName_EN, g.EntityName_FR, nr.Symbol, nr.Description_EN as NullDescription_EN, nr.Description_FR as NullDescription_FR FROM gis.geographyreference AS g INNER JOIN gis.geographyreferenceforindicator AS grfi ON g.geographyreferenceid = grfi.geographyreferenceid  INNER JOIN (select * from gis.indicator where indicatorId = 216708) AS i ON grfi.indicatorid = i.indicatorid  INNER JOIN gis.geographiclevel AS gl ON g.geographiclevelid = gl.geographiclevelid  INNER JOIN gis.geographiclevelforindicator AS glfi  ON i.indicatorid = glfi.indicatorid  AND gl.geographiclevelid = glfi.geographiclevelid  INNER JOIN gis.indicatorvalues AS iv  ON iv.indicatorvalueid = grfi.indicatorvalueid  INNER JOIN gis.indicatortheme AS it ON i.indicatorthemeid = it.indicatorthemeid  LEFT OUTER JOIN gis.indicatornullreason AS nr  ON iv.nullreasonid = nr.nullreasonid","oidFields":"GeographyReferenceId","geometryType":"esriGeometryPolygon"},"type":"dataLayer"},"definitionExpression":"GeographicLevelId = 'A0007' AND IndicatorId = 216708"};
@@ -68,14 +63,33 @@ export default class Main extends Templated {
 			query : (data)
 		});
 		
-		p.then(renderer => {			
-			// Sample feature layer events
-			const mLayer = new ESRI.layers.MapImageLayer({
-				url: "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
-				imageFormat : "png8",
-				opacity : 0.75,
-				dpi : 96,
-				sublayers: [{ 
+		// Sample feature layer events
+		this.mLayer = new ESRI.layers.MapImageLayer({
+			url: "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
+			imageFormat : "png8",
+			opacity : 0.75,
+			dpi : 96,
+			sublayers: []
+		});
+		
+		this.mLayer.on("layerview-create", (ev) => {
+
+		})
+		
+		var map = new ESRI.Map({ basemap: "streets", layers: [this.mLayer] });
+		
+		var view = new ESRI.views.MapView({
+			animation : false,
+			center: [-100, 63],
+			container: this.Elem('map'), // Reference to the scene div created in step 5
+			map: map, 					 // Reference to the map object created before the scene
+			zoom: 4 					 // Sets zoom level based on level of detail (LOD)
+		});
+		
+		map.add(this.mLayer);
+		
+		p.then(renderer => {
+			var sublayer = { 
 					id: 7, 
 					visible: true,
 					definitionExpression:data.where,
@@ -90,35 +104,20 @@ export default class Main extends Templated {
 							oidFields: "GeographyReferenceId"
 						}
 					}
-				}]
-			});
+				}
 			
-			var map = new ESRI.Map({ basemap: "streets", layers: [mLayer] });
-				
-			var view = new ESRI.views.MapView({
-				animation : false,
-				center: [-100, 63],
-				container: this.Elem('map'), // Reference to the scene div created in step 5
-				map: map, // Reference to the map object created before the scene
-				zoom: 4 // Sets zoom level based on level of detail (LOD)
-			});
-			
-			mLayer.on("layerview-create", (ev) => {
-
-			})
-			
-			map.add(mLayer);
-		})
+			this.mLayer.sublayers.add(sublayer);
+		});
 	}
 	
 	OnMenuButton_Click(overlay, ev) {
+		var isSame = this.current.overlay == overlay;
+		
 		if (this.current.overlay) this.current.overlay.Hide();
 		
 		if (this.current.button) Dom.RemoveCss(this.current.button, "checked");
 		
-		if (this.current.overlay == overlay) this.current = { button:null, overlay:null };
-		
-		else {
+		if (!isSame) {
 			this.current = { button:ev.target, overlay:overlay };
 			
 			this.current.overlay.Show();
@@ -131,6 +130,12 @@ export default class Main extends Templated {
 		Dom.RemoveCss(this.current.button, "checked");
 		
 		this.current = { button:null, overlay:null };
+	}
+	
+	OnSelector_Ready(ev) {
+		this.mLayer.sublayers.removeAll();
+		
+		this.mLayer.sublayers.add(ev.sublayer);
 	}
 	
 	OnError(error) {

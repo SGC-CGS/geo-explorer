@@ -22,13 +22,32 @@
 	cursor : text;
 }
 
+.gexp button {
+	
+}
+
+.gexp button.button-label {
+    color: white;
+    font-weight: bold;
+    height: 32px;
+    width: 64px;
+    border: none;
+    border-radius: 2px;
+	background: #333;
+    border-bottom: solid 2px #000;
+}
+
 .gexp select, .gexp button {
 	cursor : pointer;
 }
 
 .gexp select {
-	margin-left : 5px;
 	padding: 3px;
+}
+
+.gexp input:disabled,
+.gexp select:disabled {
+	background: #f6f6f6;
 }
 
 .gexp img.button-icon {
@@ -220,20 +239,78 @@
 }
 
 /* Map Legend widget */
+.gexp .selector,
 .gexp .legend {
-	width: 350px;
+	width: 450px;
 }
 
 /* Select Data widget */
-.gexp .selector {
-	width: 350px;
-}
-
 .gexp .selector label {
 	display:flex;
     align-items: center;
 }
 
+.gexp .selector label.sm-label {
+	display:flex;
+    align-items: center;
+}
+
 .gexp .selector label > * {
+	margin-left : 5px;
 	flex : 1;
+}
+
+.gexp .selector .filter-container > *,
+.gexp .selector .filter-container .filter > *,
+.gexp .selector .overlay-body > * {
+	margin-top : 6px;
+}
+
+.gexp .selector select {
+	width: 100%;
+}
+
+.gexp .select-placeholder {
+	display:none;
+}
+
+.gexp .selector .filter-container {
+    border-left: solid 0.5em #d9d9d9;
+	padding-left: 5px;
+}
+
+.gexp .selector .filter-instructions {
+    font-style: italic;
+}
+
+.gexp .button-container {
+	float: right;
+}
+
+.gexp .button-container button {
+    transition: background-color 125ms ease;
+}
+
+.gexp .button-container button.button-apply {
+    margin-right: 5px;
+    background: #489648;
+    border-bottom: solid 2px #325b32;
+}
+
+.gexp .button-container button:disabled {
+	opacity : 0.7;
+	cursor : not-allowed;
+}
+
+.gexp .button-container button.button-apply:hover:not(:disabled) {
+	background-color: #325b32;
+}
+
+.gexp .button-container button.button-close {
+    margin-left: 5px;
+    background: #ed3330;
+    border-bottom: solid 2px #80201e;
+}
+.gexp .button-container button.button-close:hover {
+	background-color: #80201e;
 }
