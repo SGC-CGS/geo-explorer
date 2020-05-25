@@ -147,10 +147,10 @@ export default class Core {
 	static Debounce(delegate, threshold) {
 		var timeout;
 	
-		return function debounced () {
+		return function debounced (...args) {
 			
 			function delayed () {
-				delegate.apply(this, arguments);
+				delegate.apply(this, args);
 				
 				timeout = null; 
 			}

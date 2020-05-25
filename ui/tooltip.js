@@ -11,6 +11,10 @@ export default class Tooltip extends Templated  {
 		return this.Elem("root").getBoundingClientRect();
 	}
 	
+	set content(value) {
+		this.Elem('content').innerHTML = value;
+	}
+	
 	constructor(css) {	
 		super(document.body);		
 
@@ -22,7 +26,7 @@ export default class Tooltip extends Templated  {
 				  '<div handle="content"></div>' +
 			   '</div>';
 	}
-	
+		
 	PositionTarget(target, offset) {
 		offset = offset || [0,0];
 		

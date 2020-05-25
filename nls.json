@@ -7,6 +7,54 @@
 		"en" : "Map Legend",
 		"fr" : "Légende de la carte"
 	},
+	"Legend_Instructions_1" : {
+		"en" : "Use the options below to change how to render the indicator on the map. To confirm your changes, click 'Apply' at the end of the form.",
+		"fr" : "Utiliser les options ci-dessous pour changer la façon dont l’indicateur apparaît sur la carte. Pour confirmer les changements, cliquer sur « Appliquer » en bas du formulaire."
+	},
+	"Legend_Instructions_3" : {
+		"en" : "* Geographies with no data or that do not fit in the ranges below are transparent on the map but still interactive.",
+		"fr" : "* Les régions géographiques n’ayant pas de données ou ne tenant pas dans les plages ci-dessous apparaissent en transparence sur la carte, mais sont toujours interactives."
+	},
+	"Legend_Method" : {
+		"en" : "Classification method",
+		"fr" : "Méthode de classification"
+	},
+	"Legend_Color_Range" : {
+		"en" : "Color range",
+		"fr" : "Gamme de couleurs"
+	},
+	"Legend_Color_Start" : {
+		"en" : "Start color",
+		"fr" : "Couleur de départ"
+	},
+	"Legend_Color_End" : {
+		"en" : "End color",
+		"fr" : "Couleur de fin"
+	},
+	"Legend_Breaks" : {
+		"en" : "Number of breaks (1 to 10)",
+		"fr" : "Nombre de bornes (1 à 10)"
+	},
+	"Legend_Legend" : {
+		"en" : "Legend",
+		"fr" : "Légende"
+	},
+	"Legend_Item_Join" : {
+		"en" : " to ",
+		"fr" : " jusqu'à "
+	},
+	"Legend_Method_Equal": {
+		"en": "Equal intervals",
+		"fr": "Intervalles égaux"
+	},
+	"Legend_Method_Natural": {
+		"en": "Natural breaks",
+		"fr": "Bornes naturelles"
+	},
+	"Legend_Method_Quantile": {
+		"en": "Quantiles",
+		"fr": "Quantiles"
+	},
 	"Selector_Title" : {
 		"en" : "Select Data",
 		"fr" : "Sélectionner des données"
@@ -67,12 +115,20 @@
 		"en" : "Close",
 		"fr" : "Fermer"
 	},
-	"Search_Typeahead_Title" : {
-		"en" : "Find a place on the map...",
-		"fr" : "Rechercher un endroit sur la carte..."
-	},
 	"Search_Icon_Alt" : {
 		"en" : "Magnifying glass",
 		"fr" : "Loupe"
+	},
+    "Search_Typeahead_Title": {
+        "en": "A Filtered list of items will appear as characters are typed.",
+        "fr": "Une liste filtrée d'objets apparaîtra lorsque des caractères seront saisis."
+    },
+    "Search_Typeahead_Placeholder": {
+		"en" : "Find a place on the map...",
+		"fr" : "Rechercher un endroit sur la carte..."
+    },
+	"Search_Typeahead_loading" : {
+		"en": "loading...",
+		"en": "en chargement..."
 	}
 }

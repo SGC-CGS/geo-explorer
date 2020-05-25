@@ -1,1 +1,14 @@
-{}
+{
+    "symbols": {
+        "identify": {
+            "type": "simple-fill",
+            "color": [0, 0, 0, 0.2],
+            "style": "none",
+            "outline": {
+                "color": [0, 128, 255, 1],
+                "width": 1.5,
+				"style": "solid"
+            }
+        }
+    }
+}

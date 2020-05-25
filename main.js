@@ -41,24 +41,34 @@ function LoadEsri() {
 				 "esri/request", 
 				 "esri/layers/MapImageLayer", 
 				 "esri/layers/FeatureLayer", 
+				 "esri/layers/GraphicsLayer", 
+				 "esri/layers/support/Sublayer", 
 				 "esri/core/urlUtils", 
+				 "esri/core/watchUtils", 
 				 "esri/Map", 
+				 "esri/Graphic", 
 				 "esri/views/MapView"], 
 				 
 				 function(jsonUtils, 
 						  request, 
 						  MapImageLayer, 
 						  FeatureLayer, 
+						  GraphicsLayer, 
+						  Sublayer, 
 						  urlUtils, 
+						  watchUtils, 
 						  Map, 
+						  Graphic, 
 						  MapView) {
 			
 			window.ESRI = {
 				core : { 
-					urlUtils : urlUtils
+					urlUtils : urlUtils,
+					watchUtils : watchUtils
 				},
 				request : request,
 				Map : Map,
+				Graphic : Graphic,
 				views : {
 					MapView : MapView
 				},
@@ -69,7 +79,11 @@ function LoadEsri() {
 				},
 				layers : {
 					MapImageLayer : MapImageLayer,
-					FeatureLayer : FeatureLayer
+					FeatureLayer : FeatureLayer,
+					GraphicsLayer : GraphicsLayer,
+					support : {
+						Sublayer : Sublayer
+					}
 				}
 			}
 

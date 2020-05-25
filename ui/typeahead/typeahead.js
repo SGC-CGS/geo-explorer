@@ -1,23 +1,25 @@
-import Templated from './templated.js';
-import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
+import Templated from '../../components/templated.js';
+import Core from '../../tools/core.js';
+import Dom from '../../tools/dom.js';
 
 export default Core.Templatable("Basic.Components.Typeahead", class Typeahead extends Templated {
-	
 	
     set placeholder(value) { this.Elem('input').setAttribute('placeholder', value); }
 	
 	set title(value) { this.Elem('input').setAttribute('title', value); }
 	
-	set items(value) {		
-		this._items = value.map(i => {
+	set store(value) {		
+		this._store = value.map(i => {
 			var li = Dom.Create("li", { innerHTML : i.label, tabIndex : -1 });
-			var item = { data : i, node : li };
+			var item = { data:i, node:li, next:null, prev:null };
 			
 			li.addEventListener("mousedown", this.onLiClick_Handler.bind(this, item));
 			
 			return item; 
 		});
+		
+		// Initially unfiltered
+		this._items = this._store;
 	}
 	
 	set current(value) {
@@ -31,12 +33,17 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	constructor(container, options) {	
 		super(container, options);
 		
+		this._store = null;
 		this._items = null;
 		this._filt = null;
 		this._curr = null;
 		this._temp = null;
 		
-		this.Node("input").On("input", function(ev) { this.OnInputInput_Handler(ev); }.bind(this));	
+		
+		var handler = function(ev) { this.OnInputInput_Handler(ev); }.bind(this);
+		var debounced = Core.Debounce(handler, 350);
+		
+		this.Node("input").On("input", debounced);	
 
 		// this.Node("input").On("click", this.OnInputClick_Handler.bind(this));
 		this.Node("input").On("keydown", function(ev) { this.OnInputKeyDown_Handler(ev); }.bind(this));		
@@ -52,39 +59,39 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	Empty() {		
 		Dom.Empty(this.Elem("list"));
 		
-		this._filt = [];
+		this._items = [];
 	}
 	
-	Fill(mask) {		
-		this._filt = this._items.filter(i => compare(i.data.label, mask));
+	Refresh() {
+		throw new Error("The Refresh function must be implemented.");
+	}
+	
+	Fill(items, mask) {
+		this._items = items;
 		
 		var frag = document.createDocumentFragment();
 		
-		for (var i = 0; i < this._filt.length; i++) {
-			var curr = this._filt[i];
+		for (var i = 0; i < items.length; i++) {
+			var curr = items[i];
 			
 			// Maybe insert <b> at right index instead, faster?
 			curr.node.innerHTML = curr.data.label.replace(mask, `<b>${mask}</b>`);
-			curr.next = this._filt[(i + 1) % this._filt.length];
+			curr.next = items[(i + 1) % items.length];
 			curr.next.prev = curr;
 		
 			Dom.Place(curr.node, frag);
 		}
-				
-		Dom.Place(frag, this.Elem("list"));
 		
-		function compare(label, mask) {
-			return label.toLowerCase().indexOf(mask.toLowerCase()) !== -1
-		}
+		Dom.Place(frag, this.Elem("list"));
 	}
 	
 	UpdateCss() {		
-		Dom.ToggleCss(this.Elem("root"), "collapsed", this._filt.length == 0);
+		Dom.ToggleCss(this.Elem("root"), "collapsed", this._items.length == 0);
 	}
 	
 	Reset() {
 		if (this._temp) Dom.SetCss(this._temp.node, "");
-			
+		
 		this._temp = null;
 		
 		this.Empty();
@@ -95,21 +102,28 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	}
 	
 	OnInputInput_Handler(ev) {
-		if (ev.target.value.length < 3) return;
+		var value = ev.target.value;
+		// var value = this.Elem("input").value;	// If can'T use ...args in debounce
+		
+		if (value.length < 3) return;
 		
 		this.Empty();
 		
-		this.Fill(ev.target.value);
+		this.Refresh(value).then(items => { 
+			this.Fill(items, value);
 		
-		this.UpdateCss();
+			this.UpdateCss();
+		});
 	}
 	
 	OnInputClick_Handler(ev) {			
 		if (ev.target.value.length < 3) return;
 		
-		this.Fill(ev.target.value);
-		
-		this.UpdateCss();
+		this.Refresh(ev.target.value).then(items => { 
+			this.Fill(items, ev.target.value);
+
+			this.UpdateCss();
+		});
 	}
 	
 	OnInputKeyDown_Handler(ev) {		
@@ -121,7 +135,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		
 		// up or down key : cycle through dropdown
 		else if (ev.keyCode == 40 || ev.keyCode == 38 ) {	
-			this._temp = this._temp || this._filt[this._filt.length - 1];
+			this._temp = this._temp || this._items[this._items.length - 1];
 			
 			Dom.SetCss(this._temp.node, "");
 			
@@ -140,7 +154,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 			if (this._temp) this.onLiClick_Handler(this._temp);
 			
 			// if a filtered list is being shown, select the first item
-			else if (this._filt.length > 0) this.onLiClick_Handler(this._filt[0]);
+			else if (this._items.length > 0) this.onLiClick_Handler(this._items[0]);
 
 			// nothing is selected (don't think this can happen		    	
 			else {				
@@ -160,7 +174,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	
 	onLiClick_Handler(item, ev) {		
 		this.current = item;
-				
+		
 		this.Reset();
 		
 		this.UpdateCss();
@@ -182,7 +196,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	
 	Template() {        
 		return "<div handle='root' class='typeahead collapsed'>" +
-				 "<input handle='input' type='text' class='input' placeholder='nls(Typeahead_Title)' title='nls(Typeahead_Title)'>" + 
+				 "<input handle='input' type='text' class='input' placeholder='nls(Search_Typeahead_Placeholder)' title='nls(Search_Typeahead_Title)'>" + 
 			     "<ul handle='list' class='list'></ul>" +
 			   "</div>";
 	}

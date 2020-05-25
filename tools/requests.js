@@ -2,10 +2,11 @@ import Core from './core.js';
 
 const URLS = {
 	renderer : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/dynamicLayer/generateRenderer",
-	value : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/1/query",
-	geography : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/2/query",
+	placename : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/0",
+	value : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/1",
+	geography : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/2",
 	indicator : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/3",
-	break : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/4",
+	breaks : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/4",
 	filter : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/8"
 }
 
@@ -23,20 +24,40 @@ export default class Requests {
 		});
 	}
 	
+	static Query(layer, where, geometry, returnGeometry, outFields, distinct, orderBy) {
+		var query = layer.createQuery();
+		
+		query.returnGeometry = !!returnGeometry;
+		query.returnDistinctValues = !!distinct;
+		
+		if (outFields) query.outFields = outFields;
+		if (where) query.where = where;
+		if (geometry) query.geometry = geometry;
+		if (orderBy) query.orderByFields = orderBy;
+		
+		return layer.queryFeatures(query);
+	}
+	
+	static QueryGeometry(layer, geometry) {
+		return Requests.Query(layer, null, geometry, true, "*", null, null);
+	}
+	
+	static QueryUrl(url, where, geometry, returnGeometry, outFields, distinct, orderBy) {		
+		var layer = ESRI.layers.FeatureLayer({ url:url });
+		
+		return Requests.Query(layer, where, geometry, returnGeometry, outFields, distinct, orderBy);
+	}
+	
+	static QueryTable(url, where, returnGeometry) {		
+		return Requests.QueryUrl(url, where, null, !!returnGeometry, "*", true, null);
+	}
+	
 	static Indicator(id, delegate) {
 		var d = Core.Defer();
 		
-		// TODO: Maybe instantiate and keep a copy?
-		var layer = ESRI.layers.FeatureLayer({ url:URLS.indicator });
+		var where = (id == null) ? `ParentThemeId is ${id}` : `ParentThemeId = ${id}`;
 		
-		var query = layer.createQuery();
-		
-		query.where = id == null ? `ParentThemeId is ${id}` : `ParentThemeId = ${id}`;
-		query.returnGeometry = false;
-		query.outFields = "*";
-		query.returnDistinctValues = true;
-		
-		layer.queryFeatures(query).then(r => {
+		Requests.QueryTable(URLS.indicator, where).then(r => {
 			var items = Requests.MapFeatures(r.features, "IndicatorThemeId", "IndicatorTheme", "IndicatorThemeDescription");
 			
 			if (delegate) items = delegate(items);
@@ -64,16 +85,9 @@ export default class Requests {
 	static Filter(id) {
 		var d = Core.Defer();
 		
-		var layer = ESRI.layers.FeatureLayer({ url:URLS.filter });
+		var where = `IndicatorThemeId = ${id}`;
 		
-		var query = layer.createQuery();
-		
-		query.where = `IndicatorThemeId = ${id}`;
-		query.returnGeometry = false;
-		query.outFields = "*";
-		query.returnDistinctValues = true;
-		
-		layer.queryFeatures(query).then(r => {
+		Requests.QueryTable(URLS.filter, where).then(r => {
 			var locale = Core.locale.toUpperCase();
 			var dimensions = [];
 			
@@ -110,22 +124,14 @@ export default class Requests {
 	static Value(ids) {
 		var d = Core.Defer();
 		
-		var layer = ESRI.layers.FeatureLayer({ url:URLS.value });
+		var where = `DimensionUniqueKey = '${ids.join("-")}'`;
 		
-		var query = layer.createQuery();
-		
-		query.where = `DimensionUniqueKey = '${ids.join("-")}'`;
-		query.returnGeometry = false;
-		query.outFields = "*";
-		query.returnDistinctValues = true;
-		
-		layer.queryFeatures(query).then(r => {
+		Requests.QueryTable(URLS.value, where).then(r => {
 			if (r.features.length > 1) d.Reject(new Error("Received more than one indicator Id."));
 			
 			var metadata = r.features[0].attributes;
 			
 			Requests.Geography(metadata).then(items => d.Resolve(items), error => d.Reject(error));
-			
 		}, error => { d.Reject(error) });
 		
 		return d.promise;
@@ -134,16 +140,9 @@ export default class Requests {
 	static Geography(metadata) {
 		var d = Core.Defer();
 		
-		var layer = ESRI.layers.FeatureLayer({ url:URLS.geography });
+		var where = `IndicatorId = '${metadata.IndicatorId}'`;
 		
-		var query = layer.createQuery();
-		
-		query.where = `IndicatorId = '${metadata.IndicatorId}'`;
-		query.returnGeometry = false;
-		query.outFields = "*";
-		query.returnDistinctValues = true;
-		
-		layer.queryFeatures(query).then(r => {
+		Requests.QueryTable(URLS.geography, where).then(r => {
 			var items = Requests.MapFeatures(r.features, "GeographicLevelId", "LevelName", "LevelDescription");
 			
 			// TODO: Remove filter if they fix the backend
@@ -161,16 +160,9 @@ export default class Requests {
 	static Break(id) {
 		var d = Core.Defer();
 		
-		var layer = ESRI.layers.FeatureLayer({ url:URLS.break });
+		var where = `BreakAlgorithmId  = ${id}`;
 		
-		var query = layer.createQuery();
-		
-		query.where = `BreakAlgorithmId  = ${id}`;
-		query.returnGeometry = false;
-		query.outFields = "*";
-		query.returnDistinctValues = true;
-		
-		layer.queryFeatures(query).then(r => {
+		Requests.QueryTable(URLS.breaks, where).then(r => {
 			if (r.features.length > 1) d.Reject(new Error("Received more than one break algorithm."));
 			
 			var data = r.features[0].attributes;
@@ -198,7 +190,7 @@ export default class Requests {
 				},
 				"type":"dataLayer"
 			}, 
-			"definitionExpression":`GeographicLevelId = '${geography.value}' AND IndicatorId = ${metadata.IndicatorId}`
+			"definitionExpression":`GeographicLevelId = '${geography}' AND IndicatorId = ${metadata.IndicatorId}`
 		}
 		
 		var classif = {
@@ -217,7 +209,7 @@ export default class Requests {
 		var data = {
 			f : "json",
 			layer: JSON.stringify(layer),
-			where: `GeographicLevelId = '${geography.value}' AND IndicatorId = ${metadata.IndicatorId}`,
+			where: `GeographicLevelId = '${geography}' AND IndicatorId = ${metadata.IndicatorId}`,
 			classificationDef: JSON.stringify(classif)
 		}
 		
@@ -229,25 +221,73 @@ export default class Requests {
 		});
 		
 		p.then(renderer => {
-			var sublayer = { 
-					id: 7, 
-					visible: true,
-					definitionExpression: data.where,
-					renderer : ESRI.renderers.support.jsonUtils.fromJSON(renderer.data),
-					source: {
-						type: "data-layer",
-						dataSource: {
-							type: "query-table",
-							workspaceId: "stcdv_dyn_service",
-							query: metadata.PrimaryQuery,
-							geometryType: "esriGeometryPolygon",
-							oidFields: "GeographyReferenceId"
-						}
+			var sublayer = new ESRI.layers.support.Sublayer({ 
+				id: 7, 
+				visible: true,
+				definitionExpression: data.where,
+				renderer : ESRI.renderers.support.jsonUtils.fromJSON(renderer.data),
+				source: {
+					type: "data-layer",
+					dataSource: {
+						type: "query-table",
+						workspaceId: "stcdv_dyn_service",
+						query: metadata.PrimaryQuery,
+						geometryType: "esriGeometryPolygon",
+						oidFields: "GeographyReferenceId"
 					}
 				}
+			});
 				
-			d.Resolve(sublayer);
+			d.Resolve({ method:renderer.data.classificationMethod, sublayer:sublayer });
 		}, error => { d.Reject(error) });
+		
+		return d.promise;
+	}
+	
+	static Typeahead(value, idField, labelField) { 
+		var d = Core.Defer();
+		
+		var where = `UPPER(${labelField}) LIKE UPPER('${value}%') AND Lang = '${Core.locale.toUpperCase()}'`;
+		
+		Requests.QueryUrl(URLS.placename, where, null, false, [idField, labelField], false, [`${labelField} DESC`]).then(r => {
+			var items = r.features.map(f => {
+				return {
+					id : f.attributes[idField],
+					label : f.attributes[labelField],
+					feature : f
+				}
+			})
+			
+			d.Resolve(items);	
+		}, error => {
+			d.Reject(error);
+		})
+		
+		return d.promise;
+	}
+	
+	static Identify(layer, geometry) {
+		var d = Core.Defer();
+		
+		Requests.QueryGeometry(layer, geometry).then(r => {
+			d.Resolve(r.features[0]);
+		}, error => {
+			d.Reject(error);
+		})
+		
+		return d.promise;
+	}
+	
+	static Placename(id, label) { 
+		var d = Core.Defer();
+		
+		var where = `GeographyReferenceId = '${id}' and SearchDisplayName = '${label}'`;
+		
+		Requests.QueryTable(URLS.placename, where, true).then(r => {
+			d.Resolve(r.features[0]);	
+		}, error => {
+			d.Reject(error);
+		});
 		
 		return d.promise;
 	}

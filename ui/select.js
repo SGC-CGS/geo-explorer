@@ -54,6 +54,14 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 		this.items.push(item);
 	}
 	
+	FindIndex(delegate) {
+		for (var i = 0; i < this.items.length; i++) {
+			if (delegate(this.items[i])) return i;
+		}
+		
+		return -1;
+	}
+	
 	OnSelect_Change(ev) {
 		var item = this.items[ev.target.value];
 		
