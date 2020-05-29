@@ -41,9 +41,8 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		
 		
 		var handler = function(ev) { this.OnInputInput_Handler(ev); }.bind(this);
-		var debounced = Core.Debounce(handler, 350);
 		
-		this.Node("input").On("input", debounced);	
+		this.Node("input").On("input", Core.Debounce(handler, 350));	
 
 		// this.Node("input").On("click", this.OnInputClick_Handler.bind(this));
 		this.Node("input").On("keydown", function(ev) { this.OnInputKeyDown_Handler(ev); }.bind(this));		

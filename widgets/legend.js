@@ -20,7 +20,9 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		this.Node('bColorS').On("Finished", this.OnPicker_Finished.bind(this));
 		this.Node('bColorE').On("Finished", this.OnPicker_Finished.bind(this));
 		
-		this.Node('iBreaks').On("change", this.onIBreaks_Change.bind(this));
+		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
+		
+		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
 		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
 		
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));

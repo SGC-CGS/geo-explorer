@@ -83,7 +83,6 @@ export default class Main extends Templated {
 	}
 	
 	OnLegend_Change(ev) {
-		debugger;		
 		var symbol = this.queryLayer.renderer.classBreakInfos[0].symbol;
 		
 		var json = this.queryLayer.renderer.toJSON();
