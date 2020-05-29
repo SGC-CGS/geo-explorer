@@ -24,10 +24,13 @@ export default class Main extends Templated {
 		this.Node('bLegend').On("click", this.OnMenuButton_Click.bind(this, this.Elem("legend")));
 		
 		this.Node('selector').On('Hide', this.OnOverlay_Hide.bind(this, this.Elem('bSelect')));
-		this.Node('legend').On('Hide', this.OnOverlay_Hide.bind(this, this.Elem('bLegend')));
-		
-		this.Node('selector').On('Ready', this.OnSelector_Ready.bind(this));
+		this.Node('selector').On('Change', this.OnSelector_Change.bind(this));
+		this.Node('selector').On('Error', this.OnApplication_Error.bind(this));
 
+		this.Node('legend').On('Hide', this.OnOverlay_Hide.bind(this, this.Elem('bLegend')));
+		this.Node('legend').On('Change', this.OnLegend_Change.bind(this));
+		this.Node('legend').On('Error', this.OnApplication_Error.bind(this));
+		
 		this.Node('search').On('Change', this.OnSearch_Change.bind(this));
 		this.Node('search').On('Error', this.OnApplication_Error.bind(this));
 
@@ -39,6 +42,10 @@ export default class Main extends Templated {
 		this.map.AddGraphicsLayer('identify');
 		
 		this.Elem("selector").InitialRenderer();
+		
+		// Move the buttons to the ArcGIS Menu top-left.
+		this.map.view.ui.add(this.Elem("bSelect"), "top-left");
+		this.map.view.ui.add(this.Elem("bLegend"), "top-left");
 	}
 	
 	OnMenuButton_Click(overlay, ev) {
@@ -63,17 +70,42 @@ export default class Main extends Templated {
 		this.current = { button:null, overlay:null };
 	}
 	
-	OnSelector_Ready(ev) {	
-		this.Elem("legend").Update(ev.method, ev.sublayer.renderer);
-		
-		this.queryLayer = ev.sublayer;
-		
+	OnSelector_Change(ev) {		
 		this.map.EmptyLayer('main');
-		this.map.AddSubLayer('main', ev.sublayer);
+		
+		Requests.Renderer(ev.metadata).then(sublayer => {
+			this.queryLayer = sublayer;
+		
+			this.map.AddSubLayer('main', sublayer);
+			
+			this.Elem("legend").Update(ev.metadata, sublayer);
+		}, (error) => this.OnApplication_Error({ error:error }));
+	}
+	
+	OnLegend_Change(ev) {
+		debugger;		
+		var symbol = this.queryLayer.renderer.classBreakInfos[0].symbol;
+		
+		var json = this.queryLayer.renderer.toJSON();
+		
+		json.min = ev.breaks[0].min;
+		
+		json.classBreakInfos = ev.breaks.map(b => {
+			symbol.color = b.color;
+			
+			return {
+				description : "",
+				label : `${b.min} - ${b.max}`,
+				classMaxValue: b.max,
+				symbol: symbol.toJSON()
+			}
+		})
+		
+		this.queryLayer.renderer = ESRI.renderers.support.jsonUtils.fromJSON(json);		
 	}
 	
 	OnSearch_Change(ev) {
-		this.map.goTo(ev.feature.geometry);
+		this.map.GoTo(ev.feature.geometry);
 	}
 	
 	OnMap_Click(ev) {		
@@ -92,7 +124,7 @@ export default class Main extends Templated {
 			
 			this.map.Popup(ev.mapPoint, content, f.attributes["DisplayNameShort_EN"]);
 		}, error => {
-			this.Emit("Error", { error:error });
+			this.OnApplication_Error(error);
 		})
 	}
 	
@@ -102,17 +134,15 @@ export default class Main extends Templated {
 
 	Template() {
 		return	"<div class='top-container'>" +
-					"<img class='button-icon search' src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
+					"<img class='button-icon large-icon search' src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
 					"<div handle='search' widget='App.Widgets.Search'></div>" +
 				"</div>" +
 				"<div class='map-container'>" +
 					"<div handle='map'></div>" +
 					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
 					"<div handle='legend' widget='App.Widgets.Legend'></div>" +
-					"<div class='menu-container menu-overlay'>" +
-						"<button handle='bSelect' title='nls(Selector_Title)' class='button-icon select'></button>" +
-						"<button handle='bLegend' title='nls(Legend_Title)' class='button-icon legend'></button>" +
-					"</div>" +
+					"<button handle='bSelect' title='nls(Selector_Title)' class='button-icon large-icon select'></button>" +
+					"<button handle='bLegend' title='nls(Legend_Title)' class='button-icon large-icon legend'></button>" +
 				"</div>";
 	}
 }

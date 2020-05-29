@@ -1,8 +1,19 @@
+
 import Dom from '../tools/dom.js';
 import Core from '../tools/core.js';
 import Templated from '../components/templated.js';
 
 export default Core.Templatable("Basic.Components.Picker", class Picker extends Templated {
+
+	get color() {
+		return this.picker.color;
+	}
+	
+	get EsriColor() {
+		var c = this.color.rgba;
+		
+		return [c.r, c.g, c.b, c.a * 255];
+	}
 
 	set color(value) {
 		this.picker.color.set(value);
@@ -25,7 +36,7 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 			sliderSize : 15
 		});
 		
-		this.picker.on("color:change", this.OnPicker_Change.bind(this));
+		// this.picker.on("color:change", this.OnPicker_Change.bind(this));
 		
 		this.picker.base.children[0].tabIndex = 0;
 		this.picker.base.children[1].tabIndex = 0;
@@ -41,9 +52,9 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 		ev.stopPropagation();
 	}
 	
-	OnPicker_Change(ev) {
-		this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
-	}
+	// OnPicker_Change(ev) {
+ 	//	this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
+	// }
 	
 	OnButtonColor_Click(ev) {
 		ev.preventDefault();
@@ -68,6 +79,8 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 		this.collapsed = true;
 	
 		Dom.AddCss(this.Elem('container'), "collapsed");
+		
+		this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
 		
 		this.Emit("Finished", { color:this.picker.color.rgba });
 	}

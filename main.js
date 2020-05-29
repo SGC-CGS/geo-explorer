@@ -38,6 +38,7 @@ function LoadEsri() {
 
 	esriJs.addEventListener("load", (ev) => {
 		require(["esri/renderers/support/jsonUtils", 
+				 "esri/renderers/Renderer",
 				 "esri/request", 
 				 "esri/layers/MapImageLayer", 
 				 "esri/layers/FeatureLayer", 
@@ -47,9 +48,11 @@ function LoadEsri() {
 				 "esri/core/watchUtils", 
 				 "esri/Map", 
 				 "esri/Graphic", 
-				 "esri/views/MapView"], 
+				 "esri/views/MapView", 
+				 "esri/widgets/Fullscreen"], 
 				 
 				 function(jsonUtils, 
+						  Renderer, 
 						  request, 
 						  MapImageLayer, 
 						  FeatureLayer, 
@@ -59,7 +62,8 @@ function LoadEsri() {
 						  watchUtils, 
 						  Map, 
 						  Graphic, 
-						  MapView) {
+						  MapView, 
+						  Fullscreen) {
 			
 			window.ESRI = {
 				core : { 
@@ -73,6 +77,7 @@ function LoadEsri() {
 					MapView : MapView
 				},
 				renderers : {
+					Renderer : Renderer,
 					support : {
 						jsonUtils : jsonUtils
 					}
@@ -84,6 +89,9 @@ function LoadEsri() {
 					support : {
 						Sublayer : Sublayer
 					}
+				},
+				widgets : {
+					Fullscreen : Fullscreen
 				}
 			}
 

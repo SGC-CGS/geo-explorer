@@ -1,4 +1,5 @@
 import Core from './core.js';
+import Metadata from '../components/metadata.js';
 
 const URLS = {
 	renderer : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/dynamicLayer/generateRenderer",
@@ -120,38 +121,39 @@ export default class Requests {
 		
 		return d.promise;
 	}
-	
-	static Value(ids) {
+
+	static Value(dimensions) {
 		var d = Core.Defer();
 		
-		var where = `DimensionUniqueKey = '${ids.join("-")}'`;
+		var where = `DimensionUniqueKey = '${dimensions.join("-")}'`;
 		
 		Requests.QueryTable(URLS.value, where).then(r => {
 			if (r.features.length > 1) d.Reject(new Error("Received more than one indicator Id."));
 			
-			var metadata = r.features[0].attributes;
+			var metadata = Metadata.FromJson(r.features[0].attributes);
+			var algo = r.features[0].attributes["DefaultBreaksAlgorithmId"];
 			
-			Requests.Geography(metadata).then(items => d.Resolve(items), error => d.Reject(error));
+			Requests.Break(algo).then(breaks => {
+				metadata.breaks.algo = breaks.BreakAlgorithm;
+				
+				d.Resolve(metadata);
+			}, error => { d.Reject(error) });
 		}, error => { d.Reject(error) });
 		
 		return d.promise;
 	}
 	
-	static Geography(metadata) {
+	static Geography(indicatorId) {
 		var d = Core.Defer();
 		
-		var where = `IndicatorId = '${metadata.IndicatorId}'`;
+		var where = `IndicatorId = '${indicatorId}'`;
 		
 		Requests.QueryTable(URLS.geography, where).then(r => {
 			var items = Requests.MapFeatures(r.features, "GeographicLevelId", "LevelName", "LevelDescription");
 			
-			// TODO: Remove filter if they fix the backend
-			var data = {
-				items : items.filter(item => item.value != "SSSS"),
-				metadata : metadata
-			}
+			items = items.filter(item => item.value != "SSSS");
 			
-			d.Resolve(data);
+			d.Resolve(items);
 		}, error => { d.Reject(error) });
 		
 		return d.promise;
@@ -173,7 +175,8 @@ export default class Requests {
 		return d.promise;
 	}
 	
-	static Renderer(metadata, breaks, geography) {
+	// static Renderer(indicatorId, geography, query, nBreaks, algo, colorFrom, colorTo)
+	static Renderer(meta) {
 		var d = Core.Defer();
 		
 		var layer = {
@@ -184,24 +187,24 @@ export default class Requests {
 				"dataSource": {
 					"type": "queryTable",
 					"workspaceId": "stcdv_dyn_service",
-					"query": metadata.PrimaryQuery,
+					"query": meta.query,
 					"oidFields": "GeographyReferenceId",
 					"geometryType": "esriGeometryPolygon" 
 				},
 				"type":"dataLayer"
 			}, 
-			"definitionExpression":`GeographicLevelId = '${geography}' AND IndicatorId = ${metadata.IndicatorId}`
+			"definitionExpression":`GeographicLevelId = '${meta.geolevel}' AND IndicatorId = ${meta.indicator}`
 		}
 		
 		var classif = {
 			"type": "classBreaksDef",
 			"classificationField": "Value",
-			"classificationMethod": breaks.BreakAlgorithm,
-			"breakCount": metadata.DefaultBreaks,
+			"classificationMethod": meta.breaks.algo,
+			"breakCount": meta.breaks.n,
 			"colorRamp": {
 				"type":"algorithmic",
-				"fromColor": metadata.ColorFrom.split(","),
-				"toColor":metadata.ColorTo.split(","),
+				"fromColor": meta.colors.start,
+				"toColor":meta.colors.end,
 				"algorithm":"esriHSVAlgorithm"
 			}
 		};
@@ -209,7 +212,7 @@ export default class Requests {
 		var data = {
 			f : "json",
 			layer: JSON.stringify(layer),
-			where: `GeographicLevelId = '${geography}' AND IndicatorId = ${metadata.IndicatorId}`,
+			where: `GeographicLevelId = '${meta.geolevel}' AND IndicatorId = ${meta.indicator}`,
 			classificationDef: JSON.stringify(classif)
 		}
 		
@@ -231,15 +234,15 @@ export default class Requests {
 					dataSource: {
 						type: "query-table",
 						workspaceId: "stcdv_dyn_service",
-						query: metadata.PrimaryQuery,
+						query: meta.query,
 						geometryType: "esriGeometryPolygon",
 						oidFields: "GeographyReferenceId"
 					}
 				}
 			});
 				
-			d.Resolve({ method:renderer.data.classificationMethod, sublayer:sublayer });
-		}, error => { d.Reject(error) });
+			d.Resolve(sublayer);
+		}, error => { d.Reject(new Error(error.message)) });
 		
 		return d.promise;
 	}
@@ -283,7 +286,7 @@ export default class Requests {
 		
 		var where = `GeographyReferenceId = '${id}' and SearchDisplayName = '${label}'`;
 		
-		Requests.QueryTable(URLS.placename, where, true).then(r => {
+		Requests.QueryUrl(URLS.placename, where, null, true).then(r => {
 			d.Resolve(r.features[0]);	
 		}, error => {
 			d.Reject(error);

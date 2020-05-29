@@ -24,6 +24,12 @@ export default class Map extends Evented {
 		});
 		
 		this.view.on("click", this.OnMapView_Click.bind(this));
+		
+		var fullscreen = new ESRI.widgets.Fullscreen({ 
+			view: this.view
+		});
+
+		this.view.ui.add(fullscreen, "top-left");
 	}
 	
 	AddGraphicsLayer(id) {

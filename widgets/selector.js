@@ -3,6 +3,7 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Select from '../ui/select.js';
+import Metadata from '../components/metadata.js';
 
 export default Core.Templatable("App.Widgets.Selector", class Selector extends Overlay {
 	
@@ -37,28 +38,22 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	}
 	
 	InitialRenderer() {
-		// Generate Renderer test
-		var breaks = {
-			BreakAlgorithm:"esriClassifyNaturalBreaks"
-		}
+		// TODO: This doesn't really belong here I think. Should be in Application maybe and passed to the selector
+		this.metadata = new Metadata();
 		
-		var metadata = {
-			IndicatorId : 216708,
-			DefaultBreaks : 5,
-			ColorFrom : "255,204,188,255",
-			ColorTo : "183,28,28,255",
-			PrimaryQuery : "SELECT iv.value AS Value, CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'en-US') END AS FormattedValue_EN,  CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'fr-CA') END AS FormattedValue_FR, grfi.GeographyReferenceId, g.DisplayNameShort_EN, g.DisplayNameShort_FR, g.DisplayNameLong_EN, g.DisplayNameLong_FR, g.ProvTerrName_EN, g.ProvTerrName_FR, g.Shape, i.IndicatorName_EN, i.IndicatorName_FR, i.IndicatorId, i.IndicatorDisplay_EN, i.IndicatorDisplay_FR, i.UOM_EN, i.UOM_FR, g.GeographicLevelId, gl.LevelName_EN, gl.LevelName_FR, gl.LevelDescription_EN, gl.LevelDescription_FR, g.EntityName_EN, g.EntityName_FR, nr.Symbol, nr.Description_EN as NullDescription_EN, nr.Description_FR as NullDescription_FR FROM gis.geographyreference AS g INNER JOIN gis.geographyreferenceforindicator AS grfi ON g.geographyreferenceid = grfi.geographyreferenceid  INNER JOIN (select * from gis.indicator where indicatorId = 216708) AS i ON grfi.indicatorid = i.indicatorid  INNER JOIN gis.geographiclevel AS gl ON g.geographiclevelid = gl.geographiclevelid  INNER JOIN gis.geographiclevelforindicator AS glfi  ON i.indicatorid = glfi.indicatorid  AND gl.geographiclevelid = glfi.geographiclevelid  INNER JOIN gis.indicatorvalues AS iv  ON iv.indicatorvalueid = grfi.indicatorvalueid  INNER JOIN gis.indicatortheme AS it ON i.indicatorthemeid = it.indicatorthemeid  LEFT OUTER JOIN gis.indicatornullreason AS nr  ON iv.nullreasonid = nr.nullreasonid"
-		}
+		this.metadata.indicator = 216708;
+		this.metadata.geolevel = 'A0007';
+		this.metadata.query = "SELECT iv.value AS Value, CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'en-US') END AS FormattedValue_EN,  CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'fr-CA') END AS FormattedValue_FR, grfi.GeographyReferenceId, g.DisplayNameShort_EN, g.DisplayNameShort_FR, g.DisplayNameLong_EN, g.DisplayNameLong_FR, g.ProvTerrName_EN, g.ProvTerrName_FR, g.Shape, i.IndicatorName_EN, i.IndicatorName_FR, i.IndicatorId, i.IndicatorDisplay_EN, i.IndicatorDisplay_FR, i.UOM_EN, i.UOM_FR, g.GeographicLevelId, gl.LevelName_EN, gl.LevelName_FR, gl.LevelDescription_EN, gl.LevelDescription_FR, g.EntityName_EN, g.EntityName_FR, nr.Symbol, nr.Description_EN as NullDescription_EN, nr.Description_FR as NullDescription_FR FROM gis.geographyreference AS g INNER JOIN gis.geographyreferenceforindicator AS grfi ON g.geographyreferenceid = grfi.geographyreferenceid  INNER JOIN (select * from gis.indicator where indicatorId = 216708) AS i ON grfi.indicatorid = i.indicatorid  INNER JOIN gis.geographiclevel AS gl ON g.geographiclevelid = gl.geographiclevelid  INNER JOIN gis.geographiclevelforindicator AS glfi  ON i.indicatorid = glfi.indicatorid  AND gl.geographiclevelid = glfi.geographiclevelid  INNER JOIN gis.indicatorvalues AS iv  ON iv.indicatorvalueid = grfi.indicatorvalueid  INNER JOIN gis.indicatortheme AS it ON i.indicatorthemeid = it.indicatorthemeid  LEFT OUTER JOIN gis.indicatornullreason AS nr  ON iv.nullreasonid = nr.nullreasonid"
+		this.metadata.breaks.n = 5;
+		this.metadata.breaks.algo = "esriClassifyNaturalBreaks";
+		this.metadata.colors.start = [255,204,188,255];
+		this.metadata.colors.end = [183,28,28,255];
 		
-		var geography = 'A0007';
-		
-		this.GetRenderer(metadata, breaks, geography);
+		this.Apply(this.metadata);
 	}
 	
-	GetRenderer(metadata, breaks, geography) {		
-		Requests.Renderer(metadata, breaks, geography).then(renderer => {
-			this.Emit("Ready", renderer);
-		}, error => this.OnRequests_Error.bind(this));
+	Apply(metadata) {
+		this.Emit("Change", { metadata:metadata });
 	}
 	
 	OnSubject_Change(ev) {
@@ -76,7 +71,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	OnCategory_Change(ev) {
 		this.Disable(['sValue', 'sGeography', 'bApply']);
 		
-		Requests.Filter(ev.item.value).then(items => this.LoadFilterAndValue(items), error => this.OnRequests_Error.bind(this));		
+		Requests.Filter(ev.item.value).then(items => this.LoadFilterAndValue(items), this.OnRequests_Error.bind(this));		
 	}
 	
 	OnValue_Change(ev) {
@@ -88,25 +83,23 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		
 		ids.push(this.Elem("sValue").selected.id);
 		
-		Requests.Value(ids).then(data => {
-			this.metadata = data.metadata;
+		Requests.Value(ids).then(metadata => {
+			this.metadata = metadata;
 			
-			this.Emit("Metadata", { metadata:data.metadata });
-			
-			this.LoadDropDown(this.Elem("sGeography"), data.items)
-		}, error => this.OnRequests_Error.bind(this));	
+			Requests.Geography(this.metadata.indicator).then(items => {
+				this.LoadDropDown(this.Elem("sGeography"), items);
+			}, error => d.Reject(error));
+		}, this.OnRequests_Error.bind(this));	
 	}
 	
 	OnGeography_Change(ev) {
 		this.Elem('bApply').disabled = false;
+		
+		this.metadata.geolevel = this.Elem('sGeography').selected.value;
 	}
 	
-	OnApply_Click(ev) {
-		var geography = this.Elem('sGeography').selected;
-		
-		Requests.Break(this.metadata["DefaultBreaksAlgorithmId"]).then(breaks => {
-			this.GetRenderer(this.metadata, breaks, geography.value);
-		}, error => this.OnRequests_Error.bind(this));
+	OnApply_Click(ev) {					
+		this.Apply(this.metadata);
 	}
 	
 	OnClose_Click(ev) {
@@ -157,13 +150,13 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		
 		if (elements.indexOf('sValue') == -1) return;
 		
-		this.metadata = null;
+		// this.metadata = null;
 		
 		this.ResetFilter();
 	}
 	
 	OnRequests_Error (error) {
-		debugger;
+		this.Emit("Error", { error:error });
 	}
 	
 	Template() {

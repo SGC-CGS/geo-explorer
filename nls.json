@@ -1,7 +1,7 @@
 {
 	"Overlay_Close" : {
-		"en" : "Close",
-		"fr" : "Fermer"
+		"en" : "Cancel",
+		"fr" : "Annuler"
 	},
 	"Legend_Title" : {
 		"en" : "Map Legend",
@@ -55,6 +55,14 @@
 		"en": "Quantiles",
 		"fr": "Quantiles"
 	},
+	"Legend_Max_Lt_Min" : {
+		"en" : "New maximum value is less than the current minimum value for the layer. Input a higher value.",
+		"fr" : "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée."
+	},
+	"Legend_Max_Gt_Next" : {
+		"en" : "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.",
+		"fr" : "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante."
+	},
 	"Selector_Title" : {
 		"en" : "Select Data",
 		"fr" : "Sélectionner des données"
@@ -64,8 +72,8 @@
 		"fr" : "Sujet"
 	},
 	"Selector_Subject_Placeholder" : {
-		"en": "*... Select a subject",
-		"fr": "*... Sélectionnez un sujet"
+		"en": "Select a subject",
+		"fr": "Sélectionnez un sujet"
 	},
 	"Selector_Theme" : {
 		"en" : "Theme",
@@ -112,8 +120,8 @@
 		"fr" : "Appliquer"
 	},
 	"Selector_Button_Close" : {
-		"en" : "Close",
-		"fr" : "Fermer"
+		"en" : "Cancel",
+		"fr" : "Annuler"
 	},
 	"Search_Icon_Alt" : {
 		"en" : "Magnifying glass",

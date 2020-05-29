@@ -3,11 +3,15 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Picker from '../ui/picker.js';
+import LegendBreak from './legend-break.js';
 
 export default Core.Templatable("App.Widgets.Legend", class Legend extends Overlay {
 	
 	constructor(container, options) {	
 		super(container, options);
+		
+		this.metadata = null;
+		this.breaks = null;
 		
 		this.Elem('sMethod').Add(Core.Nls("Legend_Method_Equal"), null, { id:1, algo:"esriClassifyEqualInterval" });
 		this.Elem('sMethod').Add(Core.Nls("Legend_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
@@ -15,40 +19,97 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 	
 		this.Node('bColorS').On("Finished", this.OnPicker_Finished.bind(this));
 		this.Node('bColorE').On("Finished", this.OnPicker_Finished.bind(this));
+		
+		this.Node('iBreaks').On("change", this.onIBreaks_Change.bind(this));
+		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
+		
+		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
+		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 	}
 	
-	Update(method, renderer) {	
-		var n = renderer.classBreakInfos.length;
+	Update(metadata, sublayer) {
+		this.metadata = metadata.Clone();
 		
-		var idx = this.Elem('sMethod').FindIndex(i => i.algo === method);
+		var n = sublayer.renderer.classBreakInfos.length;
+		
+		var idx = this.Elem('sMethod').FindIndex(i => i.algo === metadata.breaks.algo);
 		
 		this.Elem("sMethod").value = idx;
 		this.Elem("iBreaks").value = n;
 		
-		this.Elem("bColorS").color = renderer.classBreakInfos[0].symbol.color;
-		this.Elem("bColorE").color = renderer.classBreakInfos[n - 1].symbol.color;
+		this.Elem("bColorS").color = sublayer.renderer.classBreakInfos[0].symbol.color;
+		this.Elem("bColorE").color = sublayer.renderer.classBreakInfos[n - 1].symbol.color;
 		
+		this.LoadClassBreaks(sublayer.renderer.classBreakInfos);
+	}
+	
+	LoadClassBreaks(classBreakInfos) {
 		Dom.Empty(this.Elem("breaks"));
 		
-		renderer.classBreakInfos.forEach(c => {
-			this.AddClassBreak(c);
-		})
+		this.breaks = classBreakInfos.map((c, i) => {
+			var brk = new LegendBreak(this.Elem('breaks'), c);
+			
+			brk.On("apply", this.OnBreak_Apply.bind(this, i));
+			
+			return brk;
+		});
 	}
 	
-	AddClassBreak(brk) {		
-		var color = brk.symbol.color.toHex();
+	OnBreak_Apply(i, ev) {		
+		var curr = this.breaks[i];
+		var next = this.breaks[i + 1];
 		
-		var tr = Dom.Create("tr", { className:"break-line" }, this.Elem('breaks'));
-		var td = Dom.Create("td", { className:"break-color-container" }, tr);
+		if (next && ev.value > next.Max) alert(Core.Nls("Legend_Max_Gt_Next"));
 		
-		Dom.Create("div", { className:"break-color", style:`background-color:${color};` }, td);
-		Dom.Create("td", { className:"from", innerHTML:brk.minValue.toLocaleString(Core.locale) }, tr);
-		Dom.Create("td", { className:"join", innerHTML:Core.Nls("Legend_Item_Join") }, tr);
-		Dom.Create("td", { className:"to", innerHTML:brk.maxValue.toLocaleString(Core.locale) }, tr);
+		else if (ev.value < curr.Min) alert(Core.Nls("Legend_Max_Lt_Min"));
+		
+		else {
+			ev.target.Save();
+			ev.target.StopEdit();
+			
+			next.Min = curr.Max;
+		}
 	}
-	
+		
 	OnPicker_Finished(ev) {
-		debugger;
+		this.metadata.colors.start = this.Elem("bColorS").EsriColor;
+		this.metadata.colors.end = this.Elem("bColorE").EsriColor;
+		
+		this.Refresh(this.metadata);
+	}
+	
+	onIBreaks_Change(ev) {
+		this.metadata.breaks.n = ev.target.value;
+		
+		this.Refresh(this.metadata);
+	}
+	
+	onMethod_Change(ev) {
+		this.metadata.breaks.algo = ev.target.selected.algo;
+		
+		this.Refresh(this.metadata);
+	}
+	
+	OnApply_Click(ev) {
+		var breaks = this.breaks.map(b => {
+			return { color : b.Color, min : b.Min, max : b.Max }
+		});
+	
+		this.Emit("Change", { breaks:breaks });
+	}
+	
+	OnClose_Click(ev) {
+		this.Hide();
+	}
+	
+	OnRequests_Error (error) {
+		this.Emit("Error", { error:error });
+	}
+	
+	Refresh() {
+		Requests.Renderer(this.metadata).then(sublayer => {			
+			this.LoadClassBreaks(sublayer.renderer.classBreakInfos);
+		}, error => this.OnRequests_Error(error));	
 	}
 	
 	Template() {
