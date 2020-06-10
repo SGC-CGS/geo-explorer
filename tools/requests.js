@@ -1,5 +1,4 @@
 import Core from './core.js';
-import Metadata from '../components/metadata.js';
 
 const URLS = {
 	renderer : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/dynamicLayer/generateRenderer",
@@ -13,16 +12,39 @@ const URLS = {
 
 export default class Requests {
 	
-	static MapFeatures(features, value, label, description) {
+	static MakeItem(f, value, label, description, locale) {
+		var item = {
+				value : f.attributes[value],
+				label : f.attributes[`${label}_${locale}`]
+			} 
+			
+		if (description) item.description = f.attributes[`${description}_${locale}`]
+		
+		return item;
+	}
+	
+	static MakeItems(features, value, label, description) {
 		var locale = Core.locale.toUpperCase();
 		
 		return features.map(f => {
-			return {
-				value : f.attributes[value],
-				label : f.attributes[`${label}_${locale}`],
-				description : f.attributes[`${description}_${locale}`]
-			}
+			return Requests.MakeItem(f, value, label, description, locale);
 		});
+	}
+	
+	static MakeMetadata(attr) {
+		return {
+			indicator : attr.IndicatorId,
+			query : attr.PrimaryQuery,
+			breaks : {
+				n : attr.DefaultBreaks,
+				algoId : attr.DefaultBreaksAlgorithmId,
+				algo : null
+			},
+			colors : {
+				start : attr.ColorFrom.split(","),
+				end : attr.ColorTo.split(",")
+			}
+		}
 	}
 	
 	static Query(layer, where, geometry, returnGeometry, outFields, distinct, orderBy) {
@@ -53,37 +75,23 @@ export default class Requests {
 		return Requests.QueryUrl(url, where, null, !!returnGeometry, "*", true, null);
 	}
 	
-	static Indicator(id, delegate) {
+	static Indicator(id) {
 		var d = Core.Defer();
 		
 		var where = (id == null) ? `ParentThemeId is ${id}` : `ParentThemeId = ${id}`;
 		
 		Requests.QueryTable(URLS.indicator, where).then(r => {
-			var items = Requests.MapFeatures(r.features, "IndicatorThemeId", "IndicatorTheme", "IndicatorThemeDescription");
+			var items = Requests.MakeItems(r.features, "IndicatorThemeId", "IndicatorTheme", "IndicatorThemeDescription");
 			
-			if (delegate) items = delegate(items);
-			
+			items = items.filter(i => i.value % 10000 != 9999);
+						
 			d.Resolve(items);
 		}, error => { d.Reject(error) });
 		
 		return d.promise;
 	}
 	
-	static Subject(id) {
-		return Requests.Indicator(id, items => {
-			// TODO: Remove filter if they fix the backend
-			return items.filter(i => i.value % 10000 != 9999);
-		});
-	}
-	
-	static Theme(id) {
-		return Requests.Indicator(id, items => {
-			// TODO: Remove filter if they fix the backend
-			return items.filter(i => i.value % 10000 != 9999);
-		});
-	}
-	
-	static Filter(id) {
+	static Category(id) {
 		var d = Core.Defer();
 		
 		var where = `IndicatorThemeId = ${id}`;
@@ -104,11 +112,9 @@ export default class Requests {
 					};
 				}
 				
-				dimensions[i].values.push({
-					id : f.attributes["DimensionValueId"],
-					label : f.attributes[`Display_${locale}`],
-					description : null
-				});
+				var item = Requests.MakeItem(f, "DimensionValueId", "Display", null, locale);
+				
+				dimensions[i].values.push(item);
 			});
 			
 			var filters = dimensions.filter(d => d.type == 'Filter');
@@ -122,18 +128,17 @@ export default class Requests {
 		return d.promise;
 	}
 
-	static Value(dimensions) {
+	static Metadata(indicators) {
 		var d = Core.Defer();
 		
-		var where = `DimensionUniqueKey = '${dimensions.join("-")}'`;
+		var where = `DimensionUniqueKey = '${indicators.join("-")}'`;
 		
 		Requests.QueryTable(URLS.value, where).then(r => {
 			if (r.features.length > 1) d.Reject(new Error("Received more than one indicator Id."));
 			
-			var metadata = Metadata.FromJson(r.features[0].attributes);
-			var algo = r.features[0].attributes["DefaultBreaksAlgorithmId"];
+			var metadata = this.MakeMetadata(r.features[0].attributes);
 			
-			Requests.Break(algo).then(breaks => {
+			Requests.Break(metadata.breaks.algoId).then(breaks => {
 				metadata.breaks.algo = breaks.BreakAlgorithm;
 				
 				d.Resolve(metadata);
@@ -149,7 +154,7 @@ export default class Requests {
 		var where = `IndicatorId = '${indicatorId}'`;
 		
 		Requests.QueryTable(URLS.geography, where).then(r => {
-			var items = Requests.MapFeatures(r.features, "GeographicLevelId", "LevelName", "LevelDescription");
+			var items = Requests.MakeItems(r.features, "GeographicLevelId", "LevelName", "LevelDescription");
 			
 			items = items.filter(item => item.value != "SSSS");
 			
@@ -175,8 +180,9 @@ export default class Requests {
 		return d.promise;
 	}
 	
-	// static Renderer(indicatorId, geography, query, nBreaks, algo, colorFrom, colorTo)
-	static Renderer(meta) {
+	static Renderer(context) {
+		var meta = context.metadata;
+		
 		var d = Core.Defer();
 		
 		var layer = {
@@ -193,7 +199,7 @@ export default class Requests {
 				},
 				"type":"dataLayer"
 			}, 
-			"definitionExpression":`GeographicLevelId = '${meta.geolevel}' AND IndicatorId = ${meta.indicator}`
+			"definitionExpression":`GeographicLevelId = '${context.geography}' AND IndicatorId = ${meta.indicator}`
 		}
 		
 		var classif = {
@@ -212,7 +218,7 @@ export default class Requests {
 		var data = {
 			f : "json",
 			layer: JSON.stringify(layer),
-			where: `GeographicLevelId = '${meta.geolevel}' AND IndicatorId = ${meta.indicator}`,
+			where: `GeographicLevelId = '${context.geography}' AND IndicatorId = ${meta.indicator}`,
 			classificationDef: JSON.stringify(classif)
 		}
 		
@@ -240,19 +246,20 @@ export default class Requests {
 					}
 				}
 			});
-				
+			
 			d.Resolve(sublayer);
 		}, error => { d.Reject(new Error(error.message)) });
 		
 		return d.promise;
 	}
 	
-	static Typeahead(value, idField, labelField) { 
+	static Typeahead(value) { 
 		var d = Core.Defer();
 		
-		var where = `UPPER(${labelField}) LIKE UPPER('${value}%') AND Lang = '${Core.locale.toUpperCase()}'`;
+		var fields = ["GeographyReferenceId", "SearchDisplayName"];
+		var where = `UPPER(SearchDisplayName) LIKE UPPER('${value}%') AND Lang = '${Core.locale.toUpperCase()}'`;
 		
-		Requests.QueryUrl(URLS.placename, where, null, false, [idField, labelField], false, [`${labelField} DESC`]).then(r => {
+		Requests.QueryUrl(URLS.placename, where, null, false, fields, false, [`SearchDisplayName DESC`]).then(r => {
 			var items = r.features.map(f => {
 				return {
 					id : f.attributes[idField],
@@ -273,10 +280,18 @@ export default class Requests {
 		var d = Core.Defer();
 		
 		Requests.QueryGeometry(layer, geometry).then(r => {
-			d.Resolve(r.features[0]);
-		}, error => {
-			d.Reject(error);
-		})
+			var locale = Core.locale.toUpperCase();
+			var f = r.features[0];
+			
+			var title = f.attributes[`DisplayNameShort_${locale}`];
+			var unit = f.attributes[`UOM_${locale}`];
+			var value = f.attributes[`FormattedValue_${locale}`];
+			var html = f.attributes[`IndicatorDisplay_${locale}`];
+			
+			var content = `<b>${unit}</b>: ${value}<br><br>${html}`;
+			
+			d.Resolve({ feature:f, geometry:geometry, content:content, title:title });
+		}, error => d.Reject(error));
 		
 		return d.promise;
 	}

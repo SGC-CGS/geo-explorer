@@ -96,11 +96,25 @@ export default class Map extends Evented {
 		this.view.popup.collapseEnabled = false;
 	}
 	
+	Identify(layer, geometry) {
+		var d = Core.Defer();
+		
+		Requests.Identify(layer, geometry).then(result => {
+			d.Resolve(result);			
+		}, error => this.OnMapView_Error(error));
+		
+		return d.promise;
+	}
+	
 	GoTo(target) {
 		this.view.goTo(target);
 	}
 	
 	OnMapView_Click(ev) {		
 		this.Emit("Click", ev);
+	}
+	
+	OnMapView_Error(ev) {		
+		this.Emit("Error", ev);
 	}
 }

@@ -54,9 +54,13 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 		this.items.push(item);
 	}
 	
+	Select(delegate) {		
+		this.value = this.FindIndex(delegate);
+	}
+	
 	FindIndex(delegate) {
 		for (var i = 0; i < this.items.length; i++) {
-			if (delegate(this.items[i])) return i;
+			if (delegate(this.items[i], i)) return i;
 		}
 		
 		return -1;

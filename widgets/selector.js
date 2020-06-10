@@ -3,15 +3,11 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Select from '../ui/select.js';
-import Metadata from '../components/metadata.js';
 
 export default Core.Templatable("App.Widgets.Selector", class Selector extends Overlay {
 	
 	constructor(container, options) {	
 		super(container, options);
-		
-		Requests.Subject(null).then(items => this.LoadDropDown(this.Elem("sSubject"), items), error => this.OnRequests_Error.bind(this));
-		
 		this.filters = [];
 		this.metadata = null;
 		
@@ -37,75 +33,28 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		this.Elem('bApply').disabled = true;
 	}
 	
-	InitialRenderer() {
-		// TODO: This doesn't really belong here I think. Should be in Application maybe and passed to the selector
-		this.metadata = new Metadata();
+	Update(context) {
+		this.context = context;
 		
-		this.metadata.indicator = 216708;
-		this.metadata.geolevel = 'A0007';
-		this.metadata.query = "SELECT iv.value AS Value, CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'en-US') END AS FormattedValue_EN,  CASE WHEN iv.value IS NULL THEN nr.symbol ELSE Format(iv.value, 'N0', 'fr-CA') END AS FormattedValue_FR, grfi.GeographyReferenceId, g.DisplayNameShort_EN, g.DisplayNameShort_FR, g.DisplayNameLong_EN, g.DisplayNameLong_FR, g.ProvTerrName_EN, g.ProvTerrName_FR, g.Shape, i.IndicatorName_EN, i.IndicatorName_FR, i.IndicatorId, i.IndicatorDisplay_EN, i.IndicatorDisplay_FR, i.UOM_EN, i.UOM_FR, g.GeographicLevelId, gl.LevelName_EN, gl.LevelName_FR, gl.LevelDescription_EN, gl.LevelDescription_FR, g.EntityName_EN, g.EntityName_FR, nr.Symbol, nr.Description_EN as NullDescription_EN, nr.Description_FR as NullDescription_FR FROM gis.geographyreference AS g INNER JOIN gis.geographyreferenceforindicator AS grfi ON g.geographyreferenceid = grfi.geographyreferenceid  INNER JOIN (select * from gis.indicator where indicatorId = 216708) AS i ON grfi.indicatorid = i.indicatorid  INNER JOIN gis.geographiclevel AS gl ON g.geographiclevelid = gl.geographiclevelid  INNER JOIN gis.geographiclevelforindicator AS glfi  ON i.indicatorid = glfi.indicatorid  AND gl.geographiclevelid = glfi.geographiclevelid  INNER JOIN gis.indicatorvalues AS iv  ON iv.indicatorvalueid = grfi.indicatorvalueid  INNER JOIN gis.indicatortheme AS it ON i.indicatorthemeid = it.indicatorthemeid  LEFT OUTER JOIN gis.indicatornullreason AS nr  ON iv.nullreasonid = nr.nullreasonid"
-		this.metadata.breaks.n = 5;
-		this.metadata.breaks.algo = "esriClassifyNaturalBreaks";
-		this.metadata.colors.start = [255,204,188,255];
-		this.metadata.colors.end = [183,28,28,255];
+		this.LoadDropDown(this.Elem("sSubject"), context.Lookup("subjects"));
+		this.LoadDropDown(this.Elem("sTheme"), context.Lookup("themes"));
+		this.LoadDropDown(this.Elem("sCategory"), context.Lookup("categories"));
+		this.LoadDropDown(this.Elem("sGeography"), context.Lookup("geographies"));
+		this.LoadDropDown(this.Elem('sValue'), context.Lookup("values"));
 		
-		this.Apply(this.metadata);
+		this.LoadFilters(context.Lookup("filters"));
+		
+		this.Elem("sSubject").Select(i => i.value == context.subject);
+		this.Elem("sTheme").Select(i => i.value == context.theme);
+		this.Elem("sCategory").Select(i => i.value == context.category);
+		this.Elem("sGeography").Select(i => i.value == context.geography);
+		this.Elem("sValue").Select(i => i.value == context.value);
+		
+		this.filters.forEach((f, i) => {
+			f.Select(j => j.value == context.filters[i]);
+		});
 	}
-	
-	Apply(metadata) {
-		this.Emit("Change", { metadata:metadata });
-	}
-	
-	OnSubject_Change(ev) {
-		this.Disable(['sTheme', 'sCategory', 'sValue', 'sGeography', 'bApply']);
 		
-		Requests.Subject(ev.item.value).then(items => this.LoadDropDown(this.Elem("sTheme"), items), error => this.OnRequests_Error.bind(this));		
-	}
-	
-	OnTheme_Change(ev) {
-		this.Disable(['sCategory', 'sValue', 'sGeography', 'bApply']);
-		
-		Requests.Theme(ev.item.value).then(items => this.LoadDropDown(this.Elem("sCategory"), items), error => this.OnRequests_Error.bind(this));
-	}
-	
-	OnCategory_Change(ev) {
-		this.Disable(['sValue', 'sGeography', 'bApply']);
-		
-		Requests.Filter(ev.item.value).then(items => this.LoadFilterAndValue(items), this.OnRequests_Error.bind(this));		
-	}
-	
-	OnValue_Change(ev) {
-		if (this.Elem("sValue").value == -1) return;
-		
-		this.Disable(['sGeography', 'bApply']);
-		
-		var ids = this.filters.map(f => f.selected.id);
-		
-		ids.push(this.Elem("sValue").selected.id);
-		
-		Requests.Value(ids).then(metadata => {
-			this.metadata = metadata;
-			
-			Requests.Geography(this.metadata.indicator).then(items => {
-				this.LoadDropDown(this.Elem("sGeography"), items);
-			}, error => d.Reject(error));
-		}, this.OnRequests_Error.bind(this));	
-	}
-	
-	OnGeography_Change(ev) {
-		this.Elem('bApply').disabled = false;
-		
-		this.metadata.geolevel = this.Elem('sGeography').selected.value;
-	}
-	
-	OnApply_Click(ev) {					
-		this.Apply(this.metadata);
-	}
-	
-	OnClose_Click(ev) {
-		this.Hide();
-	}
-	
 	LoadDropDown(select, items) {
 		select.Empty();
 		
@@ -121,15 +70,15 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		Dom.RemoveCss(this.Elem("instructions"), "hidden");
 	}
 	
-	LoadFilterAndValue(data) {		
+	LoadFilters(filters) {		
 		Dom.AddCss(this.Elem("instructions"), "hidden");
 		
-		this.filters = data.filters.map(d => {
+		this.filters = filters.map(d => {
 			var label = Dom.Create("label", { innerHTML:d.label }, this.Elem('filter'));
 			var div = Dom.Create("div", null, this.Elem('filter'));
 			var select = new Select(div);
 			
-			d.values.forEach(item => select.Add(item.label, null, item));
+			d.forEach(item => select.Add(item.label, null, item));
 			
 			select.Elem("root").firstChild.selected = true;
 			
@@ -137,8 +86,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 			
 			return select;
 		});
-		
-		this.LoadDropDown(this.Elem('sValue'), data.value.values);
 	}
 	
 	Disable(elements) {
@@ -150,9 +97,69 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		
 		if (elements.indexOf('sValue') == -1) return;
 		
-		// this.metadata = null;
-		
 		this.ResetFilter();
+	}
+	
+	OnSubject_Change(ev) {
+		this.Disable(['sTheme', 'sCategory', 'sValue', 'sGeography', 'bApply']);
+		
+		this.context.ChangeSubject(ev.item.value).then(c => {
+			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
+		}, error => this.OnRequests_Error(error));		
+	}
+	
+	OnTheme_Change(ev) {
+		this.Disable(['sCategory', 'sValue', 'sGeography', 'bApply']);
+		
+		this.context.ChangeTheme(ev.item.value).then(c => {
+			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
+		}, error => this.OnRequests_Error(error));		
+	}
+	
+	OnCategory_Change(ev) {
+		this.Disable(['sValue', 'sGeography', 'bApply']);
+		
+		this.context.ChangeCategory(ev.item.value).then(c => {
+			this.LoadFilters(this.context.Lookup("filters"));
+			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
+		}, error => this.OnRequests_Error(error));		
+	}
+	
+	OnValue_Change(ev) {
+		if (this.Elem("sValue").value == -1) return;
+		
+		this.Disable(['sGeography', 'bApply']);
+		
+		var filters = this.filters.map(f => f.selected.value);
+		var value = this.Elem("sValue").selected.value;
+		
+		this.context.ChangeIndicators(filters, value).then(c => {				
+			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
+		}, error => this.OnRequests_Error(error));
+	}
+	
+	OnGeography_Change(ev) {
+		this.Elem('bApply').disabled = false;
+		
+		this.context.ChangeGeography(ev.item.value);
+	}
+	
+	OnApply_Click(ev) {
+		this.context.UpdateRenderer().then(c => {
+			this.context.Commit();
+			
+			// TODO: Commit partial Update Map, Legend, Styler
+		
+			this.Emit("Change", { context:this.context });
+		});
+	}
+	
+	OnClose_Click(ev) {
+		this.context.Revert();
+		
+		this.Update(this.context);
+		
+		this.Hide();
 	}
 	
 	OnRequests_Error (error) {

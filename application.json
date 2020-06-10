@@ -1,4 +1,8 @@
 {
+	"map" : {
+		"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
+		"opacity" : 0.75
+	},
     "symbols": {
         "identify": {
             "type": "simple-fill",
@@ -10,5 +14,13 @@
 				"style": "solid"
             }
         }
-    }
+    },
+	"context" : {
+		"subject" : 13,
+		"theme" : 	1399,
+		"category" : 13100113,
+		"filters" : [3046, 3001, 3007, 3021],
+		"value" : 3037,
+		"geography" : "A0007"
+	}
 }

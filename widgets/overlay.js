@@ -51,6 +51,8 @@ export default class Overlay extends Templated {
 	
 	onBtnClose_Click(ev) {
 		this.Hide();
+		
+		this.Emit("Close", { overlay:this });
 	}
 	
 	Template() {

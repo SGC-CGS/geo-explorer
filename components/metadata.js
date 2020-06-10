@@ -7,7 +7,6 @@ export default class Metadata {
 	
 	constructor () {		
 		this.indicator = null;
-		this.geolevel = null;
 		this.query = null,
 		
 		this.breaks = {
@@ -25,7 +24,6 @@ export default class Metadata {
 		var meta = new Metadata();
 		
 		meta.indicator = this.indicator;
-		meta.geolevel = this.geolevel;
 		meta.query = this.query;
 		meta.breaks.n = this.breaks.n;
 		meta.breaks.algo = this.breaks.algo;
@@ -39,12 +37,11 @@ export default class Metadata {
 		var meta = new Metadata();
 		
 		meta.indicator = json.IndicatorId;
-		meta.geolevel = null;
 		meta.query = json.PrimaryQuery;
 		meta.breaks.n = json.DefaultBreaks;
 		meta.breaks.algo = null;
-		meta.colors.start = json.ColorFrom;
-		meta.colors.end = json.ColorTo;
+		meta.colors.start = json.ColorFrom.split(",");
+		meta.colors.end = json.ColorTo.split(",");
 		
 		return meta;
 	}

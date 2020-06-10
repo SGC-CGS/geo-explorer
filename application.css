@@ -51,6 +51,10 @@
 	background:#f6f6f6;
 }
 
+.gexp input[type=range] {
+	cursor : pointer;
+}
+
 .gexp img.button-icon {
     width:28px;
     height:28px;
@@ -91,7 +95,7 @@
 }
 
 .gexp .esri-view-width-large .esri-popup__main-container {
-    width: 350px;
+    width: 325px;
 }
 
 .gexp .esri-popup__header-title {
@@ -217,8 +221,12 @@
 	border-bottom:solid 1px rgba(110,110,110,0.3);
 }
 
-.gexp .map-container .esri-ui .button-icon.legend {
+.gexp .map-container .esri-ui .button-icon.styler {
 	background-image:url(./assets/indicator-24.png);
+}
+
+.gexp .map-container .esri-ui .button-icon.legend {
+	background-image:url(./assets/layers-24.png);
 }
 
 .gexp .map-container .esri-ui .button-icon,
@@ -262,25 +270,29 @@
 	cursor:pointer;
 }
 
-/* Map Legend widget */
+/* Map Styler widget */
 .gexp .selector,
-.gexp .legend {
+.gexp .styler {
 	width:450px;
 }
 
-.gexp .legend .overlay-body > * {
+.gexp .legend {
+	width:350px;
+}
+
+.gexp .styler .overlay-body > * {
 	margin:5px 0px;
 }
 
-.gexp .legend p {
+.gexp .styler p {
 	font-size:0.9em;
 }
 
-.gexp .legend label {
+.gexp .styler label {
 	font-size:1.1em;
 }
 
-.gexp .legend input {
+.gexp .styler input {
 	display:block;
 }
 
@@ -298,11 +310,11 @@
     font-size: 1em;
 }
 
-.gexp .legend .color-picker > * {
+.gexp .styler .color-picker > * {
 	display:inline-block;
 }
 
-.gexp .legend .color-picker .wheel-container {
+.gexp .styler .color-picker .wheel-container {
     position: absolute;
     transform: translate(-10px, 0px);
     background: white;
@@ -312,57 +324,99 @@
 	cursor:pointer;
 }
 
-.gexp .legend .color-picker .wheel-container.collapsed {
+.gexp .styler .color-picker .wheel-container.collapsed {
 	display:none;
 }
 
+.gexp .legend label {
+	font-weight: bold;
+	font-size: 1.1em;
+    margin: 5px 0px;
+}
 
-.gexp .legend .break-line > * {
+.gexp .legend .opacity-labels-container label {
+	font-size : 0.9em;
+	font-weight : normal;
+    margin: 0;
+}
+
+.gexp .legend .opacity-labels-container label:first-child {
+	float:left;
+}
+
+.gexp .legend .opacity-labels-container label:last-child {
+	float:right;
+}
+
+.gexp .legend ul {
+    padding-inline-start: 30px;
+    margin-bottom: 0px;
+}
+
+.gexp .legend .break-line > *,
+.gexp .styler .break-line > * {
     padding:3px 5px;
 }
 
-.gexp .legend .break-line button.to {
+.gexp .styler .break-line button.to {
     border: none;
     background: none;
     text-decoration: underline;
 }
 
-.gexp .legend button.color,
-.gexp .legend .break-line .break-color{
+.gexp .styler button.color,
+.gexp .legend .break-line .break-color,
+.gexp .styler .break-line .break-color{
 	width:24px;
 	height:24px;
 	border:solid thin black;
 	border-radius:2px;
 }
 
-.gexp .legend .break-line .break-to-container:not(.editing) .editor {
+.gexp .styler .break-line .break-to-container:not(.editing) .editor {
 	display:none;
 }
 
-.gexp .legend .break-line .break-to-container.editing button.to {
+.gexp .styler .break-line .break-to-container.editing button.to {
 	display:none;
 }
 
-.gexp .legend .break-line .break-to-container .editor > * {
+.gexp .styler .break-line .break-to-container .editor > * {
 	display:inline-block;
 	vertical-align:middle;
 } 
 
-.gexp .legend .break-line .break-to-container .editor .editor-input {
+.gexp .styler .break-line .break-to-container .editor .editor-input {
 	width:80px;    
 	height: 24px;
 }
 
-.gexp .legend .break-line .break-to-container .editor button {
+.gexp .styler .break-line .break-to-container .editor button {
     margin: 0px 3px;
 }
 
-.gexp .legend .break-line .break-to-container .editor button.apply {
+.gexp .styler .break-line .break-to-container .editor button.apply {
     background-image: url(./assets/check-16.png);
 }
 
-.gexp .legend .break-line .break-to-container .editor button.cancel {
+.gexp .styler .break-line .break-to-container .editor button.cancel {
     background-image: url(./assets/close-16.png);
+}
+
+/* Legend Widget */
+.gexp .legend .break-line:not(:first-child) {
+	border-top : solid thin silver;
+}
+
+.gexp .legend .opacity-container {
+	text-align:center;
+}
+
+.gexp .legend .opacity-labels-container,
+.gexp .legend input.opacity {
+    width: 90%;
+    display: inline-block;
+    padding: 0;
 }
 
 /* Select Data widget */

@@ -9,9 +9,7 @@ export default Core.Templatable("App.Widgets.Search", class Search extends Templ
 	constructor(container, options) {	
 		super(container, options);
 		
-		this.Elem("typeahead").storeFn = (value) => {
-			return Requests.Typeahead(value, "GeographyReferenceId", "SearchDisplayName");
-		}
+		this.Elem("typeahead").storeFn = (value) => Requests.Typeahead(value);
 		
 		this.Elem("typeahead").On("Change", this.OnTypeahead_Change.bind(this));
 	}
@@ -27,7 +25,6 @@ export default Core.Templatable("App.Widgets.Search", class Search extends Templ
 	Template() {        
 		return "<div handle='root'>" +
 				  "<div handle='typeahead' widget='Basic.Components.DynamicTypeahead'></div>" +
-				  "<ul handle='list' class='list'></ul>" +
 			   "</div>";
 	}
 })

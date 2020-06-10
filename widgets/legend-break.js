@@ -21,9 +21,7 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	set Max(value) {
 		this.max = value;
 		
-		this.Elem("bTo").innerHTML = this.max.toLocaleString(Core.locale);
-		
-		this.Elem("eInput").value = this.max;
+		this.Elem("lTo").innerHTML = this.max.toLocaleString(Core.locale);
 	}
 	
 	get Color() {
@@ -39,50 +37,6 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		this.color = info.symbol.color;
 		
 		this.Elem("color").style.backgroundColor = this.color.toHex();
-		
-		this.Elem("bTo").addEventListener("click", this.OnEditor_Button.bind(this));
-		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
-		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
-	}
-	
-	Cancel() {
-		this.Elem("eInput").value = this.max;
-	}
-	
-	Save() {
-		this.max = +this.Elem("eInput").value;
-		
-		this.Elem("bTo").innerHTML = this.max.toLocaleString(Core.locale);
-	}
-	
-	Edit() {
-		Dom.AddCss(this.Elem('eContainer'), "editing");
-	}
-	
-	StopEdit() {
-		Dom.RemoveCss(this.Elem('eContainer'), "editing");
-	}
-	
-	OnEditor_Button(ev) {		
-		this.Edit();
-	}
-	
-	OnEditor_Apply(ev) {
-		// var value = +this.Elem("eInput").value;
-		
-		// this.Elem("bTo").innerHTML = this.max.toLocaleString(Core.locale);
-		
-		// this.StopEdit();
-	
-		var tentative = +this.Elem("eInput").value;
-		
-		this.Emit("apply", { value:tentative });
-	}
-	
-	OnEditor_Cancel(ev) {	
-		this.Cancel();
-	
-		this.StopEdit();
 	}
 	
 	Template() {
@@ -91,15 +45,8 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 					"<div handle='color' class='break-color'></div>" +
 				 "</td>" + 
 				 "<td handle='lFrom'></td>" + 
-				 "<td>nls(Legend_Item_Join)</td>" + 
-				 "<td handle='eContainer' class='break-to-container'>" + 
-					"<button handle='bTo' class='to'></button>" +
-					"<div class='editor'>" +
-						"<input handle='eInput' class='editor-input' type='number'>" +
-						"<button handle='eApply' class='apply button-icon small-icon'></button>" +
-						"<button handle='eCancel' class='cancel button-icon small-icon'></button>" +
-					"</div>" +
-				 "</td>" + 
+				 "<td>nls(Styler_Item_Join)</td>" + 
+				 "<td handle='lTo'></td>" + 
 			   "</tr>";
 	}
 })
