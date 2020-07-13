@@ -1,8 +1,8 @@
-import Overlay from './overlay.js';
-import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
-import Requests from '../tools/requests.js';
-import Picker from '../ui/picker.js';
+import Overlay from '../overlay.js';
+import Core from '../../tools/core.js';
+import Dom from '../../tools/dom.js';
+import Requests from '../../tools/requests.js';
+import Picker from '../../ui/picker.js';
 import StylerBreak from './styler-break.js';
 
 export default Core.Templatable("App.Widgets.Styler", class Styler extends Overlay {

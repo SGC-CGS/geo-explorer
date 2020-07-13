@@ -1,6 +1,6 @@
-import Overlay from './overlay.js';
-import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
+import Overlay from '../overlay.js';
+import Core from '../../tools/core.js';
+import Dom from '../../tools/dom.js';
 
 import LegendBreak from './legend-break.js';
 

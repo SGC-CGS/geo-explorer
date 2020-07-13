@@ -1,6 +1,6 @@
-import TemplatedTable from '../components/templated-table.js';
-import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
+import TemplatedTable from '../../components/templated-table.js';
+import Core from '../../tools/core.js';
+import Dom from '../../tools/dom.js';
 
 export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak extends TemplatedTable {
 	
