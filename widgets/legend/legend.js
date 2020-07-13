@@ -6,11 +6,11 @@ import LegendBreak from './legend-break.js';
 
 export default Core.Templatable("App.Widgets.Legend", class Legend extends Overlay {
 	
-	set opacity(value) {
+	set Opacity(value) {
 		this.Elem('sOpacity').value = value * 100;
 	}
 	
-	get opacity() {
+	get Opacity() {
 		return this.Elem('sOpacity').value / 100;
 	}
 	
@@ -19,7 +19,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 	}
-		
+	
 	Update(context) {	
 		this.context = context;
 		
@@ -44,7 +44,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 	}
 	
 	OnOpacity_Changed(ev) {
-		this.Emit("Opacity", { opacity:this.opacity });
+		this.Emit("Opacity", { opacity:this.Opacity });
 	}
 	
 	Template() {

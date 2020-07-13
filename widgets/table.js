@@ -7,20 +7,20 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 	
 	set Title(value) { this.Elem("title").innerHTML = value; }
 	
+	set Headers(value) {
+		this.headers = value; 
+		
+		Dom.Create("th", { }, this.Elem("header"));
+		
+		this.headers.forEach(h => {
+			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
+		});
+	}
+	
 	constructor(container) {	
 		super(container);
 		
 		Dom.AddCss(this.container, 'hidden');
-	}
-
-	Initialize(config) {
-		this.config = config; 
-		
-		Dom.Create("th", { }, this.Elem("header"));
-			
-		config.headers.forEach(h => {
-			Dom.Create("th", { innerHTML:h.label[Core.locale] }, this.Elem("header"));
-		});
 	}
 
 	Update(context) {
@@ -40,21 +40,19 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		Dom.Empty(this.Elem('body'));
 		
 		graphics.forEach(g => {
-			var name = g.attributes[this.config.headers[1].id[Core.locale]];
+			var name = g.attributes[this.headers[1].id];
 			
 			var tr = Dom.Create("tr", { className:"table-row" }, this.Elem("body"));
 			
 			this.CreateButton(tr, g, name);
 			
-			this.config.headers.forEach(f => {
-				var id = f.id[Core.locale];
-				
-				Dom.Create("td", { className:"table-cell", innerHTML:g.attributes[id] }, tr);
+			this.headers.forEach(f => {				
+				Dom.Create("td", { className:"table-cell", innerHTML:g.attributes[f.id] }, tr);
 			});
 						
 			tr.title = Core.Nls("Table_Row_Title", [name]);
 			
-			tr.addEventListener("click", ev => this.Emit("RowClick", { graphic:g }));
+			tr.addEventListener("click", ev => this.Emit("RowClick", { feature:g }));
 		});
 		
 		this.UpdateTableVisibility();

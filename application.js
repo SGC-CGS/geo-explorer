@@ -1,13 +1,11 @@
- 'use strict';
+'use strict';
 
 import Core from './tools/core.js';
-import Dom from './tools/dom.js';
-import Net from './tools/net.js';
-import Requests from './tools/requests.js';
 import Templated from './components/templated.js';
-
 import Context from './components/context.js';
 import Map from './components/map.js';
+import SelectBehavior from './components/rectangle-select.js';
+import IdentifyBehavior from './components/point-identify.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -16,14 +14,15 @@ import Search from './widgets/search.js';
 import Waiting from './widgets/waiting.js';
 import Table from './widgets/table.js';
 
-export default class Main extends Templated { 
+export default class Application extends Templated { 
 
 	constructor(node, config) {		
 		super(node);
 
 		this.config = config;
 
-		// Build map, menu, widgets and other UI components
+		// Build context, map, menu, widgets and other UI components
+		this.context = new Context();
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu(this.map);
 		
@@ -40,38 +39,23 @@ export default class Main extends Templated {
 		for (var id in this.menu.items) this.map.Place(this.menu.items[id].button, "top-left");
 		
 		// Hookup events to UI
-		this.HandleWidgetEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
-		this.HandleWidgetEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
-		this.HandleWidgetEvents(this.Node('search'), this.OnSearch_Change.bind(this));
+		this.HandleEvents(this.map);
+		this.HandleEvents(this.context);
+		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
+		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
+		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
 		
-		// Hookup events to map
-		this.map.On("Click", this.OnMap_Click.bind(this));
-		this.map.On("Select-Draw", this.OnMap_SelectDraw.bind(this));
-		this.map.On("Error", this.OnApplication_Error.bind(this));
-		
-		// Initialize application
-		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
-		this.map.AddGraphicsLayer('identify');
-		this.map.AddGraphicsLayer('selection');
+		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
 
-		this.Elem('legend').opacity = this.config.map.opacity;
-
-		this.context = new Context();
-
-		this.context.On("Error", this.OnApplication_Error.bind(this));
-		
-		this.Elem("waiting").Show();
-		
-		this.context.Initialize(config.context).then(d => {		
-			this.Elem("waiting").Hide();
-		
+		this.Elem("table").Headers = this.config.TableHeaders;
+		this.Elem('legend').Opacity = this.config.MapOpacity;
+				
+		this.context.Initialize(config.Context).then(d => {				
 			this.map.AddSubLayer('main', this.context.sublayer);
-			
-			this.Elem("table").Initialize(this.config.table);
 			
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
@@ -79,93 +63,81 @@ export default class Main extends Templated {
 			this.Elem("table").Update(this.context);
 			
 			this.menu.SetOverlay(this.menu.Item("legend"));
+			
+			this.AddSelectBehavior(this.map, this.context, this.config);
+			// this.AddIdentifyBehavior(this.map, this.context, this.config);
 		}, error => this.OnApplication_Error(error));
 	}
 	
-	HandleWidgetEvents(node, changeHandler) {
-		node.On('Change', changeHandler);
+	AddSelectBehavior(map, context, config) {
+		var options = {
+			layer: context.sublayer,
+			field: "GeographyReferenceId",
+			symbol: config.Symbol("selection")
+		}
+		
+		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map, options));
+		
+		this.HandleEvents(behavior, this.OnMap_SelectDraw.bind(this));
+	}
+	
+	AddIdentifyBehavior(map, context, config) {
+		var options = {
+			layer: context.sublayer,
+			symbol: config.Symbol("identify")
+		}
+		
+		var behavior = this.map.AddBehavior("identify", new IdentifyBehavior(map, options));
+
+		this.HandleEvents(behavior);	
+	}
+	
+	HandleEvents(node, changeHandler) {
+		if (changeHandler) node.On('Change', changeHandler);
+		
 		node.On('Busy', this.OnWidget_Busy.bind(this));
 		node.On('Idle', this.OnWidget_Idle.bind(this));
 		node.On('Error', this.OnApplication_Error.bind(this));
 	}
 	
-	OnSelector_Change(ev) {	
-		this.Elem("waiting").Hide();
-		
+	OnSelector_Change(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 		
-		this.map.ClearGraphics('identify');
-		this.map.ClearGraphics('selection');
+		this.map.Behavior("selection").Reset({ layer:this.context.sublayer });
+		// this.map.Behavior("identify").Reset({ layer:this.context.sublayer });
 			
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
 		this.Elem("table").Update(this.context);
 	}
 	
-	OnStyler_Change(ev) {
-		this.Elem("waiting").Hide();
-		
+	OnStyler_Change(ev) {		
 		this.context.sublayer.renderer = ev.renderer;
 		
 		this.Elem("legend").Update(this.context);
 	}
 	
-	OnSearch_Change(ev) {
-		this.Elem("waiting").Hide();
-		
-		this.map.GoTo(ev.feature.geometry);
-	}
-	
-	OnMap_Click(ev) {
-		return;
-		
-		this.Elem("waiting").Show();
-		
-		this.map.Identify(this.context.sublayer, ev.mapPoint).then((r) => {
-			this.Elem("waiting").Hide();
-			
-			this.map.ClearGraphics('identify');
-			
-			this.map.AddGraphic('identify', r.feature, this.config.symbols.identify);
-			
-			this.map.Popup(ev.mapPoint, r.content, r.title);
-		}, error => this.OnApplication_Error(error));
-	}
-	
-	OnMap_SelectDraw(ev) {
-		this.Elem("waiting").Show();
-		
-		Requests.QueryGeometry(this.context.sublayer, ev.geometry).then(r => {
-			this.Elem("waiting").Hide();
-			
-			var field = "GeographyReferenceId";
-			var graphics = this.map.Layer("selection").graphics;
-			
-			r.features.forEach(f => {
-				var exists = graphics.find(g => g.attributes[field] == f.attributes[field]);
-				
-				if (exists) this.map.RemoveGraphic("selection", exists);
-				
-				else this.map.AddGraphic('selection', f, this.config.symbols.identify);
-			});
-
-			this.Elem("table").Populate(this.map.Layer("selection").graphics);
-		});
-	}
-		
 	OnLegend_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
 	}
 	
+	OnSearch_Change(ev) {		
+		this.map.GoTo(ev.feature.geometry);
+	}
+	
 	OnTable_RowClick(ev) {
-		this.map.GoTo(ev.graphic.geometry);
+		this.map.GoTo(ev.feature.geometry);
+	}
+	
+	OnMap_SelectDraw(ev) {
+		this.Elem("table").Populate(ev.selection);
 	}
 	
 	OnTable_RowButtonClick(ev) {
-		this.map.RemoveGraphic("selection", ev.graphic);
-		
-		this.Elem("table").Populate(this.map.Layer("selection").graphics);
+		this.map.Behavior("selection").Layer.remove(ev.graphic);
+				
+		this.Elem("table").Populate(this.map.Behavior("selection").Graphics);
 	}
 	
 	OnWidget_Busy(ev) {

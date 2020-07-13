@@ -2,6 +2,7 @@ import Core from "./tools/core.js";
 import Dom from "./tools/dom.js";
 import Net from "./tools/net.js";
 import Requests from "./tools/requests.js";
+import Configuration from "./components/configuration.js";
 
 import Application from "./application.js";
 
@@ -23,9 +24,7 @@ function Start(responses) {
 	
 	var div = Dom.Node(document.body, "#app-container");
 	
-	Requests.config = responses[1].requests;
-	
-	var app = new Application(div, responses[1]);
+	var app = new Application(div, new Configuration(responses[1]));
 }
 
 function Fail(response) {

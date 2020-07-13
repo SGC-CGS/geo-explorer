@@ -51,6 +51,8 @@ export default class Context extends Evented {
 	}
 	
 	Initialize(config) {
+		this.Emit("Busy");
+		
 		var d = Core.Defer();
 		
 		var p1 = this.UpdateSubjects();		
@@ -64,15 +66,15 @@ export default class Context extends Evented {
 			this.UpdateRenderer().then(c => {
 				this.Commit();
 				
-				// TODO: Commit everything , Update Map, Legend, Styler, Selector
-				
+				this.Emit("Idle");
+		
 				d.Resolve();
 			}, error => d.Reject(error));
 		}, error => d.Reject(error));
 		
 		return d.promise;
 	}
-	
+		
 	Clone(pojo) {
 		return JSON.parse(JSON.stringify(pojo));
 	}
@@ -209,6 +211,6 @@ export default class Context extends Evented {
 	}
 	
 	OnContext_Error(error) {
-		this.Emit("Error", error);
+		this.Emit("Error", { error:error });
 	}
 }
