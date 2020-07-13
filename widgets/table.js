@@ -9,15 +9,6 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 	
 	constructor(container) {	
 		super(container);
-				
-		this.current = {
-			item : null,
-			page : 1,
-			max : null
-		}
-
-		// this.Node('prev').On('click', this.OnButtonPrev_Handler.bind(this));
-		// this.Node('next').On('click', this.OnButtonNext_Handler.bind(this));
 		
 		Dom.AddCss(this.container, 'hidden');
 	}
@@ -35,29 +26,25 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 	Update(context) {
 		this.context = context; 
 		
-		Dom.Empty(this.Node('body'));
+		Dom.Empty(this.Elem('body'));
 		
 		Dom.RemoveCss(this.container, 'hidden');
-		Dom.RemoveCss(this.Elem("message"), 'hidden');
-		Dom.AddCss(this.Elem("table"), 'hidden')
+		
+		this.UpdateTableVisibility();
 		
 		this.Title = this.context.IndicatorsLabel();
 	}
 
 	//Update the table content with the correct data of the DBU
 	Populate(graphics) {
-		Dom.Empty(this.Node('body'));
-		Dom.AddCss(this.Elem("message"), 'hidden');
-		Dom.RemoveCss(this.Elem("table"), 'hidden');
+		Dom.Empty(this.Elem('body'));
 		
 		graphics.forEach(g => {
 			var name = g.attributes[this.config.headers[1].id[Core.locale]];
 			
 			var tr = Dom.Create("tr", { className:"table-row" }, this.Elem("body"));
-				
-			var td = Dom.Create("td", { className:"table-cell" }, tr);
-			var bt = Dom.Create("button", { className:"table-button", title:Core.Nls("Table_Thrash_Title", [name]) }, td);
-			var ic = Dom.Create("i", { className:"fa fa-trash" }, bt);
+			
+			this.CreateButton(tr, g, name);
 			
 			this.config.headers.forEach(f => {
 				var id = f.id[Core.locale];
@@ -67,30 +54,35 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 						
 			tr.title = Core.Nls("Table_Row_Title", [name]);
 			
-			tr.addEventListener("click", ev => {
-				this.Emit("RowClick", { graphic:g });
-			})
+			tr.addEventListener("click", ev => this.Emit("RowClick", { graphic:g }));
+		});
+		
+		this.UpdateTableVisibility();
+	}
+	
+	CreateButton(tr, g, name){
+		var td = Dom.Create("td", { className:"table-cell" }, tr);
+		var bt = Dom.Create("button", { className:"table-button", title:Core.Nls("Table_Thrash_Title", [name]) }, td);
+		var ic = Dom.Create("i", { className:"fa fa-trash" }, bt);
+		
+		bt.addEventListener("click", ev => {
+			ev.stopPropagation();
+			
+			this.Emit("RowButtonClick", { graphic:g })
 		});
 	}
-	/*
-	OnButtonPrev_Handler(ev) {
-		this.current.page--;
+	
+	UpdateTableVisibility() {
+		var isVisible = this.Elem("body").children.length > 0;
 		
-		this.UpdateTable(this.current.item, this.current.page);
+		Dom.ToggleCss(this.Elem("message"), 'hidden', isVisible);
+		Dom.ToggleCss(this.Elem("table"), 'hidden', !isVisible);
 	}
-
-	OnButtonNext_Handler(ev) {
-		this.current.page++;
-		
-		this.UpdateTable(this.current.item, this.current.page);
-	}
-	*/
+	
 	Template() {
 		return "<div class='table-widget'>" +
 				  "<h2 handle='title'></h2>" +
-				  
 			      "<div handle='message' class='table-message'>nls(Table_Message)</div>"+
-				  
 			      "<div handle='table' class='table-container hidden'>" + 
 					 "<summary handle='description'></summary>" +
 				     "<table>" +
@@ -99,25 +91,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 				        "</thead>" +
 				        "<tbody handle='body'></tbody>" + 
 				     "</table>" + 
-				     //"<div class='navigation'>" + 
-					 //   "<button handle='prev' title='nls(Table_Previous_Button)' disabled><img src='assets/arrow-left.png'></button>"+
-					 //   "<span handle='current' class='current'></span>"+ 
-					 //   "<button handle='next' title='nls(Table_Next_Button)' disabled><img src='assets/arrow-right.png'></button>"+
-				     //"</div>" + 
 			      "</div>" + 
 			   "</div>"
-	}
-	
-	
-	
-	UpdateTable(item, page) {	
-		this.current.page = page || 1;
-		this.current.item = item;
-		this.current.max = this.summary[item.id] || 0;
-	}
-
-	ToggleButtons() {
-		this.Node('prev').disabled = (this.current.page <= 1);
-		this.Node('next').disabled = (this.current.page >= this.current.max);
 	}
 })

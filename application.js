@@ -45,6 +45,7 @@ export default class Main extends Templated {
 		this.HandleWidgetEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
+		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
 		
 		// Hookup events to map
@@ -86,14 +87,6 @@ export default class Main extends Templated {
 		node.On('Busy', this.OnWidget_Busy.bind(this));
 		node.On('Idle', this.OnWidget_Idle.bind(this));
 		node.On('Error', this.OnApplication_Error.bind(this));
-	}
-	
-	OnWidget_Busy(ev) {
-		this.Elem("waiting").Show();
-	}
-	
-	OnWidget_Idle(ev) {
-		this.Elem("waiting").Hide();
 	}
 	
 	OnSelector_Change(ev) {	
@@ -146,8 +139,11 @@ export default class Main extends Templated {
 		Requests.QueryGeometry(this.context.sublayer, ev.geometry).then(r => {
 			this.Elem("waiting").Hide();
 			
+			var field = "GeographyReferenceId";
+			var graphics = this.map.Layer("selection").graphics;
+			
 			r.features.forEach(f => {
-				var exists = this.map.Layer("selection").graphics.find(g => g.attributes.ESRI_OID == f.attributes.ESRI_OID);
+				var exists = graphics.find(g => g.attributes[field] == f.attributes[field]);
 				
 				if (exists) this.map.RemoveGraphic("selection", exists);
 				
@@ -164,6 +160,20 @@ export default class Main extends Templated {
 	
 	OnTable_RowClick(ev) {
 		this.map.GoTo(ev.graphic.geometry);
+	}
+	
+	OnTable_RowButtonClick(ev) {
+		this.map.RemoveGraphic("selection", ev.graphic);
+		
+		this.Elem("table").Populate(this.map.Layer("selection").graphics);
+	}
+	
+	OnWidget_Busy(ev) {
+		this.Elem("waiting").Show();
+	}
+	
+	OnWidget_Idle(ev) {
+		this.Elem("waiting").Hide();
 	}
 	
 	OnApplication_Error(error) {
