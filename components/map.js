@@ -8,6 +8,8 @@ import Evented from './evented.js';
 
 export default class Map extends Evented { 
 
+	get isDrawing() { return !!this.draw.activeAction; }
+
 	constructor(container) {
 		super();
 		
@@ -30,6 +32,14 @@ export default class Map extends Evented {
 		});
 
 		this.view.ui.add(fullscreen, "top-left");
+	
+		this.draw = new ESRI.views.draw.Draw({ view : this.view });
+		
+		this.view.on("layerview-create", ev => this.StartSelect());
+	}
+	
+	Place(element, position) {		
+		this.view.ui.add(element, position);
 	}
 	
 	AddGraphicsLayer(id) {
@@ -39,19 +49,29 @@ export default class Map extends Evented {
 		
 		this.map.add(layer);
 	}
-	
+		
 	ClearGraphics(id) {
 		this.Layer(id).removeAll();
 	}
-	
-	AddGraphic(id, geometry, attributes, symbol) {
-		var graphic = new ESRI.Graphic({
-			geometry : geometry,
-			attributes : attributes,
-			symbol : symbol
-		});
+		
+	AddGraphic(id, graphic, symbol) {
+		if (symbol) graphic.symbol = symbol;
 		
 		this.Layer(id).add(graphic);
+	}
+	
+	AddGraphics(id, graphics, symbol) {
+		if (symbol) graphics.forEach(g => g.symbol = symbol);
+		
+		this.Layer(id).addMany(graphics);
+	}
+	
+	RemoveGraphic(id, graphic) {
+		this.Layer(id).remove(graphic);
+	}
+	
+	RemoveGraphics(id, graphics) {
+		this.Layer(id).removeMany(graphic);
 	}
 	
 	AddMapImageLayer(id, url, opacity, dpi, format) {
@@ -108,6 +128,49 @@ export default class Map extends Evented {
 	
 	GoTo(target) {
 		this.view.goTo(target);
+	}
+	
+	// TODO : Following three functions are for rectangle selection, maybe should 
+	// be moved to dedicated component class
+	StartSelect() {
+		var action = this.draw.create("rectangle", { mode: "click" });
+		
+		action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
+		action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
+	}
+	
+	VerticesToPolygon(vertices, sref) {
+		var p1 = vertices[0];
+		var p2 = vertices[1];
+		
+		// points are [x, y] format
+		var ring = [p1, [p2[0], p1[1]], p2, [p1[0], p2[1]], p1];
+		
+		return { type: "polygon", rings: [ring], spatialReference: sref };
+	}
+	
+	OnDraw_CursorUpdate(ev) {
+		if (ev.vertices.length < 2) return;
+
+		this.view.graphics.removeAll();
+		
+		var geometry = this.VerticesToPolygon(ev.vertices, this.view.spatialReference);
+		var outline = { color: [200, 20, 0], width: 1 }
+		var symbol = { type: "simple-fill", color: [200, 20, 0, 0.3], style: "solid", outline: outline }
+		
+		this.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
+	}
+	
+	OnDraw_Complete(ev) {
+		this.view.graphics.removeAll();
+		
+		if (ev.vertices.length < 2) return;
+		
+		var geometry = this.VerticesToPolygon(ev.vertices, this.view.spatialReference);
+		
+		this.Emit("Select-Draw", { geometry:geometry });
+		
+		this.StartSelect();
 	}
 	
 	OnMapView_Click(ev) {		

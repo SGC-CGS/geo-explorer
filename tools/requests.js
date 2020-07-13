@@ -1,5 +1,7 @@
 import Core from './core.js';
 
+let _config = null;
+
 const URLS = {
 	renderer : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/dynamicLayer/generateRenderer",
 	placename : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/0",
@@ -11,6 +13,10 @@ const URLS = {
 }
 
 export default class Requests {
+	
+	static set config(value) { _config = value; }
+	
+	static get config() { return _config; }
 	
 	static MakeItem(f, value, label, description, locale) {
 		var item = {
@@ -99,7 +105,7 @@ export default class Requests {
 		Requests.QueryTable(URLS.filter, where).then(r => {
 			var locale = Core.locale.toUpperCase();
 			var dimensions = [];
-			
+				
 			r.features.forEach(f => {
 				var i = f.attributes["DisplayOrder"] - 1;
 
@@ -122,7 +128,7 @@ export default class Requests {
 			
 			if (values.length > 1) d.Reject(new Error("More than one dimension of type Value received."));
 			
-			else d.Resolve({ filters:filters, value:values[0] });
+			else d.Resolve({ filters:filters, value:values[0].values });
 		}, error => { d.Reject(error) });
 		
 		return d.promise;
@@ -253,6 +259,26 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	static Identify(layer, geometry) {
+		var d = Core.Defer();
+		
+		Requests.QueryGeometry(layer, geometry).then(r => {
+			var locale = Core.locale.toUpperCase();
+			var f = r.features[0];
+			
+			var title = f.attributes[`DisplayNameShort_${locale}`];
+			var unit = f.attributes[`UOM_${locale}`];
+			var value = f.attributes[`FormattedValue_${locale}`];
+			var html = f.attributes[`IndicatorDisplay_${locale}`];
+			
+			var content = `<b>${unit}</b>: ${value}<br><br>${html}`;
+			
+			d.Resolve({ feature:f, geometry:geometry, content:content, title:title });
+		}, error => d.Reject(error));
+		
+		return d.promise;
+	}
+	
 	static Typeahead(value) { 
 		var d = Core.Defer();
 		
@@ -272,26 +298,6 @@ export default class Requests {
 		}, error => {
 			d.Reject(error);
 		})
-		
-		return d.promise;
-	}
-	
-	static Identify(layer, geometry) {
-		var d = Core.Defer();
-		
-		Requests.QueryGeometry(layer, geometry).then(r => {
-			var locale = Core.locale.toUpperCase();
-			var f = r.features[0];
-			
-			var title = f.attributes[`DisplayNameShort_${locale}`];
-			var unit = f.attributes[`UOM_${locale}`];
-			var value = f.attributes[`FormattedValue_${locale}`];
-			var html = f.attributes[`IndicatorDisplay_${locale}`];
-			
-			var content = `<b>${unit}</b>: ${value}<br><br>${html}`;
-			
-			d.Resolve({ feature:f, geometry:geometry, content:content, title:title });
-		}, error => d.Reject(error));
 		
 		return d.promise;
 	}

@@ -24,11 +24,16 @@ export default class Overlay extends Templated {
 		this.SetStyle(0, "hidden");
 		
 		this.Node("close").On("click", this.onBtnClose_Click.bind(this));
+		
+		Dom.AddCss(this.container, "overlay");
 	}
 	
 	SetStyle(opacity, visibility) {
-		this.Elem("overlay").style.opacity = opacity;
-		this.Elem("overlay").style.visibility = visibility;
+		//this.Elem("overlay").style.opacity = opacity;
+		//this.Elem("overlay").style.visibility = visibility;
+		
+		this.container.style.opacity = opacity;
+		this.container.style.visibility = visibility;
 	}
 	
 	Empty() {
@@ -56,13 +61,13 @@ export default class Overlay extends Templated {
 	}
 	
 	Template() {
-		return "<div handle='overlay' class='overlay hidden'>" +
-				  "<div class='overlay-header'>" +
+		//return "<div handle='overlay' class='overlay hidden'>" +
+		return	  "<div class='overlay-header'>" +
 					  "<h2 class='overlay-title' handle='title'></h2>" +
 					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
 				  "</div>" +
 					
-				  "<div class='overlay-body' handle='body'></div>" +
-			   "</div>";
+				  "<div class='overlay-body' handle='body'></div>";
+		//	   "</div>";
 	}
 }

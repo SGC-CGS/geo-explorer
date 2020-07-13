@@ -111,8 +111,8 @@ export default class Context extends Evented {
 	
 	UpdateIndicators() {
 		return Requests.Category(this.category).then(r => {
-			this.lookups.current.filters = r.filters.map(f => f.values);
-			this.lookups.current.values = r.value.values;
+			this.lookups.current.filters = r.filters; //.map(f => f.values);
+			this.lookups.current.values = r.value; //.values;
 		}, error => this.OnContext_Error(error));
 	}
 	
@@ -191,11 +191,24 @@ export default class Context extends Evented {
 		var items = this.filters.map((ind, i) => {
 			var lookup = this.Lookup("filters")[i];
 			
-			return this.FindLookupItem(lookup, ind);
+			return this.FindLookupItem(lookup.values, ind);
 		});
 		
 		items.push(this.FindLookupItem(this.Lookup("values"), this.value));
 		
 		return items;
+	}
+	
+	IndicatorsLabel() {
+		// TODO : Couple of things here, removing the first term because reference period
+		// didn't show in the original app. Also removing the numbers at the start of each
+		// label because they start with numbers.
+		return this.IndicatorItems().splice(1).map(i => {
+			return i.label.split(" ").splice(1).join(" ");
+		}).join(", ");
+	}
+	
+	OnContext_Error(error) {
+		this.Emit("Error", error);
 	}
 }

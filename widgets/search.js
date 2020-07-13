@@ -15,7 +15,11 @@ export default Core.Templatable("App.Widgets.Search", class Search extends Templ
 	}
 	
 	OnTypeahead_Change(ev) {
+		this.Emit("Busy");
+		
 		Requests.Placename(ev.item.id, ev.item.label).then(feature => {
+			this.Emit("Idle");
+		
 			this.Emit("Change", { feature:feature });
 		}, error => {
 			this.Emit("Error", { error:error });

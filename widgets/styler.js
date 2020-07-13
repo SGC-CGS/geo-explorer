@@ -134,14 +134,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 	}
 	
 	Refresh() {
-		Requests.Renderer(this.context).then(sublayer => {			
+		this.Emit("Busy");
+		
+		Requests.Renderer(this.context).then(sublayer => {		
+			this.Emit("Idle");
+		
 			this.LoadClassBreaks(sublayer.renderer.classBreakInfos);
 		}, error => this.OnRequests_Error(error));	
 	}
 	
 	Template() {
-		return "<div handle='overlay' class='overlay styler'>" +
-				  "<div class='overlay-header'>" +
+		// return "<div handle='overlay' class='overlay styler'>" +
+		return		  "<div class='overlay-header'>" +
 					  "<h2 class='overlay-title' handle='title'>nls(Styler_Title)</h2>" +
 					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
 				  "</div>" +
@@ -168,7 +172,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 					   "<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
 					   "<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
 					"</div>" +
-				  "</div>" +
-			   "</div>";
+				  "</div>";
+		//	   "</div>";
 	}
 })

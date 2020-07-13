@@ -48,8 +48,8 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 	}
 	
 	Template() {
-		return "<div handle='overlay' class='overlay legend'>" +
-				  "<div class='overlay-header'>" +
+		// return "<div handle='overlay' class='overlay legend'>" +
+		return		  "<div class='overlay-header'>" +
 					  "<h2 class='overlay-title' handle='title'>nls(Legend_Title)</h2>" +
 					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
 				  "</div>" +
@@ -68,7 +68,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 						  "<label>nls(Legend_Opacity_More)</label>" +
 					   "</div>" +
 					"</div>" +
-				  "</div>" +
-			   "</div>";
+				  "</div>";
+			//   "</div>";
 	}
 })

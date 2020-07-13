@@ -22,5 +22,120 @@
 		"filters" : [3046, 3001, 3007, 3021],
 		"value" : 3037,
 		"geography" : "A0007"
+	},
+	"table" : {
+		"headers" : [{
+			"id" : {
+				"en": "GeographyReferenceId",
+				"fr": "GeographyReferenceId" 
+			},
+			"label" : {
+				"en" : "DGUID",
+				"fr" : "IDUGD"
+			}
+		},{
+			"id" : {
+				"en": "DisplayNameShort_EN",
+				"fr": "DisplayNameShort_FR" 
+			},
+			"label" : {
+				"en" : "Location",
+				"fr" : "Endroit"
+			}
+		},{
+			"id" : {
+				"en": "ProvTerrName_EN",
+				"fr": "ProvTerrName_FR" 
+			},
+			"label" : {
+				"en" : "Province/Territory",
+				"fr" : "Province/Territoire"
+			}
+		},{
+			"id" : {
+				"en": "FormattedValue_EN",
+				"fr": "FormattedValue_FR" 
+			},
+			"label" : {
+				"en" : "Value",
+				"fr" : "Valeur"
+			}
+		},{
+			"id" : {
+				"en": "NullDescription_EN",
+				"fr": "NullDescription_FR" 
+			},
+			"label" : {
+				"en" : "Data comment",
+				"fr" : "Commentaire"
+			}
+		}]
+	},
+	"NOT_USED_requests_NOT_USED" : {
+		"indicator" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/3",
+			"key" : "ParentThemeId",
+			"value" : "IndicatorThemeId",
+			"label" : "IndicatorTheme",
+			"description" : "IndicatorThemeDescription"
+		},
+		"dimension" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/8",
+			"key" : "DimensionId",
+			"label" : "Dimension_",
+			"type" : "DimensionType",
+			"order" : "DisplayOrder"
+		},
+		"value" : {
+			"value" : "DimensionValueId",
+			"label" : "Display",
+			"description" : null,
+			"types" : {
+				"filter" : "Filter",
+				"value" : "Value"
+			}
+		},
+		"metadata" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/1",
+			"key" : "DimensionUniqueKey",
+			"indicator" : "IndicatorId",
+			"query" : "PrimaryQuery",
+			"breaks" : {
+				"n" : "DefaultBreaks",
+				"algoId" : "DefaultBreaksAlgorithmId",
+				"algo" : "BreakAlgorithm"
+			},
+			"colors" : {
+				"start" : "ColorFrom",
+				"end" : "ColorTo"
+			}
+		},
+		"geography" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/2",
+			"key" : "IndicatorId",
+			"value" : "GeographicLevelId",
+			"label" : "LevelName",
+			"description" : "LevelDescription"
+		},
+		"breaks" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/4",
+			"key" : "BreakAlgorithmId"
+		},
+		"renderer" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/dynamicLayer/generateRenderer",
+			"workspace" : "stcdv_dyn_service",
+			"oid" : "GeographyReferenceId"
+		},
+		"placename" : {
+			"url" : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/0",
+			"key" : "GeographyReferenceId",
+			"label" : "SearchDisplayName"
+		},
+		"identify" : {
+			"title" : "DisplayNameShort_",
+			"unit" : "UOM_",
+			"value" : "FormattedValue_",
+			"html" : "IndicatorDisplay_"
+		}
 	}
 }

@@ -1,6 +1,7 @@
 import Core from "./tools/core.js";
 import Dom from "./tools/dom.js";
 import Net from "./tools/net.js";
+import Requests from "./tools/requests.js";
 
 import Application from "./application.js";
 
@@ -21,6 +22,8 @@ function Start(responses) {
 	Core.nls = responses[0];
 	
 	var div = Dom.Node(document.body, "#app-container");
+	
+	Requests.config = responses[1].requests;
 	
 	var app = new Application(div, responses[1]);
 }
@@ -49,6 +52,7 @@ function LoadEsri() {
 				 "esri/Map", 
 				 "esri/Graphic", 
 				 "esri/views/MapView", 
+				 "esri/views/draw/Draw", 
 				 "esri/widgets/Fullscreen"], 
 				 
 				 function(jsonUtils, 
@@ -63,6 +67,7 @@ function LoadEsri() {
 						  Map, 
 						  Graphic, 
 						  MapView, 
+						  Draw, 
 						  Fullscreen) {
 			
 			window.ESRI = {
@@ -74,7 +79,10 @@ function LoadEsri() {
 				Map : Map,
 				Graphic : Graphic,
 				views : {
-					MapView : MapView
+					MapView : MapView,
+					draw : {
+						Draw : Draw
+					}
 				},
 				renderers : {
 					Renderer : Renderer,

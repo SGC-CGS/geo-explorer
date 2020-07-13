@@ -78,7 +78,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 			var div = Dom.Create("div", null, this.Elem('filter'));
 			var select = new Select(div);
 			
-			d.forEach(item => select.Add(item.label, null, item));
+			d.values.forEach(item => select.Add(item.label, null, item));
 			
 			select.Elem("root").firstChild.selected = true;
 			
@@ -103,7 +103,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	OnSubject_Change(ev) {
 		this.Disable(['sTheme', 'sCategory', 'sValue', 'sGeography', 'bApply']);
 		
+		this.Emit("Busy");
+		
 		this.context.ChangeSubject(ev.item.value).then(c => {
+			this.Emit("Idle");
+		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -111,7 +115,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	OnTheme_Change(ev) {
 		this.Disable(['sCategory', 'sValue', 'sGeography', 'bApply']);
 		
+		this.Emit("Busy");
+		
 		this.context.ChangeTheme(ev.item.value).then(c => {
+			this.Emit("Idle");
+		
 			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -119,7 +127,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	OnCategory_Change(ev) {
 		this.Disable(['sValue', 'sGeography', 'bApply']);
 		
+		this.Emit("Busy");
+		
 		this.context.ChangeCategory(ev.item.value).then(c => {
+			this.Emit("Idle");
+		
 			this.LoadFilters(this.context.Lookup("filters"));
 			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
 		}, error => this.OnRequests_Error(error));		
@@ -133,7 +145,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		var filters = this.filters.map(f => f.selected.value);
 		var value = this.Elem("sValue").selected.value;
 		
-		this.context.ChangeIndicators(filters, value).then(c => {				
+		this.Emit("Busy");
+		
+		this.context.ChangeIndicators(filters, value).then(c => {	
+			this.Emit("Idle");
+					
 			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
 		}, error => this.OnRequests_Error(error));
 	}
@@ -145,7 +161,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	}
 	
 	OnApply_Click(ev) {
+		this.Emit("Busy");
+		
 		this.context.UpdateRenderer().then(c => {
+			this.Emit("Idle");
+		
 			this.context.Commit();
 			
 			// TODO: Commit partial Update Map, Legend, Styler
@@ -167,8 +187,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	}
 	
 	Template() {
-		return "<div handle='overlay' class='overlay selector'>" +
-				  "<div class='overlay-header'>" +
+		 // "<div handle='overlay' class='overlay selector'>" +
+		return	  "<div class='overlay-header'>" +
 					  "<h2 class='overlay-title' handle='title'>nls(Selector_Title)</h2>" +
 					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
 				  "</div>" +
@@ -193,7 +213,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 						 "<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
 						 "<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
 					  "</div>" +
-				  "</div>" +
-			   "</div>";
+				  "</div>";
+			 // "</div>";
 	}
 })

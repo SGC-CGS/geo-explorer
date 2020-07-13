@@ -5,11 +5,11 @@ import Dom from '../tools/dom.js';
 
 export default class Main { 
 
-	constructor(view) {				
+	constructor(map) {				
 		this.current = null;
 		this.items = {};
 		
-		this.view = view;
+		this.map = map;
 	}
 	
 	Item(id) {
@@ -43,7 +43,7 @@ export default class Main {
 		overlay.On("Close", this.OnOverlay_Hide.bind(this, item));
 		
 		// Move the buttons to the ArcGIS Menu top-left.
-		this.view.add(item.button, "top-left");
+		// this.map.Place(item.button, "top-left");
 	}
 	
 	OnMenuButton_Click(item, ev) {
