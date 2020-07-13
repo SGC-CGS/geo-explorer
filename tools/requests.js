@@ -288,8 +288,8 @@ export default class Requests {
 		Requests.QueryUrl(URLS.placename, where, null, false, fields, false, [`SearchDisplayName DESC`]).then(r => {
 			var items = r.features.map(f => {
 				return {
-					id : f.attributes[idField],
-					label : f.attributes[labelField],
+					id : f.attributes[fields[0]],
+					label : f.attributes[fields[1]],
 					feature : f
 				}
 			})

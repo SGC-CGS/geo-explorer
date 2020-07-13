@@ -168,8 +168,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		
 			this.context.Commit();
 			
-			// TODO: Commit partial Update Map, Legend, Styler
-		
 			this.Emit("Change", { context:this.context });
 		});
 	}
@@ -187,7 +185,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	}
 	
 	Template() {
-		 // "<div handle='overlay' class='overlay selector'>" +
 		return	  "<div class='overlay-header'>" +
 					  "<h2 class='overlay-title' handle='title'>nls(Selector_Title)</h2>" +
 					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
@@ -214,6 +211,5 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 						 "<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
 					  "</div>" +
 				  "</div>";
-			 // "</div>";
 	}
 })

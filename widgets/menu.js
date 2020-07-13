@@ -41,9 +41,6 @@ export default class Main {
 		item.button.addEventListener("click", this.OnMenuButton_Click.bind(this, item));
 		
 		overlay.On("Close", this.OnOverlay_Hide.bind(this, item));
-		
-		// Move the buttons to the ArcGIS Menu top-left.
-		// this.map.Place(item.button, "top-left");
 	}
 	
 	OnMenuButton_Click(item, ev) {

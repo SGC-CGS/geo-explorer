@@ -174,20 +174,5 @@
 	"Table_Thrash_Title": {
 		"en": "Click to remove geometry ({0}) from selection",
 		"fr": "Cliquer retirer la géométrie ({0}) de la sélection"
-	},
-
-
-
-	"Table_Current_Page" : {
-		"en" : "Page {0} of {1}",
-		"fr" : "Page {0} de {1}"
-	},
-	"Table_Next_Button" : {
-		"en" : "Next page",
-		"fr" : "Prochaine page"
-	},
-	"Table_Previous_Button" : {
-		"en" : "Previous page",
-		"fr" : "Page précédent"
 	}
 }

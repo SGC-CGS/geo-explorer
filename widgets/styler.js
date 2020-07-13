@@ -95,8 +95,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 	OnApply_Click(ev) {
 		this.context.Commit();
 		
-		// TODO: Commit partial (sublayer, metadata) Update Map, Legend
-		
 		var json = this.context.sublayer.renderer.toJSON();
 		
 		json.min = this.breaks[0].min;
@@ -144,7 +142,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 	}
 	
 	Template() {
-		// return "<div handle='overlay' class='overlay styler'>" +
 		return		  "<div class='overlay-header'>" +
 					  "<h2 class='overlay-title' handle='title'>nls(Styler_Title)</h2>" +
 					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
@@ -173,6 +170,5 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 					   "<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
 					"</div>" +
 				  "</div>";
-		//	   "</div>";
 	}
 })

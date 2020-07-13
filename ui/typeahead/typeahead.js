@@ -171,7 +171,10 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		this.UpdateCss();
 	}
 	
-	onLiClick_Handler(item, ev) {		
+	onLiClick_Handler(item, ev) {
+		ev.stopPropagation();
+		// ev.preventDefault();
+		
 		this.current = item;
 		
 		this.Reset();
