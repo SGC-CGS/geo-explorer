@@ -41,6 +41,28 @@ export default class Configuration {
 		}); 
 	}
 	
+	get Bookmarks() {
+		var bookmarks = this.json.bookmarks.sort((a,b) => {
+			if (a.name > b.name) return 1;
+			
+			if (a.name < b.name) return -1;
+			
+			return 0;
+		})
+		
+		return bookmarks.map(b => {
+			return {
+				name : b.name,
+				extent : {
+					xmin : b.extent[0][0],
+					xmax : b.extent[1][0],
+					ymin : b.extent[0][1],
+					ymax : b.extent[1][1],
+				}
+			}
+		}); 
+	}
+	
 	constructor(json) {
 		this.json = json;
 	}

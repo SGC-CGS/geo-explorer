@@ -178,5 +178,9 @@
 	"Basemap_Title" : {
 		"en": "Change basemap",
 		"fr": "Changer de fond de carte"
+	},
+	"Bookmarks_Title" : {
+		"en": "Bookmarks",
+		"fr": "Géosignets"
 	}
 }

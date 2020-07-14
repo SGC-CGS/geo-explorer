@@ -13,6 +13,7 @@ import Legend from './widgets/legend/legend.js';
 import Search from './widgets/search.js';
 import Waiting from './widgets/waiting.js';
 import Basemap from './widgets/basemap.js';
+import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
 
 export default class Application extends Templated { 
@@ -31,13 +32,14 @@ export default class Application extends Templated {
 		this.menu.AddOverlay("selector", Core.Nls("Selector_Title"), this.Elem("selector"));
 		this.menu.AddOverlay("styler", Core.Nls("Styler_Title"), this.Elem("styler"));
 		this.menu.AddOverlay("legend", Core.Nls("Legend_Title"), this.Elem("legend"));
+		this.menu.AddOverlay("bookmarks", Core.Nls("Bookmarks_Title"), this.Elem("bookmarks"));
 		this.bMenu.AddOverlay("basemap", Core.Nls("Basemap_Title"), this.Elem("basemap"));
 
 		// Move all widgets inside the map div, required for fullscreen
 		this.map.Place(this.bMenu.Buttons, "bottom-left");
 		this.map.Place(this.menu.Buttons, "top-left");
 		this.map.Place([this.Elem("basemap").container], "bottom-left");
-		this.map.Place(this.Elems("selector", "styler", "legend").map(e => e.container), "top-right");
+		this.map.Place(this.Elems("selector", "styler", "legend", "bookmarks").map(e => e.container), "top-right");
 		this.map.Place([this.Elem("waiting").container], "bottom-right");
 		
 		// Hookup events to UI
@@ -56,6 +58,8 @@ export default class Application extends Templated {
 		this.Elem("table").Headers = this.config.TableHeaders;
 		this.Elem('legend').Opacity = this.config.MapOpacity;
 		this.Elem('basemap').Map = this.map;
+		this.Elem('bookmarks').Map = this.map;
+		this.Elem('bookmarks').Bookmarks = this.config.Bookmarks;
 				
 		this.context.Initialize(config.Context).then(d => {				
 			this.map.AddSubLayer('main', this.context.sublayer);
@@ -169,6 +173,7 @@ export default class Application extends Templated {
 					"<div handle='legend' class='legend' widget='App.Widgets.Legend'></div>" +
 					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
 					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
+					"<div handle='bookmarks' class='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +
 			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>";;
 	}
