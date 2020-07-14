@@ -5,11 +5,17 @@ import Dom from '../tools/dom.js';
 
 export default class Main { 
 
-	constructor(map) {				
+	get Buttons() {
+		var buttons = [];
+		
+		for (var id in this.items) buttons.push(this.items[id].button);
+		
+		return buttons;
+	}
+
+	constructor() {				
 		this.current = null;
 		this.items = {};
-		
-		this.map = map;
 	}
 	
 	Item(id) {
@@ -49,6 +55,8 @@ export default class Main {
 	
 	OnOverlay_Hide(item, ev) {
 		this.HideOverlay(item);
+		
+		this.current = null;
 	}
 	
 	SetOverlay(item) {

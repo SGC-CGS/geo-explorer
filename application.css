@@ -222,6 +222,10 @@
 	border-bottom:solid 1px rgba(110,110,110,0.3);
 }
 
+.gexp .map-container .esri-ui .button-icon.basemap {
+	background-image:url(./assets/streets-16.png);
+}
+
 .gexp .map-container .esri-ui .button-icon.styler {
 	background-image:url(./assets/indicator-24.png);
 }
@@ -277,6 +281,18 @@
 }
 
 /* Map Styler widget */
+.gexp .basemap { 
+    width: 300px;
+}
+.gexp .basemap .overlay-body {
+    max-height: 350px;
+}
+
+.gexp .basemap .esri-widget,
+.gexp .basemap .esri-basemap-gallery {
+    background: none;
+}
+
 .gexp .selector,
 .gexp .styler {
 	width:450px;

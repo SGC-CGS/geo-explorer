@@ -29,6 +29,24 @@ export default class Map extends Evented {
 		var fullscreen = new ESRI.widgets.Fullscreen({ 
 			view: this.view
 		});
+/*		
+		var basemap = new ESRI.widgets.BasemapToggle({
+		  view: this.view,
+		  nextBasemap: "satellite"
+		});
+*/
+
+/*		
+		var basemap = new ESRI.widgets.BasemapGallery({
+		  view: this.view,
+		  source: {
+			portal: {
+			  url: "https://www.arcgis.com",
+			  useVectorBasemaps: true // Load vector tile basemaps
+			}
+		  }
+		});
+*/
 
 		this.view.ui.add(fullscreen, "top-left");
 	}
@@ -43,8 +61,9 @@ export default class Map extends Evented {
 		return this.behaviors[id] || null;
 	}
 	
-	Place(element, position) {		
-		this.view.ui.add(element, position);
+	// NOTE : Test for spread operator in Rollup
+	Place(elements, position) {
+		elements.forEach(e => this.view.ui.add(e, position));
 	}
 	
 	AddGraphicsLayer(id) {

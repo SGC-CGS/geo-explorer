@@ -51,8 +51,13 @@ function LoadEsri() {
 				 "esri/Map", 
 				 "esri/Graphic", 
 				 "esri/views/MapView", 
-				 "esri/views/draw/Draw", 
+				 "esri/views/draw/Draw",
+				 "esri/widgets/BasemapToggle",
+				 "esri/widgets/BasemapGallery", 
+				 "esri/widgets/BasemapLayerList", 
 				 "esri/widgets/Fullscreen"], 
+				 
+				 
 				 
 				 function(jsonUtils, 
 						  Renderer, 
@@ -67,6 +72,9 @@ function LoadEsri() {
 						  Graphic, 
 						  MapView, 
 						  Draw, 
+						  BasemapToggle, 
+						  BasemapGallery, 
+						  BasemapLayerList, 
 						  Fullscreen) {
 			
 			window.ESRI = {
@@ -98,7 +106,10 @@ function LoadEsri() {
 					}
 				},
 				widgets : {
-					Fullscreen : Fullscreen
+					Fullscreen : Fullscreen,
+					BasemapToggle : BasemapToggle,
+					BasemapLayerList : BasemapLayerList,
+					BasemapGallery : BasemapGallery
 				}
 			}
 

@@ -174,5 +174,9 @@
 	"Table_Thrash_Title": {
 		"en": "Click to remove geometry ({0}) from selection",
 		"fr": "Cliquer retirer la géométrie ({0}) de la sélection"
+	},
+	"Basemap_Title" : {
+		"en": "Change basemap",
+		"fr": "Changer de fond de carte"
 	}
 }

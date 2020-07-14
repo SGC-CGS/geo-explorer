@@ -107,5 +107,15 @@ export default class Templated extends Evented {
 		return this.nodes[id];
 	}
 	
+	// NOTE : Test for spread operator in Rollup
+	Nodes(...ids) {
+		return ids.map(id => new Node(this.nodes[id]));
+	}
+	
+	// NOTE : Test for spread operator in Rollup
+	Elems(...ids) {
+		return ids.map(id => this.nodes[id]);
+	}
+	
 	// TODO : Build a root function
 }
