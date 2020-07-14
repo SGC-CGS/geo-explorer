@@ -40,7 +40,7 @@ export default class Application extends Templated {
 		this.map.Place(this.menu.Buttons, "top-left");
 		this.map.Place([this.Elem("basemap").container], "bottom-left");
 		this.map.Place(this.Elems("selector", "styler", "legend", "bookmarks").map(e => e.container), "top-right");
-		this.map.Place([this.Elem("waiting").container], "bottom-right");
+		this.map.Place([this.Elem("waiting").container], "manual");
 		
 		// Hookup events to UI
 		this.HandleEvents(this.map);

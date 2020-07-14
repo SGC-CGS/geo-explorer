@@ -257,10 +257,6 @@
     position:absolute;
 }
 
-.gexp .waiting {
-    position:relative;
-}
-
 .gexp .overlay .overlay-close {
     position:absolute;
     right:2px;
@@ -281,7 +277,10 @@
 /* Esri's map view */
 .gexp .map-container .esri-view {
 	height:100%;
-	cursor:pointer;
+}
+
+.gexp .map-container .esri-view .esri-view-surface {
+	cursor : pointer;
 }
 
 /* Map Styler widget */
@@ -539,6 +538,11 @@
 }
 
 /* Waiting message */
+.gexp .waiting {
+    left: 50%;
+    transform: translate(-50%, 15px);
+}
+
 .gexp .waiting > * {
     display:inline-block;
 }
