@@ -409,10 +409,18 @@
 	display:none;
 }
 
-.gexp .styler .break-line .break-to-container.editing button.to {
+.gexp .styler .break-line .break-to-container.editing button.remove {
 	display:none;
 }
 
+.gexp .styler .break-line:only-child .break-to-container button.remove {
+	display:none;
+}
+
+.gexp .styler .break-line .break-to-container.editing button.to {
+	display:none;
+}
+.gexp .styler .break-line .break-to-container > *,
 .gexp .styler .break-line .break-to-container .editor > * {
 	display:inline-block;
 	vertical-align:middle;
@@ -423,18 +431,21 @@
 	height: 24px;
 }
 
-.gexp .styler .break-line .break-to-container .editor button {
+.gexp .styler .break-line .break-to-container button {
     margin: 0px 3px;
 }
 
-.gexp .styler .break-line .break-to-container .editor button.apply {
+.gexp .styler .break-line .break-to-container button.apply {
     background-image: url(./assets/check-16.png);
 }
 
-.gexp .styler .break-line .break-to-container .editor button.cancel {
+.gexp .styler .break-line .break-to-container button.cancel {
     background-image: url(./assets/close-16.png);
 }
 
+.gexp .styler .break-line .break-to-container button.remove {
+    background-image: url(./assets/trashcan-16.png);
+}
 /* Legend Widget */
 .gexp .legend .break-line:not(:first-child) {
 	border-top : solid thin silver;
