@@ -45,29 +45,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
 	}
 
-	RemoveHelper(i){
-		var brkLength = this.breaks.length;
-		if (i > 0 && brkLength > 2 && i != brkLength - 1){
-			var prev = this.breaks[i-1];
-			var next = this.breaks[i+1];
-		    next.Min = prev.Max;
-		}
-		return;
-	
-	}
-
 	Remove(i) {
-		// // TODO: implement this in DOM (eventually?)
 		var brk = this.breaks[i];
-		this.RemoveHelper(i);
-		if (this.breaks.length == 1){
-			return;
-		} else{
-			this.Elem('breaks').removeChild(brk.Elem('container'));
-			this.breaks.splice(i,1);
-			var n = this.breaks.length;
-			this.Elem("iBreaks").value = n;
-		}
+		var prev = this.breaks[i-1];
+		var next = this.breaks[i+1];
+		
+		if (next && prev) next.Min = prev.Max;
+
+		// TODO: implement this in DOM (eventually?)
+		this.Elem('breaks').removeChild(brk.Elem('container'));
+		this.breaks.splice(i,1);
+						
+		this.Elem("iBreaks").value = this.breaks.length;
 	}
 
 	LoadClassBreaks(classBreakInfos) {
@@ -101,7 +90,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Overl
 	}
 
 	OnBreak_Remove(i, ev) {
+		// Last break cannot be removed
+		if (this.breaks.length == 1) return;
+		
 		var i = this.breaks.indexOf(ev.target);
+		
 		this.Remove(i);
 	}
 

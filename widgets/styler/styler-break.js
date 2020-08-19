@@ -69,12 +69,6 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	}
 
 	OnEditor_Apply(ev) {
-		// var value = +this.Elem("eInput").value;
-
-		// this.Elem("bTo").innerHTML = this.max.toLocaleString(Core.locale);
-
-		// this.StopEdit();
-
 		var tentative = +this.Elem("eInput").value;
 
 		this.Emit("apply", { value:tentative });
