@@ -39,7 +39,7 @@
     border-bottom:solid 2px #000;
 }
 
-.gexp select, .gexp button {
+.gexp select, .gexp button, .gexp input[type="checkbox"] {
 	cursor:pointer;
 }
 
@@ -460,6 +460,22 @@
     width: 90%;
     display: inline-block;
     padding: 0;
+}
+
+
+.gexp .legend .context-layers-container ul {
+    list-style-type:none;
+}
+
+.gexp .legend .context-layers-container .context-layer label {
+	font-weight: normal;
+	margin-left: 8px;
+}
+
+.gexp .legend .context-layers-container li > * {
+    display: inline;
+    vertical-align: middle;
+	cursor: pointer;
 }
 
 /* Select Data widget */

@@ -3,6 +3,7 @@
 let _nls = null;
 let _locale = null;
 let _templatables = {}
+let _id = 0;
 
 export default class Core {
 	
@@ -200,6 +201,10 @@ export default class Core {
 			for (var i = 0; i < selection.length; i++) selection[i].disabled = disabled;
 		});
 	}	
+	
+	static NextId() {
+		return `auto_${++_id}`;
+	}
 	
 	static RgbToHex(rgb) {
 		return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);

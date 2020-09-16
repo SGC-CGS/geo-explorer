@@ -23,6 +23,10 @@
 		"en" : "More",
 		"fr" : "Plus"
 	},
+	"Legend_Context_Layers" : {
+		"en" : "Context layers",
+		"fr" : "Données contextuelles"
+	},
 	"Styler_Title" : {
 		"en" : "Change map style",
 		"fr" : "Modifier le style de la carte"

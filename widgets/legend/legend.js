@@ -18,6 +18,9 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		super(container, options);
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
+		
+		this.AddContextLayer({ label:"Census Metropolitan Areas (CMA)" });
+		this.AddContextLayer({ label:"Open Database of Health Facilities (ODHF)" });
 	}
 	
 	Update(context) {	
@@ -40,6 +43,16 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		
 		this.breaks = classBreakInfos.map((c, i) => {
 			return new LegendBreak(this.Elem('breaks'), c);
+		});
+	}
+	
+	AddContextLayer(item) {
+		var div = Dom.Create("li", { className:"context-layer" }, this.Elem("cLayers"));
+		var chk = Dom.Create("input", { id:Core.NextId(), className:"context-layer-check", type:"checkbox" }, div);
+		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"context-layer-label", innerHTML:item.label }, div);
+		
+		chk.addEventListener("change", ev => {
+			debugger;
 		});
 	}
 	
@@ -66,6 +79,9 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 						  "<label>nls(Legend_Opacity_Less)</label>" +
 						  "<label>nls(Legend_Opacity_More)</label>" +
 					   "</div>" +
+					"</div>" +
+				    "<label>nls(Legend_Context_Layers)</label>" +
+					"<ul handle='cLayers' class='context-layers-container'>" + 
 					"</div>" +
 				  "</div>";
 	}
