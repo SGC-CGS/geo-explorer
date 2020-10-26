@@ -52,6 +52,7 @@ export default class Application extends Templated {
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
+		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
 		
 		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
 
@@ -60,7 +61,12 @@ export default class Application extends Templated {
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.Bookmarks;
-				
+	
+	    this.config.LegendItems.forEach(i => {
+			this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
+			this.Elem("legend").AddContextLayer(i.label, i, false);
+		})
+
 		this.context.Initialize(config.Context).then(d => {				
 			this.map.AddSubLayer('main', this.context.sublayer);
 			
@@ -127,6 +133,14 @@ export default class Application extends Templated {
 	
 	OnLegend_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
+	}
+
+	OnLegend_LayerVisibility(ev) {
+		var l = this.map.Layer(ev.data.id);
+
+		if (!l)return;
+
+		l.visible = ev.checked;
 	}
 	
 	OnSearch_Change(ev) {		

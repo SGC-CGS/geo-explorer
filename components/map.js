@@ -55,6 +55,22 @@ export default class Map extends Evented {
 		
 		this.map.add(layer);
 	}
+
+	AddFeatureLayer(id, url, labels, visibility){
+		var FLayer = new ESRI.layers.FeatureLayer({
+			url: url,
+			fields:[{
+				name: id,
+				alias: labels
+			}],
+			visible: visibility
+		});
+
+		// TODO
+		this.layers[id] = FLayer;
+
+		this.map.add(FLayer);
+	}
 	
 	AddMapImageLayer(id, url, opacity, dpi, format) {
 		if (this.layers[id]) throw new Error("Layer already exists in map.");
