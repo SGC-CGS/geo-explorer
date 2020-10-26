@@ -19,8 +19,6 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 		
-		// this.AddContextLayer({ label:"Census Metropolitan Areas (CMA)" });
-		// this.AddContextLayer({ label:"Open Database of Health Facilities (ODHF)" });
 	}
 	
 	Update(context) {	
