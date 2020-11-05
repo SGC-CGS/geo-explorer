@@ -2,9 +2,10 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from './evented.js';
+import Evented from '../components/evented.js';
+import Behavior from './behavior.js';
 
-export default class PointIdentifyBehavior extends Evented { 
+export default class PointIdentifyBehavior extends Behavior { 
 
 	get Layer() { return this.map.Layer("identify"); }
 
@@ -20,7 +21,17 @@ export default class PointIdentifyBehavior extends Evented {
 		
 		this.Reset(options);
 		
-		this.map.On("Click", this.OnMap_Click.bind(this));
+		this.ClickHandler = this.OnMap_Click.bind(this);
+	}
+
+	Deactivate(){
+		this.Clear();
+
+		this.map.Off("Click", this.ClickHandler);
+	}
+
+	Activate(){
+		this.map.On("Click", this.ClickHandler);
 	}
 	
 	Reset(options) {
@@ -32,6 +43,8 @@ export default class PointIdentifyBehavior extends Evented {
 	
 	Clear() {
 		this.Layer.removeAll();
+
+		this.map.Popup.close();
 	}
 	
 	OnMap_Click(ev) {		
@@ -45,8 +58,12 @@ export default class PointIdentifyBehavior extends Evented {
 			r.feature.symbol = this.options.symbol;
 			
 			this.Layer.add(r.feature);
-					
-			this.map.Popup(ev.mapPoint, r.content, r.title);
+
+			this.map.Popup.open({
+				title:r.title,
+				content:r.content,
+				location:ev.mapPoint
+			});
 			
 			this.Emit("Change", { mapPoint:ev.mapPoint, results:r });
 		}, error => this.OnIdentify_Error(error));

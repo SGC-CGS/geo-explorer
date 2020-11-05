@@ -161,7 +161,7 @@
     },
 	"Search_Typeahead_loading" : {
 		"en": "loading...",
-		"en": "en chargement..."
+		"fr": "en chargement..."
 	},
 	"Waiting_Label": {
 		"en" : "Working...",
@@ -186,5 +186,9 @@
 	"Bookmarks_Title" : {
 		"en": "Bookmarks",
 		"fr": "Géosignets"
+	},
+	"Behaviour_Title" : {
+		"en" : "Toggle behaviour",
+		"fr" : "comportement de bascule"
 	}
 }

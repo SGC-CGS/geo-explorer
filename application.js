@@ -4,8 +4,8 @@ import Core from './tools/core.js';
 import Templated from './components/templated.js';
 import Context from './components/context.js';
 import Map from './components/map.js';
-import SelectBehavior from './components/rectangle-select.js';
-import IdentifyBehavior from './components/point-identify.js';
+import SelectBehavior from './behaviors/rectangle-select.js';
+import IdentifyBehavior from './behaviors/point-identify.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -15,6 +15,7 @@ import Waiting from './widgets/waiting.js';
 import Basemap from './widgets/basemap.js';
 import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
+import Dom from './tools/dom.js';
 
 export default class Application extends Templated { 
 
@@ -28,11 +29,12 @@ export default class Application extends Templated {
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu();
 		this.bMenu = new Menu();
-		
+
 		this.menu.AddOverlay("selector", Core.Nls("Selector_Title"), this.Elem("selector"));
 		this.menu.AddOverlay("styler", Core.Nls("Styler_Title"), this.Elem("styler"));
 		this.menu.AddOverlay("legend", Core.Nls("Legend_Title"), this.Elem("legend"));
 		this.menu.AddOverlay("bookmarks", Core.Nls("Bookmarks_Title"), this.Elem("bookmarks"));
+		this.menu.AddButton("behaviour", Core.Nls("Behaviour_Title"));
 		this.bMenu.AddOverlay("basemap", Core.Nls("Basemap_Title"), this.Elem("basemap"));
 
 		// Move all widgets inside the map div, required for fullscreen
@@ -48,6 +50,8 @@ export default class Application extends Templated {
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
+
+		this.menu.Button("behaviour").addEventListener("click", this.BehaviourButton_Click.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
@@ -75,10 +79,15 @@ export default class Application extends Templated {
 			this.Elem("legend").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
-			this.menu.SetOverlay(this.menu.Item("legend"));
-			
+			this.menu.SetOverlay(this.menu.Item("legend"));			
+
 			this.AddSelectBehavior(this.map, this.context, this.config);
-			// this.AddIdentifyBehavior(this.map, this.context, this.config);
+			this.AddIdentifyBehavior(this.map, this.context, this.config);
+
+			this.map.Behavior("identify").Activate();
+
+			this.behavior = "identify";
+			
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -112,7 +121,19 @@ export default class Application extends Templated {
 		node.On('Idle', this.OnWidget_Idle.bind(this));
 		node.On('Error', this.OnApplication_Error.bind(this));
 	}
+
+	StopHandleEvents(node, changeHandler){
+		debugger;
+	}
 	
+    BehaviourButton_Click(ev){
+		this.map.Behavior(this.behavior).Deactivate();
+
+		this.behavior = (this.behavior == "identify") ? "selection" : "identify";
+
+		this.map.Behavior(this.behavior).Activate();
+	}
+
 	OnSelector_Change(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);

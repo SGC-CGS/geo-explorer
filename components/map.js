@@ -8,6 +8,8 @@ import Evented from './evented.js';
 
 export default class Map extends Evented { 
 
+	get Popup() { return this.view.popup; }
+
 	constructor(container) {
 		super();
 		
@@ -24,6 +26,8 @@ export default class Map extends Evented {
 			zoom: 4 
 		});
 		
+		this.view.popup.collapseEnabled = false;
+
 		this.view.on("click", this.OnMapView_Click.bind(this));
 		
 		var fullscreen = new ESRI.widgets.Fullscreen({ 
@@ -104,16 +108,6 @@ export default class Map extends Evented {
 	
 	Layer(id) {
 		return this.layers[id] || null;
-	}
-	
-	Popup(location, content, title) {
-		this.view.popup.open({
-			title:title,
-			content:content,
-			location:location
-		});
-		
-		this.view.popup.collapseEnabled = false;
 	}
 	
 	Identify(layer, geometry) {
