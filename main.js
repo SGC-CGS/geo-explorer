@@ -110,7 +110,8 @@ function LoadEsri() {
 
 			urlUtils.addProxyRule({
 				urlPrefix: "www97.statcan.gc.ca",
-				proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.ashx`
+				proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.jsp`
+				// proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.ashx`
 			});
 			
 			d.Resolve();

@@ -85,7 +85,6 @@ export default class Application extends Templated {
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
 			this.map.Behavior("identify").Activate();
-
 			this.behavior = "identify";
 			
 		}, error => this.OnApplication_Error(error));
@@ -120,10 +119,6 @@ export default class Application extends Templated {
 		node.On('Busy', this.OnWidget_Busy.bind(this));
 		node.On('Idle', this.OnWidget_Idle.bind(this));
 		node.On('Error', this.OnApplication_Error.bind(this));
-	}
-
-	StopHandleEvents(node, changeHandler){
-		debugger;
 	}
 	
     BehaviourButton_Click(ev){

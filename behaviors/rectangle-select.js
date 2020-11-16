@@ -22,17 +22,20 @@ export default class RectangleSelectBehavior extends Behavior {
 		this.map.AddGraphicsLayer('selection');
 		
 		this.Reset(options);
+		this.handlers = {"cursor-update": null, "draw-complete": null};
 	}
 
 	Deactivate(){
+		this.Clear();
+		this.handlers["cursor-update"].remove();
+		this.handlers["draw-complete"].remove();	
 		
 	}
 
 	Activate(){		
 		this.action = this.draw.create("rectangle", { mode: "click" });
-		
-		this.action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
-		this.action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
+		this.handlers["cursor-update"] = this.action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
+		this.handlers["draw-complete"] = this.action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
 	}
 	
 	Reset(options) {
@@ -45,6 +48,7 @@ export default class RectangleSelectBehavior extends Behavior {
 	
 	Clear() {
 		this.Layer.removeAll();
+		this.map.view.graphics.removeAll();
 	}
 	
 	VerticesToPolygon(vertices, sref) {
