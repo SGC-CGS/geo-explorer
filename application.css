@@ -483,6 +483,22 @@
 	cursor: pointer;
 }
 
+.gexp .legend .label-name-container ul {
+    list-style-type:none;
+}
+
+.gexp .legend .label-name-container .label-name label {
+	font-weight: normal;
+	margin-left: 8px;
+}
+
+.gexp .legend .label-name-container li > * {
+    display: inline;
+    vertical-align: middle;
+	cursor: pointer;
+	font-weight: normal;
+}
+
 /* Select Data widget */
 .gexp .selector label {
 	display:flex;

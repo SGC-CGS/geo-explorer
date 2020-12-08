@@ -239,6 +239,7 @@ export default class Requests {
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,
+				labelsVisible: true,
 				definitionExpression: data.where,
 				renderer : ESRI.renderers.support.jsonUtils.fromJSON(renderer.data),
 				source: {
@@ -250,7 +251,38 @@ export default class Requests {
 						geometryType: "esriGeometryPolygon",
 						oidFields: "GeographyReferenceId"
 					}
-				}
+				},
+				labelingInfo: [{
+					labelExpression: "[DisplayNameShort_EN]",
+					labelPlacement: "always-horizontal",
+					useCodedValues: false,
+                    maxScale: 0,
+                    minScale: 0,
+                    where: null,
+					symbol: {
+					  type: "text",  // autocasts as new TextSymbol()
+					  color: [255, 255, 255, 255],
+					  haloColor: [0, 0, 0, 255],
+					  haloSize: 2,
+					  verticalAlignment: "bottom",
+					  horizontalAlignment: "left",
+					  rightToLeft: false,
+					  angle: 0,
+					  xoffset: 0,
+					  yoffset: 0,
+					  rotated: false,
+                      kerning: true,
+					  font: {
+						size: 9,
+						style: "normal",
+						decoration: "none",
+						weight: "normal",
+						family: "Arial"
+					  }
+					},
+					minScale: 0,
+					maxScale: 0
+				  }]
 			});
 			
 			d.Resolve(sublayer);

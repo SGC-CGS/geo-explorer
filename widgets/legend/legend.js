@@ -18,6 +18,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		super(container, options);
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
+		this.AddLabelName({label: " Show Label Name"})
 		
 	}
 	
@@ -52,6 +53,16 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 			this.Emit("LayerVisibility", {data: data, checked:chk.checked});
 		});
 	}
+
+	AddLabelName(item) {
+		var div = Dom.Create("li", { className:"labelName" }, this.Elem("labelName"));
+		var chk = Dom.Create("input", { id:Core.NextId(), className:"labelName-checkbox", type:"checkbox" }, div);
+		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"labelName-label", innerHTML:item.label }, div);
+		
+		chk.addEventListener("change", ev => {
+			this.Emit("LabelVisibility", {checked: chk.checked});
+		});
+	}
 	
 	OnOpacity_Changed(ev) {
 		this.Emit("Opacity", { opacity:this.Opacity });
@@ -80,6 +91,8 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 				    "<label>nls(Legend_Context_Layers)</label>" +
 					"<ul handle='cLayers' class='context-layers-container'>" + 
 					"</div>" +
+					"<label>nls(Legend_Label_Name)</label>" +
+					"<ul handle='labelName' class='label-name-container'>" +
 				  "</div>";
 	}
 })
