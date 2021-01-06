@@ -4,8 +4,8 @@ import Core from './tools/core.js';
 import Templated from './components/templated.js';
 import Context from './components/context.js';
 import Map from './components/map.js';
-import SelectBehavior from './components/rectangle-select.js';
-import IdentifyBehavior from './components/point-identify.js';
+import SelectBehavior from './behaviors/rectangle-select.js';
+import IdentifyBehavior from './behaviors/point-identify.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -15,6 +15,7 @@ import Waiting from './widgets/waiting.js';
 import Basemap from './widgets/basemap.js';
 import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
+import Dom from './tools/dom.js';
 
 export default class Application extends Templated { 
 
@@ -28,11 +29,12 @@ export default class Application extends Templated {
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu();
 		this.bMenu = new Menu();
-		
+
 		this.menu.AddOverlay("selector", Core.Nls("Selector_Title"), this.Elem("selector"));
 		this.menu.AddOverlay("styler", Core.Nls("Styler_Title"), this.Elem("styler"));
 		this.menu.AddOverlay("legend", Core.Nls("Legend_Title"), this.Elem("legend"));
 		this.menu.AddOverlay("bookmarks", Core.Nls("Bookmarks_Title"), this.Elem("bookmarks"));
+		this.menu.AddButton("behaviour", Core.Nls("Behaviour_Title"));
 		this.bMenu.AddOverlay("basemap", Core.Nls("Basemap_Title"), this.Elem("basemap"));
 
 		// Move all widgets inside the map div, required for fullscreen
@@ -48,10 +50,14 @@ export default class Application extends Templated {
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
+
+		this.menu.Button("behaviour").addEventListener("click", this.BehaviourButton_Click.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
+		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
+		this.Node('legend').On('LabelVisibility', this.onLegend_LabelName.bind(this));
 		
 		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
 
@@ -60,19 +66,29 @@ export default class Application extends Templated {
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.Bookmarks;
-				
+	
+	    this.config.LegendItems.forEach(i => {
+			this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
+			this.Elem("legend").AddContextLayer(i.label, i, false);
+		})
+
 		this.context.Initialize(config.Context).then(d => {				
 			this.map.AddSubLayer('main', this.context.sublayer);
+			this.map.layers["main"].findSublayerById(7).labelsVisible = false;
 			
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
 			this.Elem("legend").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
-			this.menu.SetOverlay(this.menu.Item("legend"));
-			
+			this.menu.SetOverlay(this.menu.Item("legend"));			
+
 			this.AddSelectBehavior(this.map, this.context, this.config);
-			// this.AddIdentifyBehavior(this.map, this.context, this.config);
+			this.AddIdentifyBehavior(this.map, this.context, this.config);
+
+			this.map.Behavior("identify").Activate();
+			this.behavior = "identify";
+			
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -107,6 +123,14 @@ export default class Application extends Templated {
 		node.On('Error', this.OnApplication_Error.bind(this));
 	}
 	
+    BehaviourButton_Click(ev){
+		this.map.Behavior(this.behavior).Deactivate();
+
+		this.behavior = (this.behavior == "identify") ? "selection" : "identify";
+
+		this.map.Behavior(this.behavior).Activate();
+	}
+
 	OnSelector_Change(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
@@ -127,6 +151,18 @@ export default class Application extends Templated {
 	
 	OnLegend_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
+	}
+
+	OnLegend_LayerVisibility(ev) {
+		var l = this.map.Layer(ev.data.id);
+
+		if (!l)return;
+
+		l.visible = ev.checked;
+	}
+
+	onLegend_LabelName(ev) {
+		this.map.layers["main"].findSublayerById(7).labelsVisible = ev.checked;
 	}
 	
 	OnSearch_Change(ev) {		

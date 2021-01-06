@@ -18,9 +18,8 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		super(container, options);
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
+		this.AddLabelName({label: " Show Label Name"})
 		
-		this.AddContextLayer({ label:"Census Metropolitan Areas (CMA)" });
-		this.AddContextLayer({ label:"Open Database of Health Facilities (ODHF)" });
 	}
 	
 	Update(context) {	
@@ -46,13 +45,22 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		});
 	}
 	
-	AddContextLayer(item) {
+	AddContextLayer(label, data, checked) {
 		var div = Dom.Create("li", { className:"context-layer" }, this.Elem("cLayers"));
-		var chk = Dom.Create("input", { id:Core.NextId(), className:"context-layer-check", type:"checkbox" }, div);
-		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"context-layer-label", innerHTML:item.label }, div);
-		
+		var chk = Dom.Create("input", { id:Core.NextId(), className:"context-layer-check", type:"checkbox", checked: checked}, div);
+		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"context-layer-label", innerHTML:label }, div);
 		chk.addEventListener("change", ev => {
-			debugger;
+			this.Emit("LayerVisibility", {data: data, checked:chk.checked});
+		});
+	}
+
+	AddLabelName(item) {
+		var div = Dom.Create("li", { className:"labelName" }, this.Elem("labelName"));
+		var chk = Dom.Create("input", { id:Core.NextId(), className:"labelName-checkbox", type:"checkbox" }, div);
+		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"labelName-label", innerHTML:item.label }, div);
+		
+		chk.addEventListener("change", ev => {
+			this.Emit("LabelVisibility", {checked: chk.checked});
 		});
 	}
 	
@@ -83,6 +91,8 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 				    "<label>nls(Legend_Context_Layers)</label>" +
 					"<ul handle='cLayers' class='context-layers-container'>" + 
 					"</div>" +
+					"<label>nls(Legend_Label_Name)</label>" +
+					"<ul handle='labelName' class='label-name-container'>" +
 				  "</div>";
 	}
 })

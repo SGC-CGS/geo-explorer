@@ -27,6 +27,10 @@
 		"en" : "Context layers",
 		"fr" : "Données contextuelles"
 	},
+	"Legend_Label_Name" : {
+		"en" : "Label name",
+	    "fr" : "Nom de l'étiquette"
+	},
 	"Styler_Title" : {
 		"en" : "Change map style",
 		"fr" : "Modifier le style de la carte"
@@ -161,7 +165,7 @@
     },
 	"Search_Typeahead_loading" : {
 		"en": "loading...",
-		"en": "en chargement..."
+		"fr": "en chargement..."
 	},
 	"Waiting_Label": {
 		"en" : "Working...",
@@ -186,5 +190,9 @@
 	"Bookmarks_Title" : {
 		"en": "Bookmarks",
 		"fr": "Géosignets"
+	},
+	"Behaviour_Title" : {
+		"en" : "Toggle behaviour",
+		"fr" : "comportement de bascule"
 	}
 }

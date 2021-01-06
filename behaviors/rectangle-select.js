@@ -2,9 +2,10 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from './evented.js';
+import Evented from '../components/evented.js';
+import Behavior from './behavior.js';
 
-export default class RectangleSelectBehavior extends Evented { 
+export default class RectangleSelectBehavior extends Behavior { 
 
 	get Layer() { return this.map.Layer('selection'); }
 
@@ -21,8 +22,20 @@ export default class RectangleSelectBehavior extends Evented {
 		this.map.AddGraphicsLayer('selection');
 		
 		this.Reset(options);
+		this.handlers = {"cursor-update": null, "draw-complete": null};
+	}
+
+	Deactivate(){
+		this.Clear();
+		this.handlers["cursor-update"].remove();
+		this.handlers["draw-complete"].remove();	
 		
-		this.Start();
+	}
+
+	Activate(){		
+		this.action = this.draw.create("rectangle", { mode: "click" });
+		this.handlers["cursor-update"] = this.action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
+		this.handlers["draw-complete"] = this.action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
 	}
 	
 	Reset(options) {
@@ -35,13 +48,7 @@ export default class RectangleSelectBehavior extends Evented {
 	
 	Clear() {
 		this.Layer.removeAll();
-	}
-	
-	Start() {
-		this.action = this.draw.create("rectangle", { mode: "click" });
-		
-		this.action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
-		this.action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
+		this.map.view.graphics.removeAll();
 	}
 	
 	VerticesToPolygon(vertices, sref) {
@@ -97,7 +104,7 @@ export default class RectangleSelectBehavior extends Evented {
 		
 		this.Emit("Change", { selection:this.Layer.graphics });
 
-		this.Start();
+		this.Activate();
 	}
 	
 	OnDraw_QueryError(error) {

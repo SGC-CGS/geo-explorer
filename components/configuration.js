@@ -40,6 +40,16 @@ export default class Configuration {
 			}
 		}); 
 	}
+
+	get LegendItems(){
+		return this.json.legend.items.map(i => {
+			return {
+				id : i.id,
+				label : i.label[Core.locale],
+				url : i.url
+			}
+		});
+	}
 	
 	get Bookmarks() {
 		var bookmarks = this.json.bookmarks.sort((a,b) => {

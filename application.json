@@ -82,6 +82,23 @@
             }
         ]
     },
+    "legend": {
+        "items":[{
+            "id" : "cma",
+            "url" : " https://maps.covid-19.geo.ca/hosted/rest/services/Hosted/CMA_Digital_boundaries/FeatureServer",
+            "label" : {
+                "en" : "Census Metropolitan Area",
+                "fr" : "Region Metropolitaine de Recensement"
+            }
+        }, {
+            "id" : "ODHF",
+            "url" : "https://maps.covid-19.geo.ca/hosted/rest/services/Hosted/ODHF_update_Sep24/FeatureServer",
+            "label" : {
+                "en" : "The Open Database of Healthcare Facilities",
+                "fr" : "La Base de Données Ouverte des Établissements de Santé"
+            }
+        }
+    ]},
     "bookmarks": [{
             "name": "Calgary",
             "extent": [[-114.72816, 50.794297], [-113.376704, 51.489714]]

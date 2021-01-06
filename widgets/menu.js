@@ -3,7 +3,7 @@
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
-export default class Main { 
+export default class Menu { 
 
 	get Buttons() {
 		var buttons = [];
@@ -23,7 +23,7 @@ export default class Main {
 	}
 	
 	Button(id) {
-		return this.Item[id].button;
+		return this.Item(id).button;
 	}
 	
 	Overlay(id) {
@@ -34,6 +34,14 @@ export default class Main {
 		if (this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} already exists in menu.`);
 		
 		this.items[id] = item;
+	}
+
+	AddButton(id, title){
+		var item = {
+			button : Dom.Create("button", { title:title, className:`button-icon large-icon ${id}` })
+		}
+		
+		this.AddItem(id, item);
 	}
 	
 	AddOverlay(id, title, overlay) {
