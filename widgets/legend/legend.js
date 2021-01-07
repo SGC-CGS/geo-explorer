@@ -18,8 +18,11 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		super(container, options);
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
-		this.AddLabelName({label: " Show Label Name"})
 		
+		// FIX: Since this part of the legend is static, we should do all of this through the 
+		// template at the bottom then hook events onto already built DOM elements. 
+		// Hard-coded strings should not be used, breaks translation.
+		this.AddLabelName({label: " Show Label Name"});
 	}
 	
 	Update(context) {	

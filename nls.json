@@ -28,8 +28,8 @@
 		"fr" : "Données contextuelles"
 	},
 	"Legend_Label_Name" : {
-		"en" : "Label name",
-	    "fr" : "Nom de l'étiquette"
+		"en" : "Map labels",
+	    "fr" : "Étiquettes sur la carte"
 	},
 	"Styler_Title" : {
 		"en" : "Change map style",
@@ -192,7 +192,7 @@
 		"fr": "Géosignets"
 	},
 	"Behaviour_Title" : {
-		"en" : "Toggle behaviour",
-		"fr" : "comportement de bascule"
+		"en" : "Toggle map click behaviour",
+		"fr" : "Basculer le comportement des clics sur la carte"
 	}
 }

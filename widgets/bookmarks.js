@@ -15,8 +15,9 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 	
 	set Bookmarks(value) {
-		this.bookmarks = value;
-		return;
+		this.bookmarks.bookmarks = value;
+
+		/*
 		var bookmarks = value.sort((a,b) => {
 			if (a.name > b.name) return 1;
 			
@@ -36,6 +37,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 				}
 			}
 		}); 
+		*/
 	}
 	
 	constructor(container, options) {	

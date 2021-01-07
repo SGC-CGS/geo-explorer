@@ -108,10 +108,12 @@ function LoadEsri() {
 				}
 			}
 
+			// TODO: This won't hold once deployed. Need to find a better way of setting the proxy.
+			var ext = (navigator.appVersion.indexOf("Win") == -1) ? "jsp" : "ashx";
+			
 			urlUtils.addProxyRule({
 				urlPrefix: "www97.statcan.gc.ca",
-				proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.jsp`
-				// proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.ashx`
+				proxyUrl: `${location.origin}/geo-explorer-proxy/proxy.${ext}`
 			});
 			
 			d.Resolve();

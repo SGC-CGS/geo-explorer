@@ -61,6 +61,8 @@ export default class Map extends Evented {
 	}
 
 	AddFeatureLayer(id, url, labels, visibility){
+		// FIX: Naming convention, we've been using camelCase for variables
+		// so first letter lowercase then each other word uppercase
 		var FLayer = new ESRI.layers.FeatureLayer({
 			url: url,
 			fields:[{
@@ -70,6 +72,7 @@ export default class Map extends Evented {
 			visible: visibility
 		});
 
+		// FIX: Address TODO, delete if not relevant anymore
 		// TODO
 		this.layers[id] = FLayer;
 
@@ -97,7 +100,7 @@ export default class Map extends Evented {
 	}
 	
 	AddSubLayer(id, sublayer) {
-		// debugger;
+		// FIX: Address TODO, delete if not relevant anymore
 		// TODO : try After Add
 		this.Layer(id).sublayers.add(sublayer);
 	}

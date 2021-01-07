@@ -85,7 +85,8 @@
     "legend": {
         "items":[{
             "id" : "cma",
-            "url" : " https://maps.covid-19.geo.ca/hosted/rest/services/Hosted/CMA_Digital_boundaries/FeatureServer",
+            "url" : "https://maps.covid-19.geo.ca/hosted/rest/services/Hosted/CMA_Digital_boundaries/FeatureServer",
+            "url2" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0",
             "label" : {
                 "en" : "Census Metropolitan Area",
                 "fr" : "Region Metropolitaine de Recensement"
@@ -93,6 +94,7 @@
         }, {
             "id" : "ODHF",
             "url" : "https://maps.covid-19.geo.ca/hosted/rest/services/Hosted/ODHF_update_Sep24/FeatureServer",
+            "url2" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/OpenDatabaseHealthFacilities/MapServer/0",
             "label" : {
                 "en" : "The Open Database of Healthcare Facilities",
                 "fr" : "La Base de Données Ouverte des Établissements de Santé"

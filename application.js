@@ -57,6 +57,8 @@ export default class Application extends Templated {
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
 		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
+		
+		// FIX: Name of event handler is not consistent, first letter uppercase, name should reflect event
 		this.Node('legend').On('LabelVisibility', this.onLegend_LabelName.bind(this));
 		
 		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
@@ -74,6 +76,10 @@ export default class Application extends Templated {
 
 		this.context.Initialize(config.Context).then(d => {				
 			this.map.AddSubLayer('main', this.context.sublayer);
+			
+			// FIX: Use the map component function to find the 'main' layer. We shouldn't
+			// find a sublayer by it's index like this, what if there are more sublayers
+			// in the future?
 			this.map.layers["main"].findSublayerById(7).labelsVisible = false;
 			
 			this.Elem("selector").Update(this.context);
@@ -161,7 +167,9 @@ export default class Application extends Templated {
 		l.visible = ev.checked;
 	}
 
+	// FIX: Yanick reported that labels automatically switch back on when the user switches geography, something to look into...
 	onLegend_LabelName(ev) {
+		// FIX: Same as above
 		this.map.layers["main"].findSublayerById(7).labelsVisible = ev.checked;
 	}
 	
