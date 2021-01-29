@@ -309,6 +309,9 @@
 }
 
 .gexp .selector,
+
+.gexp .chart,
+
 .gexp .styler {
 	width:450px;
 }
@@ -538,6 +541,50 @@
     font-style:italic;
 }
 
+/* Chart svg */
+svg {
+  border:2px solid black;
+} 
+
+/* Chart view widget */
+.gexp .chart label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .chart label.sm-label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .chart label > * {
+	margin-left:5px;
+	flex:1;
+}
+
+.gexp .chart .filter-container > *,
+.gexp .chart .filter-container .filter > *,
+.gexp .chart .overlay-body > * {
+	margin-top:6px;
+}
+
+.gexp .chart select {
+	width:100%;
+}
+
+.gexp .select-placeholder {
+	display:none;
+}
+
+.gexp .chart .filter-container {
+    border-left:solid 0.5em #d9d9d9;
+	padding-left:5px;
+}
+
+.gexp .chart .filter-instructions {
+    font-style:italic;
+}
+
 /* Apply Close Buttons */
 .gexp .button-container {
 	float:right;
@@ -670,3 +717,36 @@
 	border:none;
 	background:none;
 }
+
+/* Chart CSS */
+rect {
+    fill: steelblue;
+}
+
+.rect:hover {
+    fill: orangered ;
+  }
+
+text {
+    font-size: 1.4em;
+}
+
+.vertical-text {
+	transform: rotate(-90.0deg);
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis-grid path, 
+.axis-grid line{
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #e4e4e4;   
+  }
+
+/* End Chart CSS */

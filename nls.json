@@ -151,6 +151,18 @@
 		"en" : "Cancel",
 		"fr" : "Annuler"
 	},
+	"Chart_Title" : {
+		"en" : "View chart",
+		"fr" : "Afficher le graphique"
+	},
+	"Chart_Type" : {
+		"en" : "Chart Type",
+		"fr" : "Type de Graphique"
+	},
+	"Chart_Type_Placeholder" : {
+		"en": "Select a Chart Type",
+		"fr": "Sélectionnez un Type de Graphique"
+	},
 	"Search_Icon_Alt" : {
 		"en" : "Magnifying glass",
 		"fr" : "Loupe"
