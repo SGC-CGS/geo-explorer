@@ -18,11 +18,10 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		super(container, options);
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
-		
-		// FIX: Since this part of the legend is static, we should do all of this through the 
-		// template at the bottom then hook events onto already built DOM elements. 
-		// Hard-coded strings should not be used, breaks translation.
-		this.AddLabelName({label: " Show Label Name"});
+
+		this.Node('labelChk').On("click", ev => {
+			this.Emit("LabelName", { checked: this.Elem('labelChk').checked });
+		})
 	}
 	
 	Update(context) {	
@@ -30,6 +29,10 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		
 		this.LoadIndicators(context.IndicatorItems());
 		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
+
+		this.Elem("labelChk").checked = false;
+		this.Elem("labelChk").removeAttribute("checked");
+		
 	}
 	
 	LoadIndicators(indicators) {
@@ -52,21 +55,12 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 		var div = Dom.Create("li", { className:"context-layer" }, this.Elem("cLayers"));
 		var chk = Dom.Create("input", { id:Core.NextId(), className:"context-layer-check", type:"checkbox", checked: checked}, div);
 		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"context-layer-label", innerHTML:label }, div);
+
 		chk.addEventListener("change", ev => {
 			this.Emit("LayerVisibility", {data: data, checked:chk.checked});
 		});
 	}
 
-	AddLabelName(item) {
-		var div = Dom.Create("li", { className:"labelName" }, this.Elem("labelName"));
-		var chk = Dom.Create("input", { id:Core.NextId(), className:"labelName-checkbox", type:"checkbox" }, div);
-		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"labelName-label", innerHTML:item.label }, div);
-		
-		chk.addEventListener("change", ev => {
-			this.Emit("LabelVisibility", {checked: chk.checked});
-		});
-	}
-	
 	OnOpacity_Changed(ev) {
 		this.Emit("Opacity", { opacity:this.Opacity });
 	}
@@ -95,7 +89,12 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 					"<ul handle='cLayers' class='context-layers-container'>" + 
 					"</div>" +
 					"<label>nls(Legend_Label_Name)</label>" +
-					"<ul handle='labelName' class='label-name-container'>" +
+					"<ul class='label-name-container'>" +
+						"<li class='labelName'>" +
+							"<input handle='labelChk' type=checkbox class='labelName-checkbox'>" + 
+							"<label class='labelName-label'>nls(Legend_Show_label)</label>" + 
+						"</li>" +
+					"</ul>" +
 				  "</div>";
 	}
 })

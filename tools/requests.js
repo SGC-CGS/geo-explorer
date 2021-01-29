@@ -239,7 +239,7 @@ export default class Requests {
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,
-				labelsVisible: true,
+				labelsVisible: false,
 				definitionExpression: data.where,
 				renderer : ESRI.renderers.support.jsonUtils.fromJSON(renderer.data),
 				source: {
@@ -260,7 +260,7 @@ export default class Requests {
                     minScale: 0,
                     where: null,
 					symbol: {
-					  type: "text",  // autocasts as new TextSymbol()
+					  type: "text", 
 					  color: [255, 255, 255, 255],
 					  haloColor: [0, 0, 0, 255],
 					  haloSize: 2,

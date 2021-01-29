@@ -31,6 +31,10 @@
 		"en" : "Map labels",
 	    "fr" : "Étiquettes sur la carte"
 	},
+    "Legend_Show_label" : {
+            "en" : " Show label",
+            "fr" : " Afficher les étiquettes"
+    },
 	"Styler_Title" : {
 		"en" : "Change map style",
 		"fr" : "Modifier le style de la carte"
