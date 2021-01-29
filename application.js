@@ -210,6 +210,6 @@ export default class Application extends Templated {
 					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' class='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +
-			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>";;
+			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>"
 	}
 }
