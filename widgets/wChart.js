@@ -47,20 +47,30 @@ export default Core.Templatable("App.Widgets.WChart",
           {city: "ottawa", cases: 133},
           {city: "toronto", cases: 160},
           {city: "kingston", cases: 50},
-          {city: "vancouver", cases: 200},
+          {city: "vancouver", cases: 330},
           {city: "victoria", cases: 10},
           {city: "montreal", cases: 250},
           {city: "quebec city", cases: 90},
-          {city: 1234567891011324432932973297, cases: 90}
+          {city: "Timiskaming Health Unit", cases: 190}
         ]
 
         // Direct reference
-        var elem = this.Node("ChartsContainer").elem.container
-        var barChart = new BarChart(data, elem, "city", "cases");
+        var element = this.Node("ChartsContainer").elem.container
+        var barChart = new BarChart({
+          chartType: "BarChart",
+          data: data, 
+          element: element, 
+          // Or as defined by SME
+          xName: Object.keys(data[0])[0], 
+          yName: Object.keys(data[0])[1]
+        });
+
+        console.log(barChart)
         
       } 
 
       else if (ev.target.selected.label == "Pie Chart") {
+        // Find a way to destroy barChart?
         var svg = d3.select(this.Node("ChartsContainer").elem.container)
         svg.selectAll("svg").remove();
       }
@@ -83,7 +93,7 @@ export default Core.Templatable("App.Widgets.WChart",
 
           "<div class='overlay-body' handle='body'>" +
             "<label class='sm-label'>nls(Chart_Type)</label>" +
-            "<div id='ChartsContainer' handle='ChartsContainer' widget='Basic.Components.Select'></div>" +
+            "<div id='ChartsContainer' handle='ChartsContainer' widget='Basic.Components.Select' height='300'></div>" +
           "</div>" +
         "</div>"
       );

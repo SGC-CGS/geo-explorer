@@ -542,9 +542,11 @@
 }
 
 /* Chart svg */
-svg {
+svg, 
+/* {
   border:2px solid black;
-} 
+
+}  */
 
 /* Chart view widget */
 .gexp .chart label {
@@ -728,11 +730,12 @@ rect {
   }
 
 text {
-    font-size: 1.4em;
+    font-size: 1.15em;
 }
 
 .vertical-text {
-	transform: rotate(-90.0deg);
+    transform: rotate(-90.0deg);
+    
 }
 
 .axis path,
