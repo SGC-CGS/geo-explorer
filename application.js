@@ -5,10 +5,8 @@ import CODR from './util/codr.js';
 import Templated from '../geo-explorer/components/templated.js';
 import Map from './map.js';
 import Menu from '../geo-explorer/widgets/menu.js';
-import Search from '../geo-explorer/widgets/search.js';
 import Waiting from '../geo-explorer/widgets/waiting.js';
 import Basemap from '../geo-explorer/widgets/basemap.js';
-import Bookmarks from '../geo-explorer/widgets/bookmarks.js';
 import Configuration from './components/config.js';
 import Style from './util/style.js';
 
@@ -16,6 +14,8 @@ export default class Application extends Templated {
 
 	constructor(node, config) {		
 		super(node);
+
+		this.title = document.querySelector("#_indicator");
 
 		this.config = Configuration.FromJson(config);
 
@@ -48,6 +48,8 @@ export default class Application extends Templated {
 			var code = CODR.GeoLookup(geo);
 			
 			metadata.geo.members = metadata.geo.members.filter(m => m.geoLevel == code);
+
+			this.title.innerHTML = this.GetTitle(coordinates, metadata);
 			
 			CODR.GetCoordinateData(metadata, coordinates).then(data => {
 				d.Resolve({ metadata:metadata, data:data });
@@ -55,6 +57,21 @@ export default class Application extends Templated {
 		}, error => d.Reject(error));
 		
 		return d.promise;
+	}
+	
+	GetTitle (coordinates, metadata) {
+		var names = [];
+
+		for (var i = 0; i < coordinates.length; i++) {
+			if (coordinates[i] == "*") continue;
+
+			var j = coordinates[i];
+			var name = metadata.dimensions[i].members[j].name;
+
+			names.push(name);
+		}
+
+		return names.join(", ");
 	}
 	
 	LoadLayer(geo) {		
@@ -96,10 +113,7 @@ export default class Application extends Templated {
 	}
 
 	Template() {
-		return	"<div class='top-container'>" +
-					"<img class='button-icon large-icon search' src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
-				"</div>" +
-				"<div class='map-container'>" +
+		return	"<div class='map-container'>" +
 					"<div handle='map'></div>" +
 					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
 				"</div>";
