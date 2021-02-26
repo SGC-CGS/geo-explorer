@@ -17,6 +17,7 @@ import Basemap from './widgets/basemap.js';
 import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
 import Dom from './tools/dom.js';
+import wChart from './widgets/wChart.js';
 
 export default class Application extends Templated { 
 
@@ -103,6 +104,7 @@ export default class Application extends Templated {
 		}, error => this.OnApplication_Error(error));
 	}
 	
+	// Behaviour object
 	AddSelectBehavior(map, context, config) {
 		var options = {
 			layer: context.sublayer,
@@ -112,6 +114,8 @@ export default class Application extends Templated {
 		
 		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map, options));
 		
+		// Where it happens
+		// MAPSELECTDAW
 		this.HandleEvents(behavior, this.OnMap_SelectDraw.bind(this));
 	}
 	
@@ -126,6 +130,7 @@ export default class Application extends Templated {
 		this.HandleEvents(behavior);	
 	}
 	
+	// Add event handler
 	HandleEvents(node, changeHandler) {
 		if (changeHandler) node.On('Change', changeHandler);
 		
@@ -198,14 +203,17 @@ export default class Application extends Templated {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
+	// Selection changes, in ev.selection 
 	OnMap_SelectDraw(ev) {
-		this.Elem("table").Populate(ev.selection);
+		this.Elem("table").data = ev.selection;
+		this.Elem("chart").data = ev.selection.items;
 	}
 	
+	// More changes
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior("selection").Layer.remove(ev.graphic);
-				
-		this.Elem("table").Populate(this.map.Behavior("selection").Graphics);
+		this.Elem("table").data = this.map.Behavior("selection").Graphics;
+		this.Elem("chart").data = this.map.Behavior("selection").Graphics.items;
 	}
 	
 	OnWidget_Busy(ev) {
@@ -230,7 +238,6 @@ export default class Application extends Templated {
 				"<div class='map-container'>" +
 					"<div handle='map'></div>" +
 					"<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
-					// chart.js
 					"<div handle='chart' class='chart' widget='App.Widgets.WChart'></div>" +
 					"<div handle='styler' class='styler' widget='App.Widgets.Styler'></div>" +
 					"<div handle='legend' class='legend' widget='App.Widgets.Legend'></div>" +

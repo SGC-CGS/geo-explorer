@@ -16,7 +16,12 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
 		});
 	}
+
+	set data(value){
+		this.Populate(value)
+	}
 	
+
 	constructor(container) {	
 		super(container);
 		

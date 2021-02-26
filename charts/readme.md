@@ -53,8 +53,9 @@ Many important methods exist in D3 for working with data:
        - ```circle```
        - ```<svg>```
        - ```<p>```
+   - In some cases you could use ```.merge()``` after such command to get existing data 
 3. ```.exit().remove()``` 
-   - Remove unwanted surplus of elements 
+   - Remove unwanted elements (e.g., if the data array has shrunken in size)
 
 ### Scales
 
@@ -88,6 +89,12 @@ An axis can be left, right, bottom, and top for orientation. You can also modify
 Examples:
 - ```d3.axisLeft()``` would be composed of your ```y scale``` to produce a ```y-axis```.
 
+### Transitions
+
+Animate DOM changes for a certain amount of milliseconds 
+
+Command: ```transition().duration()```
+
 ### Margin Convention 
 
 As you may know, the origin point in computer graphics is the top left corner. When using a method such as  ```.attr('transform', 'translate('tx', 'ty')')```, a selected element will be translated from the top left corner of the container it is in. The ```tx``` translates along the x-axis to the right of the origin point whereas ```ty``` pushes down along the y-axis.
@@ -104,15 +111,26 @@ Other things to consider:
 
 **Modified By:** Omar Kawach (2021)
 
+### Transitions 
+
 ## TODO
 - Add chart icon to side panel
 - Make chart unavailable if no polygon clicked (alert)
-- Link charts to map data
 - Overlay and widget should use an association instead of inheritance 
-- Add chart interaction 
-- Animate charts
 - Develop sub charts (related indicator? Remove related indicator value when clicked?)
-- Hover function on label
+- Download button? https://www.quebec.ca/en/health/health-issues/a-z/2019-coronavirus/situation-coronavirus-in-quebec/
+- Add model-container alert like the one in CSGE V1 
+  - Text: "No charts available. Select one or more locations to generate charts."
+- Remove chart type selection and instead leave it up to the SME?
+- Update width when too many regions selected?
+
+## Ongoing 
+- Animate chart
+- Add chart interaction
+  - Tooltip
+- Tick marks get weird
+- Link charts to map data
+- Do something about the crowding when too many rectangles and large y-axis values
 
 ## Author(s)
 

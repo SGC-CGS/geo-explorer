@@ -11,6 +11,7 @@ export default class Tooltip extends Templated  {
 		return this.Elem("root").getBoundingClientRect();
 	}
 	
+	// HTML string
 	set content(value) {
 		this.Elem('content').innerHTML = value;
 	}
@@ -49,6 +50,8 @@ export default class Tooltip extends Templated  {
 		}
 	}
 	
+	// Call this
+	// x and y from generated interaction (position)
 	Show(x, y) {
 		this.PositionXY(x, y);
 		

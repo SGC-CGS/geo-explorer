@@ -206,5 +206,9 @@
 	"Behaviour_Title" : {
 		"en" : "Toggle map click behaviour",
 		"fr" : "Basculer le comportement des clics sur la carte"
+	},
+	"DisplayNameLong" : {
+		"en" : "DisplayNameLong_EN",
+		"fr" : "DisplayNameLong_FR"
 	}
 }

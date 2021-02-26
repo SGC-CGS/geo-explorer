@@ -722,10 +722,12 @@ svg,
 
 /* Chart CSS */
 rect {
+    /* Default fill */
     fill: steelblue;
 }
 
 .rect:hover {
+    /* Default hover color */
     fill: orangered ;
   }
 

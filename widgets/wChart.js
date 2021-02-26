@@ -3,20 +3,77 @@ import Core from "../tools/core.js";
 import Dom from "../tools/dom.js";
 import Requests from "../tools/requests.js";
 import BarChart from "../charts/barChart.js";
+import PieChart from "../charts/pieChart.js";
+import LineChart from "../charts/lineChart.js";
 
 
 export default Core.Templatable("App.Widgets.WChart",
   class WChart extends Overlay {
+
+    set data(value){
+      this.PopulateDataArray(value);
+    }
+    get data(){
+      return this._data;
+    }
+
     constructor(container, options) {
       super(container, options);
       this.metadata = null;
+      this.chart = null;
+      this.chartType = null;
 
       this.Node("ChartsContainer").On("Change", this.OnSubject_Change.bind(this));
       this.Elem("ChartsContainer").placeholder = Core.Nls("Chart_Type_Placeholder");
     }
 
-    // Add interaction here
+    PopulateDataArray(value) {
+      this._data = [];
+      var title = Core.Nls("DisplayNameLong");
+      for (let index = 0; index < value.length; index++) {
+        var element = value[index];
+        this._data.push({
+          // change to label and value
+          title: element["attributes"][title],
+          value: element["attributes"]["Value"],
+        });
+      }
+      this.Chart();
+    }
 
+    Chart() {
+      if (this.chart) {
+        if (this._data.length == 0) {
+          this.ClearExistingSVG();
+        } else {
+          this.chart.options.data = this._data;
+          this.chart.Redraw();
+        }
+      } else {
+        var element = this.Node("ChartsContainer").elem.container;
+
+        // this.chart = new BarChart({
+        //   chartType: "BarChart",
+        //   data: this._data,
+        //   element: element
+        // });
+
+        // this.chart = new PieChart({
+        //   chartType: "PieChart",
+        //   data: this._data,
+        //   element: element
+        // });
+
+        this.chart = new LineChart({
+          chartType: "LineChart",
+          data: this._data,
+          element: element
+        });
+
+      }
+    }
+
+    // Do we actually need this?
     Update(context) {
       this.context = context;
 
@@ -41,41 +98,20 @@ export default Core.Templatable("App.Widgets.WChart",
     }
 
     OnSubject_Change(ev) {
-      if (ev.target.selected.label == "Bar Chart") {
-
-        var data = [
-          {city: "ottawa", cases: 133},
-          {city: "toronto", cases: 160},
-          {city: "kingston", cases: 50},
-          {city: "vancouver", cases: 330},
-          {city: "victoria", cases: 10},
-          {city: "montreal", cases: 250},
-          {city: "quebec city", cases: 90},
-          {city: "Timiskaming Health Unit", cases: 190}
-        ]
-
-        // Direct reference
-        var element = this.Node("ChartsContainer").elem.container
-        var barChart = new BarChart({
-          chartType: "BarChart",
-          data: data, 
-          element: element, 
-          // Or as defined by SME
-          xName: Object.keys(data[0])[0], 
-          yName: Object.keys(data[0])[1]
-        });
-
-        console.log(barChart)
-        
+      this.chartType = ev.target.selected.label;
+      if (this.chartType == "Bar Chart") {
+        console.log(this.chart)
       } 
-
-      else if (ev.target.selected.label == "Pie Chart") {
-        // Find a way to destroy barChart?
-        var svg = d3.select(this.Node("ChartsContainer").elem.container)
-        svg.selectAll("svg").remove();
+      else if (this.chartType == "Pie Chart") {
+        console.log(this.chart)
       }
-
     }
+
+    ClearExistingSVG() {
+      var svg = d3.select(this.Node("ChartsContainer").elem.container)
+      svg.selectAll("svg").remove();
+      this.chart = null
+    } 
 
     OnRequests_Error(error) {
       this.Emit("Error", { error: error });
@@ -93,8 +129,8 @@ export default Core.Templatable("App.Widgets.WChart",
 
           "<div class='overlay-body' handle='body'>" +
             "<label class='sm-label'>nls(Chart_Type)</label>" +
-            "<div id='ChartsContainer' handle='ChartsContainer' widget='Basic.Components.Select' height='300'></div>" +
-          "</div>" +
+            "<div id='ChartsContainer' handle='ChartsContainer' widget='Basic.Components.Select' height='400'></div>" +
+            "</div>" +
         "</div>"
       );
     }

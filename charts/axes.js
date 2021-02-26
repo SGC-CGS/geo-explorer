@@ -1,26 +1,24 @@
 export default class Axes { 
 
-    static CreateDefaultXScale(data, xName, innerWidth){
+    static CreateDefaultXScale(data, innerWidth){
         return d3.scaleBand()
             // Map values into correct pixel positions
-            .domain(data.map(d => d[xName]))
+            .domain(data.map(d => d.title))
             // Map values from start of data array to end of data array
             .range([0, innerWidth])
             .padding(0.1)
-
     }
 
-    static CreateDefaultYScale(data, yName, innerHeight){
+    static CreateDefaultYScale(data, innerHeight){
         return d3.scaleLinear()
             // max at the top of the y-axis
             // 0 at the bottom of the y-axis
-            .domain([(d3.max(data, d => d[yName])), 0])
+            .domain([(d3.max(data, d => d.value)), 0])
             // 0 on bottom of y-axis
             // max at top of y-axis
             .range([0, innerHeight])
             // .nice() rounds the domain to nice values
             .nice()
-
     }
 
     // Horizontal lines onto graph 
@@ -32,6 +30,16 @@ export default class Axes {
 
         g.append('g').call(y)
             .classed("y axis-grid", true)
+            .attr("transform", "translate(0,0)")
+    }
+
+    static UpdateGridLineForY(yScale, innerWidth, g){
+        const y = d3.axisLeft(yScale)
+            // left axis should have same number of ticks 
+            .tickSize(-innerWidth).ticks()
+            .tickFormat("")
+
+        g.selectAll("g.y.axis-grid").call(y)
             .attr("transform", "translate(0,0)")
     }
 
@@ -53,25 +61,47 @@ export default class Axes {
             .classed("y axis", true)
     }
 
+    static UpdateLeftAxisToGraph(yScale, g){
+        g.selectAll('g.y.axis')
+            // The ticks get a bit weird sometimes
+            .call(d3.axisLeft(yScale).ticks())
+    }
+
     // Horizontal axis
     static AppendBottomAxisToGraph(xScale, innerHeight, g){
         g
-          .append("g")
-          .call(d3.axisBottom(xScale))
-          .attr("transform", `translate(0, ${innerHeight})`)
-          .classed("x axis", true)
-          .selectAll("text")
-          .attr("transform", "translate(-10,0)rotate(-45)")
-          // The labels come from xScale.domain()
-          .text(d => {
-              // So the label doesn't exit the SVG
-              if(d.length >= 14){
-                d = d.substring(0, 11) + "..."
-              }
-              return d
-          })
-          .style("text-anchor", "end");
+            .append("g")
+            .call(d3.axisBottom(xScale))
+            .attr("transform", `translate(0, ${innerHeight})`)
+            .classed("x axis", true)
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            // The labels come from xScale.domain()
+            .text(d => {
+                // So the label doesn't exit the SVG
+                if(d.length >= 16){
+                    d = d.substring(0, 13) + "..."
+                }
+                return d
+            })
+            .style("text-anchor", "end");
+    }
 
-    
+    static UpdateBottomAxisInGraph(xScale, innerHeight, g){
+        g.selectAll("g.x.axis")
+            .call(d3.axisBottom(xScale))
+            .attr("transform", `translate(0, ${innerHeight})`)
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            // The labels come from xScale.domain()
+            .text(d => {
+                // So the label doesn't exit the SVG
+                if(d.length >= 14){
+                    d = d.substring(0, 11) + "..."
+                }
+                return d
+            })
+            .style("text-anchor", "end");
+
     }
 }
