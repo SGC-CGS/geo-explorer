@@ -5,6 +5,11 @@ export default class Chart {
     constructor(options) {
         this.options = options
         this.spaceFromBorders = 25
+        this.tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 1);
+        this.SelectContainerElement();
+        this.AppendSVGtoContainerElement();
+        this.SetDimensions();
+        this.AddGroupToSVG();
     }
 
     SelectContainerElement(){
@@ -14,7 +19,7 @@ export default class Chart {
     AppendSVGtoContainerElement(){
         this.container
           .append("svg")
-          .attr("width", this.options.element.clientWidth)
+          .attr("width", this.options.element.getAttribute("width"))
           .attr("height", +this.options.element.getAttribute("height"))
     }
 
@@ -57,26 +62,34 @@ export default class Chart {
 
     UpdateInnerHeight(innerHeight){ this.dimensions.innerHeight = innerHeight; }
 
+    // Put the group within the view of the svg 
     AddGroupToSVG(){
+        this.g = this.container.select("svg").append('g')
+        
         if (this.options.chartType == "BarChart" || this.options.chartType == "LineChart") {
-            this.g = this.container.select("svg").append('g')
-            // Put the group within the view of the svg 
-            .attr('transform', `translate(${this.dimensions.margin.left}, ${this.dimensions.margin.top})`);
+            this.g.attr(
+                'transform', 
+                `translate(${this.dimensions.margin.left}, ${this.dimensions.margin.top})`
+            );
         } 
         else if (this.options.chartType == "PieChart") {
-            this.g = this.container.select("svg").append('g')
-            // Put the group within the view of the svg 
-            //.attr('transform', `translate(${this.dimensions.margin.left / 3.5}, ${-this.dimensions.margin.bottom + 20})`);
-            .attr('transform', `translate(${this.dimensions.radius * 1.5}, ${this.dimensions.radius * 1.5})`);
+            this.g.attr(
+                'transform', 
+                `translate(${this.dimensions.radius * 1.5}, ${this.dimensions.radius * 1.5})`
+            );
         } 
     }
 
     BuildScales(){
-        this.xScale = Axes.CreateDefaultXScale(this.options.data, this.dimensions.innerWidth)
-        this.yScale = Axes.CreateDefaultYScale(this.options.data, this.dimensions.innerHeight)
+        if (this.options.chartType == "LineChart") {
+            this.xScale = Axes.CreateLinearXScale(this.options.data, this.dimensions.innerWidth)
+        } else {
+            this.xScale = Axes.CreateBandXScale(this.options.data, this.dimensions.innerWidth)
+        }
+        this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight)
     }
 
-    // Pass in regular parameters
+    // To build axes you need scales first
     BuildAxes(){ 
         this.BuildScales();
         if (this.options.chartType == "LineChart") {
@@ -89,19 +102,64 @@ export default class Chart {
     }
 
     UpdateAxes(){
+        let xScaleDomain;
+        
+        if (this.options.chartType == "LineChart") {
+            xScaleDomain = this.xScale.domain([0, this.options.data.length - 1])
+        } else {
+            xScaleDomain = this.xScale.domain(this.options.data.map(d => d.title))
+        }
+
         Axes.UpdateBottomAxisInGraph(
-            this.xScale.domain(this.options.data.map(d => d.title)), 
+            xScaleDomain, 
             this.dimensions.innerHeight, 
             this.g);
         Axes.UpdateLeftAxisToGraph(
             this.yScale.domain([(d3.max(this.options.data, d => d.value)), 0]), 
             this.g);
         Axes.UpdateGridLineForY(this.yScale, this.dimensions.innerWidth, this.g)
+
+        if (this.options.chartType == "LineChart") {
+            Axes.UpdateGridLineForX(this.xScale, this.dimensions.innerHeight, this.g)
+        }
     }
 
     // Based on overlay
+    // TODO
     Resize(){
 
+    }
+
+
+    // Use tooltip.js instead?
+    MouseOver(d) {
+        this.tooltip
+            .transition()
+            .delay(100)
+            .duration(600)
+            .style("opacity", 1)
+            .style('pointer-events', 'all')	
+
+        if (this.options.chartType == "PieChart") {
+            this.tooltip
+                .html(`${d.data.title}` + "<br/>" + `Value: ` + `${d.data.value}`)	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px")
+        } else {
+            this.tooltip
+                .html(`${d.title}` + "<br/>" + `Value: ` + `${d.value}`)	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px")
+        }
+    }
+
+    MouseOut() {
+        this.tooltip
+            .transition()
+            .delay(100)
+            .duration(600)
+            .style("opacity", 0)
+            .style('pointer-events', 'none')
     }
 
 }

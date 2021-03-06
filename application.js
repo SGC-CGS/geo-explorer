@@ -87,7 +87,6 @@ export default class Application extends Templated {
 			// in the future?
 			this.map.layers["main"].findSublayerById(7).labelsVisible = false;
 
-			this.Elem("chart").Update(this.context);
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
 			this.Elem("legend").Update(this.context);

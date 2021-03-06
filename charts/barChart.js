@@ -1,34 +1,25 @@
 import Chart from "./chart.js";
 import Axes from "./axes.js";
 
-// Use tooltip.js?
-
 export default class BarChart extends Chart{ 
 
     constructor(options) {
         super(options)
         this.options = options
         this.color = d3.scaleOrdinal(d3.schemeCategory20);
-        this.CreateBarChart()
+        this.Draw()
     }
 
-    CreateBarChart(){
-        this.SelectContainerElement(this.element);
-        this.AppendSVGtoContainerElement();
-        this.SetDimensions();
-        this.AddGroupToSVG();
+    Draw(){
         this.BuildAxes();
-        this.tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 1);
         this.AppendVerticalRectanglesToGraph();
     }
     
     // This is specific to regular bar graphs
     // A sideways bar graph would need a new method entirely
     AppendVerticalRectanglesToGraph(){
-        var rectangles = this.g.selectAll("rect")
-            .data(this.options.data)
-
-        var tooltip = this.tooltip;
+        let rectangles = this.g.selectAll("rect").data(this.options.data);
+        let self = this;
               
         rectangles
             .enter()
@@ -45,33 +36,14 @@ export default class BarChart extends Chart{
             // Later fill based on SME config
             .style("fill", (d) => this.color(d.value))
             // So rectangles can change on hover
-            .on("mouseover", function (d) {
-                d3.select(this)
-                     .style("opacity", 0.5)
-
-                tooltip
-                    .transition()
-                    .delay(100)
-                    .duration(600)
-                    .style("opacity", 1)
-                    .style('pointer-events', 'all')	
-
-                // The text is a bit glitchy for some reason
-                tooltip
-                    .html(`${d.title}` + "<br/>" + `Value: ` + `${d.value}`)	
-                    .style("left", (d3.event.pageX) + "px")		
-                    .style("top", (d3.event.pageY - 28) + "px")
+            .on("mouseover", function(d) { 
+                d3.select(this).style("opacity", 0.5);
+                self.MouseOver(d);
             })
             .on("mouseout", function () {
                 d3.select(this).style("opacity", 1);
-
-                tooltip
-                    .transition()
-                    .delay(100)
-                    .duration(600)
-                    .style("opacity", 0)
-                    .style('pointer-events', 'none')
-            });
+                self.MouseOut();
+            })
 
         // Remove surplus bars and previous dataset out of graph
         rectangles.exit().remove();

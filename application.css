@@ -754,4 +754,10 @@ text {
     stroke: #e4e4e4;   
   }
 
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+
 /* End Chart CSS */

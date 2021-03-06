@@ -1,6 +1,6 @@
 export default class Axes { 
 
-    static CreateDefaultXScale(data, innerWidth){
+    static CreateBandXScale(data, innerWidth){
         return d3.scaleBand()
             // Map values into correct pixel positions
             .domain(data.map(d => d.title))
@@ -9,7 +9,14 @@ export default class Axes {
             .padding(0.1)
     }
 
-    static CreateDefaultYScale(data, innerHeight){
+    static CreateLinearXScale(data, innerWidth){
+        return d3.scaleLinear()
+            .domain([0, data.length - 1])
+            .range([0, innerWidth])
+    }
+
+    static CreateLinearYScale(data, innerHeight){
+        // Could also use .domain(d3.extent(data, (d) => d.value ))
         return d3.scaleLinear()
             // max at the top of the y-axis
             // 0 at the bottom of the y-axis
@@ -22,11 +29,15 @@ export default class Axes {
     }
 
     // Horizontal lines onto graph 
+    static GridLineY(yScale, innerWidth) {
+        return d3.axisLeft(yScale)
+        // left axis should have same number of ticks 
+        .tickSize(-innerWidth).ticks()
+        .tickFormat("")
+    }
+    
     static AppendGridLineForY(yScale, innerWidth, g){
-        const y = d3.axisLeft(yScale)
-            // left axis should have same number of ticks 
-            .tickSize(-innerWidth).ticks()
-            .tickFormat("")
+        let y = this.GridLineY(yScale, innerWidth);
 
         g.append('g').call(y)
             .classed("y axis-grid", true)
@@ -34,25 +45,36 @@ export default class Axes {
     }
 
     static UpdateGridLineForY(yScale, innerWidth, g){
-        const y = d3.axisLeft(yScale)
-            // left axis should have same number of ticks 
-            .tickSize(-innerWidth).ticks()
-            .tickFormat("")
+        let y = this.GridLineY(yScale, innerWidth);
 
         g.selectAll("g.y.axis-grid").call(y)
             .attr("transform", "translate(0,0)")
     }
 
     // Vertical lines onto graph
-    static AppendGridLineForX(xScale, innerHeight, g){
-        const x = d3.axisBottom(xScale)
-            .tickSize(-innerHeight)
-            .tickFormat("")
-
-        g.append('g').call(x)
-            .classed("x axis-grid", true)
-            .attr('transform', 'translate(0,' + innerHeight + ')')
+    static GridLineX(xScale, innerHeight) {
+        return d3.axisBottom(xScale)
+        .tickSize(-innerHeight)
+        .tickFormat("")
     }
+
+    static AppendGridLineForX(xScale, innerHeight, g){
+        let x = this.GridLineX(xScale, innerHeight);
+
+        g.append('g')
+            .call(x)
+            .classed("x axis-grid", true)
+            .attr('transform', 'translate(0,' + innerHeight + ')');
+    }
+
+    static UpdateGridLineForX(xScale, innerHeight, g){
+        let x = this.GridLineX(xScale, innerHeight);
+
+        g.selectAll("g.x.axis-grid")
+            .call(x)
+            .attr('transform', 'translate(0,' + innerHeight + ')');
+    }
+    
 
     // Vertical axis
     static AppendLeftAxisToGraph(yScale, g){
@@ -63,45 +85,29 @@ export default class Axes {
 
     static UpdateLeftAxisToGraph(yScale, g){
         g.selectAll('g.y.axis')
-            // The ticks get a bit weird sometimes
             .call(d3.axisLeft(yScale).ticks())
     }
 
     // Horizontal axis
     static AppendBottomAxisToGraph(xScale, innerHeight, g){
-        g
-            .append("g")
-            .call(d3.axisBottom(xScale))
-            .attr("transform", `translate(0, ${innerHeight})`)
-            .classed("x axis", true)
-            .selectAll("text")
-            .attr("transform", "translate(-10,0)rotate(-45)")
-            // The labels come from xScale.domain()
-            .text(d => {
-                // So the label doesn't exit the SVG
-                if(d.length >= 16){
-                    d = d.substring(0, 13) + "..."
-                }
-                return d
-            })
-            .style("text-anchor", "end");
+        this.SetBottomAxisAttributes(xScale, g.append("g"), innerHeight)
     }
 
     static UpdateBottomAxisInGraph(xScale, innerHeight, g){
-        g.selectAll("g.x.axis")
-            .call(d3.axisBottom(xScale))
-            .attr("transform", `translate(0, ${innerHeight})`)
-            .selectAll("text")
-            .attr("transform", "translate(-10,0)rotate(-45)")
-            // The labels come from xScale.domain()
-            .text(d => {
-                // So the label doesn't exit the SVG
-                if(d.length >= 14){
-                    d = d.substring(0, 11) + "..."
-                }
-                return d
-            })
-            .style("text-anchor", "end");
+        this.SetBottomAxisAttributes(xScale, g.selectAll("g.x.axis"), innerHeight)
+    }
 
+    static SetBottomAxisAttributes (xScale, g, innerHeight) {
+        g.call(d3.axisBottom(xScale))
+        .attr("transform", `translate(0, ${innerHeight})`)
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .text(d => {
+            if(d.length >= 16){
+                d = d.substring(0, 13) + "..."
+            }
+            return d
+        })
+        .style("text-anchor", "end");
     }
 }
