@@ -18,21 +18,6 @@ function DocumentReady() {
 	Promise.all([p1, p2, p3]).then(Start, Fail);
 }
 
-function CheckUrlEmpty(config) {
-	// if (config.subject === NaN && config.theme === NaN && config.category === NaN && config.filters === null && config.value === NaN && config.geography === null) {
-	// 	return true;
-	// } else if (config === undefined) {
-	// 	return true;
-	// } else {
-	// 	return false;
-	// }
-	if (!config.subject && !config.theme && !config.category && !config.filters && !config.value  && !config.geography ) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 function Start(responses) {	
 	Core.locale = document.documentElement.lang || "en";
 	Core.nls = responses[0];
@@ -47,12 +32,9 @@ function Start(responses) {
 		filters: Net.GetUrlParameter("filters"),
 		value: parseInt(Net.GetUrlParameter("val")),
 		geography: Net.GetUrlParameter("geo")
-	}
+	}		
 
-	var test = CheckUrlEmpty(config.data);
-		
-
-	if (test){
+	if (!config.data.subject && !config.data.theme && !config.data.category && !config.data.filters && !config.data.value  && !config.data.geography){
 		config.data.subject = 13;
         config.data.theme = 1399;
         config.data.category = 13100113;

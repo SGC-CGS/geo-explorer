@@ -74,12 +74,6 @@ export default class Application extends Templated {
 		})
 
 		this.context.Initialize(config.Context).then(d => {	
-			// update context with url parameter\
-			// this.context.ChangeSubject(config.data.subject);
-			// this.context.ChangeTheme(config.data.theme);
-			// this.context.ChangeCategory(config.data.category);
-			// this.context.ChangeIndicators(config.data.filters, config.data.value);
-			// this.context.ChangeGeography(config.data.geography);
 
 			this.map.AddSubLayer('main', this.context.sublayer);
 			
