@@ -73,7 +73,14 @@ export default class Application extends Templated {
 			this.Elem("legend").AddContextLayer(i.label, i, false);
 		})
 
-		this.context.Initialize(config.Context).then(d => {				
+		this.context.Initialize(config.Context).then(d => {	
+			// update context with url parameter\
+			// this.context.ChangeSubject(config.data.subject);
+			// this.context.ChangeTheme(config.data.theme);
+			// this.context.ChangeCategory(config.data.category);
+			// this.context.ChangeIndicators(config.data.filters, config.data.value);
+			// this.context.ChangeGeography(config.data.geography);
+
 			this.map.AddSubLayer('main', this.context.sublayer);
 			
 			this.Elem("selector").Update(this.context);
@@ -88,6 +95,8 @@ export default class Application extends Templated {
 
 			this.map.Behavior("identify").Activate();
 			this.behavior = "identify";
+
+			
 			
 		}, error => this.OnApplication_Error(error));
 	}
