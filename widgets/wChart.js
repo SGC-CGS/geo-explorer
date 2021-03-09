@@ -5,6 +5,7 @@ import Requests from "../tools/requests.js";
 import BarChart from "../charts/barChart.js";
 import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";
+import ScatterPlot from "../charts/scatterPlot.js";
 
 export default Core.Templatable("App.Widgets.WChart",
   class WChart extends Overlay {
@@ -67,6 +68,8 @@ export default Core.Templatable("App.Widgets.WChart",
 
         // Uncomment whichever chart you want to see
 
+        // TODO: Define chart type in constructor instead?
+
         // TODO: Prevent user from selecting too much (or hide x axis labels)
         // this.chart = new BarChart({
         //   chartType: "BarChart",
@@ -85,8 +88,16 @@ export default Core.Templatable("App.Widgets.WChart",
         // TODO: Add red line tooltip instead of hover
         // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2017003-eng.htm
         // The x-axis labels are numbers
-        this.chart = new LineChart({
-          chartType: "LineChart",
+        // this.chart = new LineChart({
+        //   chartType: "LineChart",
+        //   data: this._data,
+        //   element: element
+        // });
+
+        // Need better data for testing of LineChart and 
+        // ScatterPlot
+        this.chart = new ScatterPlot({
+          chartType: "ScatterPlot",
           data: this._data,
           element: element
         });

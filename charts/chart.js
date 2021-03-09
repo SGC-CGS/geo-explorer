@@ -66,7 +66,7 @@ export default class Chart {
     AddGroupToSVG(){
         this.g = this.container.select("svg").append('g')
         
-        if (this.options.chartType == "BarChart" || this.options.chartType == "LineChart") {
+        if (this.options.chartType == "BarChart" || this.options.chartType == "LineChart" || this.options.chartType == "ScatterPlot") {
             this.g.attr(
                 'transform', 
                 `translate(${this.dimensions.margin.left}, ${this.dimensions.margin.top})`
@@ -81,7 +81,7 @@ export default class Chart {
     }
 
     BuildScales(){
-        if (this.options.chartType == "LineChart") {
+        if (this.options.chartType == "LineChart" || this.options.chartType == "ScatterPlot") {
             this.xScale = Axes.CreateLinearXScale(this.options.data, this.dimensions.innerWidth)
         } else {
             this.xScale = Axes.CreateBandXScale(this.options.data, this.dimensions.innerWidth)
@@ -92,7 +92,7 @@ export default class Chart {
     // To build axes you need scales first
     BuildAxes(){ 
         this.BuildScales();
-        if (this.options.chartType == "LineChart") {
+        if (this.options.chartType == "LineChart" || this.options.chartType == "ScatterPlot") {
             Axes.AppendGridLineForX(this.xScale, this.dimensions.innerHeight, this.g)
         }
         Axes.AppendGridLineForY(this.yScale, this.dimensions.innerWidth, this.g)
@@ -104,7 +104,7 @@ export default class Chart {
     UpdateAxes(){
         let xScaleDomain;
         
-        if (this.options.chartType == "LineChart") {
+        if (this.options.chartType == "LineChart" || this.options.chartType == "ScatterPlot") {
             xScaleDomain = this.xScale.domain([0, this.options.data.length - 1])
         } else {
             xScaleDomain = this.xScale.domain(this.options.data.map(d => d.title))

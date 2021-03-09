@@ -10,13 +10,7 @@ export default class LineChart extends Chart{
 
     Draw(){
         this.BuildAxes();
-        this.points = this.g.append("g")
-                            .attr("fill", "steelblue")
-                            .attr("stroke", "steelblue")
-                            .attr("stroke-width", 2)
-        
         this.line = this.g.append("path")
-        
         this.AppendPointsToGraph();
     }
 
@@ -27,32 +21,6 @@ export default class LineChart extends Chart{
             .y((d) =>  this.yScale(d.value)) 
             // https://bl.ocks.org/d3noob/ced1b9b18bd8192d2c898884033b5529
             //.curve(d3.curveMonotoneX) 
-
-        let self = this;
-
-        let points = this.points.selectAll("circle").data(this.options.data)
-        
-        // Add the points
-        points  
-            .enter()
-            .append("circle")
-            .merge(points)
-                .on("mouseover", function (d) { 
-                    d3.select(this).style("opacity", 0.5);
-                    self.MouseOver(d);
-                })
-                .on("mouseout",  function () {
-                    d3.select(this).style("opacity", 1);
-                    self.MouseOut();
-                })
-                .transition()
-                .delay( (d, i) => (i * 3) )
-                .duration(2000)
-                .attr("cx", (d, i) => this.xScale(i))
-                .attr("cy", (d) => this.yScale(d.value))
-                .attr("r", 5)
-
-        points.exit().remove()
 
         // Add the line
         this.line

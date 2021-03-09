@@ -75,7 +75,6 @@ export default class Axes {
             .attr('transform', 'translate(0,' + innerHeight + ')');
     }
     
-
     // Vertical axis
     static AppendLeftAxisToGraph(yScale, g){
         g.append('g')
@@ -90,14 +89,14 @@ export default class Axes {
 
     // Horizontal axis
     static AppendBottomAxisToGraph(xScale, innerHeight, g){
-        this.SetBottomAxisAttributes(xScale, g.append("g"), innerHeight)
+        this.SetBottomAxisAttributes(xScale, innerHeight, g.append("g").classed("x axis", true))
     }
 
     static UpdateBottomAxisInGraph(xScale, innerHeight, g){
-        this.SetBottomAxisAttributes(xScale, g.selectAll("g.x.axis"), innerHeight)
+        this.SetBottomAxisAttributes(xScale, innerHeight, g.selectAll("g.x.axis"))
     }
 
-    static SetBottomAxisAttributes (xScale, g, innerHeight) {
+    static SetBottomAxisAttributes (xScale, innerHeight, g) {
         g.call(d3.axisBottom(xScale))
         .attr("transform", `translate(0, ${innerHeight})`)
         .selectAll("text")
