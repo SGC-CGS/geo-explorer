@@ -79,11 +79,11 @@ export default Core.Templatable("App.Widgets.WChart",
 
         // TODO: Add new square DIV for legend with label and multiline 
         // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018012-eng.htm
-        // this.chart = new PieChart({
-        //   chartType: "PieChart",
-        //   data: this._data,
-        //   element: element
-        // });
+        this.chart = new PieChart({
+          chartType: "PieChart",
+          data: this._data,
+          element: element
+        });
 
         // TODO: Add red line tooltip instead of hover
         // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2017003-eng.htm
@@ -96,11 +96,11 @@ export default Core.Templatable("App.Widgets.WChart",
 
         // Need better data for testing of LineChart and 
         // ScatterPlot
-        this.chart = new ScatterPlot({
-          chartType: "ScatterPlot",
-          data: this._data,
-          element: element
-        });
+        // this.chart = new ScatterPlot({
+        //   chartType: "ScatterPlot",
+        //   data: this._data,
+        //   element: element
+        // });
       }
     }
 

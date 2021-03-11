@@ -5,6 +5,20 @@ export default class PieChart extends Chart{
         super(options)
         this.options = options
         this.color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        // Append a foreignObject containing legend inside of SVG
+        this.foreignObject = this.container.select("svg")
+                        .append('foreignObject')
+                        .style("overflow-y", "scroll" )
+                        .style('position','fixed')
+                        .style('y', this.dimensions.height / 1.4)
+                        .style('x', 0)
+                        .style('width', this.dimensions.width)
+                        .style('height', this.dimensions.height / 3)
+                        .style('border', "solid")
+        
+        this.foreignObject.append("xhtml:div")
+        
         this.Draw();
     }
 
@@ -44,9 +58,27 @@ export default class PieChart extends Chart{
             });
             this.circle.exit().remove();
         
+        this.Legend();
+        
+    }
 
-        // TODO: Add a legend below that has the title and value
-
+    Legend() {
+        
+        this.foreignObject
+            .select("div")
+            .html(
+            this.options.data.map( (d, i) => {
+                return `<div style="font-size:11px; margin-top:5px;  margin-left:5px;">
+                            <div style="border-radius:10px;
+                                width:10px;
+                                height:10px;
+                                background-color:${this.color(i)};
+                                display:inline-block">
+                            </div> 
+                                ${d.title}\t (${d.value})
+                        </div>`	
+                }).join('')
+        )
     }
 
     Redraw() {

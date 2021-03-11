@@ -1,8 +1,6 @@
 # D3 for Data Visualization in CSGE
 
-## Overview
-
-### D3
+## Overview of D3
 
 D3 binds data and graphical elements to DOMs. 
 
@@ -109,9 +107,19 @@ Other things to consider:
 
 **Source:** [Adam Mescher (2019)](https://gist.github.com/AdamMescher/d6f432d169743937f191cab778462d38)
 
-**Modified By:** Omar Kawach (2021)
+**Modified By:** Omar Kawach (2021) 
 
-### Transitions 
+## Workflow 
+
+How data is gathered from the map and used to create the chart(s). 
+
+wChart
+
+Chart (parent)
+
+Axes
+
+The Charts themselves (children)
 
 ## TODO
 - Add chart icon to side panel

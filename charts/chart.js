@@ -19,33 +19,33 @@ export default class Chart {
     AppendSVGtoContainerElement(){
         this.container
           .append("svg")
-          .attr("width", this.options.element.getAttribute("width"))
+          .attr("width", +this.options.element.getAttribute("width"))
           .attr("height", +this.options.element.getAttribute("height"))
     }
 
     SetDimensions(){
         let dimensions = this.options.dimensions || false;
-        let radius = 0;
         if (!dimensions){
-            var margin = {top: 20, bottom: 70, right: 0, left: 55};
-            var width =
+            let margin = {top: 20, bottom: 70, right: 0, left: 55};
+            let width =
               +this.container.select("svg").attr("width") -
                 this.spaceFromBorders;
-            var height =
+            let height =
               +this.container.select("svg").attr("height") -
                 this.spaceFromBorders;
-            // Maybe don't need this at all?
-            if(this.options.chartType == "PieChart"){
-                radius = (Math.min(width, height) / 3);
-            }
+            
             dimensions = {
                 margin : margin,
                 width:  width,
                 height: height,
-                radius: radius,
                 innerWidth: width - margin.left - margin.right,
                 innerHeight : height - margin.top - margin.bottom, 
             };
+
+            if (this.options.chartType == "PieChart") {
+                dimensions.radius = (Math.min(width, height) / 3);
+                dimensions.width += this.spaceFromBorders
+            } 
         }
         this.dimensions = dimensions
     }
@@ -73,9 +73,10 @@ export default class Chart {
             );
         } 
         else if (this.options.chartType == "PieChart") {
+            // TODO: The centering could use some work
             this.g.attr(
                 'transform', 
-                `translate(${this.dimensions.radius * 1.5}, ${this.dimensions.radius * 1.5})`
+                `translate(${this.dimensions.width / 2}, ${this.dimensions.radius})`
             );
         } 
     }
