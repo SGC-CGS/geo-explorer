@@ -1,5 +1,27 @@
 # D3 for Data Visualization in CSGE
 
+## Workflow
+
+By using the drag function in CSGE, map feature data can be sent to the chart widget for the creation of a desired chart. 
+
+![](./img/drag.png)
+
+In application.js, the following functions are used to get the selected feature layers into ```wChart.js```:
+
+![](./img/application.png)
+
+Notice the use of ```this.Elem("chart").data``` as it utilizes the accessors in ```wChart.js``` (seen below).
+
+![](./img/accessors.png)
+
+Once the ```data``` has been set for ```this.Elem("chart").data```, an array is populated with the information coming from the feature layers selected. The ```Chart()``` function is then used to create a chart for visualization based on the information in ```this._data```. 
+
+![](./img/populate.png)
+
+And finally a chart is displayed. 
+
+![](./img/output.png)
+
 ## Overview of D3
 
 D3 binds data and graphical elements to DOMs. 
@@ -57,7 +79,7 @@ Many important methods exist in D3 for working with data:
 
 ### Scales
 
-Obviously scale selection will depend on what you aim to visualize, so I won't go too in-depth on scales in D3 and the many functions that exist. 
+Scale selection will depend on what you aim to visualize, so we won't go too in-depth on scales in D3 and the many functions that exist. 
 
 Scales need domain, range, and sometimes padding (based on preference and / or the type of scale function you used). 
 
@@ -103,23 +125,11 @@ Other things to consider:
 - Height moves across the y-axis
   - Inner Height is similar
 
-![](./Margin.png)
+![](./img/Margin.png)
 
 **Source:** [Adam Mescher (2019)](https://gist.github.com/AdamMescher/d6f432d169743937f191cab778462d38)
 
 **Modified By:** Omar Kawach (2021) 
-
-## Workflow 
-
-How data is gathered from the map and used to create the chart(s). 
-
-wChart
-
-Chart (parent)
-
-Axes
-
-The Charts themselves (children)
 
 ## TODO
 - Add chart icon to side panel

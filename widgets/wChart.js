@@ -63,7 +63,7 @@ export default Core.Templatable("App.Widgets.WChart",
       } 
       
       // Create the chart
-      else {
+      else if (this._data.length != 0) {
         var element = this.Node("ChartsContainer").elem;
 
         // Uncomment whichever chart you want to see
@@ -71,19 +71,19 @@ export default Core.Templatable("App.Widgets.WChart",
         // TODO: Define chart type in constructor instead?
 
         // TODO: Prevent user from selecting too much (or hide x axis labels)
-        // this.chart = new BarChart({
-        //   chartType: "BarChart",
-        //   data: this._data,
-        //   element: element
-        // });
-
-        // TODO: Add new square DIV for legend with label and multiline 
-        // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018012-eng.htm
-        this.chart = new PieChart({
-          chartType: "PieChart",
+        this.chart = new BarChart({
+          chartType: "BarChart",
           data: this._data,
           element: element
         });
+
+        // TODO: Add new square DIV for legend with label and multiline 
+        // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018012-eng.htm
+        // this.chart = new PieChart({
+        //   chartType: "PieChart",
+        //   data: this._data,
+        //   element: element
+        // });
 
         // TODO: Add red line tooltip instead of hover
         // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2017003-eng.htm
