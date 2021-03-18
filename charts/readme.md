@@ -132,7 +132,6 @@ Other things to consider:
 **Modified By:** Omar Kawach (2021) 
 
 ## TODO
-- Add chart icon to side panel
 - Make chart unavailable if no polygon clicked (alert)?
   - Add model-container alert like the one in CSGE V1 
     - Text: "No charts available. Select one or more locations to generate charts."
@@ -143,6 +142,8 @@ Other things to consider:
 - Handle overcrowding in charts
 - Add axis titles?
 - Tick marks get weird
+- When provinces and territories are un-highlighted they should be removed from the table and chart 
+- When selecting a new dataset, the chart doesn't clear, but table does
 
 ## Author(s)
 
