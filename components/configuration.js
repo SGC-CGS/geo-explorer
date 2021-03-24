@@ -41,6 +41,10 @@ export default class Configuration {
 		}); 
 	}
 
+	get LabelName() {
+		return this.json.name.label[Core.locale];
+	}
+
 	get LegendItems(){
 		return this.json.legend.items.map(i => {
 			return {

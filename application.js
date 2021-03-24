@@ -63,8 +63,7 @@ export default class Application extends Templated {
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
 		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
 		
-		// FIX: Name of event handler is not consistent, first letter uppercase, name should reflect event
-		this.Node('legend').On('LabelVisibility', this.onLegend_LabelName.bind(this));
+		this.Node('legend').On('LabelName', this.onLegend_LabelName.bind(this));
 		
 		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
 
@@ -79,9 +78,10 @@ export default class Application extends Templated {
 		// 	this.Elem("legend").AddContextLayer(i.label, i, false);
 		// })
 
-		this.context.Initialize(config.Context).then(d => {				
+		this.context.Initialize(config.Context).then(d => {	
+
 			this.map.AddSubLayer('main', this.context.sublayer);
-			
+
 			// FIX: Use the map component function to find the 'main' layer. We shouldn't
 			// find a sublayer by it's index like this, what if there are more sublayers
 			// in the future?
@@ -99,6 +99,8 @@ export default class Application extends Templated {
 
 			this.map.Behavior("identify").Activate();
 			this.behavior = "identify";
+
+			
 			
 		}, error => this.OnApplication_Error(error));
 	}
@@ -151,8 +153,7 @@ export default class Application extends Templated {
 		this.map.AddSubLayer('main', this.context.sublayer);
 		
 		this.map.Behavior("selection").Reset({ layer:this.context.sublayer });
-		// this.map.Behavior("identify").Reset({ layer:this.context.sublayer });
-			
+		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
 		this.Elem("table").Update(this.context);
@@ -170,7 +171,7 @@ export default class Application extends Templated {
 		this.Elem("table").Update(this.context);
 	}
 	
-	OnStyler_Change(ev) {		
+	OnStyler_Change(ev) {	
 		this.context.sublayer.renderer = ev.renderer;
 		
 		this.Elem("legend").Update(this.context);
@@ -188,10 +189,8 @@ export default class Application extends Templated {
 		l.visible = ev.checked;
 	}
 
-	// FIX: Yanick reported that labels automatically switch back on when the user switches geography, something to look into...
 	onLegend_LabelName(ev) {
-		// FIX: Same as above
-		this.map.layers["main"].findSublayerById(7).labelsVisible = ev.checked;
+		this.map.layers["main"].findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 	
 	OnSearch_Change(ev) {		
@@ -244,6 +243,6 @@ export default class Application extends Templated {
 					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' class='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +
-			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>";;
+			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>"
 	}
 }

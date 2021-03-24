@@ -3,6 +3,17 @@
         "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
         "opacity": 0.75
     },
+    "layers": {
+		"PR" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
+		"CD" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
+		"CSD" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
+	},
+	"id": {
+		"PR" : "PRUID",
+		"CD" : "CDUID",
+		"CSD" : "CSDUID"
+	},
+	"colors": [[239,243,255],[189,215,231,255],[107,174,214,255],[49,130,189,255],[8,81,156,255]],
     "symbols": {
         "selection": {
             "type": "simple-fill",
@@ -278,4 +289,5 @@
             "html": "IndicatorDisplay_"
         }
     }
+    
 }
