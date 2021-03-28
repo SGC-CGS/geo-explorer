@@ -7,19 +7,29 @@ import Behavior from './behavior.js';
 
 export default class PointIdentifyBehavior extends Behavior { 
 
-	get Layer() { return this.map.Layer("identify"); }
+	get layer() { return this._map.Layer("identify"); }
 
-	get Graphics() { return this.Layer.graphics; }
+	get graphics() { return this.layer.graphics; }
+
+	get target() { return this._options.target; }
+
+	set target(value) { 
+		this.Clear();
+		
+		this._options.target = value; 
+	}
+
+	get symbol() { return this._options.symbol; }
+
+	set symbol(value) { this._options.symbol = value; }
 
 	constructor(map, options) {	
 		super();
 
-		this.options = {};
-		this.map = map;
+		this._options = {};
+		this._map = map;
 		
-		this.map.AddGraphicsLayer('identify');
-		
-		this.Reset(options);
+		this._map.AddGraphicsLayer('identify');
 		
 		this.ClickHandler = this.OnMap_Click.bind(this);
 	}
@@ -27,39 +37,32 @@ export default class PointIdentifyBehavior extends Behavior {
 	Deactivate(){
 		this.Clear();
 
-		this.map.Off("Click", this.ClickHandler);
+		this._map.Off("Click", this.ClickHandler);
 	}
 
 	Activate(){
-		this.map.On("Click", this.ClickHandler);
-	}
-	
-	Reset(options) {
-		this.Clear();
-		
-		if (options.layer) this.options.layer = options.layer;		// Layer to query when done selecting
-		if (options.symbol) this.options.symbol = options.symbol;	// Symbol to draw the graphics with
+		this._map.On("Click", this.ClickHandler);
 	}
 	
 	Clear() {
-		this.Layer.removeAll();
+		this.layer.removeAll();
 
-		this.map.Popup.close();
+		this._map.popup.close();
 	}
 	
 	OnMap_Click(ev) {		
 		this.Emit("Busy");
 		
-		this.map.Identify(this.options.layer, ev.mapPoint).then((r) => {
+		this._map.Identify(this.target, ev.mapPoint).then((r) => {
 			this.Emit("Idle");	
 			
-			this.Layer.removeAll();
+			this.layer.removeAll();
 			
-			r.feature.symbol = this.options.symbol;
+			r.feature.symbol = this.symbol;
 			
-			this.Layer.add(r.feature);
+			this.layer.add(r.feature);
 
-			this.map.Popup.open({
+			this._map.popup.open({
 				title:r.title,
 				content:r.content,
 				location:ev.mapPoint

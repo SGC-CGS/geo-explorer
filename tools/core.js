@@ -1,24 +1,12 @@
 'use strict';
 
 let _nls = null;
-let _locale = null;
+let _locale = document.documentElement.lang || "en";
 let _templatables = {}
 let _id = 0;
 
 export default class Core {
-	
-	/**
-	* Gets the nls ressources
-	*
-	* Return : Object, an object containing the nls ressources
-	*/
-    static get nls() { return _nls; }
-	
-	/**
-	* Sets the nls ressources
-	*/
-    static set nls(value) { _nls = value; }
-	
+		
 	/**
 	* Gets the locale String
 	*
@@ -30,30 +18,7 @@ export default class Core {
 	* Sets the locale String
 	*/
     static set locale(value) { _locale = value; }
-	
-	/**
-	* Get a localized nls string ressource
-	*
-	* Parameters :
-	*	id : String, the id of the nls ressource to retrieve
-	*	subs : Array(String), an array of Strings to substitute in the localized nls string ressource
-	*	locale : String, the locale for the nls ressource
-	* Return : String, the localized nls string ressource
-	*/
-	static Nls(id, subs, locale) {
-		if (!this.nls) throw new Error("Nls content not set.");
-		
-		var itm = this.nls[id];
-
-		if (!itm) throw new Error("Nls String '" + id + "' undefined.");
-
-		var txt = itm[(locale) ? locale : this.locale];
-
-		if (txt === undefined || txt === null) throw new Error("String does not exist for requested language.");
-
-		return this.Format(txt, subs);
-	}
-		
+			
 	/**
 	* A convenience function to get a deffered object for asynchronous processing. 
 	* Removes one level of nesting when working with promises

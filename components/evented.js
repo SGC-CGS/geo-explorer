@@ -5,23 +5,23 @@ import Core from '../tools/core.js';
 export default class Evented { 
 
 	constructor() {
-		this.listeners = {};
+		this._listeners = {};
 	}
 
 	addEventListener(type, callback, once){
-		if (!(type in this.listeners)) this.listeners[type] = [];
+		if (!(type in this._listeners)) this._listeners[type] = [];
 		
 		var h = { target:this, type:type, callback:callback, once:!!once };
 		
-		this.listeners[type].push(h);
+		this._listeners[type].push(h);
 		
 		return h;
 	}
 	
 	removeEventListener(type, callback){
-		if (!(type in this.listeners)) return;
+		if (!(type in this._listeners)) return;
 	  
-		var stack = this.listeners[type];
+		var stack = this._listeners[type];
 		  
 		for (var i = 0, l = stack.length; i < l; i++){
 			if (stack[i].callback === callback){
@@ -33,9 +33,9 @@ export default class Evented {
 	}
 	
 	dispatchEvent(event){
-		if (!(event.type in this.listeners)) return;
+		if (!(event.type in this._listeners)) return;
 
-		var stack = this.listeners[event.type];
+		var stack = this._listeners[event.type];
 
 		for (var i = 0; i < stack.length; i++) {
 			stack[i].callback.call(this, event);

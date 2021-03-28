@@ -6,48 +6,53 @@ import Requests from '../tools/requests.js';
 
 export default class Context extends Evented { 
 	
-	set subject(value) { this.selection.current.subject = value; }
-	set theme(value) { this.selection.current.theme = value; }
-	set category(value) { this.selection.current.category = value; }
-	set filters(value) { this.selection.current.filters = value; }
-	set value(value) { this.selection.current.value = value; }
-	set geography(value) { this.selection.current.geography = value; }
+	set subject(value) { this._selection.current.subject = value; }
+	set theme(value) { this._selection.current.theme = value; }
+	set category(value) { this._selection.current.category = value; }
+	set filters(value) { this._selection.current.filters = value; }
+	set value(value) { this._selection.current.value = value; }
+	set geography(value) { this._selection.current.geography = value; }
 	set metadata(value) { this._metadata.current = value; }
 	set sublayer(value) { this._sublayer.current = value; }
 	
-	get subject() { return this.selection.current.subject; }
-	get theme() { return this.selection.current.theme; }
-	get category() { return this.selection.current.category; }
-	get filters() { return this.selection.current.filters; }
-	get value() { return this.selection.current.value; }
-	get geography() { return this.selection.current.geography; }
+	get subject() { return this._selection.current.subject; }
+	get theme() { return this._selection.current.theme; }
+	get category() { return this._selection.current.category; }
+	get filters() { return this._selection.current.filters; }
+	get value() { return this._selection.current.value; }
+	get geography() { return this._selection.current.geography; }
 	get metadata() { return this._metadata.current; }
 	get sublayer() { return this._sublayer.current; }
 
 	get indicators() { return this.filters.concat([this.value]); }
 	
-	constructor () {
+	constructor (json) {
 		super();
 		
-		this.lookups = {
-			current : {},
-			previous : {}			
-		}
+		this.Validate(json);
 		
-		this.selection = {
-			current : {},
-			previous : {}
-		}
+		this._lookups = { current : {}, previous : {} }
+		this._selection = { current : json, previous : {} }
+		this._metadata = { current: null, previous : null }
+		this._sublayer = { current: null, previous : null }
+	}
+	
+	Validate(json) {
+		if (isNaN(json.subject)) throw new Error("subject provided is not a number.");
+
+		if (isNaN(json.theme)) throw new Error("theme provided is not a number.");
+
+		if (isNaN(json.category)) throw new Error("category provided is not a number.");
+
+		if (isNaN(json.value)) throw new Error("value provided is not a number.");
+
+		if (typeof json.geography != "string") throw new Error("geography provided is not a string.");
 		
-		this._metadata = {
-			current: null,
-			previous : null
-		}
+		if (!Array.isArray(json.filters)) throw new Error("filters provided is not an array.");
 		
-		this._sublayer = {
-			current: null,
-			previous : null
-		}
+		if (json.filters.length == 0) throw new Error("No filters provided.");
+		
+		if (json.filters.some(isNaN)) throw new Error("filters provided are not numbers.");
 	}
 	
 	Initialize(config) {
@@ -56,13 +61,12 @@ export default class Context extends Evented {
 		var d = Core.Defer();
 		
 		var p1 = this.UpdateSubjects();		
-		var p2 = this.ChangeSubject(config.subject);		
-		var p3 = this.ChangeTheme(config.theme);
-		var p4 = this.ChangeCategory(config.category);	
-		var p5 = this.ChangeIndicators(config.filters, config.value);
-		var p6 = this.ChangeGeography(config.geography);
+		var p2 = this.UpdateThemes(config.subject);		
+		var p3 = this.UpdateCategories(config.theme);
+		var p4 = this.UpdateIndicators(config.category);	
+		var p5 = this.UpdateMetadata(config.filters, config.value);
 
-		Promise.all([p1, p2, p3, p4, p5, p6]).then(c => {
+		Promise.all([p1, p2, p3, p4, p5]).then(c => {
 			this.UpdateRenderer().then(c => {
 				this.Commit();
 				
@@ -80,41 +84,41 @@ export default class Context extends Evented {
 	}
 	
 	Commit() {
-		this.lookups.previous = this.Clone(this.lookups.current);
-		this.selection.previous = this.Clone(this.selection.current);
+		this._lookups.previous = this.Clone(this._lookups.current);
+		this._selection.previous = this.Clone(this._selection.current);
 		this._metadata.previous = this.Clone(this._metadata.current);
 		this._sublayer.previous = this._sublayer.current;
 	}
 	
 	Revert() {
-		this.lookups.current = this.Clone(this.lookups.previous);
-		this.selection.current = this.Clone(this.selection.previous);
+		this._lookups.current = this.Clone(this._lookups.previous);
+		this._selection.current = this.Clone(this._selection.previous);
 		this._metadata.current = this.Clone(this._metadata.previous);
 		this._sublayer.current = this._sublayer.previous;
 	}
 	
 	UpdateSubjects() {
 		return Requests.Indicator(null).then(lookup => {				
-			this.lookups.current.subjects = lookup;
+			this._lookups.current.subjects = lookup;
 		}, error => this.OnContext_Error(error));
 	}
 	
 	UpdateThemes() {
 		return Requests.Indicator(this.subject).then(lookup => {					
-			this.lookups.current.themes = lookup;
+			this._lookups.current.themes = lookup;
 		}, error => this.OnContext_Error(error));
 	}
 	
 	UpdateCategories() {
 		return Requests.Indicator(this.theme).then(lookup => {					
-			this.lookups.current.categories = lookup;
+			this._lookups.current.categories = lookup;
 		}, error => this.OnContext_Error(error));
 	}
 	
 	UpdateIndicators() {
 		return Requests.Category(this.category).then(r => {
-			this.lookups.current.filters = r.filters; //.map(f => f.values);
-			this.lookups.current.values = r.value; //.values;
+			this._lookups.current.filters = r.filters; //.map(f => f.values);
+			this._lookups.current.values = r.value; //.values;
 		}, error => this.OnContext_Error(error));
 	}
 	
@@ -132,7 +136,7 @@ export default class Context extends Evented {
 	
 	UpdateGeographies() {
 		return Requests.Geography(this.metadata.indicator).then(items => {
-			this.lookups.current.geographies = items;
+			this._lookups.current.geographies = items;
 		}, error => this.OnContext_Error(error));
 	}
 	
@@ -178,7 +182,7 @@ export default class Context extends Evented {
 	}
 	
 	Lookup(id) {
-		return this.lookups.current[id];
+		return this._lookups.current[id];
 	}
 	
 	FindLookupItem(lookup, value) {		

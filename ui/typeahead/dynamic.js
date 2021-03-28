@@ -6,6 +6,23 @@ export default Core.Templatable("Basic.Components.DynamicTypeahead", class Dynam
 		
 	set storeFn(value) { this._storeFn = value; }
 	
+	static Nls() {
+		return {
+			"Search_Typeahead_Title": {
+				"en": "A Filtered list of items will appear as characters are typed.",
+				"fr": "Une liste filtrée d'objets apparaîtra lorsque des caractères seront saisis."
+			},
+			"Search_Typeahead_Placeholder": {
+				"en" : "Find a place on the map...",
+				"fr" : "Rechercher un endroit sur la carte..."
+			},
+			"Search_Typeahead_loading" : {
+				"en": "loading...",
+				"fr": "en chargement..."
+			}
+		}
+	}
+	
 	constructor(container, options) {	
 		super(container, options);
 	}
@@ -20,7 +37,7 @@ export default Core.Templatable("Basic.Components.DynamicTypeahead", class Dynam
 			
 			this.store = items;
 			
-			d.Resolve(this._items);
+			d.Resolve(this._store);
 		}, (error) => {
 			d.Reject(error);
 		});

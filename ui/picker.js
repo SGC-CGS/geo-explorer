@@ -6,7 +6,7 @@ import Templated from '../components/templated.js';
 export default Core.Templatable("Basic.Components.Picker", class Picker extends Templated {
 
 	get color() {
-		return this.picker.color;
+		return this._picker.color;
 	}
 	
 	get EsriColor() {
@@ -16,21 +16,21 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 	}
 
 	set color(value) {
-		this.picker.color.set(value);
+		this._picker.color.set(value);
 		
-		this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
+		this.Elem('button').style.backgroundColor = this._picker.color.rgbString;
 	}
 
 	constructor(container) {
 		super(container);
 		
-		this.h = null;
-		this.collapsed = true;
+		this._h = null;
+		this._collapsed = true;
 		
 		this.Node("button").On("click", this.OnButtonColor_Click.bind(this));
 		this.Node("container").On("click", this.OnContainer_Click.bind(this));
 		
-		this.picker = new iro.ColorPicker(this.Elem('wheel'), {
+		this._picker = new iro.ColorPicker(this.Elem('wheel'), {
 			width : 170,
 			layoutDirection : "vertical",
 			sliderSize : 15
@@ -38,11 +38,10 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 		
 		// this.picker.on("color:change", this.OnPicker_Change.bind(this));
 		
-		this.picker.base.children[0].tabIndex = 0;
-		this.picker.base.children[1].tabIndex = 0;
+		this._picker.base.children[0].tabIndex = 0;
+		this._picker.base.children[1].tabIndex = 0;
 		
-		
-		this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
+		this.Elem('button').style.backgroundColor = this._picker.color.rgbString;
 		
 		this.onBody_KeyUp_Bound = this.onBody_KeyUp.bind(this);
 		this.onBody_Click_Bound = this.onBody_Click.bind(this);
@@ -60,14 +59,14 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 		ev.preventDefault();
 		ev.stopPropagation();
 		
-		this.collapsed ? this.Show() : this.Hide();
+		this._collapsed ? this.Show() : this.Hide();
 	}
 	
 	Show() {
 		document.body.addEventListener("keyup", this.onBody_KeyUp_Bound);
 		document.body.addEventListener("click", this.onBody_Click_Bound);
 		
-		this.collapsed = false;
+		this._collapsed = false;
 	
 		Dom.RemoveCss(this.Elem('container'), "collapsed");
 	}
@@ -76,13 +75,13 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 		document.body.removeEventListener("keyup", this.onBody_KeyUp_Bound);
 		document.body.removeEventListener("click", this.onBody_Click_Bound);
 		
-		this.collapsed = true;
+		this._collapsed = true;
 	
 		Dom.AddCss(this.Elem('container'), "collapsed");
 		
-		this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
+		this.Elem('button').style.backgroundColor = this._picker.color.rgbString;
 		
-		this.Emit("Finished", { color:this.picker.color.rgba });
+		this.Emit("Finished", { color:this._picker.color.rgba });
 	}
 	
 	onBody_KeyUp(ev) {

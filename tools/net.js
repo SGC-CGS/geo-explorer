@@ -84,6 +84,26 @@ export default class Net {
 	}
 	
 	/**
+	* Parses the location query and returns a string dictionary
+	*
+	* Return : Object, a dictionary of string key values containing the parameters from the location query
+	*/
+	static ParseUrlQuery() {
+		var params = {};
+		var query = location.search.slice(1);
+		
+		if (query.length == 0) return params;
+		
+		query.split("&").forEach(p => {
+			var lr = p.split("=");
+			
+			params[lr[0]] = lr[1];
+		});
+		
+		return params;
+	}
+	
+	/**
 	* Get a parameter value from the document URL
 	*
 	* Parameters :

@@ -4,28 +4,43 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Evented from './evented.js';
 import Node from './node.js';
+import Nls from './nls.js';
 
 export default class Templated extends Evented { 
+
+	get container() { return this._container; }
+
+	get roots() { return this._roots; }
+
+	get nls() { return this._nls; }
 
 	constructor(container, options) {
 		super();
 		
-		this.options = options || { };
+		this._options = options || { };
+		
+		var json = this.constructor.Nls ? this.constructor.Nls() : {};
+		
+		this._nls = new Nls(json);
 		
 		this.BuildTemplate();
 		
-		if (this.template) this.SetNamedNodes();
+		if (this._template) this.SetNamedNodes();
 	
-		if (this.template) this.BuildSubWidgets();
+		if (this._template) this.BuildSubWidgets();
 		
 		this.SetRoots();
 		
 		if (container) this.Place(container);
 	}
 	
+	Nls(id) {
+		return this.nls.Ressource(id);
+	}
+	
 	BuildTemplate() {
 		// Use template provided in options first, use Template function second
-		var html = this.options.template ? this.options.template : this.Template();
+		var html = this._options.template ? this._options.template : this.Template();
 		
 		// TODO : I think it still works with empty templates.
 		if (!html) return;
@@ -33,35 +48,37 @@ export default class Templated extends Evented {
 		// Trailing whitespaces can cause issues when parsing the template, remove them
 		html = html.trim();
 		
-		// Replace all nls strings in template. Nls string pattern in templates is nls(StringId)
-		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return Core.Nls(m); });
+		var nls = this._nls;
 		
-		this.template = Dom.Create("div", { innerHTML:html });
+		// Replace all nls strings in template. Nls string pattern in templates is nls(StringId)
+		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return nls.Ressource(m); });
+		
+		this._template = Dom.Create("div", { innerHTML:html });
 	}
 	
 	SetRoots() {
-		this.roots = [];
+		this._roots = [];
 		
-		for (var i = 0; i < this.template.children.length; i++) {
-			this.roots.push(this.template.children[i]);
+		for (var i = 0; i < this._template.children.length; i++) {
+			this._roots.push(this._template.children[i]);
 		}
 	}
 	
 	SetNamedNodes() {		
-		var named = this.template.querySelectorAll("[handle]");
+		var named = this._template.querySelectorAll("[handle]");
 		
-		this.nodes = {};
+		this._nodes = {};
 		
 		// Can't use Array ForEach here since named is a NodeList, not an array
 		for (var i = 0; i < named.length; i++) { 
 			var name = Dom.GetAttribute(named[i], "handle");
 			
-			this.nodes[name] = named[i];
+			this._nodes[name] = named[i];
 		}
 	}
 	
 	BuildSubWidgets() {		
-		var nodes = this.template.querySelectorAll("[widget]");
+		var nodes = this._template.querySelectorAll("[widget]");
 		
 		// Can't use Array ForEach here since nodes is a NodeList, not an array
 		for (var i = 0; i < nodes.length; i++) {
@@ -70,18 +87,18 @@ export default class Templated extends Evented {
 			var widget = new module(nodes[i]);
 			var handle = Dom.GetAttribute(widget.container, "handle");
 			
-			if (handle) this.nodes[handle] = widget;
+			if (handle) this._nodes[handle] = widget;
 		}
 	}
 	
 	Place(container) {
-		this.container = container;
+		this._container = container;
 		
-		this.roots.forEach(r => { Dom.Place(r, this.container); });
+		this._roots.forEach(r => { Dom.Place(r, this._container); });
 	}
 	
 	SetCss(css) {
-		this.roots.forEach(r => { Dom.SetCss(r, css); });
+		this._roots.forEach(r => { Dom.SetCss(r, css); });
 	}
 	
 	Template() {
@@ -100,21 +117,21 @@ export default class Templated extends Evented {
 	}
 	
 	Node(id) {
-		return new Node(this.nodes[id]);
+		return new Node(this._nodes[id]);
 	}
 	
 	Elem(id) {
-		return this.nodes[id];
+		return this._nodes[id];
 	}
 	
 	// NOTE : Test for spread operator in Rollup
 	Nodes(...ids) {
-		return ids.map(id => new Node(this.nodes[id]));
+		return ids.map(id => new Node(this._nodes[id]));
 	}
 	
 	// NOTE : Test for spread operator in Rollup
 	Elems(...ids) {
-		return ids.map(id => this.nodes[id]);
+		return ids.map(id => this._nodes[id]);
 	}
 	
 	// TODO : Build a root function

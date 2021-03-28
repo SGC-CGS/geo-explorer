@@ -6,15 +6,15 @@ import Evented from './evented.js';
 export default class Metadata { 
 	
 	constructor () {		
-		this.indicator = null;
-		this.query = null,
+		this._indicator = null;
+		this._query = null,
 		
-		this.breaks = {
+		this._breaks = {
 			n : null,
 			algo : null
 		}
 		
-		this.colors = {
+		this._colors = {
 			start : null,
 			end : null
 		}
@@ -23,12 +23,12 @@ export default class Metadata {
 	Clone() {
 		var meta = new Metadata();
 		
-		meta.indicator = this.indicator;
-		meta.query = this.query;
-		meta.breaks.n = this.breaks.n;
-		meta.breaks.algo = this.breaks.algo;
-		meta.colors.start = this.colors.start;
-		meta.colors.end = this.colors.end;
+		meta.indicator = this._indicator;
+		meta.query = this._query;
+		meta.breaks.n = this._breaks.n;
+		meta.breaks.algo = this._breaks.algo;
+		meta.colors.start = this._colors.start;
+		meta.colors.end = this._colors.end;
 		
 		return meta;
 	}

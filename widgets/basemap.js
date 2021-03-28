@@ -1,15 +1,15 @@
-import Overlay from './overlay.js';
+import Templated from '../components/templated.js';
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
-export default Core.Templatable("App.Widgets.Basemap", class Basemap extends Overlay {
+export default Core.Templatable("App.Widgets.Basemap", class Basemap extends Templated {
 	
 	set Map(value) { 
 		this.map = value; 
 		
 		var basemap = new ESRI.widgets.BasemapGallery({
 		  view: this.map.view,
-		  container: this.Elem("body"),
+		  container: this.Elem("content"),
 		  source: {
 			portal: {
 			  url: "https://www.arcgis.com",
@@ -21,18 +21,20 @@ export default Core.Templatable("App.Widgets.Basemap", class Basemap extends Ove
 		// this.map.view.ui.add(basemap, "bottom-left");
 	}
 	
+	static Nls() {
+		return {
+			"Basemap_Title" : {
+				"en": "Change basemap",
+				"fr": "Changer de fond de carte"
+			}
+		}
+	}
+	
 	constructor(container, options) {	
 		super(container, options);
 	}
 	
 	Template() {
-		return	  "<div class='overlay-header'>" +
-					  "<h2 class='overlay-title' handle='title'>nls(Basemap_Title)</h2>" +
-					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
-				  "</div>" +
-				  "<hr>" +
-				  "<div class='overlay-body' handle='body'>" + 
-
-				  "</div>";
+		return "<div handle='content'></div>";
 	}
 })

@@ -11,21 +11,21 @@ export default class Popup extends Templated {
 	set Widget(widget) {
 		this.Empty();
 		
-		this.widget = widget;
+		this._widget = widget;
 		
 		widget.Place(this.Elem("body"));
 	}
 	
-	get Widget() { return this.widget; }
+	get Widget() { return this._widget; }
 	
 	constructor(container) {	
 		super(container || document.body);
 				
 		this.onBody_KeyUp_Bound = this.onBody_KeyUp.bind(this);
 		
-		this.h = null;
+		this._h = null;
 		
-		this.nodes.blocker = Dom.Create("div", { className:"popup-blocker" }, document.body);
+		this._nodes.blocker = Dom.Create("div", { className:"popup-blocker" }, document.body);
 		
 		this.SetStyle(0, "hidden");
 		
@@ -45,7 +45,7 @@ export default class Popup extends Templated {
 	}
 	
 	Show() {		
-		this.h = document.body.addEventListener("keyup", this.onBody_KeyUp_Bound);
+		this._h = document.body.addEventListener("keyup", this.onBody_KeyUp_Bound);
 		
 		this.SetStyle(1, "visible");
 		

@@ -8,56 +8,58 @@ import Evented from './evented.js';
 
 export default class Map extends Evented { 
 
-	get Popup() { return this.view.popup; }
+	get popup() { return this._view.popup; }
+
+	get view() { return this._view; }
 
 	constructor(container) {
 		super();
 		
-		this.layers = {};
-		this.behaviors = {};
+		this._layers = {};
+		this._behaviors = {};
 		
-		this.map = new ESRI.Map({ basemap: "streets" });
+		this._map = new ESRI.Map({ basemap: "streets" });
 		
-		this.view = new ESRI.views.MapView({
+		this._view = new ESRI.views.MapView({
 			animation : false,
 			center: [-100, 63], 
 			container: container, 
-			map: this.map,  
+			map: this._map,  
 			zoom: 4 
 		});
 		
-		this.view.popup.collapseEnabled = false;
+		this._view.popup.collapseEnabled = false;
 
-		this.view.on("click", this.OnMapView_Click.bind(this));
+		this._view.on("click", this.OnMapView_Click.bind(this));
 		
 		var fullscreen = new ESRI.widgets.Fullscreen({ 
-			view: this.view
+			view: this._view
 		});
 
-		this.view.ui.add(fullscreen, "top-left");
+		this._view.ui.add(fullscreen, "top-left");
 	}
 	
 	AddBehavior(id, behavior) {
-		this.behaviors[id] = behavior;
+		this._behaviors[id] = behavior;
 		
 		return behavior;
 	}
 	
 	Behavior(id) {
-		return this.behaviors[id] || null;
+		return this._behaviors[id] || null;
 	}
 	
 	// NOTE : Test for spread operator in Rollup
 	Place(elements, position) {
-		elements.forEach(e => this.view.ui.add(e, position));
+		elements.forEach(e => this._view.ui.add(e, position));
 	}
 	
 	AddGraphicsLayer(id) {
 		var layer = new ESRI.layers.GraphicsLayer();
 		
-		this.layers[id] = layer;
+		this._layers[id] = layer;
 		
-		this.map.add(layer);
+		this._map.add(layer);
 	}
 
 	AddFeatureLayer(id, url, labels, visibility){
@@ -70,13 +72,13 @@ export default class Map extends Evented {
 			visible: visibility
 		});
 
-		this.layers[id] = layer;
+		this._layers[id] = layer;
 
-		this.map.add(layer);
+		this._map.add(layer);
 	}
 	
 	AddMapImageLayer(id, url, opacity, dpi, format) {
-		if (this.layers[id]) throw new Error("Layer already exists in map.");
+		if (this._layers[id]) throw new Error("Layer already exists in map.");
 		
 		var layer = new ESRI.layers.MapImageLayer({
 			url: url,
@@ -86,9 +88,9 @@ export default class Map extends Evented {
 			sublayers: []
 		});
 		
-		this.layers[id] = layer;
+		this._layers[id] = layer;
 		
-		this.map.add(layer);
+		this._map.add(layer);
 	}
 	
 	EmptyLayer(id) {
@@ -104,7 +106,7 @@ export default class Map extends Evented {
 	}
 	
 	Layer(id) {
-		return this.layers[id] || null;
+		return this._layers[id] || null;
 	}
 	
 	Identify(layer, geometry) {
@@ -118,14 +120,14 @@ export default class Map extends Evented {
 	}
 	
 	GoTo(target) {
-		this.view.goTo(target);
+		this._view.goTo(target);
 	}
 	
 	OnMapView_Click(ev) {		
 		this.Emit("Click", ev);
 	}
 	
-	OnMapView_Error(ev) {		
-		this.Emit("Error", ev);
+	OnMapView_Error(error) {		
+		this.Emit("Error", { error:error });
 	}
 }

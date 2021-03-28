@@ -27,6 +27,15 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	get Color() {
 		return this.color;
 	}
+
+	static Nls() {
+		return {
+			"Legend_Item_Join" : {
+				"en" : " to ",
+				"fr" : " jusqu'à "
+			}
+		}
+	}
 	
 	constructor(container, info) {	
 		super(container, info);
@@ -45,7 +54,7 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 					"<div handle='color' class='break-color'></div>" +
 				 "</td>" + 
 				 "<td handle='lFrom'></td>" + 
-				 "<td>nls(Styler_Item_Join)</td>" + 
+				 "<td>nls(Legend_Item_Join)</td>" + 
 				 "<td handle='lTo'></td>" + 
 			   "</tr>";
 	}

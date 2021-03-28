@@ -5,7 +5,7 @@ import Dom from '../tools/dom.js';
 
 export default class Menu { 
 
-	get Buttons() {
+	get buttons() {
 		var buttons = [];
 		
 		for (var id in this.items) buttons.push(this.items[id].button);
@@ -27,7 +27,11 @@ export default class Menu {
 	}
 	
 	Overlay(id) {
-		return this.Item[id].overlay;
+		return this.Item(id).overlay;
+	}
+	
+	Widget(id) {
+		return this.Item[id].overlay.widget;
 	}
 	
 	AddItem(id, item) {
@@ -54,6 +58,7 @@ export default class Menu {
 		
 		item.button.addEventListener("click", this.OnMenuButton_Click.bind(this, item));
 		
+		overlay.widget.On("Close", this.OnOverlay_Hide.bind(this, item));
 		overlay.On("Close", this.OnOverlay_Hide.bind(this, item));
 	}
 	

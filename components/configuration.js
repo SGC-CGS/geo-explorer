@@ -1,39 +1,28 @@
 import Core from '../tools/core.js';
+import Context from './context.js';
 
 export default class Configuration {
 	
-	get Map() { return this.json.map; }
+	get map() { return this._json.map; }
 	
-	get MapUrl() { return this.json.map.url; }
+	get mapUrl() { return this._json.map.url; }
 	
-	get MapOpacity() { return this.json.map.opacity; }
+	get mapOpacity() { return this._json.map.opacity; }
 	
-	Symbol(id) {
-		var s = this.json.symbols[id];
+	symbol(id) {
+		var s = this._json.symbols[id];
 		
 		if (!s) throw new Error(`Symbol ${0} does not exist is the configuration file.`);
 		
 		return s;
 	}
 	
-	get Context() { return this.json.context; }
+	get context() { return this._context; }
 	
-	get ContextSubject() { return this.json.context.subject; }
+	get table() { return this._json.table; }
 	
-	get ContextTheme() { return this.json.context.theme; }
-	
-	get ContextCategory() { return this.json.context.category; }
-	
-	get ContextFilters() { return this.json.context.filters; }
-	
-	get ContextValue() { return this.json.context.value; }
-	
-	get ContextGeography() { return this.json.context.geography; }
-	
-	get Table() { return this.json.table; }
-	
-	get TableHeaders() { 
-		return this.json.table.headers.map(h => {
+	get tableHeaders() { 
+		return this._json.table.headers.map(h => {
 			return {
 				id : h.id[Core.locale],
 				label : h.label[Core.locale]
@@ -41,12 +30,12 @@ export default class Configuration {
 		}); 
 	}
 
-	get LabelName() {
-		return this.json.name.label[Core.locale];
+	get labelName() {
+		return this._json.name.label[Core.locale];
 	}
 
-	get LegendItems(){
-		return this.json.legend.items.map(i => {
+	get legendItems(){
+		return this._json.legend.items.map(i => {
 			return {
 				id : i.id,
 				label : i.label[Core.locale],
@@ -55,8 +44,8 @@ export default class Configuration {
 		});
 	}
 	
-	get Bookmarks() {
-		var bookmarks = this.json.bookmarks.sort((a,b) => {
+	get bookmarks() {
+		var bookmarks = this._json.bookmarks.sort((a,b) => {
 			if (a.name > b.name) return 1;
 			
 			if (a.name < b.name) return -1;
@@ -78,6 +67,8 @@ export default class Configuration {
 	}
 	
 	constructor(json) {
-		this.json = json;
+		this._json = json;
+		
+		this._context = new Context(json.context);
 	}
 }

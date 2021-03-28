@@ -30,6 +30,15 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		return this.color;
 	}
 
+	static Nls() {
+		return {
+			"Styler_Item_Join" : {
+				"en" : " to ",
+				"fr" : " jusqu'à "
+			}
+		}
+	}
+
 	constructor(container, info) {
 		super(container, info);
 

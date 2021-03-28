@@ -4,7 +4,7 @@
    <![endif]--><!--[if gt IE 8]><!-->
    <html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" dir="ltr">
       <!--<![endif]-->
-      <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
+      <!-- Web Experience Toolkit (WET) / Boï¿½te ï¿½ outils de l'expï¿½rience Web (BOEW)
          wet-boew.github.io/wet-boew4b/License-en.htm / wet-boew.github.io/wet-boew4b/Licence-fr.htm -->
       <!-- METADATA BEGINS | DEBUT DES METADONNEES -->
       <head prefix="dcterms: http://purl.org/dc/terms/">
@@ -27,7 +27,6 @@
          <noscript>
             <link rel="stylesheet" href="/wet-boew4b/css/noscript.min.css" />
          </noscript>
-         <script src="//assets.adobedtm.com/caacec67651710193d2331efef325107c23a0145/satelliteLib-c2082deaf69c358c641c5eb20f94b615dd606662.js"></script>
          <script>dataLayer1 = [];</script>
          <script src="./reference/wet-boew4b/js/jquery.tooltipster.min.js"></script>
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
@@ -39,6 +38,11 @@
 		 <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
          <link href='./application.css' rel='stylesheet' />		 
          <!-- CustomScriptsCSSEnd -->
+
+         <!-- D3 -->
+         <script src='https://d3js.org/d3.v4.min.js'></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+         <!-- D3 -->
       </head>
       <body vocab="http://schema.org/" typeof="WebPage">
          <!--stopindex-->
@@ -264,15 +268,18 @@
             </div>
          </footer>
 		 
+		 
+		 
          <script src="./reference/wet-boew4b/js/wet-boew.min.js"></script>
          <script src="./reference/wet-boew4b/js/theme.min.js"></script>
+		 <!--script src="./reference/dojo.js"></script-->
 		 
          <!-- CustomScriptsJSStart -->
          <script src="./reference/polyfill/promise.min.js"></script>
 		 <script src="./reference/iro/iro@5.js"></script>
 
-		 <!--script src="./reference/dojo.js"></script-->
          <script src='./main.js' type='module'></script>
+         <!--script src='./main.min.js'></script-->
          <!-- CustomScriptsJSEnd -->
       </body>
    </html>

@@ -5,16 +5,35 @@ import Net from "../tools/net.js";
 
 export default Core.Templatable("App.Widgets.Table", class Table extends Templated {
 	
-	set Title(value) { this.Elem("title").innerHTML = value; }
+	set title(value) { this.Elem("title").innerHTML = value; }
 	
-	set Headers(value) {
-		this.headers = value; 
+	get headers() { return this._headers; }
+	
+	set headers(value) {
+		this._headers = value; 
 		
 		Dom.Create("th", { }, this.Elem("header"));
 		
-		this.headers.forEach(h => {
+		this._headers.forEach(h => {
 			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
 		});
+	}
+	
+	static Nls() {
+		return {
+			"Table_Message" : {
+				"en" : "Please select geometries on the map to show their attributes in the table.",
+				"fr" : "Veuillez sélectionner des géométries sur la carte afin d'afficher leur attributs dans le tableau."
+			},
+			"Table_Row_Title": {
+				"en": "Click to zoom to geometry ({0})",
+				"fr": "Cliquer pour zoomer sur la géométrie ({0})"
+			},
+			"Table_Thrash_Title": {
+				"en": "Click to remove geometry ({0}) from selection",
+				"fr": "Cliquer retirer la géométrie ({0}) de la sélection"
+			}
+		}
 	}
 	
 	constructor(container) {	
@@ -32,7 +51,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		
 		this.UpdateTableVisibility();
 		
-		this.Title = this.context.IndicatorsLabel();
+		this.title = this.context.IndicatorsLabel();
 	}
 
 	//Update the table content with the correct data of the DBU
@@ -50,7 +69,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 				Dom.Create("td", { className:"table-cell", innerHTML:g.attributes[f.id] }, tr);
 			});
 						
-			tr.title = Core.Nls("Table_Row_Title", [name]);
+			tr.title = this.Nls("Table_Row_Title", [name]);
 			
 			tr.addEventListener("click", ev => this.Emit("RowClick", { feature:g }));
 		});
@@ -60,7 +79,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 	
 	CreateButton(tr, g, name){
 		var td = Dom.Create("td", { className:"table-cell" }, tr);
-		var bt = Dom.Create("button", { className:"table-button", title:Core.Nls("Table_Thrash_Title", [name]) }, td);
+		var bt = Dom.Create("button", { className:"table-button", title:this.Nls("Table_Thrash_Title", [name]) }, td);
 		var ic = Dom.Create("i", { className:"fa fa-trash" }, bt);
 		
 		bt.addEventListener("click", ev => {

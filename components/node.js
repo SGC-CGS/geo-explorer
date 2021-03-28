@@ -3,26 +3,26 @@
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
-export default class Node { 
+export default class _Node { 
 
-	get Element() { return this.elem; }
+	get elem() { return this._elem; }
 
 	constructor(elem) {
-		this.elem = elem;
+		this._elem = elem;
 	}
 	
 	On(type, handler) {
-		this.elem.addEventListener(type, handler);
+		this._elem.addEventListener(type, handler);
 	}
 	
 	Elem(selector) {
-		var elem = this.elem.querySelector(selector);
+		var elem = this._elem.querySelector(selector);
 		
 		return (!elem) ? null : elem;
 	}
 	
 	Elems(selector) {
-		var elems = this.elem.querySelectorAll(selector);
+		var elems = this._elem.querySelectorAll(selector);
 		var out = [];
 		
 		elems.forEach(e => out.push(e));
@@ -31,13 +31,13 @@ export default class Node {
 	}
 	
 	Node(selector) {
-		var elem = this.elem.querySelector(selector);
+		var elem = this._elem.querySelector(selector);
 		
 		return (!elem) ? null : new Node(elem);
 	}
 	
 	Nodes(selector) {
-		var elems = this.elem.querySelectorAll(selector);
+		var elems = this._elem.querySelectorAll(selector);
 		var out = [];
 		
 		elems.forEach(e => out.push(new Node(e)));

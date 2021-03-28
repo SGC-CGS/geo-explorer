@@ -2,7 +2,6 @@
 
 import Core from './tools/core.js';
 import Templated from './components/templated.js';
-import Context from './components/context.js';
 import Map from './components/map.js';
 import SelectBehavior from './behaviors/rectangle-select.js';
 import IdentifyBehavior from './behaviors/point-identify.js';
@@ -15,33 +14,68 @@ import Waiting from './widgets/waiting.js';
 import Basemap from './widgets/basemap.js';
 import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
+import Overlay from './widgets/overlay.js';
 import Dom from './tools/dom.js';
 
 export default class Application extends Templated { 
 
+	get config() { return this._config; }
+	
+	get context() { return this._config.context; }
+
+	static Nls() {
+		return {
+			"Selector_Title" : {
+				"en" : "Select Data",
+				"fr" : "Sélectionner des données"
+			},
+			"Styler_Title" : {
+				"en" : "Change map style",
+				"fr" : "Modifier le style de la carte"
+			},
+			"Legend_Title" : {
+				"en" : "Map legend",
+				"fr" : "Légende de la carte"
+			},
+			"Bookmarks_Title" : {
+				"en": "Bookmarks",
+				"fr": "Géosignets"
+			},
+			"Behaviour_Title" : {
+				"en" : "Toggle map click behaviour",
+				"fr" : "Basculer le comportement des clics sur la carte"
+			},
+			"Basemap_Title" : {
+				"en": "Change basemap",
+				"fr": "Changer de fond de carte"
+			},
+			"Search_Icon_Alt" : {
+				"en" : "Magnifying glass",
+				"fr" : "Loupe"
+			}
+		}
+	}
+
 	constructor(node, config) {		
 		super(node);
 
-		this.config = config;
+		this._config = config;
 
-		// Build context, map, menu, widgets and other UI components
-		this.context = new Context();
+		// Build map, menus, widgets and other UI components
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu();
 		this.bMenu = new Menu();
 
-		this.menu.AddOverlay("selector", Core.Nls("Selector_Title"), this.Elem("selector"));
-		this.menu.AddOverlay("styler", Core.Nls("Styler_Title"), this.Elem("styler"));
-		this.menu.AddOverlay("legend", Core.Nls("Legend_Title"), this.Elem("legend"));
-		this.menu.AddOverlay("bookmarks", Core.Nls("Bookmarks_Title"), this.Elem("bookmarks"));
-		this.menu.AddButton("behaviour", Core.Nls("Behaviour_Title"));
-		this.bMenu.AddOverlay("basemap", Core.Nls("Basemap_Title"), this.Elem("basemap"));
+		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
+		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
+		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
+		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
+		this.menu.AddButton("behaviour", this.Nls("Behaviour_Title"));
 
 		// Move all widgets inside the map div, required for fullscreen
-		this.map.Place(this.bMenu.Buttons, "bottom-left");
-		this.map.Place(this.menu.Buttons, "top-left");
-		this.map.Place([this.Elem("basemap").container], "bottom-left");
-		this.map.Place(this.Elems("selector", "styler", "legend", "bookmarks").map(e => e.container), "top-right");
+		this.map.Place(this.bMenu.buttons, "bottom-left");
+		this.map.Place(this.menu.buttons, "top-left");
 		this.map.Place([this.Elem("waiting").container], "manual");
 		
 		// Hookup events to UI
@@ -60,21 +94,20 @@ export default class Application extends Templated {
 		
 		this.Node('legend').On('LabelName', this.onLegend_LabelName.bind(this));
 		
-		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
+		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 
-		this.Elem("table").Headers = this.config.TableHeaders;
-		this.Elem('legend').Opacity = this.config.MapOpacity;
+		this.Elem("table").headers = this.config.tableHeaders;
+		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
-		this.Elem('bookmarks').Bookmarks = this.config.Bookmarks;
-	
-	    this.config.LegendItems.forEach(i => {
+		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
+		/*
+	    this.config.legendItems.forEach(i => {
 			this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
 			this.Elem("legend").AddContextLayer(i.label, i, false);
 		})
-
-		this.context.Initialize(config.Context).then(d => {	
-
+		*/
+		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 			
 			this.Elem("selector").Update(this.context);
@@ -89,31 +122,38 @@ export default class Application extends Templated {
 
 			this.map.Behavior("identify").Activate();
 			this.behavior = "identify";
-
-			
-			
 		}, error => this.OnApplication_Error(error));
 	}
 	
-	AddSelectBehavior(map, context, config) {
-		var options = {
-			layer: context.sublayer,
-			field: "GeographyReferenceId",
-			symbol: config.Symbol("selection")
-		}
+	AddOverlay(menu, id, title, widget, position) {
+		var overlay = new Overlay(this.Elem("map-container"));
 		
-		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map, options));
+		// TODO: roots[0] is awkward
+		Dom.AddCss(overlay.roots[0], id);
+		
+		overlay.widget = widget;
+		overlay.title = title;
+		
+		menu.AddOverlay(id, title, overlay);
+		
+		this.map.Place([overlay.roots[0]], position);
+	}
+	
+	AddSelectBehavior(map, context, config) {
+		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map));
+		
+		behavior.target = context.sublayer;
+		behavior.field = "GeographyReferenceId";
+		behavior.symbol = config.symbol("selection");
 		
 		this.HandleEvents(behavior, this.OnMap_SelectDraw.bind(this));
 	}
 	
 	AddIdentifyBehavior(map, context, config) {
-		var options = {
-			layer: context.sublayer,
-			symbol: config.Symbol("identify")
-		}
-		
-		var behavior = this.map.AddBehavior("identify", new IdentifyBehavior(map, options));
+		var behavior = this.map.AddBehavior("identify", new IdentifyBehavior(map));
+
+		behavior.target = context.sublayer;
+		behavior.symbol = config.symbol("identify");
 
 		this.HandleEvents(behavior);	
 	}
@@ -123,7 +163,7 @@ export default class Application extends Templated {
 		
 		node.On('Busy', this.OnWidget_Busy.bind(this));
 		node.On('Idle', this.OnWidget_Idle.bind(this));
-		node.On('Error', this.OnApplication_Error.bind(this));
+		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
 	
     BehaviourButton_Click(ev){
@@ -138,7 +178,8 @@ export default class Application extends Templated {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 		
-		this.map.Behavior("selection").Reset({ layer:this.context.sublayer });
+		this.map.Behavior("selection").target = this.context.sublayer;
+		this.map.Behavior("identify").target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
@@ -156,7 +197,7 @@ export default class Application extends Templated {
 	}
 
 	OnLegend_LayerVisibility(ev) {
-		var l = this.map.Layer(ev.data.id);
+		var l = this.map.layer(ev.data.id);
 
 		if (!l)return;
 
@@ -164,7 +205,7 @@ export default class Application extends Templated {
 	}
 
 	onLegend_LabelName(ev) {
-		this.map.layers["main"].findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
+		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 	
 	OnSearch_Change(ev) {		
@@ -180,9 +221,9 @@ export default class Application extends Templated {
 	}
 	
 	OnTable_RowButtonClick(ev) {
-		this.map.Behavior("selection").Layer.remove(ev.graphic);
+		this.map.Behavior("selection").layer.remove(ev.graphic);
 				
-		this.Elem("table").Populate(this.map.Behavior("selection").Graphics);
+		this.Elem("table").Populate(this.map.Behavior("selection").graphics);
 	}
 	
 	OnWidget_Busy(ev) {
@@ -204,12 +245,12 @@ export default class Application extends Templated {
 					"<img class='button-icon large-icon search' src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
 					"<div handle='search' widget='App.Widgets.Search'></div>" +
 				"</div>" +
-				"<div class='map-container'>" +
+				"<div handle='map-container' class='map-container'>" +
 					"<div handle='map'></div>" +
+					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
 					"<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
 					"<div handle='styler' class='styler' widget='App.Widgets.Styler'></div>" +
 					"<div handle='legend' class='legend' widget='App.Widgets.Legend'></div>" +
-					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
 					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' class='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +

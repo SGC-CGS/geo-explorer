@@ -26,32 +26,32 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 	get selected() {
 		var i = this.Elem("root").value;
 		
-		return this.items[i];
+		return this._items[i];
 	}
 	
 	set placeholder(value) {
-		this.ph = Dom.Create("option", { innerHTML:value, value:-1, className:"select-placeholder" });
+		this._ph = Dom.Create("option", { innerHTML:value, value:-1, className:"select-placeholder" });
 		
-		this.ph.disabled = true;
-		this.ph.selected = true;
+		this._ph.disabled = true;
+		this._ph.selected = true;
 		
-		this.Elem("root").insertBefore(this.ph, this.Elem("root").firstChild);
+		this.Elem("root").insertBefore(this._ph, this.Elem("root").firstChild);
 	}
 	
 	constructor(container, options) {
 		super(container, options);
 		
-		this.items = [];
+		this._items = [];
 		
-		this.ph = null;
+		this._ph = null;
 		
 		this.Node("root").On("change", this.OnSelect_Change.bind(this));
 	}
 	
 	Add(label, title, item) {
-		Dom.Create("option", { innerHTML:label, value:this.items.length, title:title }, this.Elem("root"));
+		Dom.Create("option", { innerHTML:label, value:this._items.length, title:title }, this.Elem("root"));
 		
-		this.items.push(item);
+		this._items.push(item);
 	}
 	
 	Select(delegate) {		
@@ -59,15 +59,15 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 	}
 	
 	FindIndex(delegate) {
-		for (var i = 0; i < this.items.length; i++) {
-			if (delegate(this.items[i], i)) return i;
+		for (var i = 0; i < this._items.length; i++) {
+			if (delegate(this._items[i], i)) return i;
 		}
 		
 		return -1;
 	}
 	
 	OnSelect_Change(ev) {
-		var item = this.items[ev.target.value];
+		var item = this._items[ev.target.value];
 		
 		this.Emit("Change", { index:ev.target.value, item:item, label:ev.target.innerHTML });
 	}
@@ -79,12 +79,12 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 	Empty() {
 		Dom.Empty(this.Elem("root"));
 		
-		this.items = [];
+		this._items = [];
 		
-		if (!this.ph) return;
+		if (!this._ph) return;
 		
-		Dom.Place(this.ph, this.Elem("root"));
+		Dom.Place(this._ph, this.Elem("root"));
 	
-		this.ph.selected = true;
+		this._ph.selected = true;
 	}
 });

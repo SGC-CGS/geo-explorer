@@ -4,6 +4,15 @@ import Dom from '../tools/dom.js';
 
 export default Core.Templatable("App.Widgets.Waiting", class Waiting extends Templated {
 	
+	static Nls() {
+		return {
+			"Waiting_Label": {
+				"en" : "Working...",
+				"fr" : "Chargement..."
+			}
+		}
+	}
+	
 	constructor(container, options) {	
 		super(container, options);
 		

@@ -1,10 +1,75 @@
-import Overlay from './overlay.js';
+import Templated from '../components/templated.js';
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Select from '../ui/select.js';
 
-export default Core.Templatable("App.Widgets.Selector", class Selector extends Overlay {
+export default Core.Templatable("App.Widgets.Selector", class Selector extends Templated {
+	
+	static Nls() {
+		return {
+			"Selector_Title" : {
+				"en" : "Select Data",
+				"fr" : "Sélectionner des données"
+			},
+			"Selector_Subject" : {
+				"en" : "Subject",
+				"fr" : "Sujet"
+			},
+			"Selector_Subject_Placeholder" : {
+				"en": "Select a subject",
+				"fr": "Sélectionnez un sujet"
+			},
+			"Selector_Theme" : {
+				"en" : "Theme",
+				"fr" : "Thème"
+			},
+			"Selector_Theme_Placeholder" : {
+				"en": "*... Select a theme",
+				"fr": "*... Sélectionnez un thème"
+			},
+			"Selector_Category" : {
+				"en" : "Category (Product)",
+				"fr" : "Catégorie (Produit)"
+			},
+			"Selector_Category_Placeholder" : {
+				"en" : "*... Select a product",
+				"fr" : "*... Sélectionnez un produit"
+			},
+			"Selector_Value" : {
+				"en" : "Value to Display",
+				"fr" : "Valeur à afficher"
+			},
+			"Selector_Value_Placeholder" : {
+				"en" : "*... Select a value to Display",
+				"fr" : "*... Sélectionnez une valeur à afficher"
+			},
+			"Selector_Geography" : {
+				"en" : "Geographic Level",
+				"fr" : "Niveau géographique"
+			},
+			"Selector_Geography_Placeholder" : {
+				"en" : "*... Select a geographic Level",
+				"fr" : "*... Sélectionnez un niveau géographique"
+			},
+			"Selector_Filter_Label" : {
+				"en" : "Filters",
+				"fr" : "Filtres"
+			},
+			"Selector_Filter_Instructions" : {
+				"en" : "Select a subject, theme and category (product) to show available filters.",
+				"fr" : "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles."
+			},
+			"Selector_Button_Apply" : {
+				"en" : "Apply",
+				"fr" : "Appliquer"
+			},
+			"Selector_Button_Close" : {
+				"en" : "Cancel",
+				"fr" : "Annuler"
+			}
+		}
+	}
 	
 	constructor(container, options) {	
 		super(container, options);
@@ -20,11 +85,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 		
-		this.Elem('sSubject').placeholder = Core.Nls("Selector_Subject_Placeholder");
-		this.Elem('sTheme').placeholder = Core.Nls("Selector_Theme_Placeholder");
-		this.Elem('sCategory').placeholder = Core.Nls("Selector_Category_Placeholder");
-		this.Elem('sValue').placeholder = Core.Nls("Selector_Value_Placeholder");
-		this.Elem('sGeography').placeholder = Core.Nls("Selector_Geography_Placeholder");
+		this.Elem('sSubject').placeholder = this.Nls("Selector_Subject_Placeholder");
+		this.Elem('sTheme').placeholder = this.Nls("Selector_Theme_Placeholder");
+		this.Elem('sCategory').placeholder = this.Nls("Selector_Category_Placeholder");
+		this.Elem('sValue').placeholder = this.Nls("Selector_Value_Placeholder");
+		this.Elem('sGeography').placeholder = this.Nls("Selector_Geography_Placeholder");
 		
 		this.Elem('sTheme').disabled = true;
 		this.Elem('sCategory').disabled = true;
@@ -177,7 +242,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 		
 		this.Update(this.context);
 		
-		this.Hide();
+		this.Emit("Close");
 	}
 	
 	OnRequests_Error (error) {
@@ -185,31 +250,24 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends O
 	}
 	
 	Template() {
-		return	  "<div class='overlay-header'>" +
-					  "<h2 class='overlay-title' handle='title'>nls(Selector_Title)</h2>" +
-					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
-				  "</div>" +
-				  "<hr>" +
-				  "<div class='overlay-body' handle='body'>" + 
-					  "<label class='sm-label'>nls(Selector_Subject)</label>" + 
-					  "<div handle='sSubject' widget='Basic.Components.Select'></div>" +
-					  "<label class='sm-label'>nls(Selector_Theme)</label>" + 
-					  "<div handle='sTheme' widget='Basic.Components.Select'></div>" +
-					  "<label>nls(Selector_Category)</label>" +
-					  "<div handle='sCategory' widget='Basic.Components.Select'></div>" +
-					  "<div class='filter-container'>" + 
-						 "<label>nls(Selector_Filter_Label)</label>" +
-						 "<div handle='instructions' class='filter-instructions'>nls(Selector_Filter_Instructions)</div>" +
-						 "<div handle='filter' class='filter'></div>" +
-					  "</div>" +
-					  "<label>nls(Selector_Value)</label>" +
-					  "<div handle='sValue' widget='Basic.Components.Select'></div>" +
-					  "<label>nls(Selector_Geography)</label>" +
-					  "<div handle='sGeography' widget='Basic.Components.Select'></div>" +
-					  "<div class='button-container'>" + 
-						 "<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
-						 "<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
-					  "</div>" +
-				  "</div>";
+		return	"<label class='sm-label'>nls(Selector_Subject)</label>" + 
+				"<div handle='sSubject' widget='Basic.Components.Select'></div>" +
+				"<label class='sm-label'>nls(Selector_Theme)</label>" + 
+				"<div handle='sTheme' widget='Basic.Components.Select'></div>" +
+				"<label>nls(Selector_Category)</label>" +
+				"<div handle='sCategory' widget='Basic.Components.Select'></div>" +
+				"<div class='filter-container'>" + 
+					"<label>nls(Selector_Filter_Label)</label>" +
+					"<div handle='instructions' class='filter-instructions'>nls(Selector_Filter_Instructions)</div>" +
+					"<div handle='filter' class='filter'></div>" +
+				"</div>" +
+				"<label>nls(Selector_Value)</label>" +
+				"<div handle='sValue' widget='Basic.Components.Select'></div>" +
+				"<label>nls(Selector_Geography)</label>" +
+				"<div handle='sGeography' widget='Basic.Components.Select'></div>" +
+				"<div class='button-container'>" + 
+					"<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
+					"<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
+				"</div>";
 	}
 })

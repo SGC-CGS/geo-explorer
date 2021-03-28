@@ -1,10 +1,10 @@
-import Overlay from '../overlay.js';
+import Templated from '../../components/templated.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
 import LegendBreak from './legend-break.js';
 
-export default Core.Templatable("App.Widgets.Legend", class Legend extends Overlay {
+export default Core.Templatable("App.Widgets.Legend", class Legend extends Templated {
 	
 	set Opacity(value) {
 		this.Elem('sOpacity').value = value * 100;
@@ -12,6 +12,43 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 	
 	get Opacity() {
 		return this.Elem('sOpacity').value / 100;
+	}
+	
+	static Nls() {
+		return {
+			"Legend_Title" : {
+				"en" : "Map legend",
+				"fr" : "Légende de la carte"
+			},
+			"Legend_Indicators" : {
+				"en" : "Selected indicators",
+				"fr" : "Indicateurs sélectionnés"
+			},
+			"Legend_Opacity" : {
+				"en" : "Opacity",
+				"fr" : "Opacité"
+			},
+			"Legend_Opacity_Less" : {
+				"en" : "Less",
+				"fr" : "Moins"
+			},
+			"Legend_Opacity_More" : {
+				"en" : "More",
+				"fr" : "Plus"
+			},
+			"Legend_Context_Layers" : {
+				"en" : "Context layers",
+				"fr" : "Données contextuelles"
+			},
+			"Legend_Label_Name" : {
+				"en" : "Map labels",
+				"fr" : "Étiquettes sur la carte"
+			},
+			"Legend_Show_label" : {
+					"en" : " Show label",
+					"fr" : " Afficher les étiquettes"
+			}
+		}
 	}
 	
 	constructor(container, options) {	
@@ -66,35 +103,30 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Overl
 	}
 	
 	Template() {
-		return	  "<div class='overlay-header'>" +
-					  "<h2 class='overlay-title' handle='title'>nls(Legend_Title)</h2>" +
-					  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
-				  "</div>" +
-				  "<div class='overlay-body' handle='body'>" + 
-				    "<label>nls(Legend_Indicators)</label>" +
-				    "<ul handle='indicators'></ul>" +
-				    "<label>nls(Legend_Title)</label>" +
-					"<table handle='breaks' class='breaks-container'>" + 
-						// Class breaks go here, dynamically created
-					"</table>" +
-				    "<label>nls(Legend_Opacity)</label>" +
-					"<div class='opacity-container'>" +
-					   "<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
-					   "<div class='opacity-labels-container'>" +
-						  "<label>nls(Legend_Opacity_Less)</label>" +
-						  "<label>nls(Legend_Opacity_More)</label>" +
-					   "</div>" +
-					"</div>" +
-				    "<label>nls(Legend_Context_Layers)</label>" +
-					"<ul handle='cLayers' class='context-layers-container'>" + 
-					"</div>" +
-					"<label>nls(Legend_Label_Name)</label>" +
-					"<ul class='label-name-container'>" +
-						"<li class='labelName'>" +
-							"<input handle='labelChk' type=checkbox class='labelName-checkbox'>" + 
-							"<label class='labelName-label'>nls(Legend_Show_label)</label>" + 
-						"</li>" +
-					"</ul>" +
-				  "</div>";
+		return	"<div class='overlay-body' handle='body'>" + 
+				"<label>nls(Legend_Indicators)</label>" +
+				"<ul handle='indicators'></ul>" +
+				"<label>nls(Legend_Title)</label>" +
+				"<table handle='breaks' class='breaks-container'>" + 
+					// Class breaks go here, dynamically created
+				"</table>" +
+				"<label>nls(Legend_Opacity)</label>" +
+				"<div class='opacity-container'>" +
+				   "<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
+				   "<div class='opacity-labels-container'>" +
+					  "<label>nls(Legend_Opacity_Less)</label>" +
+					  "<label>nls(Legend_Opacity_More)</label>" +
+				   "</div>" +
+				"</div>" +
+				"<label>nls(Legend_Context_Layers)</label>" +
+				"<ul handle='cLayers' class='context-layers-container'>" + 
+				"</div>" +
+				"<label>nls(Legend_Label_Name)</label>" +
+				"<ul class='label-name-container'>" +
+					"<li class='labelName'>" +
+						"<input handle='labelChk' type=checkbox class='labelName-checkbox'>" + 
+						"<label class='labelName-label'>nls(Legend_Show_label)</label>" + 
+					"</li>" +
+				"</ul>";
 	}
 })

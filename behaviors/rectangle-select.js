@@ -7,48 +7,56 @@ import Behavior from './behavior.js';
 
 export default class RectangleSelectBehavior extends Behavior { 
 
-	get Layer() { return this.map.Layer('selection'); }
+	get layer() { return this._map.Layer('selection'); }
 
-	get Graphics() { return this.Layer.graphics; }
+	get graphics() { return this.layer.graphics; }
+
+	get target() { return this._options.target; }
+
+	set target(value) { 
+		this._options.target = value;
+		
+		this.Clear();
+	}
+
+	get field() { return this._options.field; }
+
+	set field(value) { this._options.field = value; }
+
+	get symbol() { return this._options.symbol; }
+
+	set symbol(value) { this._options.symbol = value; }
 
 	constructor(map, options) {	
 		super();
 		
-		this.options = {};
-		this.map = map;
-		this.draw = new ESRI.views.draw.Draw({ view : this.map.view });
-		this.action = null;
+		this._options = {};
+		this._map = map;
+		this._draw = new ESRI.views.draw.Draw({ view : this._map.view });
+		this._action = null;
 		
-		this.map.AddGraphicsLayer('selection');
+		this._map.AddGraphicsLayer('selection');
 		
-		this.Reset(options);
-		this.handlers = {"cursor-update": null, "draw-complete": null};
+		this._handlers = {"cursor-update": null, "draw-complete": null};
 	}
 
 	Deactivate(){
 		this.Clear();
-		this.handlers["cursor-update"].remove();
-		this.handlers["draw-complete"].remove();	
 		
+		this._handlers["cursor-update"].remove();
+		this._handlers["draw-complete"].remove();	
 	}
 
 	Activate(){		
-		this.action = this.draw.create("rectangle", { mode: "click" });
-		this.handlers["cursor-update"] = this.action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
-		this.handlers["draw-complete"] = this.action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
-	}
-	
-	Reset(options) {
-		this.Clear();
+		this._action = this._draw.create("rectangle", { mode: "click" });
 		
-		if (options.layer) this.options.layer = options.layer;		// Layer to query when done selecting
-		if (options.field) this.options.field = options.field;		// Field used to compare graphics
-		if (options.symbol) this.options.symbol = options.symbol;	// Symbol to draw the graphics with
+		this._handlers["cursor-update"] = this._action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
+		this._handlers["draw-complete"] = this._action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
 	}
 	
 	Clear() {
-		this.Layer.removeAll();
-		this.map.view.graphics.removeAll();
+		this.layer.removeAll();
+		this._map.view.graphics.removeAll();
 	}
 	
 	VerticesToPolygon(vertices, sref) {
@@ -64,45 +72,45 @@ export default class RectangleSelectBehavior extends Behavior {
 	OnDraw_CursorUpdate(ev) {
 		if (ev.vertices.length < 2) return;
 
-		this.map.view.graphics.removeAll();
+		this._map.view.graphics.removeAll();
 		
-		var geometry = this.VerticesToPolygon(ev.vertices, this.map.view.spatialReference);
+		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
 		var outline = { color: [200, 20, 0], width: 1 }
 		var symbol = { type: "simple-fill", color: [200, 20, 0, 0.3], style: "solid", outline: outline }
 		
-		this.map.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
+		this._map.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
 	}
 	
 	OnDraw_Complete(ev) {
 		this.Emit("Busy");
 		
-		this.map.view.graphics.removeAll();
+		this._map.view.graphics.removeAll();
 		
 		if (ev.vertices.length < 2) return;
 		
-		var geometry = this.VerticesToPolygon(ev.vertices, this.map.view.spatialReference);
+		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
 		
-		var p = Requests.QueryGeometry(this.options.layer, geometry);
+		var p = Requests.QueryGeometry(this.target, geometry);
 		
 		p.then(this.OnDraw_QueryComplete.bind(this), error => this.OnDraw_QueryError.bind(this));
 	}
 	
 	OnDraw_QueryComplete(results) {		
 		results.features.forEach(f => {
-			var exists = this.Layer.graphics.find(g => g.attributes[this.options.field] == f.attributes[this.options.field]);
+			var exists = this.layer.graphics.find(g => g.attributes[this.field] == f.attributes[this.field]);
 			
-			if (exists) this.Layer.remove(exists);
+			if (exists) this.layer.remove(exists);
 			
 			else {
-				f.symbol = this.options.symbol;
+				f.symbol = this.symbol;
 				
-				this.Layer.graphics.add(f);
+				this.layer.graphics.add(f);
 			}
 		});
 		
 		this.Emit("Idle");
 		
-		this.Emit("Change", { selection:this.Layer.graphics });
+		this.Emit("Change", { selection:this.layer.graphics });
 
 		this.Activate();
 	}

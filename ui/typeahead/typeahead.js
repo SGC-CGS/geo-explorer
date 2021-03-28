@@ -39,7 +39,6 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		this._curr = null;
 		this._temp = null;
 		
-		
 		var handler = function(ev) { this.OnInputInput_Handler(ev); }.bind(this);
 		
 		this.Node("input").On("input", Core.Debounce(handler, 350));	
@@ -51,8 +50,6 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		// this.Node("input").On("focusout", this.OnInputBlur_Handler.bind(this));
 		
 		if (!options) return;
-		
-		this.items = options.items;
 	}
 	
 	Empty() {		
