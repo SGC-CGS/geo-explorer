@@ -2,40 +2,38 @@
 
 import Core from './core.js';
 
+/**
+ * Dom module
+ * @module tools/dom
+ */
 export default class Dom {
 	
 	/**
-	* Retrieve an Element using a selector
-	*
-	* Parameters :
-	*	pNode : Element, the parent node where to begin the search
-	*	selector : String, a selector statement
-	* Return : Element, the Element found, null otherwise
+	* Retrieve an element using a selector
+	* @param {element} pNode - The parent node where to begin the search
+	* @param {string} selector - A selector statement
+	* @returns {element} The element found, null otherwise
 	*/
 	static Node(pNode, selector) {
 		return pNode.querySelectorAll(selector).item(0) || null;
 	}
 	
 	/**
-	* Retrieve elements using a selector
-	*
-	* Parameters :
-	*	pNode : Element, the parent node where to begin the search
-	*	selector : String, a selector statement
-	* Return : Element, the Element found, null otherwise
+	* Retrieve multiple elements using a selector
+	* @param {element} pNode - The parent node where to begin the search
+	* @param {string} selector - A selector statement
+	* @returns {elements} The elements found, null otherwise
 	*/
 	static Nodes(pNode, selector) {
 		return pNode.querySelectorAll(selector) || null;
 	}
 
 	/**
-	* Create an Element
-	*
-	* Parameters :
-	*	tagName : String, the type of Element to be created (div, span, label, input, etc.)
-	*	options : Object, a dictionary type object containing the options to assign to the created Element
-	*	pNode : Element, the parent Element where the created Element will be apended
-	* Return : Element, The Element created
+	* Create an element
+	* @param {string} tagName - The type of element to be created (div, span, label, input, etc.)
+	* @param {object} options - A dictionary type object containing the options to assign to the created Element
+	* @param {element} pNode - The parent element where the created element will be apended
+	* @returns {element} The element created
 	*/
 	static Create(tagName, options, pNode) {
 		var elem = document.createElement(tagName);
@@ -49,12 +47,10 @@ export default class Dom {
 
 	/**
 	* Create an SVG Element
-	*
-	* Parameters :
-	*	tagName : String, the type of SVG Element to be created (rect, path, etc.)
-	*	options : Object, a dictionary type object containing the options to assign to the created SVG Element
-	*	pNode : Element, the parent Element where the created SVG Element will be apended
-	* Return : Element, The SVG Element created
+	* @param {string} tagName - The type of SVG element to be created (rect, path, etc.)
+	* @param {object} options - Dictionary type object containing the options to assign to the created SVG Element
+	* @param {element} pNode - The parent element where the created SVG element will be apended
+	* @returns {element} The SVG element created
 	*/
 	static CreateSVG(tagName, options, pNode) {
 		var elem = document.createElementNS("http://www.w3.org/2000/svg", tagName);
@@ -67,21 +63,18 @@ export default class Dom {
 	}
 
 	/**
-	* Create an Element from a namespace
-	*
-	* Parameters :
-	*	ns : String, the URI namespace containing the Element to create 
-	*	tagName : String, the type of Element to be created (rect, path, etc.)
-	*	options : Object, a dictionary type object containing the options to assign to the created Element
-	*	pNode : Element, the parent Element where the created Element will be apended
-	*
+	* Create an element from a namespace
+	* @param {string} ns - The URI namespace containing the element to create 
+	* @param {string} tagName - The type of element to be created (rect, path, etc.)
+	* @param {object} options - A dictionary type object containing the options to assign to the created Element
+	* @param {element} pNode - The parent element where the created element will be apended
+	* @example
 	* Valid Namespaces are : 
 	*	HTML : http://www.w3.org/1999/xhtml
 	*	SVG  : http://www.w3.org/2000/svg
 	*	XBL  : http://www.mozilla.org/xbl
 	*	XUL  : http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul
-	*
-	* Return : Element, The SVG Element created
+	* @returns {element} The SVG Element created
 	*/
 	static CreateNS(ns, tagName, options, pNode) {
 		var elem = document.createElementNS(ns, tagName);
@@ -94,24 +87,20 @@ export default class Dom {
 	}
 
 	/**
-	* Append an Element to another Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to append
-	*	pNode : Element, the parent Element where the Element will be apended
-	* Return : none
+	* Append an element to another element
+	* @param {element} elem - The element to be appended
+	* @param {element} pNode - The parent element where the element will be appended
+	* @returns {void}
 	*/
 	static Place(elem, pNode) {
 		if (!!pNode) pNode.appendChild(elem);
 	}
 
 	/**
-	* Replace an Element by another Element
-	*
-	* Parameters :
-	*	elem1 : Element, the Element to be replaced
-	*	elem2 : Element, the Element that will replace elem1
-	* Return : none
+	* Replace an element with another element
+	* @param {element} elem1 - The element to be replaced
+	* @param {element} elem2 - The element that will replace elem1
+	* @returns {void}
 	*/
 	static Replace(elem1, elem2) {
 		var pNode = elem1.parentNode;
@@ -122,12 +111,10 @@ export default class Dom {
 	}
 
 	/**
-	* Remove an Element from another Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to remove
-	*	pNode : Element, the parent Element containing the Element to remove
-	* Return : none
+	* Remove an element from another element
+	* @param {element} elem - The element to remove
+	* @param {element} pNode - The parent element containing the element to remove
+	* @returns {void}
 	*/
 	static Remove(elem, pNode) {
 		if (!pNode.children.some(function(child) { return (child === elem); })) return;
@@ -136,11 +123,9 @@ export default class Dom {
 	}
 
 	/**
-	* Remove all children of an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to empty
-	* Return : none
+	* Remove all children of an element
+	* @param {element} elem - The element to empty
+	* @returns {void}
 	*/
 	static Empty(elem) {
 		while (elem.firstChild) {
@@ -149,12 +134,10 @@ export default class Dom {
 	}
 
 	/**
-	* Add a CSS rule on an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to modify
-	*	css : String, the CSS rule to add on the Element
-	* Return : none
+	* Add a CSS rule to an element
+	* @param {element} elem - The element to modify
+	* @param {string} css - The CSS rule to add to the element
+	* @returns {void}
 	*/
 	static AddCss(elem, css) {
 		var c1 = elem.className.split(" ");
@@ -167,12 +150,10 @@ export default class Dom {
 	}
 
 	/**
-	* Remove a CSS rule on an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to modify
-	*	css : String, the CSS rule to remove from the Element
-	* Return : none
+	* Remove a CSS rule from an element
+	* @param {element} elem - The element to modify
+	* @param {string} css - The CSS rule to remove from the element
+	* @returns {void}
 	*/
 	static RemoveCss(elem, css) {				
 		var c1 = elem.className.split(" ");
@@ -182,37 +163,31 @@ export default class Dom {
 	}
 
 	/**
-	* Verify that an Element contains a CSS rule
-	*
-	* Parameters :
-	*	elem : Element, the Element to verify
-	*	css : String, the CSS rule to find
-	* Return : Boolean, true if the Element contains the CSS rule, false otherwise
+	* Verify that an element contains a CSS rule
+	* @param {element} elem - The element to verify
+	* @param {string} css - The CSS rule to find
+	* @returns {boolean} True if the element contains the CSS rule, false otherwise
 	*/
 	static HasCss(elem, css) {
 		return (' ' + elem.className + ' ').indexOf(' ' + css + ' ') > -1;
 	}
 
 	/**
-	* Set the CSS rules on an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to modify
-	*	css : String, the CSS rule to set on the Element
-	* Return : none
+	* Set the CSS rules on an element
+	* @param {element} elem - The element to modify
+	* @param {string} css - The CSS rule to set on the element
+	* @returns {void}
 	*/
 	static SetCss(elem, css) {
 		elem.className = css; 
 	}
 
 	/**
-	* Toggle a CSS rule on or or off for an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to modify
-	*	css : String, the CSS rule to toggle on the Element
-	*	enabled : Boolean, true to toggle the CSS rule on, false to toggle it off
-	* Return : none
+	* Toggle a CSS rule on or or off for an element
+	* @param {element} elem - The element to modify
+	* @param {string} css - The CSS rule to toggle on the element
+	* @param {boolean} enabled - True to toggle the CSS rule on, false to toggle it off
+	* @returns {void}
 	*/
 	static ToggleCss(elem, css, enabled) {
 		if (enabled) this.AddCss(elem, css);
@@ -221,12 +196,10 @@ export default class Dom {
 	}
 	
 	/**
-	* Get an attribute value from an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to retrieve the attribute from
-	*	attr : String, the name of the attribute to retrieve
-	* Return : String, the value of the attribute if found, null otherwise
+	* Get an attribute value from an element
+	* @param {element} elem - The element to retrieve the attribute from
+	* @param {string} attr - The name of the attribute to retrieve
+	* @returns {string} The value of the attribute if found, null otherwise
 	*/
 	static GetAttribute(elem, attr) {
 		var attr = elem.attributes.getNamedItem(attr);
@@ -235,28 +208,24 @@ export default class Dom {
 	}
 	
 	/**
-	* Set an attribute value on an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to set the attribute on
-	*	attr : String, the name of the attribute to set
-	*	value : String, the value of the attribute to set
-	* Return : none
+	* Set an attribute value on an element
+	* @param {element} elem - The element to set the attribute on
+	* @param {string} attr - The name of the attribute to set
+	* @param {string} value - The value of the attribute to set
+	* @returns {void}
 	*/
 	static SetAttribute(elem, attr, value) {
 		elem.setAttribute(attr, value);
 	}
 	
 	/**
-	* Get the size of an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to retrieve the size
-	* Return : Object, an object literal containing the size of the Element
-	* 
+	* Get the size of an element
+	* @param {element} elem - The element to retrieve the size
+	* @returns {object} An object literal containing the unpadded size of the element
+	* @example
 	* { 
-	*	w: width of the Element, 
-	*	h: height of the Element 
+	*	w: width of the element, 
+	*	h: height of the element 
 	* }
 	*/
 	static Size(elem) {
@@ -279,11 +248,9 @@ export default class Dom {
 	}
 	
 	/**
-	* Get the siblings of an Element
-	*
-	* Parameters :
-	*	elem : Element, the Element to retrieve the siblings
-	* Return : Array, An array of elements containing the siblings of the input element
+	* Get the siblings of an element
+	* @param {element} elem - The element to retrieve the siblings
+	* @returns {elements} An array of elements containing the siblings of the input element
 	*/
 	static Siblings(elem) {
 		var elements = [];
@@ -298,10 +265,8 @@ export default class Dom {
 	
 	/**
 	* Returns the geometry of a dom node (width, height)
-	*
-	* Parameters :
-	*	elem : Element, the Element to retrieve the geometry
-	* Return : Object, an object containing the width and height of the element
+	* @param {element} elem - The element from which to retrieve the geometry
+	* @returns {object} An object containing the unpadded width and height of the element
 	*/
 	static Geometry(elem) {
 		var style = window.getComputedStyle(elem);
