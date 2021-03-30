@@ -1,16 +1,17 @@
 import Core from './core.js';
 
+/**
+ * Net module
+ * @module tools/net
+ */
 export default class Net {
 	
 	/**
-	* Execute a web request
-	*
-	* Parameters :
-	*	url : String, the request URL
-	* Return : none
-	*
-	* TODO : This should return a promise object but (ie11)
-	*
+	* Create and send a web request using GET
+	* @param {string} url - The request URL
+	* @param {string[]} headers - Http request headers
+	* @param {string} responseType - specifies type of data for response
+	* @returns {promise} Promise
 	*/
 	static Get(url, headers, responseType) {
 		var d = Core.Defer();
@@ -18,9 +19,9 @@ export default class Net {
 		var xhttp = new XMLHttpRequest();
 		
 		xhttp.onreadystatechange = function() {
-			if (this.readyState != 4) return;
+			if (this.readyState != 4) return; // 4 - DONE
 		
-			if (this.status == 200) d.Resolve(this.response);
+			if (this.status == 200) d.Resolve(this.response); // 200 - OK
 			
 			else d.Reject({ status:this.status, response:this.response });
 		};
@@ -37,17 +38,24 @@ export default class Net {
 		
 		return d.promise;
 	}
-	
-		
+
+	/**
+	 * Create and send a web request using POST
+	 * @param {string} url - The request URL
+	 * @param {string} data - Request body
+	 * @param {string[]} headers - Http request headers
+	 * @param {string} responseType - specifies type of data for response
+	 * @returns {promise} Promise
+	 */	
 	static Post(url, data, headers, responseType) {
 		var d = Core.Defer();
 
 		var xhttp = new XMLHttpRequest();
 		
 		xhttp.onreadystatechange = function() {
-			if (this.readyState != 4) return;
+			if (this.readyState != 4) return; // 4 - DONE
 		
-			if (this.status == 200) d.Resolve(this.response);
+			if (this.status == 200) d.Resolve(this.response); // 200 - OK
 			
 			else d.Reject({ status:this.status, response:this.response });
 		};
@@ -65,6 +73,11 @@ export default class Net {
 		return d.promise;
 	}
 	
+	/**
+	 * Get JSON from URL
+	 * @param {string} url for JSON file
+	 * @returns (promise) Promise with parsed JSON if resolved
+	 */
 	static JSON(url) {
 		var d = Core.Defer();
 		
@@ -73,6 +86,12 @@ export default class Net {
 		return d.promise;
 	}
 	
+	/**
+	 * Create file object on successful request
+	 * @param {string} url - The request URL
+	 * @param {string} name - The name of the file 
+	 * @returns {promise} Promise
+	 */
 	static File(url, name) {
 		var d = Core.Defer();
 		
@@ -85,8 +104,7 @@ export default class Net {
 	
 	/**
 	* Parses the location query and returns a string dictionary
-	*
-	* Return : Object, a dictionary of string key values containing the parameters from the location query
+	* @returns {object} A dictionary of string key values containing the parameters from the location query
 	*/
 	static ParseUrlQuery() {
 		var params = {};
@@ -105,10 +123,8 @@ export default class Net {
 	
 	/**
 	* Get a parameter value from the document URL
-	*
-	* Parameters :
-	*	name : String, the name of the parameter to retrieve from the URL
-	* Return : String, the value of the parameter from the URL, an empty string if not found
+	* @param {string} name - The name of the parameter to retrieve from the URL
+	* @returns {string} The value of the parameter from the URL, an empty string if not found
 	*/
 	static GetUrlParameter (name) {				
 		name = name.replace(/[\[\]]/g, '\\$&');
@@ -126,11 +142,9 @@ export default class Net {
 	
 	/**
 	* Download content as a file
-	*
-	* Parameters :
-	*	name : String, the name of the file to download
-	*	content : 
-	* Return : none
+	* @param {string} name - The name of the file to download
+	* @param {string} content - Content from page
+	* @returns {void}
 	*/
 	static Download(name, content) {
 		var link = document.createElement("a");
@@ -143,9 +157,7 @@ export default class Net {
 	
 	/**
 	* Gets the base URL for the app
-	*
-	* Parameters : none
-	* Return : String, the base path to the web app
+	* @returns {string} - The base path to the web app
 	*/
 	static AppPath() {
 		var path = location.href.split("/");
@@ -156,10 +168,9 @@ export default class Net {
 	}
 	
 	/**
-	* Gets the base URL for the app
-	*
-	* Parameters : none
-	* Return : String, the base path to the web app
+	* Gets the URL for the app and file
+	* @param {string} file - The filename to which path will be added
+	* @returns {string} The URL for the app and the file
 	*/
 	static FilePath(file) {
 		file = file.charAt(0) == "/" ? file.substr(1) : file;
