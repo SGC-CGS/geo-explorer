@@ -12,12 +12,29 @@ const URLS = {
 	filter : "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/8"
 }
 
+/**
+ * Requests module
+ * @module tools/requests
+ */
 export default class Requests {
 	
+	/**
+	* Get or set the config string
+	* @type {string}
+	 */
 	static set config(value) { _config = value; }
 	
 	static get config() { return _config; }
 	
+	/**
+	 * Build item for select list
+	 * @param {object} f - Feature layer
+	 * @param {string} value - Field name 
+	 * @param {string} label - Display label
+	 * @param {string} description - Field Description
+	 * @param {string} locale - For language display (EN, FR)
+	 * @returns {object} Object with label and value
+	 */
 	static MakeItem(f, value, label, description, locale) {
 		var item = {
 				value : f.attributes[value],
@@ -29,6 +46,14 @@ export default class Requests {
 		return item;
 	}
 	
+	/**
+	 * Get locale, build theme selection lists, add to map
+	 * @param {object} features - Feature layers
+	 * @param {string} value - Field name
+	 * @param {string} label - Label name
+	 * @param {string} description  - Field description
+	 * @returns {object} Selection items for map
+	 */
 	static MakeItems(features, value, label, description) {
 		var locale = Core.locale.toUpperCase();
 		
@@ -37,6 +62,11 @@ export default class Requests {
 		});
 	}
 	
+	/**
+	 * Reformat indicator metadata as new object
+	 * @param {oject} attr Metadata for an indicator
+	 * @returns {object} Newly formatted metadata
+	 */
 	static MakeMetadata(attr) {
 		return {
 			indicator : attr.IndicatorId,
@@ -53,6 +83,17 @@ export default class Requests {
 		}
 	}
 	
+	/**
+	 * Build and execute query for features from a layer
+	 * @param {object} layer - Feature layer to query
+	 * @param {string} where - Where clause for the query
+	 * @param {geometry} geometry - Geometry to apply to the spatial filter
+	 * @param {boolean} returnGeometry - If true, include geometry in the feature set
+	 * @param {string[]} outFields - Attribute fields to include in the feature set (* for all)
+	 * @param {boolean} distinct - If true, return distinct values based on outFields
+	 * @param {string[]} orderBy - Sort fields for query
+	 * @returns {object} Layer of queried features
+	 */
 	static Query(layer, where, geometry, returnGeometry, outFields, distinct, orderBy) {
 		var query = layer.createQuery();
 		
@@ -67,20 +108,49 @@ export default class Requests {
 		return layer.queryFeatures(query);
 	}
 	
+	/**
+	 * Query layer based on given geometry
+	 * @param {object} layer - Feature layer to query
+	 * @param {geometry} geometry - Geometry to apply to the spatial filter 
+	 * @returns {object} Layer of queried features
+	 */
 	static QueryGeometry(layer, geometry) {
 		return Requests.Query(layer, null, geometry, true, "*", null, null);
 	}
 	
+	/**
+	 * Set feature layer and execute query 
+	 * @param {string} url - Rest service URL
+	 * @param {string} where - Where clause for query
+	 * @param {geometry} geometry - Geometry to apply to the spatial filter 
+	 * @param {boolean} returnGeometry - If true, include geometry in the feature set
+	 * @param {string[]} outFields - Attribute fields to include in the feature set (* for all)
+	 * @param {boolean} distinct - If true, return distinct values based on outFields
+	 * @param {string[]} orderBy - Sort fields for query
+	 * @returns {object} Query results
+	 */
 	static QueryUrl(url, where, geometry, returnGeometry, outFields, distinct, orderBy) {		
 		var layer = ESRI.layers.FeatureLayer({ url:url });
 		
 		return Requests.Query(layer, where, geometry, returnGeometry, outFields, distinct, orderBy);
 	}
 	
+	/**
+	 * Execute basic query
+	 * @param {string} url - Rest service URL
+	 * @param {string} where - Where clause for query 
+	 * @param {boolean} returnGeometry - If true, include geometry in the feature set 
+	 * @returns {object} Query results
+	 */
 	static QueryTable(url, where, returnGeometry) {		
 		return Requests.QueryUrl(url, where, null, !!returnGeometry, "*", true, null);
 	}
 	
+	/**
+	 * Build and execute query for indicator and make theme select lists
+	 * @param {number} id - (Null when page first loads)
+	 * @returns {promise} Promise with items if resolved
+	 */
 	static Indicator(id) {
 		var d = Core.Defer();
 		
@@ -97,6 +167,11 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Build and execute query for specified product ID, then build dimension arrays from results
+	 * @param {number} id - Product ID
+	 * @returns {promise} Promise with select items if resolved
+	 */
 	static Category(id) {
 		var d = Core.Defer();
 		
@@ -134,6 +209,11 @@ export default class Requests {
 		return d.promise;
 	}
 
+	/**
+	 * Look up metadata for indicators
+	 * @param {number[]} indicators - Array of indicator IDs
+	 * @returns {promise} Promise with metadata if resolved
+	 */
 	static Metadata(indicators) {
 		var d = Core.Defer();
 		
@@ -154,6 +234,11 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Get select list filters for indicator 
+	 * @param {number} indicatorId - Indicator ID
+	 * @returns {promise} Promise with items if resolved
+	 */
 	static Geography(indicatorId) {
 		var d = Core.Defer();
 		
@@ -170,6 +255,11 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Build and execute query to get info on break algorithms
+	 * @param {number} id - Break algorithm Id 
+	 * @returns {promise} Promise with feature data if resolved
+	 */
 	static Break(id) {
 		var d = Core.Defer();
 		
@@ -186,6 +276,11 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Setup ESRI layer
+	 * @param {object} context - Object with current indicator
+	 * @returns {promise} Promise with sublayer if resolved
+	 */
 	static Renderer(context) {
 		var meta = context.metadata;
 		
@@ -291,6 +386,12 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Retrieve data for specified geometry
+	 * @param {object} layer - Feature layer
+	 * @param {object} geometry - Geometry from user click
+	 * @returns {promise} Promise with feature data if resolved
+	 */
 	static Identify(layer, geometry) {
 		var d = Core.Defer();
 		
@@ -311,6 +412,11 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Query for autocompleting text entry when user searches for a location
+	 * @param {string} value - Search string entered by user
+	 * @returns {promise} Promise with query result if resolved
+	 */
 	static Typeahead(value) { 
 		var d = Core.Defer();
 		
@@ -334,6 +440,12 @@ export default class Requests {
 		return d.promise;
 	}
 	
+	/**
+	 * Build and execute query on layer for matching id and label
+	 * @param {string} id - DGUID
+	 * @param {string} label - Descriptive place name for DGUID
+	 * @returns {promise} Promise with feature data if resolved
+	 */
 	static Placename(id, label) { 
 		var d = Core.Defer();
 		
