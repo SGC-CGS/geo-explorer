@@ -29,76 +29,23 @@ export default class Axes {
     }
 
     // Horizontal lines onto graph 
-    static GridLineY(yScale, innerWidth) {
+    static GridLineHorizontal(yScale, innerWidth) {
         return d3.axisLeft(yScale)
         // left axis should have same number of ticks 
         .tickSize(-innerWidth).ticks()
         .tickFormat("")
     }
     
-    static AppendGridLineForY(yScale, innerWidth, g){
-        let y = this.GridLineY(yScale, innerWidth);
-
-        g.append('g').call(y)
-            .classed("y axis-grid", true)
-            .attr("transform", "translate(0,0)")
-    }
-
-    static UpdateGridLineForY(yScale, innerWidth, g){
-        let y = this.GridLineY(yScale, innerWidth);
-
-        g.selectAll("g.y.axis-grid").call(y)
-            .attr("transform", "translate(0,0)")
-    }
-
     // Vertical lines onto graph
-    static GridLineX(xScale, innerHeight) {
+    static GridLineVertical(xScale, innerHeight) {
         return d3.axisBottom(xScale)
         .tickSize(-innerHeight)
         .tickFormat("")
     }
-
-    static AppendGridLineForX(xScale, innerHeight, g){
-        let x = this.GridLineX(xScale, innerHeight);
-
-        g.append('g')
-            .call(x)
-            .classed("x axis-grid", true)
-            .attr('transform', 'translate(0,' + innerHeight + ')');
-    }
-
-    static UpdateGridLineForX(xScale, innerHeight, g){
-        let x = this.GridLineX(xScale, innerHeight);
-
-        g.selectAll("g.x.axis-grid")
-            .call(x)
-            .attr('transform', 'translate(0,' + innerHeight + ')');
-    }
     
-    // Vertical axis
-    static AppendLeftAxisToGraph(yScale, g){
-        g.append('g')
-            .call(d3.axisLeft(yScale).ticks())
-            .classed("y axis", true)
-    }
-
-    static UpdateLeftAxisToGraph(yScale, g){
-        g.selectAll('g.y.axis')
-            .call(d3.axisLeft(yScale).ticks())
-    }
-
     // Horizontal axis
-    static AppendBottomAxisToGraph(xScale, innerHeight, g){
-        this.SetBottomAxisAttributes(xScale, innerHeight, g.append("g").classed("x axis", true))
-    }
-
-    static UpdateBottomAxisInGraph(xScale, innerHeight, g){
-        this.SetBottomAxisAttributes(xScale, innerHeight, g.selectAll("g.x.axis"))
-    }
-
-    static SetBottomAxisAttributes (xScale, innerHeight, g) {
+    static SetBottomAxisAttributes (xScale, g) {
         g.call(d3.axisBottom(xScale))
-        .attr("transform", `translate(0, ${innerHeight})`)
         .selectAll("text")
         .attr("transform", "translate(-10,0)rotate(-45)")
         .text(d => {

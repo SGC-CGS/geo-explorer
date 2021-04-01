@@ -546,11 +546,7 @@
 }
 
 /* Chart svg */
-svg, 
-/* {
-  border:2px solid black;
-
-}  */
+.gexp svg,
 
 /* Chart view widget */
 .gexp .chart label {
@@ -725,41 +721,40 @@ svg,
 }
 
 /* Chart CSS */
-rect {
+.gexp rect {
     /* Default fill */
     fill: steelblue;
 }
 
-.rect:hover {
+.gexp .rect:hover {
     /* Default hover color */
     fill: orangered ;
   }
 
-text {
+.gexp text {
     font-size: 1.15em;
 }
 
 .vertical-text {
     transform: rotate(-90.0deg);
-    
 }
 
-.axis path,
-.axis line {
+.gexp .axis path,
+.gexp .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.axis-grid path, 
-.axis-grid line{
+.gexp .axis-grid path, 
+.gexp .axis-grid line{
     fill: none;
     shape-rendering: crispedges;
     stroke: #e4e4e4;   
   }
 
 /* Style the dots by assigning a fill and stroke */
-.dot {
+.gexp .dot {
     fill: #ffab00;
     stroke: #fff;
 }

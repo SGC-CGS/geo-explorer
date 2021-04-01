@@ -153,11 +153,11 @@
 	},
 	"Selector_Button_Close" : {
 		"en" : "Cancel",
-		"fr" : "Annuler"
+		"fr" : "Afficher le Diagramme"
 	},
 	"Chart_Title" : {
 		"en" : "View chart",
-		"fr" : "Afficher le graphique"
+		"fr" : "Type de Diagramme"
 	},
 	"Chart_Type" : {
 		"en" : "Chart Type",
@@ -210,9 +210,5 @@
 	"Behaviour_Title" : {
 		"en" : "Toggle map click behaviour",
 		"fr" : "Basculer le comportement des clics sur la carte"
-	},
-	"DisplayNameLong" : {
-		"en" : "DisplayNameLong_EN",
-		"fr" : "DisplayNameLong_FR"
 	}
 }

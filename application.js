@@ -8,7 +8,6 @@ import SelectBehavior from './behaviors/rectangle-select.js';
 import IdentifyBehavior from './behaviors/point-identify.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
-import Chart from './widgets/wChart.js';
 import Styler from './widgets/styler/styler.js';
 import Legend from './widgets/legend/legend.js';
 import Search from './widgets/search.js';
@@ -44,14 +43,12 @@ export default class Application extends Templated {
 		this.map.Place(this.bMenu.Buttons, "bottom-left");
 		this.map.Place(this.menu.Buttons, "top-left");
 		this.map.Place([this.Elem("basemap").container], "bottom-left");
-		// Add chart here
 		this.map.Place(this.Elems("selector", "chart", "styler", "legend", "bookmarks").map(e => e.container), "top-right");
 		this.map.Place([this.Elem("waiting").container], "manual");
 		
 		// Hookup events to UI
 		this.HandleEvents(this.map);
 		this.HandleEvents(this.context);
-		this.HandleEvents(this.Node('chart'), this.OnChart_Change.bind(this));
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
@@ -67,6 +64,7 @@ export default class Application extends Templated {
 		
 		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
 
+		this.Elem("chart").Title = this.config.Chart;
 		this.Elem("table").Headers = this.config.TableHeaders;
 		this.Elem('legend').Opacity = this.config.MapOpacity;
 		this.Elem('basemap').Map = this.map;
@@ -115,8 +113,6 @@ export default class Application extends Templated {
 		
 		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map, options));
 		
-		// Where it happens
-		// MAPSELECTDAW
 		this.HandleEvents(behavior, this.OnMap_SelectDraw.bind(this));
 	}
 	
@@ -158,18 +154,6 @@ export default class Application extends Templated {
 		this.Elem("legend").Update(this.context);
 		this.Elem("table").Update(this.context);
 	}
-
-	OnChart_Change(ev) {
-		this.map.EmptyLayer('main');
-		this.map.AddSubLayer('main', this.context.sublayer);
-		
-		this.map.Behavior("selection").Reset({ layer:this.context.sublayer });
-		// this.map.Behavior("identify").Reset({ layer:this.context.sublayer });
-			
-		this.Elem("styler").Update(this.context);
-		this.Elem("legend").Update(this.context);
-		this.Elem("table").Update(this.context);
-	}
 	
 	OnStyler_Change(ev) {	
 		this.context.sublayer.renderer = ev.renderer;
@@ -201,17 +185,15 @@ export default class Application extends Templated {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	// Selection changes, in ev.selection 
 	OnMap_SelectDraw(ev) {
 		this.Elem("table").data = ev.selection;
-		this.Elem("chart").data = ev.selection.items;
+		this.Elem("chart").data = ev.selection;
 	}
 	
-	// More changes
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior("selection").Layer.remove(ev.graphic);
 		this.Elem("table").data = this.map.Behavior("selection").Graphics;
-		this.Elem("chart").data = this.map.Behavior("selection").Graphics.items;
+		this.Elem("chart").data = this.map.Behavior("selection").Graphics;
 	}
 	
 	OnWidget_Busy(ev) {

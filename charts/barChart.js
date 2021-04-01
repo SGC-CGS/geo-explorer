@@ -5,21 +5,28 @@ export default class BarChart extends Chart{
 
     constructor(options) {
         super(options)
-        this.options = options
-        this.color = d3.scaleOrdinal(d3.schemeCategory20);
-        this.Draw()
+
+        this.options = options;
+
+        this.Draw();
     }
 
     Draw(){
+        this.xScale = Axes.CreateBandXScale(this.options.data, this.dimensions.innerWidth);
+
+        this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
+
+        this.g.append("g").classed("y axis-grid", true).attr("transform", "translate(0,0)");
+
+        this.BuildGridLineHorizontal(); 
+
         this.BuildAxes();
-        this.AppendVerticalRectanglesToGraph();
+
+        this.AppendRectanglesToGraph();
     }
     
-    // This is specific to regular bar graphs
-    // A sideways bar graph would need a new method entirely
-    AppendVerticalRectanglesToGraph(){
+    AppendRectanglesToGraph(){
         let rectangles = this.g.selectAll("rect").data(this.options.data);
-        let self = this;
               
         rectangles
             .enter()
@@ -35,24 +42,24 @@ export default class BarChart extends Chart{
             )
             // Later fill based on SME config
             .style("fill", (d) => this.color(d.value))
-            // So rectangles can change on hover
-            .on("mouseover", function(d) { 
-                d3.select(this).style("opacity", 0.5);
-                self.MouseOver(d);
+            .on("mouseenter", (d, i, n) => { 
+                this.OnMouseEnter(d, n[i]);
             })
-            .on("mouseout", function () {
-                d3.select(this).style("opacity", 1);
-                self.MouseOut();
+            .on("mousemove", () => { 
+                this.OnMouseMove();
             })
+            .on("mouseleave", (d, i, n) => {
+                this.OnMouseLeave(n[i]);
+            });
 
         // Remove surplus bars and previous dataset out of graph
         rectangles.exit().remove();
         
         // Rectangles will grow up to their innerHeight
-        this.TransitionOnTheY();
+        this.TransitionOnTheVertical();
     }
 
-    TransitionOnTheY() {
+    TransitionOnTheVertical() {
         this.g.selectAll("rect")   
             .transition()
             .duration(700)
@@ -61,20 +68,17 @@ export default class BarChart extends Chart{
             .attr(
                 "height",
                 (d) => this.dimensions.innerHeight - this.yScale(d.value)
-            )
+            );
     }
 
     // Based on adding or removing features 
     Redraw(){
+        
         // Scale domains must be redone since the axises 
         // and bars and grid lines need to change 
-        this.UpdateAxes()
-        this.AppendVerticalRectanglesToGraph();
+        this.xScale.domain(this.options.data.map(d => d.title));
+        this.UpdateAxes();
+        this.BuildGridLineHorizontal();
+        this.AppendRectanglesToGraph();
     }
-
-    
-
-    
-
-
 }

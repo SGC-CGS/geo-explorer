@@ -131,6 +131,18 @@ Other things to consider:
 
 **Modified By:** Omar Kawach (2021) 
 
+## Arc Tween 
+
+See [a commented example of tweening](http://bl.ocks.org/mbostock/5100636) arcs by Mike Bostocks
+
+## D3 Mouse Events
+
+https://stackoverflow.com/questions/40722344/understanding-d3-with-an-example-mouseover-mouseup-with-multiple-arguments
+
+## D3 v4 Curves
+
+https://bl.ocks.org/d3noob/ced1b9b18bd8192d2c898884033b5529
+
 ## TODO
 - Make chart unavailable if no polygon clicked (alert)?
   - Add model-container alert like the one in CSGE V1 
@@ -144,6 +156,17 @@ Other things to consider:
 - Tick marks get weird
 - When provinces and territories are un-highlighted they should be removed from the table and chart 
 - When selecting a new dataset, the chart doesn't clear, but table does
+- PieChart
+  - Add new square DIV for legend with label and multiline
+    - E.g., https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018012-eng.htm
+- BarChart
+  - Prevent user from selecting too much (or hide x axis labels)
+- LineChart
+  - Need better data for testing
+  - Add red line tooltip instead of hover
+    - E.g., https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2017003-eng.htm
+- ScatterPlot
+  - Need better data for testing 
 
 ## Author(s)
 

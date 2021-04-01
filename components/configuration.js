@@ -29,6 +29,8 @@ export default class Configuration {
 	get ContextValue() { return this.json.context.value; }
 	
 	get ContextGeography() { return this.json.context.geography; }
+
+	get Chart() { return this.json.chart.id[Core.locale]; }
 	
 	get Table() { return this.json.table; }
 	

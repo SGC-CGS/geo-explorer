@@ -1,26 +1,44 @@
 import Chart from "./chart.js";
+import Axes from "./axes.js";
 
 export default class LineChart extends Chart{ 
     constructor(options) {
         super(options)
-        this.options = options
-        this.color = d3.scaleOrdinal(d3.schemeCategory20);
-        this.Draw()
+
+        this.options = options;
+
+        this.Draw();
     }
 
     Draw(){
+        this.xScale = Axes.CreateLinearXScale(this.options.data, this.dimensions.innerWidth);
+
+        this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
+
+        this.g.append("g")
+            .classed("x axis-grid", true)
+            .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+
+        this.BuildGridLineVertical(); 
+
+        this.g.append("g")
+            .classed("y axis-grid", true)
+            .attr("transform", "translate(0,0)");
+
+        this.BuildGridLineHorizontal(); 
+
         this.BuildAxes();
-        this.line = this.g.append("path")
+
+        this.line = this.g.append("path");
+
         this.AppendPointsToGraph();
     }
 
     AppendPointsToGraph() {
-        // Create line generator and add circles to each data point
+        // Create line generator
         let lineGenerator = d3.line()
             .x((d, i) => this.xScale(i)) 
-            .y((d) =>  this.yScale(d.value)) 
-            // https://bl.ocks.org/d3noob/ced1b9b18bd8192d2c898884033b5529
-            //.curve(d3.curveMonotoneX) 
+            .y((d) =>  this.yScale(d.value));
 
         // Add the line
         this.line
@@ -30,7 +48,7 @@ export default class LineChart extends Chart{
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .attr("stroke-width", 1.5)
-            .attr("d", lineGenerator)
+            .attr("d", lineGenerator);
 
         let totalLength = this.line.node().getTotalLength();
 
@@ -42,7 +60,10 @@ export default class LineChart extends Chart{
     }
 
     Redraw() {
-        this.UpdateAxes()
+        this.xScale.domain([0, this.options.data.length - 1]);
+        this.UpdateAxes();
+        this.BuildGridLineVertical();
+        this.BuildGridLineHorizontal();
         this.AppendPointsToGraph();
     }
 }

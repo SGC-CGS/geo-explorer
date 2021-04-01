@@ -1,7 +1,5 @@
 import Overlay from "./overlay.js";
 import Core from "../tools/core.js";
-import Dom from "../tools/dom.js";
-import Requests from "../tools/requests.js";
 import BarChart from "../charts/barChart.js";
 import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";
@@ -10,8 +8,27 @@ import ScatterPlot from "../charts/scatterPlot.js";
 export default Core.Templatable("App.Widgets.WChart",
   class WChart extends Overlay {
 
+    set Title(value) { this._title = value; }
+
+    get Title() { return this._title; }
+
     set data(value){
-      this.PopulateDataArray(value);
+      let values = value.items;
+
+      this._data = [];
+      
+      for (let index = 0; index < values.length; index++) {
+
+        let element = values[index];
+
+        this._data.push({
+          title: element["attributes"][this._title],
+          value: element["attributes"]["Value"],
+        });
+
+      }
+
+      this.BuildChart();
     }
     
     get data(){
@@ -20,32 +37,11 @@ export default Core.Templatable("App.Widgets.WChart",
 
     constructor(container, options) {
       super(container, options);
-      this.metadata = null;
+
       this.chart = null;
-      // Will be based on SME decision
-      this.chartType = null;
     }
 
-    PopulateDataArray(value) {
-      let title = Core.Nls("DisplayNameLong");
-
-      this._data = [];
-      
-      for (let index = 0; index < value.length; index++) {
-
-        let element = value[index];
-
-        this._data.push({
-          title: element["attributes"][title],
-          value: element["attributes"]["Value"],
-        });
-
-      }
-
-      this.Chart();
-    }
-
-    Chart() {
+    BuildChart() {
       // If the chart has already been made
       if (this.chart) {
 
@@ -68,34 +64,26 @@ export default Core.Templatable("App.Widgets.WChart",
 
         // Uncomment whichever chart you want to see
 
-        // TODO: Define chart type in constructor instead?
-
-        // TODO: Prevent user from selecting too much (or hide x axis labels)
         this.chart = new BarChart({
           chartType: "BarChart",
           data: this._data,
           element: element
         });
 
-        // TODO: Add new square DIV for legend with label and multiline 
-        // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018012-eng.htm
         // this.chart = new PieChart({
         //   chartType: "PieChart",
         //   data: this._data,
         //   element: element
         // });
 
-        // TODO: Add red line tooltip instead of hover
-        // https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2017003-eng.htm
-        // The x-axis labels are numbers
+        // The x-axis labels are numbers in LineChart
+        // And strings in BarChart
         // this.chart = new LineChart({
         //   chartType: "LineChart",
         //   data: this._data,
         //   element: element
         // });
 
-        // Need better data for testing of LineChart and 
-        // ScatterPlot
         // this.chart = new ScatterPlot({
         //   chartType: "ScatterPlot",
         //   data: this._data,
@@ -110,10 +98,6 @@ export default Core.Templatable("App.Widgets.WChart",
       this.chart = null
     } 
 
-    OnRequests_Error(error) {
-      this.Emit("Error", { error: error });
-    }
-
     Template() {
       return (
         "<div class='overlay-header'>" +
@@ -125,7 +109,7 @@ export default Core.Templatable("App.Widgets.WChart",
           "<hr>" +
 
           "<div class='overlay-body' handle='body'>" +
-            //"<label class='sm-label'>nls(Chart_Type)</label>" +
+            "<label class='sm-label'>nls(Chart_Type)</label>" +
             "<div id='ChartsContainer' handle='ChartsContainer' width='430' height='400'></div>" +
           "</div>" +
         "</div>"

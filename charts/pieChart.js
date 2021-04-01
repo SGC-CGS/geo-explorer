@@ -4,7 +4,14 @@ export default class PieChart extends Chart{
     constructor(options) {
         super(options)
         this.options = options
-        this.color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        // Update dimensions for PieChart and translate accordingly 
+        this.dimensions.radius = (Math.min(this.dimensions.width, this.dimensions.height) / 3);
+        this.dimensions.width += this.padding;
+        this.g.attr(
+            'transform', 
+            `translate(${this.dimensions.width / 2}, ${this.dimensions.radius})`
+        );
 
         // Append a foreignObject containing legend inside of SVG
         this.foreignObject = this.container.select("svg")
@@ -15,7 +22,6 @@ export default class PieChart extends Chart{
                         .style('x', 0)
                         .style('width', this.dimensions.width)
                         .style('height', this.dimensions.height / 3)
-                        .style('border', "solid")
         
         this.foreignObject.append("xhtml:div")
         
@@ -27,7 +33,6 @@ export default class PieChart extends Chart{
         // the right shape and angles
         let pie = d3.pie().value((d) => d.value)(this.options.data)
         let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0)
-        let self = this;
 
         this.circle = this.g.selectAll("path").data(pie)
 
@@ -37,18 +42,17 @@ export default class PieChart extends Chart{
             .merge(this.circle)
             .attr("d", arc)
             .style("fill", (d, i) => this.color(i))
-            .on("mouseover", function(d) { 
-                d3.select(this).style("opacity", 0.5);
-                self.MouseOver(d);
+            .on("mouseenter", (d, i, n) => { 
+                this.OnMouseEnter(d, n[i]);
             })
-            .on("mouseout", function () {
-                d3.select(this).style("opacity", 1);
-                self.MouseOut();
+            .on("mousemove", () => { 
+                this.OnMouseMove();
+            })
+            .on("mouseleave", (d, i, n) => {
+                this.OnMouseLeave(n[i]);
             })
             .transition()
             .duration(2000)
-            // TODO: Add this to the documentation
-            // http://bl.ocks.org/mbostock/5100636
             .attrTween("d", (d) => {
                 var interpolate = d3.interpolate(d.startAngle, d.endAngle);
                 return function(t) {
@@ -59,7 +63,6 @@ export default class PieChart extends Chart{
             this.circle.exit().remove();
         
         this.Legend();
-        
     }
 
     Legend() {
