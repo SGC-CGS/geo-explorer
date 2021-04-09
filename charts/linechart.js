@@ -1,6 +1,12 @@
 import Chart from "./chart.js";
 import Axes from "./axes.js";
 
+/**
+ * @description 
+ * The overall goal is to draw the lineChart onto the CSGE.
+ * Please refer to the the README in the charts folder for 
+ * more information on the D3 concepts presented in this code.
+ */
 export default class LineChart extends Chart{ 
     constructor(options) {
         super(options)
@@ -10,6 +16,12 @@ export default class LineChart extends Chart{
         this.Draw();
     }
 
+    /**
+     * @description
+     * First, the scales for the x and y axes are created.
+     * Next, grid lines are drawn vertically and horizontally. 
+     * Finally the axes are drawn and a line is drawn between data points.
+     */
     Draw(){
         this.xScale = Axes.CreateLinearXScale(this.options.data, this.dimensions.innerWidth);
 
@@ -31,10 +43,17 @@ export default class LineChart extends Chart{
 
         this.line = this.g.append("path");
 
-        this.AppendPointsToGraph();
+        this.AppendLinesToChart();
     }
 
-    AppendPointsToGraph() {
+    /**
+     * @description
+     * Generate a multi-connected line and append 
+     * it to the chart with transitions. The multi-connected
+     * line will need to be redrawn every time new data is added
+     * or removed.
+     */
+     AppendLinesToChart() {
         // Create line generator
         let lineGenerator = d3.line()
             .x((d, i) => this.xScale(i)) 
@@ -50,6 +69,7 @@ export default class LineChart extends Chart{
             .attr("stroke-width", 1.5)
             .attr("d", lineGenerator);
 
+        // Create the transition
         let totalLength = this.line.node().getTotalLength();
 
         this.line.attr("stroke-dasharray", totalLength)
@@ -59,6 +79,12 @@ export default class LineChart extends Chart{
             .attr('stroke-dashoffset', 0);
     }
 
+    /**
+     * @description
+     * Called when data is removed or added. 
+     * The domain of the scales and 
+     * visual elements need to be updated.
+     */
     Redraw() {
         this.xScale.domain([0, this.options.data.length - 1]);
         this.UpdateAxes();

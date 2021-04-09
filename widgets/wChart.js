@@ -41,6 +41,11 @@ export default Core.Templatable("App.Widgets.WChart",
       this.chart = null;
     }
 
+    /**
+     * @description
+     * Here the chart can be created, modified or cleared.
+     * Currently, the chart type selection is up to the programmer.
+     */
     BuildChart() {
       // If the chart has already been made
       if (this.chart) {
@@ -92,6 +97,11 @@ export default Core.Templatable("App.Widgets.WChart",
       }
     }
 
+    /**
+     * @description
+     * Removes the SVG from the charts container when there 
+     * is no more data to be displayed on a chart.
+     */
     ClearChart() {
       var svg = d3.select(this.Node("ChartsContainer").elem)
       svg.selectAll("svg").remove();

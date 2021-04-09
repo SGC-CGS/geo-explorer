@@ -1,5 +1,11 @@
 import Chart from "./chart.js";
 
+/**
+ * @description 
+ * The overall goal is to draw the pieChart onto the CSGE.
+ * Please refer to the the README in the charts folder for 
+ * more information on the D3 concepts presented in this code.
+ */
 export default class PieChart extends Chart{ 
     constructor(options) {
         super(options)
@@ -13,7 +19,7 @@ export default class PieChart extends Chart{
             `translate(${this.dimensions.width / 2}, ${this.dimensions.radius})`
         );
 
-        // Append a foreignObject containing legend inside of SVG
+        // Inside the SVG, append a foreignObject containing a div 
         this.foreignObject = this.container.select("svg")
                         .append('foreignObject')
                         .style("overflow-y", "scroll" )
@@ -28,6 +34,13 @@ export default class PieChart extends Chart{
         this.Draw();
     }
 
+    /**
+     * @description
+     * d3.pie() is used to set up the pieChart based on the data 
+     * and d3.arc() is used for getting the right shape and angles. 
+     * Pie slices and elements in the legend may be removed or 
+     * added depending on the case of the redraw function. 
+     */
     Draw() {
         // Set up pie chart based on data. Arc is used for getting
         // the right shape and angles
@@ -65,6 +78,11 @@ export default class PieChart extends Chart{
         this.Legend();
     }
 
+    /**
+     * @description
+     * Fill the foreignObject's div with html content relating 
+     * to the pieChart.
+     */
     Legend() {
         
         this.foreignObject
@@ -84,6 +102,11 @@ export default class PieChart extends Chart{
         )
     }
 
+    /**
+     * @description
+     * Called when data is removed or added. 
+     * The visual elements need to be updated.
+     */
     Redraw() {
         this.Draw()    
     }

@@ -1,5 +1,17 @@
+/**
+ * @description 
+ * Please refer to the the README in the charts folder for 
+ * more information on the D3 concepts presented in this code.
+ */
 export default class Axes { 
 
+    /**
+     * @description
+     * Create a new band scale for the x-axis with a domain composed of titles. 
+     * @param {Object} data - The entire dataset for the chart 
+     * @param {number} innerWidth - The extent to which the bands will be spread / mapped
+     * @returns {d3.scaleBand() function}
+     */
     static CreateBandXScale(data, innerWidth){
         return d3.scaleBand()
             // Map values into correct pixel positions
@@ -9,12 +21,28 @@ export default class Axes {
             .padding(0.1)
     }
 
+    /**
+     * @todo
+     * Update the domain later when a better dataset is available.
+     * @description
+     * Create a new linear scale for the x-axis.
+     * @param {Object} data - The entire dataset for the chart 
+     * @param {number} innerWidth - The extent to which parts of the domain will be spread / mapped
+     * @returns {d3.scaleLinear() function}
+     */
     static CreateLinearXScale(data, innerWidth){
         return d3.scaleLinear()
             .domain([0, data.length - 1])
             .range([0, innerWidth])
     }
 
+    /**
+     * @description
+     * Create a new linear scale for the y-axis with a domain composed of values.
+     * @param {Object} data - The entire dataset for the chart 
+     * @param {number} innerWidth - The extent to which the bands will be spread / mapped
+     * @returns {d3.scaleLinear() function}
+     */
     static CreateLinearYScale(data, innerHeight){
         // Could also use .domain(d3.extent(data, (d) => d.value ))
         return d3.scaleLinear()
@@ -28,7 +56,15 @@ export default class Axes {
             .nice()
     }
 
-    // Horizontal lines onto graph 
+    /**
+     * @description
+     * Create a function for the Left vertical axis on a chart. 
+     * The function will be used to build the horizontal grid 
+     * lines from the y-axis tick marks.
+     * @param {*} yScale - The linear scale for the vertical axis
+     * @param {*} innerWidth - The extent of the chart by width
+     * @returns {d3.axisLeft() function}
+     */
     static GridLineHorizontal(yScale, innerWidth) {
         return d3.axisLeft(yScale)
         // left axis should have same number of ticks 
@@ -36,14 +72,28 @@ export default class Axes {
         .tickFormat("")
     }
     
-    // Vertical lines onto graph
+    /**
+     * @description
+     * Create a function for the bottom horizontal axis on a chart. 
+     * The function will be used to build the vertical grid 
+     * lines from the x-axis tick marks.
+     * @param {*} xScale - The linear scale for the horizontal axis
+     * @param {*} innerHeight - The extent of the chart by height
+     * @returns {d3.axisBottom() function}
+     */
     static GridLineVertical(xScale, innerHeight) {
         return d3.axisBottom(xScale)
         .tickSize(-innerHeight)
         .tickFormat("")
     }
     
-    // Horizontal axis
+    /**
+     * @description
+     * Draw the bottom horizontal axis on the group element, and adjust the elements 
+     * at the tick marks to not exceed the extent of the SVG.
+     * @param {*} xScale - The linear scale for the bottom horizontal axis
+     * @param {*} g - group element bottom horizontal axis
+     */
     static SetBottomAxisAttributes (xScale, g) {
         g.call(d3.axisBottom(xScale))
         .selectAll("text")

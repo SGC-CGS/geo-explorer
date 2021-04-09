@@ -1,6 +1,12 @@
 import Chart from "./chart.js";
 import Axes from "./axes.js";
 
+/**
+ * @description 
+ * The overall goal is to draw the barChart onto the CSGE.
+ * Please refer to the the README in the charts folder for 
+ * more information on the D3 concepts presented in this code.
+ */
 export default class BarChart extends Chart{ 
 
     constructor(options) {
@@ -11,6 +17,12 @@ export default class BarChart extends Chart{
         this.Draw();
     }
 
+    /**
+     * @description
+     * First, the scales for the x and y axes are created.
+     * Next, grid lines are drawn horizontally. 
+     * Finally the axes and bars are drawn.
+     */
     Draw(){
         this.xScale = Axes.CreateBandXScale(this.options.data, this.dimensions.innerWidth);
 
@@ -22,10 +34,16 @@ export default class BarChart extends Chart{
 
         this.BuildAxes();
 
-        this.AppendRectanglesToGraph();
+        this.AppendRectanglesToChart();
     }
     
-    AppendRectanglesToGraph(){
+    /**
+     * @description
+     * For each tick mark on the x-axis, a rectangle is added. When
+     * the rectangles are first added, their heights are zero. Rectangles may be
+     * removed or added depending on the case of the redraw function. 
+     */
+    AppendRectanglesToChart(){
         let rectangles = this.g.selectAll("rect").data(this.options.data);
               
         rectangles
@@ -40,7 +58,6 @@ export default class BarChart extends Chart{
             .attr(
                 "height", this.dimensions.innerHeight - this.yScale(0)
             )
-            // Later fill based on SME config
             .style("fill", (d) => this.color(d.value))
             .on("mouseenter", (d, i, n) => { 
                 this.OnMouseEnter(d, n[i]);
@@ -55,10 +72,14 @@ export default class BarChart extends Chart{
         // Remove surplus bars and previous dataset out of graph
         rectangles.exit().remove();
         
-        // Rectangles will grow up to their innerHeight
         this.TransitionOnTheVertical();
     }
 
+    /**
+     * @description
+     * The transition function is called to grow 
+     * all the rectangles to the appropriate height.
+     */
     TransitionOnTheVertical() {
         this.g.selectAll("rect")   
             .transition()
@@ -71,14 +92,19 @@ export default class BarChart extends Chart{
             );
     }
 
-    // Based on adding or removing features 
+
+    /**
+     * @description
+     * Called when data is removed or added. 
+     * The domain of the scales and 
+     * visual elements need to be updated.
+     */
     Redraw(){
-        
         // Scale domains must be redone since the axises 
         // and bars and grid lines need to change 
         this.xScale.domain(this.options.data.map(d => d.title));
         this.UpdateAxes();
         this.BuildGridLineHorizontal();
-        this.AppendRectanglesToGraph();
+        this.AppendRectanglesToChart();
     }
 }
