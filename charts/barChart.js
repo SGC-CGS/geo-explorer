@@ -55,19 +55,11 @@ export default class BarChart extends Chart{
             // Compute the width for each rectangle
             .attr("width", this.xScale.bandwidth())
             // Compute height for each rectangle
-            .attr(
-                "height", this.dimensions.innerHeight - this.yScale(0)
-            )
+            .attr("height", this.dimensions.innerHeight - this.yScale(0))
             .style("fill", (d) => this.color(d.value))
-            .on("mouseenter", (d, i, n) => { 
-                this.OnMouseEnter(d, n[i]);
-            })
-            .on("mousemove", () => { 
-                this.OnMouseMove();
-            })
-            .on("mouseleave", (d, i, n) => {
-                this.OnMouseLeave(n[i]);
-            });
+            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d, n[i]))
+            .on("mousemove", () => this.OnMouseMove())
+            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]));
 
         // Remove surplus bars and previous dataset out of graph
         rectangles.exit().remove();
@@ -86,10 +78,7 @@ export default class BarChart extends Chart{
             .duration(700)
             .ease(d3.easeLinear)
             .attr("y", (d) => this.yScale(d.value))
-            .attr(
-                "height",
-                (d) => this.dimensions.innerHeight - this.yScale(d.value)
-            );
+            .attr("height", (d) => this.dimensions.innerHeight - this.yScale(d.value));
     }
 
 

@@ -5,6 +5,9 @@
  */
 export default class Axes { 
 
+	// TODO: For all relevant functions, consider having domain and range as parameters to function
+	// For example, what happens if you have a scale that should go in the negatives?
+	// TODO: innerWidth and innerHeight, in the context of these functions, don't really make any sense, width and height would do
     /**
      * @description
      * Create a new band scale for the x-axis with a domain composed of titles. 
@@ -94,6 +97,13 @@ export default class Axes {
      * @param {*} xScale - The linear scale for the bottom horizontal axis
      * @param {*} g - group element bottom horizontal axis
      */
+	 // TODO: transform angles and anchor should be provided as parameters
+	 // TODO: Consider more compact ways of accomplishing simple operations : 
+	 //			Option 1: return d.length > 15 ? d.substring(0, 13) + "..." : d;
+	 //			Option 2: if (d.length < 16) return d
+	 //					  return d.substring(0, 13) + "..."
+	 //		  Note: This is just coding style, if you prefer the way you wrote it, keep it that way.
+	 // Note: Not sure this should be a utility function since it's so specific. Maybe it should be a chart specific function
     static SetBottomAxisAttributes (xScale, g) {
         g.call(d3.axisBottom(xScale))
         .selectAll("text")

@@ -9,11 +9,11 @@ import Axes from "./axes.js";
  */
 export default class ScatterPlot extends Chart{ 
     constructor(options) {
-        super(options)
+        super(options);
         
-        this.options = options
+        this.options = options;
 
-        this.Draw()
+        this.Draw();
     }
 
     /**
@@ -28,14 +28,14 @@ export default class ScatterPlot extends Chart{
         this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
 
         this.g.append("g")
-            .classed("x axis-grid", true)
-            .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+              .classed("x axis-grid", true)
+              .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
 
         this.BuildGridLineVertical(); 
 
         this.g.append("g")
-            .classed("y axis-grid", true)
-            .attr("transform", "translate(0,0)");
+              .classed("y axis-grid", true)
+              .attr("transform", "translate(0,0)");
 
         this.BuildGridLineHorizontal(); 
 
@@ -59,21 +59,14 @@ export default class ScatterPlot extends Chart{
         let points = this.points.selectAll("circle").data(this.options.data);
         
         // Add the points
-        points  
-            .enter()
-            .append("circle")
-            .merge(points)
-                .on("mouseenter", (d, i, n) => { 
-                    this.OnMouseEnter(d, n[i]);
-                })
-                .on("mousemove", () => { 
-                    this.OnMouseMove();
-                })
-                .on("mouseleave", (d, i, n) => {
-                    this.OnMouseLeave(n[i]);
-                })
+        points.enter()
+              .append("circle")
+              .merge(points)
+                .on("mouseenter", (d, i, n) => this.OnMouseEnter(d, n[i]))
+                .on("mousemove", () => this.OnMouseMove())
+                .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
                 .transition()
-                .delay( (d, i) => (i * 3) )
+                .delay((d, i) => (i * 3))
                 .duration(2000)
                 .attr("cx", (d, i) => this.xScale(i))
                 .attr("cy", (d) => this.yScale(d.value))

@@ -28,14 +28,14 @@ export default class LineChart extends Chart{
         this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
 
         this.g.append("g")
-            .classed("x axis-grid", true)
-            .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+              .classed("x axis-grid", true)
+              .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
 
         this.BuildGridLineVertical(); 
 
         this.g.append("g")
-            .classed("y axis-grid", true)
-            .attr("transform", "translate(0,0)");
+              .classed("y axis-grid", true)
+              .attr("transform", "translate(0,0)");
 
         this.BuildGridLineHorizontal(); 
 
@@ -56,8 +56,8 @@ export default class LineChart extends Chart{
      AppendLinesToChart() {
         // Create line generator
         let lineGenerator = d3.line()
-            .x((d, i) => this.xScale(i)) 
-            .y((d) =>  this.yScale(d.value));
+							  .x((d, i) => this.xScale(i)) 
+							  .y((d) =>  this.yScale(d.value));
 
         // Add the line
         this.line

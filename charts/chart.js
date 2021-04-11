@@ -13,6 +13,8 @@ export default class Chart {
     constructor(options) {
         this.options = options;
 
+		// TODO: It's awkward to define a class level variable here and have descendents use it directly, not really "knowing" it exists.
+		// I suggest either making a get accessor
         // Set a default color 
         this.color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -37,10 +39,9 @@ export default class Chart {
      * Take the container element and append an SVG to it.
      */
     AppendSVGtoContainerElement() {
-        this.container
-          .append("svg")
-          .attr("width", +this.options.element.getAttribute("width"))
-          .attr("height", +this.options.element.getAttribute("height"));
+        this.container.append("svg")
+					  .attr("width", +this.options.element.getAttribute("width"))
+					  .attr("height", +this.options.element.getAttribute("height"));
     }
 
     /**
@@ -52,6 +53,7 @@ export default class Chart {
     BuildDimensions() {
         this.dimensions = this.options.dimensions || null;
 
+		// TODO : No need for curly brackets here
         if (!this.dimensions){ this.SetDefaultDimensions(); }
     }
 
@@ -62,21 +64,22 @@ export default class Chart {
     SetDefaultDimensions() {
         let margin = {top: 20, bottom: 70, right: 0, left: 55};
 
-        let width =
-            +this.container.select("svg").attr("width") -
-            this.padding;
+		// TODO : Suggestion, keep a handle on SVG element (this._svg) that holds this.container.select("svg"). 
+		// 		  Make a get accessor (this.svg). It'll make the code more readable down the line.
+        let width = +this.container.select("svg").attr("width") - this.padding;
 
-        let height =
-            +this.container.select("svg").attr("height") -
-            this.padding;
+        let height = +this.container.select("svg").attr("height") - this.padding;
 
+		// Note: Not a big fan of holding variables (margin, width and height) and derived values (both inners)
+		//		 What happens if width or height change? I wonder if it's worth it to build a "dimensions" object
+		// 		 that handles these issues. I built an example, see dimensions.js. May be overkill for now though.
         this.dimensions = {
-                margin : margin,
-                width:  width,
-                height: height,
-                innerWidth: width - margin.left - margin.right,
-                innerHeight : height - margin.top - margin.bottom
-            };
+			margin : margin,
+			width:  width,
+			height: height,
+			innerWidth: width - margin.left - margin.right,
+			innerHeight : height - margin.top - margin.bottom
+		}
     }
 
     /**
@@ -139,17 +142,13 @@ export default class Chart {
     UpdateAxes() {
         Axes.SetBottomAxisAttributes(this.xScale, this.g.selectAll("g.bottom.axis"));
         
+		// Note: For readability, I suggest computing the domain ahead		
+		var domain = [d3.max(this.options.data, (d) => d.value), 0];
+		var axis = d3.axisLeft(this.yScale.domain(domain)).ticks()
+		
         this.g
-          .selectAll("g.left.axis")
-          .call(
-            d3.axisLeft(
-                this.yScale.domain([
-                  d3.max(this.options.data, (d) => d.value),
-                  0,
-                ])
-              )
-              .ticks()
-          );
+			.selectAll("g.left.axis")
+			.call(axis);
     }
 
     /**
@@ -164,7 +163,9 @@ export default class Chart {
 
         let title, value;
 
-        if(d.title !== undefined) {
+		// TODO: This doesn't really work. It should be left to the descendent class. 
+		// Or provide a base implementation and let piecharts override.
+        if (d.title !== undefined) {
             title = d.title;
             value = d.value;
         } else {
@@ -192,7 +193,7 @@ export default class Chart {
      */
     OnMouseLeave(current) {
         d3.select(current).style("opacity", 1);
+		
         this.tooltip.Hide()
     }
-
 }

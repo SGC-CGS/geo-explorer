@@ -8,26 +8,28 @@ import Chart from "./chart.js";
  */
 export default class PieChart extends Chart{ 
     constructor(options) {
-        super(options)
-        this.options = options
+        super(options);
+		
+        this.options = options;
 
         // Update dimensions for PieChart and translate accordingly 
         this.dimensions.radius = (Math.min(this.dimensions.width, this.dimensions.height) / 3);
         this.dimensions.width += this.padding;
-        this.g.attr(
-            'transform', 
-            `translate(${this.dimensions.width / 2}, ${this.dimensions.radius})`
-        );
+        
+		var transform = `translate(${this.dimensions.width / 2}, ${this.dimensions.radius})`;
+		
+		this.g.attr('transform', transform);
 
+		// TODO: Don't remember what we said. I think we have to check this foreign Object in ie11 right?
         // Inside the SVG, append a foreignObject containing a div 
         this.foreignObject = this.container.select("svg")
-                        .append('foreignObject')
-                        .style("overflow-y", "scroll" )
-                        .style('position','fixed')
-                        .style('y', this.dimensions.height / 1.4)
-                        .style('x', 0)
-                        .style('width', this.dimensions.width)
-                        .style('height', this.dimensions.height / 3)
+										   .append('foreignObject')
+										   .style("overflow-y", "scroll" )
+										   .style('position','fixed')
+										   .style('y', this.dimensions.height / 1.4)
+										   .style('x', 0)
+										   .style('width', this.dimensions.width)
+										   .style('height', this.dimensions.height / 3)
         
         this.foreignObject.append("xhtml:div")
         
@@ -44,10 +46,10 @@ export default class PieChart extends Chart{
     Draw() {
         // Set up pie chart based on data. Arc is used for getting
         // the right shape and angles
-        let pie = d3.pie().value((d) => d.value)(this.options.data)
-        let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0)
+        let pie = d3.pie().value((d) => d.value)(this.options.data);
+        let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0);
 
-        this.circle = this.g.selectAll("path").data(pie)
+        this.circle = this.g.selectAll("path").data(pie);
 
         this.circle
             .enter()
@@ -55,22 +57,18 @@ export default class PieChart extends Chart{
             .merge(this.circle)
             .attr("d", arc)
             .style("fill", (d, i) => this.color(i))
-            .on("mouseenter", (d, i, n) => { 
-                this.OnMouseEnter(d, n[i]);
-            })
-            .on("mousemove", () => { 
-                this.OnMouseMove();
-            })
-            .on("mouseleave", (d, i, n) => {
-                this.OnMouseLeave(n[i]);
-            })
+            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d, n[i]))
+            .on("mousemove", () => this.OnMouseMove())
+            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
             .transition()
             .duration(2000)
             .attrTween("d", (d) => {
                 var interpolate = d3.interpolate(d.startAngle, d.endAngle);
-                return function(t) {
+				
+                return (t) => {
                     d.endAngle = interpolate(t);
-                    return arc(d);
+                    
+					return arc(d);
                 }
             });
             this.circle.exit().remove();
@@ -84,11 +82,14 @@ export default class PieChart extends Chart{
      * to the pieChart.
      */
     Legend() {
-        
+        // TODO: ForeignObject again, see previous comment
+		// TODO: for readability, construct HTML then call .html()
+		// TODO : Consider using CSS for styling if it works correctly with the foreign Object.
+		// Note: Is it just me or is that div with a bunch of style empty?
         this.foreignObject
             .select("div")
             .html(
-            this.options.data.map( (d, i) => {
+            this.options.data.map((d, i) => {
                 return `<div style="font-size:11px; margin-top:5px;  margin-left:5px;">
                             <div style="border-radius:10px;
                                 width:10px;
@@ -96,7 +97,7 @@ export default class PieChart extends Chart{
                                 background-color:${this.color(i)};
                                 display:inline-block">
                             </div> 
-                                ${d.title}\t (${d.value})
+                            ${d.title}\t (${d.value})
                         </div>`	
                 }).join('')
         )

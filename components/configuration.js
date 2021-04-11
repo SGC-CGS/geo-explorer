@@ -30,6 +30,8 @@ export default class Configuration {
 	
 	get ContextGeography() { return this.json.context.geography; }
 
+	// TODO : This is not returning a chart, it's returning a Field name. So ChartLabelFieldId or something like that would 
+	//		  be a more significant name, but long. In addition, "id" as a config param name is not representative, "field" maybe?
 	get Chart() { return this.json.chart.id[Core.locale]; }
 	
 	get Table() { return this.json.table; }
