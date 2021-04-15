@@ -761,3 +761,16 @@
 }
 
 /* End Chart CSS */
+
+/* foreignObject for pieChart */
+
+.svg foreignObject {
+    overflow-y: scroll;
+	position: fixed;
+}
+
+.svg foreignObject .pieLegend {
+    font-size:11px; 
+    margin-top:5px; 
+    margin-left:5px;
+}

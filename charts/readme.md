@@ -77,6 +77,8 @@ Many important methods exist in D3 for working with data:
 3. ```.exit().remove()``` 
    - Remove unwanted elements (e.g., if the data array has shrunken in size)
 
+In some cases, ```.data().enter().append()``` can be replaced with ```.datum()```. You'll see ```.datum()``` used in line charts since you'd want to bind data to a single element (i.e., the line).
+
 ### Scales
 
 Scale selection will depend on what you aim to visualize, so we won't go too in-depth on scales in D3 and the many functions that exist. 

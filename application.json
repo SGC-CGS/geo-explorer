@@ -45,10 +45,10 @@
         "geography": "A0007"
     },
     "chart": {
-        "id" : {
+        "field" : [{
             "en" : "DisplayNameLong_EN",
             "fr" : "DisplayNameLong_FR"
-        }
+        }]
     },
     "table": {
         "headers": [{

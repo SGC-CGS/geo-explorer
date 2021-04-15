@@ -5,121 +5,144 @@ import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";
 import ScatterPlot from "../charts/scatterPlot.js";
 
-export default Core.Templatable("App.Widgets.WChart",
+
+/**
+ * @description
+ * Chart widget where a chart is selected and
+ * built onto the UI
+ * @todo Handle product changes in Application.js?
+ */
+export default Core.Templatable(
+  "App.Widgets.WChart",
   class WChart extends Overlay {
+    set Title(value) {
+      this._title = value;
+    }
 
-    set Title(value) { this._title = value; }
+    get Title() {
+      return this._title;
+    }
 
-    get Title() { return this._title; }
+    set data(value) {
+      let values = value.items;
 
-    set data(value){
-		let values = value.items;
-		
-		this._data = [];
-		
-		for (let index = 0; index < values.length; index++) {
-			let element = values[index];
-			
-			this._data.push({
-				title: element["attributes"][this._title],
-				value: element["attributes"]["Value"]
-			});
+      this._data = [];
+
+      for (let index = 0; index < values.length; index++) {
+        let element = values[index];
+
+        this._data.push({
+          title: element["attributes"][this._title],
+          value: element["attributes"]["Value"],
+        });
       }
 
-	  // TODO : Call DrawChart only here, see comments in BuildChart function
-      this.BuildChart();
+      this.DrawChart();
     }
-    
-    get data() { return this._data; }
+
+    get data() {
+      return this._data || [];
+    }
 
     constructor(container, options) {
-		super(container, options);
-		
-		this.chart = null;
-		
-	  // TODO : Call BuildChart here, see comments in BuildChart function
+      super(container, options);
+
+      this.chart = null;
+
+      this.chartType = null;
+
+      this.BuildChart()
     }
 
     /**
      * @description
-     * Here the chart can be created, modified or cleared.
-     * Currently, the chart type selection is up to the programmer.
+     * Here the chart is created based on type selection.
+     * @todo 
+     * Chart type selection based on JSON.
      */
     BuildChart() {
-      // If the chart has already been made
-	  // TODO : Looks like this if statement is a DrawChart function
-      if (this.chart) {
-		  // If no more data, clear the chart from the overlay
-		  if (this._data.length == 0) this.ClearChart();
+      // Chart container element
+      let element = this.Node("ChartsContainer").elem;
 
-		  // If the chart exists and more data has been added, redraw
-		  else {
-			  // TODO: This should use a set accessor on the chart object 
-			  this.chart.options.data = this._data;
-			  
-			  this.chart.Redraw();
-        }
-      } 
-      
-      // Create the chart
-	  // TODO : Looks like this elseif statement is a BuildChart function
-      else if (this._data.length != 0) {
-        var element = this.Node("ChartsContainer").elem;
+      // Update this later
+      let chartType = this.chartType || null;
 
-        // Uncomment whichever chart you want to see
-		// TODO : Use get accessor for this._data
-        this.chart = new BarChart({
-			chartType: "BarChart",
-			data: this._data,
-			element: element
-        });
+      // Bar Chart by default
+      if ((!chartType) || (chartType == "BarChart")) {
+          this.chart = new BarChart({
+            data: this.data,
+            element: element,
+          });
+      } else if (chartType == "PieChart") {
+          this.chart = new PieChart({
+            data: this.data,
+            element: element
+          });
+      } else if (chartType == "LineChart") {
+          this.chart = new LineChart({
+            data: this.data,
+            element: element
+          });
+      } else if (chartType == "ScatterPlot") {
+          this.chart = new ScatterPlot({
+            data: this.data,
+            element: element
+          });
+      }
+      // No data is in the chart yet so hide the SVG
+      this.HideChart();
+    }
 
-        // this.chart = new PieChart({
-        //   chartType: "PieChart",
-        //   data: this._data,
-        //   element: element
-        // });
-
-        // The x-axis labels are numbers in LineChart
-        // And strings in BarChart
-        // this.chart = new LineChart({
-        //   chartType: "LineChart",
-        //   data: this._data,
-        //   element: element
-        // });
-
-        // this.chart = new ScatterPlot({
-        //   chartType: "ScatterPlot",
-        //   data: this._data,
-        //   element: element
-        // });
+    
+    /**
+     * @description
+     * Here the chart can be modified or cleared.
+     * @todo
+     * Change name of Redraw()?
+     */
+    DrawChart() {
+      if (this.data.length == 0) {
+        this.HideChart();
+      } else {
+        this.ShowChart();
+        this.chart.options.data = this.data;
+        this.chart.Redraw();
       }
     }
 
+    HideChart(){
+      d3.select(this.Node("ChartsContainer").elem)
+        .selectAll("svg")
+        .attr("visibility", "hidden");
+    }
+
+    ShowChart(){
+      d3.select(this.Node("ChartsContainer").elem)
+        .selectAll("svg")
+        .attr("visibility", "visible");
+    }
+
     /**
      * @description
-     * Removes the SVG from the charts container when there 
-     * is no more data to be displayed on a chart.
+     * Removes the SVG from the charts container and destroy 
+     * the current chart when you want to create a new type of chart.
      */
     ClearChart() {
-		var svg = d3.select(this.Node("ChartsContainer").elem);
-		svg.selectAll("svg").remove();
-		this.chart = null
-    } 
+      var elem = d3.select(this.Node("ChartsContainer").elem);
+      elem.selectAll("svg").remove();
+      this.chart = null;
+    }
 
     Template() {
       return (
-		"<div class='overlay-header'>" +
-			"<h2 class='overlay-title' handle='title'>nls(Chart_Title)</h2>" +
-			"<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
-		"</div>" +
-		"<hr>" +
-		"<div class='overlay-body' handle='body'>" +
-			"<label class='sm-label'>nls(Chart_Type)</label>" +
-            "<div id='ChartsContainer' handle='ChartsContainer' width='430' height='400'></div>" +
-		"</div>" +
-		// TODO: Oprhan div?
-        "</div>"
+        "<div class='overlay-header'>" +
+          "<h2 class='overlay-title' handle='title'>nls(Chart_Title)</h2>" +
+          "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
+        "</div>" +
+        "<hr>" +
+        "<div class='overlay-body' handle='body'>" +
+          "<label class='sm-label'>nls(Chart_Type)</label>" +
+        "<div id='ChartsContainer' handle='ChartsContainer' width='430' height='400'></div>"
       );
     }
   }

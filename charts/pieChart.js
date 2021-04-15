@@ -12,6 +12,8 @@ export default class PieChart extends Chart{
 		
         this.options = options;
 
+        this.color = this.GetColor();
+
         // Update dimensions for PieChart and translate accordingly 
         this.dimensions.radius = (Math.min(this.dimensions.width, this.dimensions.height) / 3);
         this.dimensions.width += this.padding;
@@ -20,12 +22,9 @@ export default class PieChart extends Chart{
 		
 		this.g.attr('transform', transform);
 
-		// TODO: Don't remember what we said. I think we have to check this foreign Object in ie11 right?
         // Inside the SVG, append a foreignObject containing a div 
         this.foreignObject = this.container.select("svg")
 										   .append('foreignObject')
-										   .style("overflow-y", "scroll" )
-										   .style('position','fixed')
 										   .style('y', this.dimensions.height / 1.4)
 										   .style('x', 0)
 										   .style('width', this.dimensions.width)
@@ -57,7 +56,7 @@ export default class PieChart extends Chart{
             .merge(this.circle)
             .attr("d", arc)
             .style("fill", (d, i) => this.color(i))
-            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d, n[i]))
+            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.data.title, d.data.value, n[i]))
             .on("mousemove", () => this.OnMouseMove())
             .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
             .transition()
@@ -82,25 +81,23 @@ export default class PieChart extends Chart{
      * to the pieChart.
      */
     Legend() {
-        // TODO: ForeignObject again, see previous comment
-		// TODO: for readability, construct HTML then call .html()
-		// TODO : Consider using CSS for styling if it works correctly with the foreign Object.
-		// Note: Is it just me or is that div with a bunch of style empty?
+        let htmlContent = this.options.data
+          .map((d, i) => {
+            return `<div class="pieLegend">
+                        <div style="border-radius:10px;
+                            width:10px;
+                            height:10px;
+                            background-color:${this.color(i)};
+                            display:inline-block">
+                        </div> 
+                        ${d.title}\t (${d.value})
+                    </div>`;
+          })
+          .join("");
+
         this.foreignObject
             .select("div")
-            .html(
-            this.options.data.map((d, i) => {
-                return `<div style="font-size:11px; margin-top:5px;  margin-left:5px;">
-                            <div style="border-radius:10px;
-                                width:10px;
-                                height:10px;
-                                background-color:${this.color(i)};
-                                display:inline-block">
-                            </div> 
-                            ${d.title}\t (${d.value})
-                        </div>`	
-                }).join('')
-        )
+            .html(htmlContent)
     }
 
     /**

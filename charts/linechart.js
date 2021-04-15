@@ -43,7 +43,7 @@ export default class LineChart extends Chart{
 
         this.line = this.g.append("path");
 
-        this.AppendLinesToChart();
+        this.AppendLineToChart();
     }
 
     /**
@@ -53,7 +53,7 @@ export default class LineChart extends Chart{
      * line will need to be redrawn every time new data is added
      * or removed.
      */
-     AppendLinesToChart() {
+     AppendLineToChart() {
         // Create line generator
         let lineGenerator = d3.line()
 							  .x((d, i) => this.xScale(i)) 
@@ -90,6 +90,6 @@ export default class LineChart extends Chart{
         this.UpdateAxes();
         this.BuildGridLineVertical();
         this.BuildGridLineHorizontal();
-        this.AppendPointsToGraph();
+        this.AppendLineToChart();
     }
 }

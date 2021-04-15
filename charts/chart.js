@@ -10,13 +10,12 @@ import Tooltip from "../ui/tooltip.js"
  */
 export default class Chart { 
 
+    get svg() {
+        return this._svg;
+    }
+
     constructor(options) {
         this.options = options;
-
-		// TODO: It's awkward to define a class level variable here and have descendents use it directly, not really "knowing" it exists.
-		// I suggest either making a get accessor
-        // Set a default color 
-        this.color = d3.scaleOrdinal(d3.schemeCategory20);
 
         // Set a padding value for the dimensions
         this.padding = 25
@@ -27,11 +26,15 @@ export default class Chart {
         // The container where chart elements will be held
         this.container = d3.select(this.options.element);
 
-        this.AppendSVGtoContainerElement();
+        this._svg = this.AppendSVGtoContainerElement();
 
         this.BuildDimensions();
 
         this.AddGroupToSVG();
+    }
+
+    GetColor() {
+        return d3.scaleOrdinal(d3.schemeCategory20);
     }
 
     /**
@@ -39,7 +42,7 @@ export default class Chart {
      * Take the container element and append an SVG to it.
      */
     AppendSVGtoContainerElement() {
-        this.container.append("svg")
+        return this.container.append("svg")
 					  .attr("width", +this.options.element.getAttribute("width"))
 					  .attr("height", +this.options.element.getAttribute("height"));
     }
@@ -53,8 +56,7 @@ export default class Chart {
     BuildDimensions() {
         this.dimensions = this.options.dimensions || null;
 
-		// TODO : No need for curly brackets here
-        if (!this.dimensions){ this.SetDefaultDimensions(); }
+        if (!this.dimensions) this.SetDefaultDimensions(); 
     }
 
     /**
@@ -64,11 +66,9 @@ export default class Chart {
     SetDefaultDimensions() {
         let margin = {top: 20, bottom: 70, right: 0, left: 55};
 
-		// TODO : Suggestion, keep a handle on SVG element (this._svg) that holds this.container.select("svg"). 
-		// 		  Make a get accessor (this.svg). It'll make the code more readable down the line.
-        let width = +this.container.select("svg").attr("width") - this.padding;
+        let width = +this.svg.attr("width") - this.padding;
 
-        let height = +this.container.select("svg").attr("height") - this.padding;
+        let height = +this.svg.attr("height") - this.padding;
 
 		// Note: Not a big fan of holding variables (margin, width and height) and derived values (both inners)
 		//		 What happens if width or height change? I wonder if it's worth it to build a "dimensions" object
@@ -87,7 +87,7 @@ export default class Chart {
      * Put the group within the view of the SVG.
      */
     AddGroupToSVG() {
-        this.g = this.container.select("svg").append('g').attr(
+        this.g = this.svg.append('g').attr(
             'transform', 
             `translate(${this.dimensions.margin.left}, ${this.dimensions.margin.top})`
         );
@@ -130,7 +130,7 @@ export default class Chart {
             .classed("bottom axis", true)
             .attr("transform", `translate(0, ${this.dimensions.innerHeight})`);
 
-        Axes.SetBottomAxisAttributes(this.xScale, this.g.selectAll("g.bottom.axis"));
+        this.SetBottomAxisAttributes();
     }
 
     /**
@@ -140,7 +140,7 @@ export default class Chart {
      * the chart type whereas the yScale is simply updated below. 
      */
     UpdateAxes() {
-        Axes.SetBottomAxisAttributes(this.xScale, this.g.selectAll("g.bottom.axis"));
+        this.SetBottomAxisAttributes();
         
 		// Note: For readability, I suggest computing the domain ahead		
 		var domain = [d3.max(this.options.data, (d) => d.value), 0];
@@ -153,26 +153,33 @@ export default class Chart {
 
     /**
      * @description
+     * Draw the bottom horizontal axis on the group element, and adjust the elements 
+     * at the tick marks to not exceed the extent of the SVG.
+     */
+     SetBottomAxisAttributes () {
+        let translateX = -10;
+        let angle = -45;
+        this.g
+          .selectAll("g.bottom.axis")
+          .call(d3.axisBottom(this.xScale))
+          .selectAll("text")
+          .attr("transform", `translate(${translateX}, 0)rotate(${angle})`)
+          .text((d) => {
+            return d.length > 15 ? d.substring(0, 13) + "..." : d;
+          })
+          .style("text-anchor", "end");
+    }
+
+    /**
+     * @description
      * When you enter into a chart element (slice of a pie, dot on a scatter plot, etc.),
      * the element will show a tooltip 
-     * @param {Object} d - Current data of chart element containing title and value
+     * @param {String} title - Current chart element title
+     * @param {String} value - Current chart element value
      * @param {Element} current - Current chart element (pie slice, dot on scatter plot, etc.)
      */
-    OnMouseEnter(d, current) {
+    OnMouseEnter(title, value, current) {
         d3.select(current).style("opacity", 0.5);
-
-        let title, value;
-
-		// TODO: This doesn't really work. It should be left to the descendent class. 
-		// Or provide a base implementation and let piecharts override.
-        if (d.title !== undefined) {
-            title = d.title;
-            value = d.value;
-        } else {
-            // PieCharts use .data
-            title = d.data.title;
-            value = d.data.value;
-        }  
 
         this.tooltip.content = `${title}` + "<br/>" + `Value: ` + `${value}`;
     }

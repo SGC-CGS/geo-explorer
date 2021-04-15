@@ -64,9 +64,7 @@ export default class Application extends Templated {
 		
 		this.map.AddMapImageLayer('main', this.config.MapUrl, this.config.MapOpacity);
 
-		// TODO : Discrepancy in the config.Chart accessor and what it's returning. See configuration.js
-		// TODO : Chart config in json could be clearer
-		this.Elem("chart").Title = this.config.Chart;
+		this.Elem("chart").Title = this.config.ChartLabelFieldId;
 		this.Elem("table").Headers = this.config.TableHeaders;
 		this.Elem('legend').Opacity = this.config.MapOpacity;
 		this.Elem('basemap').Map = this.map;

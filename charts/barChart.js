@@ -14,6 +14,8 @@ export default class BarChart extends Chart{
 
         this.options = options;
 
+        this.color = this.GetColor();
+
         this.Draw();
     }
 
@@ -57,7 +59,7 @@ export default class BarChart extends Chart{
             // Compute height for each rectangle
             .attr("height", this.dimensions.innerHeight - this.yScale(0))
             .style("fill", (d) => this.color(d.value))
-            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d, n[i]))
+            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.title, d.value, n[i]))
             .on("mousemove", () => this.OnMouseMove())
             .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]));
 

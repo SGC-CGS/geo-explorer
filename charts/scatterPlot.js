@@ -62,7 +62,7 @@ export default class ScatterPlot extends Chart{
         points.enter()
               .append("circle")
               .merge(points)
-                .on("mouseenter", (d, i, n) => this.OnMouseEnter(d, n[i]))
+                .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.title, d.value, n[i]))
                 .on("mousemove", () => this.OnMouseMove())
                 .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
                 .transition()
