@@ -7,6 +7,7 @@ import Behavior from './behavior.js';
 
 export default class PointIdentifyBehavior extends Behavior { 
 
+
 	get layer() { return this._map.Layer("identify"); }
 
 	get graphics() { return this.layer.graphics; }
@@ -34,22 +35,45 @@ export default class PointIdentifyBehavior extends Behavior {
 		this.ClickHandler = this.OnMap_Click.bind(this);
 	}
 
+	/**
+	 * @description
+	 * Point identify is deactivated when rectangle select 
+	 * is activated
+	 */
 	Deactivate(){
 		this.Clear();
 
 		this._map.Off("Click", this.ClickHandler);
 	}
 
+	/**
+	 * @description
+	 * By default, point identify is activated. Point identify
+	 * is re-activated when rectangle select is deactivated.
+	 */
 	Activate(){
 		this._map.On("Click", this.ClickHandler);
 	}
 	
+	/**
+	 * @description
+	 * De-select the selected layers, remove highlight
+	 * and hide popup.
+	 */
 	Clear() {
 		this.layer.removeAll();
 
 		this._map.popup.close();
 	}
 	
+	/**
+	 * @description
+	 * Fires after the map is clicked with point-identify.
+	 * mapPoint will indicate the point location of the click on the view
+	 * so that the popup may appear on the selected target. The selected feature
+	 * will also be outlined.
+	 * @param {*} ev - event
+	 */
 	OnMap_Click(ev) {		
 		this.Emit("Busy");
 		

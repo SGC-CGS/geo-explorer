@@ -4,13 +4,48 @@ import Core from '../tools/core.js';
 import Evented from './evented.js';
 import Requests from '../tools/requests.js';
 
+/**
+ * @description
+ * Context is called from configuration.js
+ * to handle changes / updates related to subject, theme, 
+ * category, etc. 
+ */
 export default class Context extends Evented { 
 	
+	/**
+	 * @description
+	 * Get / set a subject from / to the context 
+	 */
 	set subject(value) { this._selection.current.subject = value; }
+
+	/**
+	 * @description
+	 * Get / set a theme from / to the context 
+	 */
 	set theme(value) { this._selection.current.theme = value; }
+
+	/**
+	 * @description
+	 * Get / set a category from / to the context 
+	 */
 	set category(value) { this._selection.current.category = value; }
+
+	/**
+	 * @description
+	 * Get / set filters from / to the context 
+	 */
 	set filters(value) { this._selection.current.filters = value; }
+
+	/**
+	 * @description
+	 * Get / set a value from / to the context 
+	 */
 	set value(value) { this._selection.current.value = value; }
+
+	/**
+	 * @description
+	 * Get / set a geography from / to the context 
+	 */
 	set geography(value) { this._selection.current.geography = value; }
 	set metadata(value) { this._metadata.current = value; }
 	set sublayer(value) { this._sublayer.current = value; }
@@ -23,7 +58,7 @@ export default class Context extends Evented {
 	get geography() { return this._selection.current.geography; }
 	get metadata() { return this._metadata.current; }
 	get sublayer() { return this._sublayer.current; }
-
+	
 	get indicators() { return this.filters.concat([this.value]); }
 	
 	constructor (json) {
@@ -78,11 +113,21 @@ export default class Context extends Evented {
 		
 		return d.promise;
 	}
-		
+	
+	/**
+	 * @description
+	 * Convert a JS value to a JSON string and then into an object
+	 * @param {Object.prototype} pojo - Plain Old JS Object
+	 * @returns - de-referenced object
+	 */
 	Clone(pojo) {
 		return JSON.parse(JSON.stringify(pojo));
 	}
 	
+	/**
+	 * @description
+	 * By value, switch the previous to current
+	 */
 	Commit() {
 		this._lookups.previous = this.Clone(this._lookups.current);
 		this._selection.previous = this.Clone(this._selection.current);
@@ -90,6 +135,10 @@ export default class Context extends Evented {
 		this._sublayer.previous = this._sublayer.current;
 	}
 	
+	/**
+	 * @description
+	 * By value, switch the current to previous
+	 */
 	Revert() {
 		this._lookups.current = this.Clone(this._lookups.previous);
 		this._selection.current = this.Clone(this._selection.previous);

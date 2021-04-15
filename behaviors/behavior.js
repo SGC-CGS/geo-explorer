@@ -4,6 +4,11 @@ import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
 import Evented from '../components/evented.js';
 
+/**
+ * @description
+ * Parent class of the other behaviors seen in the
+ * behaviors folder
+ */
 export default class Behavior extends Evented { 
 
 	constructor(map, options) {	

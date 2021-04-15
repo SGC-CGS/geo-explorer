@@ -1,12 +1,27 @@
 import Core from '../tools/core.js';
 import Context from './context.js';
 
+/**
+ * @description
+ * Grab all the JSON content from application.json
+ * and use get accessors to retrieve parts of the content.
+ * You can see the accessors being used in application.js.
+ */
 export default class Configuration {
 	
+	/**
+	 * @description get the map object and all its contents
+	 */
 	get map() { return this._json.map; }
 	
+	/**
+	 * @description get the MapServer url for the map
+	 */
 	get mapUrl() { return this._json.map.url; }
 	
+	/**
+	 * @description get the opacity of the map
+	 */
 	get mapOpacity() { return this._json.map.opacity; }
 	
 	symbol(id) {
@@ -17,10 +32,22 @@ export default class Configuration {
 		return s;
 	}
 	
+	/**
+	 * @description get the context object and all its contents 
+	 * (subject, theme, category, etc.)
+	 */
 	get context() { return this._context; }
 	
+	/**
+	 * @description get the table object and all its contents 
+	 * (headers)
+	 */
 	get table() { return this._json.table; }
 	
+	/**
+	 * @description Get the ids and labels for the table header.
+	 * @returns object containing ids and labels in the website's current language
+	 */
 	get tableHeaders() { 
 		return this._json.table.headers.map(h => {
 			return {
@@ -34,6 +61,10 @@ export default class Configuration {
 		return this._json.name.label[Core.locale];
 	}
 
+	/**
+	 * @description Get the id, label, and url for the legend items
+	 * @returns object containing id, label and url of legend items
+	 */
 	get legendItems(){
 		return this._json.legend.items.map(i => {
 			return {
@@ -44,6 +75,10 @@ export default class Configuration {
 		});
 	}
 	
+	/**
+	 * @description Get the bookmarks in alphabetical order along 
+	 * with their extents
+	 */
 	get bookmarks() {
 		var bookmarks = this._json.bookmarks.sort((a,b) => {
 			if (a.name > b.name) return 1;
