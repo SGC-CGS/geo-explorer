@@ -3,7 +3,7 @@ import Core from '../tools/core.js';
 import Templated from '../components/templated.js';
 
 /**
- * Overlay overlay module
+ * Overlay widget module
  * @module widgets/overlay
  */
 export default class Overlay extends Templated { 
