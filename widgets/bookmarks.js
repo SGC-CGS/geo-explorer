@@ -5,6 +5,7 @@ import Dom from '../tools/dom.js';
 /**
  * Bookmarks widget module
  * @module widgets/bookmarks
+ * @extends Templated
  */
 export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends Templated {
 	

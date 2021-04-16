@@ -4,8 +4,19 @@ import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Typeahead from '../ui/typeahead/dynamic.js';
 
+/**
+ * Search widget module
+ * @module widgets/search
+ * @extends Templated
+ */
 export default Core.Templatable("App.Widgets.Search", class Search extends Templated {
 	
+	/**
+	 * Call constructor of base class (Templated) and initialize search widget
+	 * @param {object} container - div container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)
+	 * @returns {void}
+	 */
 	constructor(container, options) {	
 		super(container, options);
 		
@@ -14,6 +25,11 @@ export default Core.Templatable("App.Widgets.Search", class Search extends Templ
 		this.Elem("typeahead").On("Change", this.OnTypeahead_Change.bind(this));
 	}
 	
+	/**
+	 * Issue request to search placename and emit additional events
+	 * @param {object} ev - Event issued when user hits enter in search box
+	 * @returns {void}
+	 */
 	OnTypeahead_Change(ev) {
 		this.Emit("Busy");
 		
@@ -26,6 +42,10 @@ export default Core.Templatable("App.Widgets.Search", class Search extends Templ
 		});
 	}
 	
+	/**
+	 * Create a div for this widget
+	 * @returns {string} HTML with custom div
+	 */
 	Template() {        
 		return "<div handle='root'>" +
 				  "<div handle='typeahead' widget='Basic.Components.DynamicTypeahead'></div>" +

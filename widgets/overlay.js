@@ -5,6 +5,7 @@ import Templated from '../components/templated.js';
 /**
  * Overlay widget module
  * @module widgets/overlay
+ * @extends Templated
  */
 export default class Overlay extends Templated { 
 	

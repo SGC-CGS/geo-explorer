@@ -5,6 +5,7 @@ import Dom from '../tools/dom.js';
 /**
  * Basemap widget module
  * @module widgets/basemap
+ * @extends Templated
  */
 export default Core.Templatable("App.Widgets.Basemap", class Basemap extends Templated {
 	

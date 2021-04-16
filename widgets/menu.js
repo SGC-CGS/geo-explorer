@@ -5,7 +5,7 @@ import Dom from '../tools/dom.js';
 
 /**
  * Menu widget module
- * @module widgets/widgets
+ * @module widgets/menu
  */
 export default class Menu { 
 
