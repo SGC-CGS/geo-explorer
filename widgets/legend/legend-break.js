@@ -2,8 +2,16 @@ import TemplatedTable from '../../components/templated-table.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
+/**
+ * Legend break widget module
+ * @module widgets/legend/legend-break
+ * @extends TemplatedTable
+ */
 export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak extends TemplatedTable {
 	
+	/**
+	 * Get/set min value for breaks
+	 */
 	get Min() {
 		return this.min;
 	}
@@ -14,6 +22,9 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		this.Elem("lFrom").innerHTML = this.min.toLocaleString(Core.locale);
 	}
 	
+	/**
+	 * Get/set max value for breaks
+	 */
 	get Max() {
 		return this.max;
 	}
@@ -24,10 +35,17 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		this.Elem("lTo").innerHTML = this.max.toLocaleString(Core.locale);
 	}
 	
+	/**
+	 * Get color for legend breaks
+	 */
 	get Color() {
 		return this.color;
 	}
 
+	/**
+	 * Return text for legend breaks in both languages
+	 * @returns {object.<string, string>} Legend break text for each language
+	 */	
 	static Nls() {
 		return {
 			"Legend_Item_Join" : {
@@ -37,6 +55,12 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		}
 	}
 	
+	/**
+	 * Call constructor of base class (TemplatedTable) and initialize legend breaks
+	 * @param {object} container - table breaks container and properties
+	 * @param {object} options - additional info on breaks (min, max, colors)
+	 * @returns {void}
+	 */	
 	constructor(container, info) {	
 		super(container, info);
 		
@@ -48,6 +72,10 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		this.Elem("color").style.backgroundColor = this.color.toHex();
 	}
 	
+	/**
+	 * Create HTML for legend breaks
+	 * @returns {string} HTML for legend breaks
+	 */	
 	Template() {
 		return "<tr handle='container' class='break-line'>" +
 				 "<td class='break-color-container'>" + 
