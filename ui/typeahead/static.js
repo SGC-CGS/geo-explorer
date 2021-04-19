@@ -2,8 +2,8 @@ import Typeahead from './typeahead.js';
 import Core from '../../tools/core.js';
 
 /**
- * Dynamic typeahead module
- * @module ui/typeahead/dynamic
+ * Static typeahead module
+ * @module ui/typeahead/static
  * @extends Typeahead
  */
 export default Core.Templatable("Basic.Components.StaticTypeahead", class StaticTypeahead extends Typeahead {
