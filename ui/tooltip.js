@@ -5,28 +5,54 @@ import Dom from '../tools/dom.js';
 
 import Templated from '../components/templated.js';
 
+/**
+ * Tooltip module
+ * @module ui/tooltip
+ * @extends Templated
+ */
 export default class Tooltip extends Templated  {
-		
+	
+	/**
+	 * Get bounding box
+	 */
 	get BBox() {
 		return this.Elem("root").getBoundingClientRect();
 	}
 	
+	/**
+	 * Set HTML content value
+	 */
 	set content(value) {
 		this.Elem('content').innerHTML = value;
 	}
 	
+	/**
+	 * Call constructor of base class (Templated) and add required css
+	 * @param {string} - CSS to add
+	 * @returns {void}
+	 */
 	constructor(css) {	
 		super(document.body);		
 
 		if (css) Dom.AddCss(this.Elem("root"), css);		
 	}
 	
+	/**
+	 * Create HTML for tooltip
+	 * @returns {string} HTML for tooltip div
+	 */			
 	Template() {
 		return '<div handle="root" class="tooltip">' +
 				  '<div handle="content"></div>' +
 			   '</div>';
 	}
 		
+	/**
+	 * Create tooltip box and set position
+	 * @param {object} target - Target element
+	 * @param {number[]} offset - Offset coordinates
+	 * @returns {void}
+	 */
 	PositionTarget(target, offset) {
 		offset = offset || [0,0];
 		
@@ -39,6 +65,12 @@ export default class Tooltip extends Templated  {
 		this.PositionXY(x, y);
 	}
 	
+	/**
+	 * Set element position to specified coodinates
+	 * @param {number} x - X coordinate
+	 * @param {number} y - Y coordinate
+	 * @returns {void}
+	 */
 	PositionXY(x, y) {
 		this.Elem("root").style.left = x + "px";
 		this.Elem("root").style.top = y + "px";
@@ -49,16 +81,30 @@ export default class Tooltip extends Templated  {
 		}
 	}
 	
+	/**
+	 * Set tooltip position and show the tip
+	 * @param {number} x - X coordinate
+	 * @param {number} y - Y coordinate
+	 * @returns {void}
+	 */
 	Show(x, y) {
 		this.PositionXY(x, y);
 		
 		this.Elem("root").style.opacity = 1;
 	}
 	
+	/**
+	 * Hide tooltip
+	 * @returns {void}
+	 */
 	Hide() {
 		this.Elem("root").style.opacity = 0;
 	}
 	
+	/** 
+	 * Empty tooltip 
+	 * @returns {void}
+	 */
 	Empty() {
 		Dom.Empty(this.Elem("content"));
 	}
