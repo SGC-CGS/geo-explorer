@@ -58,7 +58,7 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 	/**
 	 * Call constructor of base class (Templated) and initialize select
 	 * @param {object} container - div container and properties
-	 * @param {object} options - any additional options to assign to the widget (not typically used)
+	 * @param {object} options - any additional options to assign (not typically used)
 	 * @returns {void}
 	 */	
 	constructor(container, options) {

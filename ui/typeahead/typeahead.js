@@ -2,12 +2,26 @@ import Templated from '../../components/templated.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
+/**
+ * Typeahead module
+ * @module ui/typeahead/typeahead
+ * @extends Templated
+ */
 export default Core.Templatable("Basic.Components.Typeahead", class Typeahead extends Templated {
 	
+	/**
+	 * Set placeholder value
+	 */
     set placeholder(value) { this.Elem('input').setAttribute('placeholder', value); }
 	
+	/**
+	 * Set title value
+	 */
 	set title(value) { this.Elem('input').setAttribute('title', value); }
 	
+	/**
+	 * Set matching values in list
+	 */
 	set store(value) {		
 		this._store = value.map(i => {
 			var li = Dom.Create("li", { innerHTML : i.label, tabIndex : -1 });
@@ -22,6 +36,9 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		this._items = this._store;
 	}
 	
+	/**
+	 * Get/set current selection in match list
+	 */
 	set current(value) {
 		this._curr = value;
 	}
@@ -30,6 +47,12 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		return this._curr;
 	}
 	
+	/**
+	 * Call constructor of base class (Templated) and initialize typeahead
+	 * @param {object} container - div container and properties
+	 * @param {object} options - any additional options to assign (not typically used)
+	 * @returns {void}
+	 */		
 	constructor(container, options) {	
 		super(container, options);
 		
@@ -52,16 +75,30 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		if (!options) return;
 	}
 	
+	/**
+	 * Remove all elements from match list
+	 * @returns {void}
+	 */
 	Empty() {		
 		Dom.Empty(this.Elem("list"));
 		
 		this._items = [];
 	}
 	
+	/**
+	 * Not currently used
+	 * @returns {void}
+	 */
 	Refresh() {
 		throw new Error("The Refresh function must be implemented.");
 	}
 	
+	/**
+	 * Populate match list in HTML
+	 * @param {object[]} items - List of items matching search
+	 * @param {string} mask - Search string
+	 * @returns {void}
+	 */
 	Fill(items, mask) {
 		this._items = items;
 		
@@ -81,10 +118,18 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		Dom.Place(frag, this.Elem("list"));
 	}
 	
+	/**
+	 * Show/hide match list under search box
+	 * @returns {void}
+	 */
 	UpdateCss() {		
 		Dom.ToggleCss(this.Elem("root"), "collapsed", this._items.length == 0);
 	}
 	
+	/**
+	 * Empty match list and populate search box after user makes a selection
+	 * @returns {void}
+	 */
 	Reset() {
 		if (this._temp) Dom.SetCss(this._temp.node, "");
 		
@@ -97,6 +142,11 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		this.Elem("input").value = value;
 	}
 	
+	/**
+	 * Refresh list of possible matches when use types a search term
+	 * @param {object} ev - Input event object
+	 * @returns {void}
+	 */
 	OnInputInput_Handler(ev) {
 		var value = ev.target.value;
 		// var value = this.Elem("input").value;	// If can'T use ...args in debounce
@@ -112,6 +162,11 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		});
 	}
 	
+	/**
+	 * Fill possible search values when input box is clicked
+	 * @param {object} ev - Focus event object
+	 * @returns {void}
+	 */
 	OnInputClick_Handler(ev) {			
 		if (ev.target.value.length < 3) return;
 		
@@ -122,6 +177,11 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		});
 	}
 	
+	/**
+	 * Handles entry of any special keys in search box
+	 * @param {object} ev - Keyboard event object
+	 * @returns {void}
+	 */
 	OnInputKeyDown_Handler(ev) {		
 		// prevent default event on specifically handled keys
 		if (ev.keyCode == 40 || ev.keyCode == 38 || ev.keyCode == 13 || ev.keyCode == 27) ev.preventDefault();
@@ -162,12 +222,23 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		else if (ev.keyCode == 27) this.OnInputBlur_Handler();	
 	}
 	
+	/**
+	 * Reset match list when user leaves search input field
+	 * @param {object} ev - Focus event object
+	 * @returns {void}
+	 */
 	OnInputBlur_Handler(ev) {			
 		this.Reset();
 		
 		this.UpdateCss();
 	}
 	
+	/**
+	 * When user clicks on an item in the list of possible search term matches, update selection and emit change event.
+	 * @param {object} item - Selected item details
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	onLiClick_Handler(item, ev) {
 		ev.stopPropagation();
 		// ev.preventDefault();
@@ -181,6 +252,11 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		this.Emit("Change", { item:item.data });
 	}
 	
+	/**
+	 * Allow scrolling through list of matches
+	 * @param {object} item - Navigation object of items in match list
+	 * @returns {void}
+	 */
 	ScrollTo(item) {				
 		// create rectangules to know the position of the elements
 		var ul = this.Elem("list");
@@ -193,6 +269,10 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		else if (liBx.top < ulBx.top) ul.scrollTop = ul.scrollTop + liBx.top - ulBx.top;
 	}
 	
+	/**
+	 * Create HTML for typeahead input box
+	 * @returns {string} HTML for typeahead input box
+	 */	
 	Template() {        
 		return "<div handle='root' class='typeahead collapsed'>" +
 				 "<input handle='input' type='text' class='input' placeholder='nls(Search_Typeahead_Placeholder)' title='nls(Search_Typeahead_Title)'>" + 

@@ -1,8 +1,17 @@
 import Typeahead from './typeahead.js';
 import Core from '../../tools/core.js';
 
+/**
+ * Dynamic typeahead module
+ * @module ui/typeahead/dynamic
+ * @extends Typeahead
+ */
 export default Core.Templatable("Basic.Components.StaticTypeahead", class StaticTypeahead extends Typeahead {
 
+	/**
+	 * Return ui text in both languages
+	 * @returns {object.<string, string>} Text for each language
+	 */	
 	static Nls() {
 		return {
 			"Search_Typeahead_Title": {
@@ -20,10 +29,21 @@ export default Core.Templatable("Basic.Components.StaticTypeahead", class Static
 		}
 	}
 	
+	/**
+	 * Call constructor of base class (Typeahead) and initialize typeahead
+	 * @param {object} container - div container and properties
+	 * @param {object} options - any additional options to assign (not typically used)
+	 * @returns {void}
+	 */		
 	constructor(container, options) {	
 		super(container, options);
 	}
 	
+	/**
+	 * Get list of possible matches for search string from static list
+	 * @param {string} mask - Search string
+	 * @returns {Promise} A promise object associated with query results (with resolve and reject functions)
+	 */	
 	Refresh(mask) {
 		var d = Core.Defer();
 		
