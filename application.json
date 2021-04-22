@@ -83,6 +83,15 @@
                 }
             }, {
                 "id": {
+                    "en": "UOM_EN",
+                    "fr": "UOM_FR"
+                },
+                "label": {
+                    "en": "Unit of Measure",
+                    "fr": "Unité de mesure"
+                }                
+            }, {
+                "id": {
                     "en": "NullDescription_EN",
                     "fr": "NullDescription_FR"
                 },
