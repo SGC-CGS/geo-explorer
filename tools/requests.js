@@ -302,8 +302,11 @@ export default class Requests {
 			var unit = f.attributes[`UOM_${locale}`];
 			var value = f.attributes[`FormattedValue_${locale}`];
 			var html = f.attributes[`IndicatorDisplay_${locale}`];
+			var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
+			var value_symbol_foot = f.attributes[`Symbol`] || ''; 
+			var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
 			
-			var content = `<b>${unit}</b>: ${value}<br><br>${html}`;
+			var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
 			
 			d.Resolve({ feature:f, geometry:geometry, content:content, title:title });
 		}, error => d.Reject(error));
