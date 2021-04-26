@@ -40,6 +40,11 @@ export default class RectangleSelectBehavior extends Behavior {
 		this._handlers = {"cursor-update": null, "draw-complete": null};
 	}
 
+	/**
+	 * @description
+	 * Rectangle select is deactivated when point select 
+	 * is activated
+	 */
 	Deactivate(){
 		this.Clear();
 		
@@ -47,6 +52,10 @@ export default class RectangleSelectBehavior extends Behavior {
 		this._handlers["draw-complete"].remove();	
 	}
 
+	/**
+	 * @description
+	 * Rectangle select is (re-)activated when point identify is deactivated.
+	 */
 	Activate(){		
 		this._action = this._draw.create("rectangle", { mode: "click" });
 		
@@ -54,11 +63,22 @@ export default class RectangleSelectBehavior extends Behavior {
 		this._handlers["draw-complete"] = this._action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
 	}
 	
+	/**
+	 * @description
+	 * De-select the selected layers and remove highlight
+	 */
 	Clear() {
 		this.layer.removeAll();
 		this._map.view.graphics.removeAll();
 	}
 	
+	/**
+	 * @description
+	 * Create the shape of the polygon 
+	 * @param {*} vertices - 2D array of #s representing the coordinates of each vertex
+	 * @param {*} sref - Spatial reference
+	 * @returns 
+	 */
 	VerticesToPolygon(vertices, sref) {
 		var p1 = vertices[0];
 		var p2 = vertices[1];
@@ -69,6 +89,14 @@ export default class RectangleSelectBehavior extends Behavior {
 		return { type: "polygon", rings: [ring], spatialReference: sref };
 	}
 	
+	/**
+	 * @description
+	 * Add a graphic polygon to the map for showing the user the rectangular 
+	 * selection 
+	 * {@link https://developers.arcgis.com/javascript/latest/add-a-point-line-and-polygon/|ArcGIS API for JavaScript}
+	 * @param {*} ev - event 
+	 * @returns 
+	 */
 	OnDraw_CursorUpdate(ev) {
 		if (ev.vertices.length < 2) return;
 
@@ -81,6 +109,12 @@ export default class RectangleSelectBehavior extends Behavior {
 		this._map.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
 	}
 	
+	/**
+	 * @description
+	 * Check if targeted layer(s) were selected by the geometry (rectangle)
+	 * @param {*} ev 
+	 * @returns 
+	 */
 	OnDraw_Complete(ev) {
 		this.Emit("Busy");
 		
@@ -95,6 +129,11 @@ export default class RectangleSelectBehavior extends Behavior {
 		p.then(this.OnDraw_QueryComplete.bind(this), error => this.OnDraw_QueryError.bind(this));
 	}
 	
+	/**
+	 * @description
+	 * Highlight the features that were selected by the geometry (rectangle)
+	 * @param {*} results 
+	 */
 	OnDraw_QueryComplete(results) {		
 		results.features.forEach(f => {
 			var exists = this.layer.graphics.find(g => g.attributes[this.field] == f.attributes[this.field]);

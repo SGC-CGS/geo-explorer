@@ -9,15 +9,14 @@ export default class Nls {
 	}
 	
 	/**
-	* Get a localized nls string ressource
-	*
-	* Parameters :
-	*	id : String, the id of the nls ressource to retrieve
-	*	subs : Array(String), an array of Strings to substitute in the localized nls string ressource
-	*	locale : String, the locale for the nls ressource
-	* Return : String, the localized nls string ressource
-	*/
-	Ressource(id, subs, locale) {
+	 * @description
+	 * Get a localized nls string resource
+	 * @param {String} id - the id of the nls resource to retrieve
+	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
+	 * @param {String} locale - the locale for the nls resource
+	 * @returns the localized nls string resource
+	 */
+	Resource(id, subs, locale) {
 		if (!this.strings) throw new Error("Nls content not set.");
 		
 		var itm = this.strings[id];
@@ -30,19 +29,24 @@ export default class Nls {
 
 		return this.Format(txt, subs);
 	}
-		
+	
+	/**
+	 * @description
+	 * Merge the strings object into the this.strings object
+	 * as a way to add nls.
+	 * @param {*} strings 
+	 */
 	AddNls(strings) {
 		this.strings = Core.Mixin(this.strings, strings);
 	}
 	
 	/**
-	* Formats a String using substitute strings
-	*
-	* Parameters :
-	*	str : String, the String to format
-	*	subs : Array(String), An array of Strings to substitute into the String
-	* Return : String, the formatted String
-	*/
+	 * @description
+	 * Formats a String using substitute string
+	 * @param {String} str - The String to format
+	 * @param {Array} subs - An array of Strings to substitute into the String
+	 * @returns the formatted String
+	 */
 	Format(str, subs) {
 		if (!subs || subs.length == 0) return str;
 		

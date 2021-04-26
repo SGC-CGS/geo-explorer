@@ -34,8 +34,14 @@ export default class Templated extends Evented {
 		if (container) this.Place(container);
 	}
 	
+	/**
+	 * @description
+	 * Get a localized nls string resource
+	 * @param {*} id — the id of the nls resource to retrieve
+	 * @returns - the localized nls string resource
+	 */
 	Nls(id) {
-		return this.nls.Ressource(id);
+		return this.nls.Resource(id);
 	}
 	
 	BuildTemplate() {
@@ -51,7 +57,7 @@ export default class Templated extends Evented {
 		var nls = this._nls;
 		
 		// Replace all nls strings in template. Nls string pattern in templates is nls(StringId)
-		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return nls.Ressource(m); });
+		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return nls.Resource(m); });
 		
 		this._template = Dom.Create("div", { innerHTML:html });
 	}

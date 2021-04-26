@@ -542,6 +542,7 @@
 /* Apply Close Buttons */
 .gexp .button-container {
 	float:right;
+	margin-top: 10px;
 }
 
 .gexp .button-container button {

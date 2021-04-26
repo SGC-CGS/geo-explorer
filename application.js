@@ -259,11 +259,11 @@ export default class Application extends Templated {
 				"<div handle='map-container' class='map-container'>" +
 					"<div handle='map'></div>" +
 					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
-					"<div handle='selector' class='' widget='App.Widgets.Selector'></div>" +
-					"<div handle='styler' class='' widget='App.Widgets.Styler'></div>" +
-					"<div handle='legend' class='' widget='App.Widgets.Legend'></div>" +
-					"<div handle='basemap' class='' widget='App.Widgets.Basemap'></div>" +
-					"<div handle='bookmarks' class='' widget='App.Widgets.Bookmarks'></div>" +
+					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
+					"<div handle='styler' widget='App.Widgets.Styler'></div>" +
+					"<div handle='legend' widget='App.Widgets.Legend'></div>" +
+					"<div handle='basemap' widget='App.Widgets.Basemap'></div>" +
+					"<div handle='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +
 			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>"
 	}

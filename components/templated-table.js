@@ -5,6 +5,11 @@ import Dom from '../tools/dom.js';
 import Evented from './evented.js';
 import Templated from './templated.js';
 
+/**
+ * @description
+ * Extends templated to create the table body element
+ */
+
 export default class templatedTable extends Templated { 
 
 	BuildTemplate() {
@@ -20,7 +25,7 @@ export default class templatedTable extends Templated {
 		var nls = this._nls;
 		
 		// Replace all nls strings in template. Nls string pattern in templates is nls(StringId)
-		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return nls.Ressource(m); });
+		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return nls.Resource(m); });
 		
 		this._template = Dom.Create("tbody", { innerHTML:html });
 	}
