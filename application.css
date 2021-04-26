@@ -1,3 +1,4 @@
+/* TODO: Periodically, big cleanup of CSS */
 .gexp {
 	font-size:14px;
 	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
@@ -243,6 +244,10 @@
 	background-size: 17pt;
 }
 
+.gexp .map-container .esri-ui .button-icon.chart {
+	background-image:url(./assets/charting-24.png);
+}
+
 .gexp .map-container .esri-ui .button-icon,
 .gexp .map-container .esri-ui .esri-fullscreen {
 	margin-bottom:0px;
@@ -309,6 +314,9 @@
 }
 
 .gexp .selector,
+
+.gexp .chart,
+
 .gexp .styler {
 	width:450px;
 }
@@ -539,6 +547,48 @@
     font-style:italic;
 }
 
+/* Chart svg */
+.gexp svg,
+
+/* Chart view widget */
+.gexp .chart label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .chart label.sm-label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .chart label > * {
+	margin-left:5px;
+	flex:1;
+}
+
+.gexp .chart .filter-container > *,
+.gexp .chart .filter-container .filter > *,
+.gexp .chart .overlay-body > * {
+	margin-top:6px;
+}
+
+.gexp .chart select {
+	width:100%;
+}
+
+.gexp .select-placeholder {
+	display:none;
+}
+
+.gexp .chart .filter-container {
+    border-left:solid 0.5em #d9d9d9;
+	padding-left:5px;
+}
+
+.gexp .chart .filter-instructions {
+    font-style:italic;
+}
+
 /* Apply Close Buttons */
 .gexp .button-container {
 	float:right;
@@ -671,4 +721,58 @@
 .gexp .table-widget button {
 	border:none;
 	background:none;
+}
+
+/* Chart CSS */
+.gexp rect {
+    /* Default fill */
+    fill: steelblue;
+}
+
+.gexp .rect:hover {
+    /* Default hover color */
+    fill: orangered ;
+  }
+
+.gexp text {
+    font-size: 1.15em;
+}
+
+.vertical-text {
+    transform: rotate(-90.0deg);
+}
+
+.gexp .axis path,
+.gexp .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.gexp .axis-grid path, 
+.gexp .axis-grid line{
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #e4e4e4;   
+  }
+
+/* Style the dots by assigning a fill and stroke */
+.gexp .dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+
+/* End Chart CSS */
+
+/* foreignObject for pieChart */
+
+.svg foreignObject {
+    overflow-y: scroll;
+	position: fixed;
+}
+
+.svg foreignObject .pieLegend {
+    font-size:11px; 
+    margin-top:5px; 
+    margin-left:5px;
 }

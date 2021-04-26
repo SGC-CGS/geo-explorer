@@ -16,6 +16,7 @@ import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
 import Overlay from './widgets/overlay.js';
 import Dom from './tools/dom.js';
+import wChart from './widgets/wChart.js';
 
 export default class Application extends Templated { 
 
@@ -32,6 +33,10 @@ export default class Application extends Templated {
 			"Styler_Title" : {
 				"en" : "Change map style",
 				"fr" : "Modifier le style de la carte"
+			},
+			"Chart_Title" : {
+				"en" : "View chart",
+				"fr" : "Type de Diagramme"
 			},
 			"Legend_Title" : {
 				"en" : "Map legend",
@@ -68,6 +73,7 @@ export default class Application extends Templated {
 
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
+		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
 		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
 		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
 		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
@@ -96,20 +102,21 @@ export default class Application extends Templated {
 		
 		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 
+		this.Elem("chart").labelField = this.config.chart.field;
 		this.Elem("table").headers = this.config.tableHeaders;
 		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-		/*
-	    this.config.legendItems.forEach(i => {
-			this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
-			this.Elem("legend").AddContextLayer(i.label, i, false);
-		})
-		*/
+	
+	    // this.config.LegendItems.forEach(i => {
+		// 	this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
+		// 	this.Elem("legend").AddContextLayer(i.label, i, false);
+		// })
+		
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
-			
+
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
 			this.Elem("legend").Update(this.context);
@@ -172,6 +179,7 @@ export default class Application extends Templated {
 		});	
 	}
 	
+	// Add event handler
 	HandleEvents(node, changeHandler) {
 		if (changeHandler) node.On('Change', changeHandler);
 		
@@ -231,13 +239,14 @@ export default class Application extends Templated {
 	}
 	
 	OnMap_SelectDraw(ev) {
-		this.Elem("table").Populate(ev.selection);
+		this.Elem("table").data = ev.selection;
+		this.Elem("chart").data = ev.selection;
 	}
 	
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior("selection").layer.remove(ev.graphic);
-				
-		this.Elem("table").Populate(this.map.Behavior("selection").graphics);
+		this.Elem("table").data = this.map.Behavior("selection").Graphics;
+		this.Elem("chart").data = this.map.Behavior("selection").Graphics;
 	}
 	
 	OnWidget_Busy(ev) {
@@ -264,6 +273,7 @@ export default class Application extends Templated {
 					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
 					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
 					"<div handle='styler' widget='App.Widgets.Styler'></div>" +
+					"<div handle='chart' widget='App.Widgets.WChart'></div>" +
 					"<div handle='legend' widget='App.Widgets.Legend'></div>" +
 					"<div handle='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' widget='App.Widgets.Bookmarks'></div>" +

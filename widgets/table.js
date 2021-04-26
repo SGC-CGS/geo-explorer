@@ -29,6 +29,10 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
 		});
 	}
+
+	set data(value){
+		this.Populate(value)
+	}
 	
 	/**
 	 Return messages for table widget in both languages
