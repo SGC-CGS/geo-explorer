@@ -3,10 +3,21 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Net from "../tools/net.js";
 
+/**
+ * Table widget module
+ * @module widgets/table
+ * @extends Templated
+ */
 export default Core.Templatable("App.Widgets.Table", class Table extends Templated {
 	
+	/**
+	 * Set table title
+	 */
 	set title(value) { this.Elem("title").innerHTML = value; }
 	
+	/**
+	 * Get/set table headers
+	 */
 	get headers() { return this._headers; }
 	
 	set headers(value) {
@@ -19,6 +30,10 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		});
 	}
 	
+	/**
+	 Return messages for table widget in both languages
+	 * @returns {object.<string, string>} Table text for each language
+	 */
 	static Nls() {
 		return {
 			"Table_Message" : {
@@ -36,12 +51,22 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		}
 	}
 	
+	/**
+	 * Call constructor of base class (Templated) and initialize table widget
+	 * @param {object} container - div table container and properties
+	 * @returns {void}
+	 */
 	constructor(container) {	
 		super(container);
 		
 		Dom.AddCss(this.container, 'hidden');
 	}
 
+	/**
+	 * Clears and hides table element
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */
 	Update(context) {
 		this.context = context; 
 		
@@ -54,7 +79,11 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		this.title = this.context.IndicatorsLabel();
 	}
 
-	//Update the table content with the correct data of the DBU
+	/**
+	 * Update the table content with the correct data of the DBU 
+	 * @param {object} graphics - Selected locations from map
+	 * @returns {void}
+	 */
 	Populate(graphics) {
 		Dom.Empty(this.Elem('body'));
 		
@@ -76,7 +105,14 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		
 		this.UpdateTableVisibility();
 	}
-	
+
+	/**
+	 * Create trash button for each row of table
+	 * @param {object} tr - Table row
+	 * @param {object} g - Accessor for map
+	 * @param {string} name - Name of location in table row
+	 * @returns {void}
+	 */
 	CreateButton(tr, g, name){
 		var td = Dom.Create("td", { className:"table-cell" }, tr);
 		var bt = Dom.Create("button", { className:"table-button", title:this.Nls("Table_Thrash_Title", [name]) }, td);
@@ -89,6 +125,10 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		});
 	}
 	
+	/**
+	 * Update CSS to toggle table visibility
+	 * @returns void
+	 */
 	UpdateTableVisibility() {
 		var isVisible = this.Elem("body").children.length > 0;
 		
@@ -96,6 +136,10 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		Dom.ToggleCss(this.Elem("table"), 'hidden', !isVisible);
 	}
 	
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for table widget
+	 */
 	Template() {
 		return "<div class='table-widget'>" +
 				  "<h2 handle='title'></h2>" +

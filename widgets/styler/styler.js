@@ -5,8 +5,17 @@ import Requests from '../../tools/requests.js';
 import Picker from '../../ui/picker.js';
 import StylerBreak from './styler-break.js';
 
+/**
+ * Styler widget module
+ * @module widgets/styler/styler
+ * @extends Templated
+ */
 export default Core.Templatable("App.Widgets.Styler", class Styler extends Templated {
 
+	/**
+	 * Return text for styler widget in both languages
+	 * @returns {object.<string, string>} Styler widget text for each language
+	 */		
 	static Nls() {
 		return {
 			"Styler_Title" : {
@@ -76,6 +85,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		}
 	}
 
+	/**
+	 * Call constructor of base class (Templated) and initialize styler widget
+	 * @param {object} container - div styler container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)	  
+	 * @returns {void}
+	 */	
 	constructor(container, options) {
 		super(container, options);
 
@@ -98,6 +113,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 	}
 
+	/**
+	 * Load class method, breaks, stard and end colours to styler widget
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */	
 	Update(context) {
 		this.context = context;
 
@@ -114,6 +134,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
 	}
 
+	/**
+	 * Remove class break
+	 * @param {number} i - Index number to remove from class breaks
+	 * @returns {void}
+	 */
 	Remove(i) {
 		var brk = this.breaks[i];
 		var prev = this.breaks[i-1];
@@ -128,6 +153,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Elem("iBreaks").value = this.breaks.length;
 	}
 
+	/**
+	 * Create break object from class break info
+	 * @param {object[]} classBreakInfos - Object describing class breaks
+	 * @returns {void}
+	 */	
 	LoadClassBreaks(classBreakInfos) {
 		Dom.Empty(this.Elem("breaks"));
 
@@ -142,6 +172,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		});
 	}
 
+	/**
+	 * Apply new break value when checkmark next to break is clicked
+	 * @param {number} i - Index number of break value to change
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnBreak_Apply(i, ev) {
 		var curr = this.breaks[i];
 		var next = this.breaks[i + 1];
@@ -158,6 +194,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		}
 	}
 
+	/**
+	 * Make a call to remove a class break if there is more than one
+	 * @param {number} i - Index number to remove
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnBreak_Remove(i, ev) {
 		// Last break cannot be removed
 		if (this.breaks.length == 1) return;
@@ -167,6 +209,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Remove(i);
 	}
 
+	/**
+	 * Change start or end colour after choice is made from colour picker
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnPicker_Finished(ev) {
 		this.context.metadata.colors.start = this.Elem("bColorS").EsriColor;
 		this.context.metadata.colors.end = this.Elem("bColorE").EsriColor;
@@ -174,18 +221,33 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Refresh();
 	}
 
+	/**
+	 * Change number of breaks when up or down arrows are clicked or new number is entered
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	onIBreaks_Change(ev) {
 		this.context.metadata.breaks.n = ev.target.value;
 
 		this.Refresh();
 	}
 
+	/**
+	 * Change classification method
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	onMethod_Change(ev) {
 		this.context.metadata.breaks.algo = ev.target.selected.algo;
 
 		this.Refresh();
 	}
 
+	/**
+	 * Update map when apply button is clicked on styler widget
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	OnApply_Click(ev) {
 		this.context.Commit();
 
@@ -213,6 +275,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Emit("Change", { renderer:renderer });
 	}
 
+	/**
+	 * Close styler widget when Cancel button is clicked
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	OnClose_Click(ev) {
 		this.context.Revert();
 
@@ -221,10 +288,19 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Update(this.context);
 	}
 
+	/**
+	 * Emits error when there is a problem loading class breaks
+	 * @param {object} error - Error object
+	 * @returns {void}
+	 */
 	OnRequests_Error (error) {
 		this.Emit("Error", { error:error });
 	}
 
+	/**
+	 * Refresh class breaks based on currently selected options
+	 * @returns {void}
+	 */
 	Refresh() {
 		this.Emit("Busy");
 
@@ -235,6 +311,10 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		}, error => this.OnRequests_Error(error));
 	}
 
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for styler widget
+	 */	
 	Template() {
 		return	"<p>nls(Styler_Instructions_1)</p>" +
 				"<label>nls(Styler_Method)</label>" +

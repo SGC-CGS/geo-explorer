@@ -4,8 +4,17 @@ import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Select from '../ui/select.js';
 
+/**
+ * Selector widget module
+ * @module widgets/selector
+ * @extends Templated
+ */
 export default Core.Templatable("App.Widgets.Selector", class Selector extends Templated {
 	
+	/**
+	 Return select box text in both languages
+	 * @returns {object.<string, string>} Select box text for each language
+	 */
 	static Nls() {
 		return {
 			"Selector_Title" : {
@@ -71,6 +80,12 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		}
 	}
 	
+	/**
+	 * Call constructor of base class (Templated) and initialize selector widget
+	 * @param {object} container - div selector container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)
+	 * @returns {void}
+	 */	
 	constructor(container, options) {	
 		super(container, options);
 		this.filters = [];
@@ -98,6 +113,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Elem('bApply').disabled = true;
 	}
 	
+	/**
+	 * Load data to select elements
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */
 	Update(context) {
 		this.context = context;
 		
@@ -120,6 +140,12 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		});
 	}
 		
+	/**
+	 * Load select element with list of items and enable
+	 * @param {object} select - Select element
+	 * @param {Object[]} items - List of objects with ids and labels to be added to select element
+	 * @returns {void}
+	 */
 	LoadDropDown(select, items) {
 		select.Empty();
 		
@@ -128,6 +154,10 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		select.disabled = false;
 	}
 	
+	/**
+	 * Remove all filter select elements from Dom and CSS
+	 * @returns {void}
+	 */
 	ResetFilter() {
 		this.filters = [];
 		
@@ -135,6 +165,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		Dom.RemoveCss(this.Elem("instructions"), "hidden");
 	}
 	
+	/**
+	 * Load filter select elements
+	 * @param {object[]} filters - List of objects containing ids and labels to be added to filter select element
+	 * @returns {object} Object containing filter select elements
+	 */
 	LoadFilters(filters) {		
 		Dom.AddCss(this.Elem("instructions"), "hidden");
 		
@@ -153,6 +188,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		});
 	}
 	
+	/**
+	 * Deselect and disable specified select elements
+	 * @param {string[]} elements - List of select elements to be disabled
+	 * @returns {void}
+	 */
 	Disable(elements) {
 		elements.forEach(e => {
 			this.Elem(e).disabled = true;
@@ -165,6 +205,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.ResetFilter();
 	}
 	
+	/**
+	 * Update themes when a subject is selected
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnSubject_Change(ev) {
 		this.Disable(['sTheme', 'sCategory', 'sValue', 'sGeography', 'bApply']);
 		
@@ -177,6 +222,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		}, error => this.OnRequests_Error(error));		
 	}
 	
+	/**
+	 * Update categories when a theme is selected
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnTheme_Change(ev) {
 		this.Disable(['sCategory', 'sValue', 'sGeography', 'bApply']);
 		
@@ -189,6 +239,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		}, error => this.OnRequests_Error(error));		
 	}
 	
+	/**
+	 * Update filter and value select elements when a category/product is selected
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnCategory_Change(ev) {
 		this.Disable(['sValue', 'sGeography', 'bApply']);
 		
@@ -202,6 +257,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		}, error => this.OnRequests_Error(error));		
 	}
 	
+	/**
+	 * Update geographic level select element when a value to display is selected
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnValue_Change(ev) {
 		if (this.Elem("sValue").value == -1) return;
 		
@@ -219,12 +279,22 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		}, error => this.OnRequests_Error(error));
 	}
 	
+	/**
+	 * Assign geography level and enable Apply button when geography level is selected
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnGeography_Change(ev) {
 		this.Elem('bApply').disabled = false;
 		
 		this.context.ChangeGeography(ev.item.value);
 	}
 	
+	/**
+	 * Load data when Apply button is clicked
+	 * @param {object} ev - Mouse event object
+	 * @returns {void}
+	 */
 	OnApply_Click(ev) {
 		this.Emit("Busy");
 		
@@ -237,6 +307,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		});
 	}
 	
+	/**
+	 * Close selector window when user clicks cancel
+	 * @param {Object} ev - Mouse event object
+	 * @returns {void}
+	 */
 	OnClose_Click(ev) {
 		this.context.Revert();
 		
@@ -245,10 +320,19 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Emit("Close");
 	}
 	
+	/**
+	 * Emits error when changing a select element generates an error
+	 * @param {object} error - Error describing problem
+	 * @returns {void}
+	 */
 	OnRequests_Error (error) {
 		this.Emit("Error", { error:error });
 	}
 	
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for selector widget
+	 */
 	Template() {
 		return	"<label class='sm-label'>nls(Selector_Subject)</label>" + 
 				"<div handle='sSubject' widget='Basic.Components.Select'></div>" +

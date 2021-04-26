@@ -2,8 +2,16 @@ import TemplatedTable from '../../components/templated-table.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
+/**
+ * Styler break widget module
+ * @module widgets/styler/styler-break
+ * @extends TemplatedTable
+ */
 export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak extends TemplatedTable {
 
+	/**
+	 * Get/set min value for breaks
+	 */
 	get Min() {
 		return this.min;
 	}
@@ -14,6 +22,9 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("lFrom").innerHTML = this.min.toLocaleString(Core.locale);
 	}
 
+	/**
+	 * Get/set max value for breaks
+	 */
 	get Max() {
 		return this.max;
 	}
@@ -26,10 +37,17 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("eInput").value = this.max;
 	}
 
+	/**
+	 * Get color for breaks
+	 */	
 	get Color() {
 		return this.color;
 	}
 
+	/**
+	 * Return text for breaks in both languages
+	 * @returns {object.<string, string>} Break text for each language
+	 */	
 	static Nls() {
 		return {
 			"Styler_Item_Join" : {
@@ -39,6 +57,12 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		}
 	}
 
+	/**
+	 * Call constructor of base class (TemplatedTable) and initialize breaks
+	 * @param {object} container - breaks container and properties
+	 * @param {object} options - additional info on breaks (min, max, colors)
+	 * @returns {void}
+	 */	
 	constructor(container, info) {
 		super(container, info);
 
@@ -55,44 +79,84 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
 	}
 
+	/**
+	 * Cancel edits to class break value and reset to max
+	 * @returns {void}
+	 */
 	Cancel() {
 		this.Elem("eInput").value = this.max;
 	}
 
+	/**
+	 * Save the updated class break value 
+	 * @returns {void}
+	 */
 	Save() {
 		this.max = +this.Elem("eInput").value;
 
 		this.Elem("bTo").innerHTML = this.max.toLocaleString(Core.locale);
 	}
 
+	/**
+	 * Change css to show element is in edit mode
+	 * @returns {void}
+	 */
 	Edit() {
 		Dom.AddCss(this.Elem('eContainer'), "editing");
 	}
 
+	/**
+	 * Change css to show element is in no longer in edit mode
+	 * @returns {void}
+	 */
 	StopEdit() {
 		Dom.RemoveCss(this.Elem('eContainer'), "editing");
 	}
 
+	/**
+	 * Change to editable text box when user clicks on break value
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	OnEditor_Button(ev) {
 		this.Edit();
 	}
 
+	/**
+	 * Update value of the class break when check button is pressed
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	OnEditor_Apply(ev) {
 		var tentative = +this.Elem("eInput").value;
 
 		this.Emit("apply", { value:tentative });
 	}
 
+	/**
+	 * Cancel edit of class break value when x button is pressed
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	OnEditor_Cancel(ev) {
 		this.Cancel();
 
 		this.StopEdit();
 	}
 
+	/**
+	 * Emit remove event when delete button of a class break is clicked
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
 	OnEditor_Remove(ev){
 		this.Emit("remove");
 	}
 
+	/**
+	 * Create HTML for breaks
+	 * @returns {string} HTML for breaks
+	 */		
 	Template() {
 		return "<tr handle='container' class='break-line'>" +
 				 "<td class='break-color-container'>" +

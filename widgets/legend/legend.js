@@ -4,8 +4,16 @@ import Dom from '../../tools/dom.js';
 
 import LegendBreak from './legend-break.js';
 
+/**
+ * Legend widget module
+ * @module widgets/legend/legend
+ * @extends Templated
+ */
 export default Core.Templatable("App.Widgets.Legend", class Legend extends Templated {
 	
+	/**
+	 * Get/set opacity
+	 */
 	set Opacity(value) {
 		this.Elem('sOpacity').value = value * 100;
 	}
@@ -14,6 +22,10 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		return this.Elem('sOpacity').value / 100;
 	}
 	
+	/**
+	 * Return text for legend widget in both languages
+	 * @returns {object.<string, string>} Legend widget text for each language
+	 */	
 	static Nls() {
 		return {
 			"Legend_Title" : {
@@ -51,6 +63,12 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		}
 	}
 	
+	/**
+	 * Call constructor of base class (Templated) and initialize legend widget
+	 * @param {object} container - div legend container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)	  
+	 * @returns {void}
+	 */	
 	constructor(container, options) {	
 		super(container, options);
 		
@@ -61,6 +79,11 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		})
 	}
 	
+	/**
+	 * Load indicators and class breaks and clear checked values on legend widget
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */	
 	Update(context) {	
 		this.context = context;
 		
@@ -72,6 +95,11 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		
 	}
 	
+	/**
+	 * Create list elements in Dom for selected indicators
+	 * @param {object[]} indicators - List of indicator IDs and labels to load
+	 * @returns {void}
+	 */
 	LoadIndicators(indicators) {
 		Dom.Empty(this.Elem("indicators"));
 		
@@ -80,6 +108,11 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		});
 	}
 	
+	/**
+	 * Create legend break object from class break info
+	 * @param {object[]} classBreakInfos - Object describing class breaks
+	 * @returns {void}
+	 */
 	LoadClassBreaks(classBreakInfos) {
 		Dom.Empty(this.Elem("breaks"));
 		
@@ -88,6 +121,13 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		});
 	}
 	
+	/**
+	 * Add context layer information to Dom
+	 * @param {string} label - Label for context layer
+	 * @param {oject} data - Data to add to event listener (confirm)
+	 * @param {string} checked - Value for checkbox (confirm)
+	 * @returns {void}
+	 */
 	AddContextLayer(label, data, checked) {
 		var div = Dom.Create("li", { className:"context-layer" }, this.Elem("cLayers"));
 		var chk = Dom.Create("input", { id:Core.NextId(), className:"context-layer-check", type:"checkbox", checked: checked}, div);
@@ -98,10 +138,19 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		});
 	}
 
+	/**
+	 * Respond to change in opacity slider
+	 * @param {object} ev - Event received from opacity slider
+	 * @returns {void}
+	 */
 	OnOpacity_Changed(ev) {
 		this.Emit("Opacity", { opacity:this.Opacity });
 	}
 	
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for legend widget
+	 */	
 	Template() {
 		return	"<div class='overlay-body' handle='body'>" + 
 				"<label>nls(Legend_Indicators)</label>" +
