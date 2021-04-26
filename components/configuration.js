@@ -2,28 +2,33 @@ import Core from '../tools/core.js';
 import Context from './context.js';
 
 /**
- * @description
  * Grab all the JSON content from application.json
  * and use get accessors to retrieve parts of the content.
  * You can see the accessors being used in application.js.
+ * @module components/configuration
  */
 export default class Configuration {
 	
 	/**
-	 * @description get the map object and all its contents
+	 * Get the map object and all its contents
 	 */
 	get map() { return this._json.map; }
 	
 	/**
-	 * @description get the MapServer url for the map
+	 * Get the MapServer url for the map
 	 */
 	get mapUrl() { return this._json.map.url; }
 	
 	/**
-	 * @description get the opacity of the map
+	 * Get the opacity of the map
 	 */
 	get mapOpacity() { return this._json.map.opacity; }
 	
+	/**
+	 * Get symbol properties from JSON object
+	 * @param {string} id - Symbol name (ex. selection, identify)
+	 * @returns {object} - Object containing symbol properties (type, color, style, outline)
+	 */
 	symbol(id) {
 		var s = this._json.symbols[id];
 		
@@ -33,20 +38,18 @@ export default class Configuration {
 	}
 	
 	/**
-	 * @description get the context object and all its contents 
-	 * (subject, theme, category, etc.)
+	 * Get the context object and all its contents (subject, theme, category, etc.)
 	 */
 	get context() { return this._context; }
 	
 	/**
-	 * @description get the table object and all its contents 
-	 * (headers)
+	 * Get the table object and all its contents (headers)
 	 */
 	get table() { return this._json.table; }
 	
 	/**
-	 * @description Get the ids and labels for the table header.
-	 * @returns object containing ids and labels in the website's current language
+	 * Get the ids (field names) and labels for the table header.
+	 * @returns {object} Object containing ids and labels in the current language
 	 */
 	get tableHeaders() { 
 		return this._json.table.headers.map(h => {
@@ -57,13 +60,17 @@ export default class Configuration {
 		}); 
 	}
 
+	/**
+	 * Return label name from JSON object - This function does not appear to be in use.
+	 * @returns {string} Label in specified language.
+	 */
 	get labelName() {
 		return this._json.name.label[Core.locale];
 	}
 
 	/**
-	 * @description Get the id, label, and url for the legend items
-	 * @returns object containing id, label and url of legend items
+	 * Get the id, label, and url for the legend items
+	 * @returns {object} Object containing id, label and url of legend items
 	 */
 	get legendItems(){
 		return this._json.legend.items.map(i => {
@@ -76,8 +83,8 @@ export default class Configuration {
 	}
 	
 	/**
-	 * @description Get the bookmarks in alphabetical order along 
-	 * with their extents
+	 * Get the bookmarks in alphabetical order along with their extents
+	 * @returns {object} Object sorted by name containing name and extent xmin, xmax, ymin, ymax)
 	 */
 	get bookmarks() {
 		var bookmarks = this._json.bookmarks.sort((a,b) => {
@@ -101,6 +108,11 @@ export default class Configuration {
 		}); 
 	}
 	
+	/**
+	 * Initialize configuration class by setting json and context (data) 
+	 * @param {object} - json with page content (bookmarks, colors, context, layers, legend, map, symbols, tables)
+	 * @returns {void}
+	 */	
 	constructor(json) {
 		this._json = json;
 		

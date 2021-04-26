@@ -5,62 +5,71 @@ import Evented from './evented.js';
 import Requests from '../tools/requests.js';
 
 /**
- * @description
- * Context is called from configuration.js
- * to handle changes / updates related to subject, theme, 
- * category, etc. 
+ * Context is called from configuration.js to handle changes / updates related 
+ * to subject, theme, category, etc. 
+ * @module components/context
+ * @extends Evented
  */
 export default class Context extends Evented { 
 	
 	/**
-	 * @description
-	 * Get / set a subject from / to the context 
+	 * Get / set current subject from / to the context 
 	 */
 	set subject(value) { this._selection.current.subject = value; }
+	get subject() { return this._selection.current.subject; }
 
 	/**
-	 * @description
-	 * Get / set a theme from / to the context 
+	 * Get / set current theme from / to the context 
 	 */
 	set theme(value) { this._selection.current.theme = value; }
+	get theme() { return this._selection.current.theme; }
 
 	/**
-	 * @description
-	 * Get / set a category from / to the context 
+	 * Get / set current category from / to the context 
 	 */
 	set category(value) { this._selection.current.category = value; }
+	get category() { return this._selection.current.category; }
 
 	/**
-	 * @description
-	 * Get / set filters from / to the context 
+	 * Get / set current filters from / to the context 
 	 */
 	set filters(value) { this._selection.current.filters = value; }
+	get filters() { return this._selection.current.filters; }
 
 	/**
-	 * @description
-	 * Get / set a value from / to the context 
+	 * Get / set current value from / to the context 
 	 */
 	set value(value) { this._selection.current.value = value; }
+	get value() { return this._selection.current.value; }
 
 	/**
-	 * @description
-	 * Get / set a geography from / to the context 
+	 * Get / set current geography from / to the context 
 	 */
 	set geography(value) { this._selection.current.geography = value; }
-	set metadata(value) { this._metadata.current = value; }
-	set sublayer(value) { this._sublayer.current = value; }
-	
-	get subject() { return this._selection.current.subject; }
-	get theme() { return this._selection.current.theme; }
-	get category() { return this._selection.current.category; }
-	get filters() { return this._selection.current.filters; }
-	get value() { return this._selection.current.value; }
 	get geography() { return this._selection.current.geography; }
+
+	/**
+	 * Get / set current metadata
+	 */
+	set metadata(value) { this._metadata.current = value; }
 	get metadata() { return this._metadata.current; }
+
+	/**
+	 * Get / set current sublayer
+	 */
+	set sublayer(value) { this._sublayer.current = value; }
 	get sublayer() { return this._sublayer.current; }
 	
+	/**
+	 * Get indicators from concatenated filters
+	 */
 	get indicators() { return this.filters.concat([this.value]); }
 	
+	/**
+	 * Call constructor of base class (Evented) and initialize context class 
+	 * @param {object} - JSON object containing values for selecting data (category, filters, geography, subject, theme, value)
+	 * @returns {void}
+	 */		
 	constructor (json) {
 		super();
 		
@@ -72,6 +81,11 @@ export default class Context extends Evented {
 		this._sublayer = { current: null, previous : null }
 	}
 	
+	/**
+	 * Verify that json object contains valid information for selecting data 
+	 * @param {object} json - JSON object containing values for selecting data (category, filters, geography, subject, theme, value)
+	 * @returns {void}
+	 */
 	Validate(json) {
 		if (isNaN(json.subject)) throw new Error("subject provided is not a number.");
 
@@ -90,6 +104,11 @@ export default class Context extends Evented {
 		if (json.filters.some(isNaN)) throw new Error("filters provided are not numbers.");
 	}
 	
+	/**
+	 * Update dependent config properties with chained promises
+	 * @param {object} config - Context object  (listeners, _lookups, _selection, _metadata:, _sublayer)
+	 * @returns {promise} Promise with if resolved
+	 */
 	Initialize(config) {
 		this.Emit("Busy");
 		
@@ -115,7 +134,6 @@ export default class Context extends Evented {
 	}
 	
 	/**
-	 * @description
 	 * Convert a JS value to a JSON string and then into an object
 	 * @param {Object.prototype} pojo - Plain Old JS Object
 	 * @returns - de-referenced object
@@ -125,8 +143,8 @@ export default class Context extends Evented {
 	}
 	
 	/**
-	 * @description
 	 * By value, switch the previous to current
+	 * @returns {void}
 	 */
 	Commit() {
 		this._lookups.previous = this.Clone(this._lookups.current);
@@ -136,8 +154,8 @@ export default class Context extends Evented {
 	}
 	
 	/**
-	 * @description
 	 * By value, switch the current to previous
+	 * @returns {void}
 	 */
 	Revert() {
 		this._lookups.current = this.Clone(this._lookups.previous);
@@ -146,24 +164,40 @@ export default class Context extends Evented {
 		this._sublayer.current = this._sublayer.previous;
 	}
 	
+	/**
+	 * Update _lookups with subject list
+	 * @returns {promise} Promise with current subject object[] (value, label, description) if resolved
+	 */
 	UpdateSubjects() {
 		return Requests.Indicator(null).then(lookup => {				
 			this._lookups.current.subjects = lookup;
 		}, error => this.OnContext_Error(error));
 	}
 	
+	/**
+	 * Update _lookups with current themes under current subject Id
+	 * @returns {promise} Promise with current theme object[] (value, label, description) if resolved
+	 */
 	UpdateThemes() {
 		return Requests.Indicator(this.subject).then(lookup => {					
 			this._lookups.current.themes = lookup;
 		}, error => this.OnContext_Error(error));
 	}
 	
+	/**
+	 * Update_lookups with current categories under current theme Id
+	 * @returns {promise} Promise with current category object[] (value, label, description) if resolved
+	 */
 	UpdateCategories() {
 		return Requests.Indicator(this.theme).then(lookup => {					
 			this._lookups.current.categories = lookup;
 		}, error => this.OnContext_Error(error));
 	}
 	
+	/**
+	 * Update_lookups with current indicators (filters and values) under current category Id
+	 * @returns {promise} Promise with current indicators object[] (filters and values) if resolved
+	 */
 	UpdateIndicators() {
 		return Requests.Category(this.category).then(r => {
 			this._lookups.current.filters = r.filters; //.map(f => f.values);
@@ -171,6 +205,10 @@ export default class Context extends Evented {
 		}, error => this.OnContext_Error(error));
 	}
 	
+	/**
+	 * Update current metadata value for current indicators and issue call to update geographies
+	 * @returns {promise} Promise with current metadata object (breaks, colors, indicator, query) if resolved
+	 */
 	UpdateMetadata() {
 		var d = Core.Defer();
 		
@@ -183,36 +221,65 @@ export default class Context extends Evented {
 		return d.promise;
 	}
 	
+	/**
+	 * Update current geography levels for current metadata
+	 * @returns {promise} Promise with current geography level objects[] (value, label, descipription) if resolved
+	 */
 	UpdateGeographies() {
 		return Requests.Geography(this.metadata.indicator).then(items => {
 			this._lookups.current.geographies = items;
 		}, error => this.OnContext_Error(error));
 	}
 	
+	/**
+	 * Call the request renderer and set the sublayer for the current selections
+	 * @returns {promise} Promise with sublayer object if resolved
+	 */
 	UpdateRenderer() {		
 		return Requests.Renderer(this).then(sublayer => {
 			this.sublayer = sublayer;
 		}, error => this.OnContext_Error(error));
 	}
 	
+	/**
+	 * Set subject and update the dependent themes when the user changes the subject selection
+	 * @param {number} subject - IndicatorThemeId for subject
+	 * @returns {promise} Promise from UpdateThemes with object[] (value, label, description) if resolved
+	 */
 	ChangeSubject(subject) {			
 		this.subject = subject;
 		
 		return this.UpdateThemes();
 	}
 	
+	/**
+	 * Set theme and update the dependent categories when the user changes the theme selection
+	 * @param {number} theme - IndicatorThemeId for theme
+	 * @returns {promise} Promise from UpdateCategories with object[] (value, label, description) if resolved
+	 */
 	ChangeTheme(theme) {			
 		this.theme = theme;
 		
 		return this.UpdateCategories();
 	}
 	
+	/**
+	 * Set category and update the dependent indicators when the user changes the category selection
+	 * @param {number} category - IndicatorThemeId for category (product)
+	 * @returns {promise} Promise from UpdateIndicators with indicators object[] (filters and values) if resolved
+	 */
 	ChangeCategory(category) {		
 		this.category = category;
 		
 		return this.UpdateIndicators();
 	}
 	
+	/**
+	 * Set filters and value and update the metadata when the user changes the value to display
+	 * @param {number[]} filters - Number array of selected filter Ids (DimensionValueId)
+	 * @param {number} value - Selected Value Id (DimensionValueId)
+	 * @returns {promise} Promise from UpdateMetadata with current metadata object (breaks, colors, indicator, query) if resolved
+	 */
 	ChangeIndicators(filters, value) {
 		this.filters = filters;
 		this.value = value;
@@ -220,6 +287,11 @@ export default class Context extends Evented {
 		return this.UpdateMetadata();
 	}
 	
+	/**
+	 * Set the geographic level when the user changes the geographic level selection
+	 * @param {string} geography - Selected Geographic Level (GeographicLevelId)
+	 * @returns {promise} - Promise with updated geography if resolved
+	 */
 	ChangeGeography(geography) {
 		var d = Core.Defer();
 		
@@ -230,10 +302,21 @@ export default class Context extends Evented {
 		return d.promise;
 	}
 	
+	/**
+	 * Look up an Id in lookups.current and return the object
+	 * @param {string} id - Id string that matches an item in lookups.current object
+	 * @returns {object} - Object from _lookups.current 
+	 */
 	Lookup(id) {
 		return this._lookups.current[id];
 	}
 	
+	/**
+	 * Look up matching filter object in filter object array
+	 * @param {object[]} lookup - Filter object array (value, label)
+	 * @param {number} value - Value to look up in filter object 
+	 * @returns {object} Matching filter object (value, label)
+	 */
 	FindLookupItem(lookup, value) {		
 		for (var i = 0; i < lookup.length; i++) {
 			if (lookup[i].value == value) return lookup[i];
@@ -242,6 +325,10 @@ export default class Context extends Evented {
 		return null;
 	}
 	
+	/**
+	 * Build array of filter objects
+	 * @returns {object[]} Array of filter objects (value, label)
+	 */
 	IndicatorItems() {
 		var items = this.filters.map((ind, i) => {
 			var lookup = this.Lookup("filters")[i];
@@ -254,6 +341,10 @@ export default class Context extends Evented {
 		return items;
 	}
 	
+	/**
+	 * Build comma separated Indicator label by joining labels from IndicatorItems array of objects
+	 * @returns (string) Indicator label
+	 */
 	IndicatorsLabel() {
 		// TODO : Couple of things here, removing the first term because reference period
 		// didn't show in the original app. Also removing the numbers at the start of each
@@ -263,6 +354,11 @@ export default class Context extends Evented {
 		}).join(", ");
 	}
 	
+	/**
+	 * Emit error when function is called
+	 * @param {object} - Object containing information about the error
+	 * @returns {void}
+	 */
 	OnContext_Error(error) {
 		this.Emit("Error", { error:error });
 	}
