@@ -295,17 +295,7 @@ export default class Requests {
 		var d = Core.Defer();
 		
 		Requests.QueryGeometry(layer, geometry).then(r => {
-			var locale = Core.locale.toUpperCase();
-			var f = r.features[0];
-			
-			var title = f.attributes[`DisplayNameShort_${locale}`];
-			var unit = f.attributes[`UOM_${locale}`];
-			var value = f.attributes[`FormattedValue_${locale}`];
-			var html = f.attributes[`IndicatorDisplay_${locale}`];
-			
-			var content = `<b>${unit}</b>: ${value}<br><br>${html}`;
-			
-			d.Resolve({ feature:f, geometry:geometry, content:content, title:title });
+			d.Resolve({ feature:r.features[0], geometry:geometry });
 		}, error => d.Reject(error));
 		
 		return d.promise;

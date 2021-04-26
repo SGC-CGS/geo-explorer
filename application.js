@@ -155,7 +155,18 @@ export default class Application extends Templated {
 		behavior.target = context.sublayer;
 		behavior.symbol = config.symbol("identify");
 
-		this.HandleEvents(behavior);	
+		this.HandleEvents(behavior, r => {		
+			var locale = Core.locale.toUpperCase();
+			var unit = r.feature.attributes[`UOM_${locale}`];
+			var value = r.feature.attributes[`FormattedValue_${locale}`];
+			var html = r.feature.attributes[`IndicatorDisplay_${locale}`];
+			
+			this.map.popup.open({
+				location : r.mapPoint,
+				title : r.feature.attributes[`DisplayNameShort_${locale}`],
+				content : `<b>${unit}</b>: ${value}<br><br>${html}`
+			});
+		});	
 	}
 	
 	HandleEvents(node, changeHandler) {
@@ -248,11 +259,11 @@ export default class Application extends Templated {
 				"<div handle='map-container' class='map-container'>" +
 					"<div handle='map'></div>" +
 					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
-					"<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
-					"<div handle='styler' class='styler' widget='App.Widgets.Styler'></div>" +
-					"<div handle='legend' class='legend' widget='App.Widgets.Legend'></div>" +
-					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
-					"<div handle='bookmarks' class='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
+					"<div handle='selector' class='' widget='App.Widgets.Selector'></div>" +
+					"<div handle='styler' class='' widget='App.Widgets.Styler'></div>" +
+					"<div handle='legend' class='' widget='App.Widgets.Legend'></div>" +
+					"<div handle='basemap' class='' widget='App.Widgets.Basemap'></div>" +
+					"<div handle='bookmarks' class='' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +
 			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>"
 	}

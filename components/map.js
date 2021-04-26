@@ -61,8 +61,8 @@ export default class Map extends Evented {
 		
 		this._map.add(layer);
 	}
-
-	AddFeatureLayer(id, url, labels, visibility){
+	/*
+	AddFeatureLayer(id, url, labels, visibility, index){
 		var layer = new ESRI.layers.FeatureLayer({
 			url: url,
 			fields:[{
@@ -74,7 +74,21 @@ export default class Map extends Evented {
 
 		this._layers[id] = layer;
 
-		this._map.add(layer);
+		this._map.add(layer, index);
+	}
+	*/
+	AddFeatureLayer(id, url, expression, outFields, renderer, index) {
+		var options = { url:url, outFields:outFields };
+		
+		if (expression) options.definitionExpression = expression;
+		
+		if (renderer) options.renderer = renderer;
+		
+		this._layers[id] = new ESRI.layers.FeatureLayer(options);
+		
+		this._map.add(this._layers[id], index);
+		
+		return this._layers[id];
 	}
 	
 	AddMapImageLayer(id, url, opacity, dpi, format) {
@@ -112,8 +126,8 @@ export default class Map extends Evented {
 	Identify(layer, geometry) {
 		var d = Core.Defer();
 		
-		Requests.Identify(layer, geometry).then(result => {
-			d.Resolve(result);			
+		Requests.QueryGeometry(layer, geometry).then(result => {
+			d.Resolve({ feature:result.features[0], geometry:geometry });
 		}, error => this.OnMapView_Error(error));
 		
 		return d.promise;

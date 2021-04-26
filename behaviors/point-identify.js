@@ -49,7 +49,7 @@ export default class PointIdentifyBehavior extends Behavior {
 
 		this._map.popup.close();
 	}
-	
+		
 	OnMap_Click(ev) {		
 		this.Emit("Busy");
 		
@@ -61,14 +61,8 @@ export default class PointIdentifyBehavior extends Behavior {
 			r.feature.symbol = this.symbol;
 			
 			this.layer.add(r.feature);
-
-			this._map.popup.open({
-				title:r.title,
-				content:r.content,
-				location:ev.mapPoint
-			});
 			
-			this.Emit("Change", { mapPoint:ev.mapPoint, results:r });
+			this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature });
 		}, error => this.OnIdentify_Error(error));
 	}
 	
