@@ -155,17 +155,20 @@ export default class Application extends Templated {
 		behavior.target = context.sublayer;
 		behavior.symbol = config.symbol("identify");
 
-		this.HandleEvents(behavior, r => {		
+		this.HandleEvents(behavior, r => {
 			var locale = Core.locale.toUpperCase();
-			var unit = r.feature.attributes[`UOM_${locale}`];
-			var value = r.feature.attributes[`FormattedValue_${locale}`];
-			var html = r.feature.attributes[`IndicatorDisplay_${locale}`];
+			var f = r.feature;
 			
-			this.map.popup.open({
-				location : r.mapPoint,
-				title : r.feature.attributes[`DisplayNameShort_${locale}`],
-				content : `<b>${unit}</b>: ${value}<br><br>${html}`
-			});
+			var title = f.attributes[`DisplayNameShort_${locale}`];
+			var unit = f.attributes[`UOM_${locale}`];
+			var value = f.attributes[`FormattedValue_${locale}`];
+			var html = f.attributes[`IndicatorDisplay_${locale}`];
+			var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
+			var value_symbol_foot = f.attributes[`Symbol`] || ''; 
+			var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
+			var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
+			
+			this.map.popup.open({ location:r.mapPoint, title:title, content:content });
 		});	
 	}
 	

@@ -83,6 +83,15 @@
                 }
             }, {
                 "id": {
+                    "en": "Symbol",
+                    "fr": "Symbol"
+                },
+                "label": {
+                    "en": "Symbol",
+                    "fr": "Symbole"
+                }                
+            }, {
+                "id": {
                     "en": "NullDescription_EN",
                     "fr": "NullDescription_FR"
                 },
