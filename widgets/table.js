@@ -145,7 +145,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 				  "<h2 handle='title'></h2>" +
 			      "<div handle='message' class='table-message'>nls(Table_Message)</div>"+
 			      "<div handle='table' class='table-container hidden'>" + 
-					 "<summary handle='description'></summary>" +
+					 // "<summary handle='description'></summary>" +
 				     "<table>" +
 				        "<thead>" + 
 				           "<tr handle='header'></tr>" + 
