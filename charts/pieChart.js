@@ -10,8 +10,6 @@ export default class PieChart extends Chart {
     constructor(options) {
         super(options);
 		
-        this.options = options;
-
         this.color = this.GetColor();
 
         // Update dimensions for PieChart and translate accordingly 
@@ -45,7 +43,7 @@ export default class PieChart extends Chart {
     Draw() {
         // Set up pie chart based on data. Arc is used for getting
         // the right shape and angles
-        let pie = d3.pie().value((d) => d.value)(this.options.data);
+        let pie = d3.pie().value((d) => d.value)(this.data);
         let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0);
 
         this.circle = this.g.selectAll("path").data(pie);
@@ -81,7 +79,7 @@ export default class PieChart extends Chart {
      * to the pieChart.
      */
     Legend() {
-        let htmlContent = this.options.data
+        let htmlContent = this.data
           .map((d, i) => {
             return `<div class="pieLegend">
                         <div style="border-radius:10px;

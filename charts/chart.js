@@ -10,13 +10,16 @@ import Tooltip from "../ui/tooltip.js"
  */
 export default class Chart { 
 
-    get svg() {
-        return this._svg;
-    }
+	set data(value) { this._data = value; }
+	
+	get data() { return this._data; }
+
+    get svg() { return this._svg; }
 
     constructor(options) {
+		this.data = options.data;
         this.options = options;
-
+		
         // Set a padding value for the dimensions
         this.padding = 25
 
@@ -141,7 +144,7 @@ export default class Chart {
         this.SetBottomAxisAttributes();
         
 		// Note: For readability, I suggest computing the domain ahead		
-		var domain = [d3.max(this.options.data, (d) => d.value), 0];
+		var domain = [d3.max(this.data, (d) => d.value), 0];
 		var axis = d3.axisLeft(this.yScale.domain(domain)).ticks()
 		
         this.g

@@ -11,8 +11,6 @@ export default class LineChart extends Chart{
     constructor(options) {
         super(options)
 
-        this.options = options;
-
         this.Draw();
     }
 
@@ -23,8 +21,8 @@ export default class LineChart extends Chart{
      * Finally the axes are drawn and a line is drawn between data points.
      */
     Draw(){
-        this.xScale = Axes.CreateLinearXScale(this.options.data, this.dimensions.innerWidth);
-        this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
+        this.xScale = Axes.CreateLinearXScale(this.data, this.dimensions.innerWidth);
+        this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
         this.g.append("g")
               .classed("x axis-grid", true)
@@ -59,7 +57,7 @@ export default class LineChart extends Chart{
 
         // Add the line
         this.line
-            .datum(this.options.data)
+            .datum(this.data)
             .attr("fill", "none")
             .attr("stroke", "steelblue")
             .attr("stroke-linejoin", "round")
@@ -84,7 +82,7 @@ export default class LineChart extends Chart{
      * visual elements need to be updated.
      */
     Redraw() {
-        this.xScale.domain([0, this.options.data.length - 1]);
+        this.xScale.domain([0, this.data.length - 1]);
         this.UpdateAxes();
         this.BuildGridLineVertical();
         this.BuildGridLineHorizontal();

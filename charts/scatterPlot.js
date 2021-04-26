@@ -11,8 +11,6 @@ export default class ScatterPlot extends Chart{
     constructor(options) {
         super(options);
         
-        this.options = options;
-
         this.Draw();
     }
 
@@ -23,8 +21,8 @@ export default class ScatterPlot extends Chart{
      * Finally the axes and points are drawn.
      */
     Draw(){
-        this.xScale = Axes.CreateLinearXScale(this.options.data, this.dimensions.innerWidth);
-        this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
+        this.xScale = Axes.CreateLinearXScale(this.data, this.dimensions.innerWidth);
+        this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
         this.g.append("g")
               .classed("x axis-grid", true)
@@ -55,7 +53,7 @@ export default class ScatterPlot extends Chart{
      * removed or added depending on the case of the redraw function. 
      */
     AppendPointsToChart() {
-        let points = this.points.selectAll("circle").data(this.options.data);
+        let points = this.points.selectAll("circle").data(this.data);
         
         // Add the points
         points.enter()
@@ -81,7 +79,7 @@ export default class ScatterPlot extends Chart{
      * visual elements need to be updated.
      */
     Redraw() {
-        this.xScale.domain([0, this.options.data.length - 1]);
+        this.xScale.domain([0, this.data.length - 1]);
         this.UpdateAxes();
         this.BuildGridLineVertical();
         this.BuildGridLineHorizontal();

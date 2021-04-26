@@ -17,17 +17,15 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
     get labelField() { return this._title; }
 
     set data(value) {
-		this._data = value.items.map(item => {		
+		var data = value.items.map(item => {		
 			return {
 				label: item["attributes"][this.labelField],
 				value: item["attributes"]["Value"],
 			}
 		});
 
-		this.DrawChart();
+		this.DrawChart(data);
     }
-
-    get data() { return this._data || []; }
 
 	static Nls() {
 		return {
@@ -67,19 +65,19 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 
 		// Bar Chart by default
 		if (this.chartType == "BarChart") {
-			this.chart = new BarChart({ data:this.data, element:element });
+			this.chart = new BarChart({ data:[], element:element });
 		} 
 		
 		else if (this.chartType == "PieChart") {
-		  this.chart = new PieChart({ data:this.data, element:element });
+		  this.chart = new PieChart({ data:[], element:element });
 		} 
 		
 		else if (this.chartType == "LineChart") {
-		  this.chart = new LineChart({ data:this.data, element:element });
+		  this.chart = new LineChart({ data:[], element:element });
 		} 
 		
 		else if (this.chartType == "ScatterPlot") {
-		  this.chart = new ScatterPlot({ data:this.data, element:element });
+		  this.chart = new ScatterPlot({ data:[], element:element });
 		}
 		
 		// No data is in the chart yet so hide the SVG
@@ -92,12 +90,12 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
      * @todo
      * Change name of Redraw()?
      */
-    DrawChart() {
-		if (this.data.length == 0) this.HideChart();
+    DrawChart(data) {
+		if (data.length == 0) this.HideChart();
 
 		else {
 			this.ShowChart();
-			this.chart.options.data = this.data;
+			this.chart.data = data;
 			this.chart.Redraw();
 		}
     }

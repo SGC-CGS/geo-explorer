@@ -12,8 +12,6 @@ export default class BarChart extends Chart{
     constructor(options) {
         super(options)
 
-        this.options = options;
-
         this.color = this.GetColor();
 
         this.Draw();
@@ -26,8 +24,8 @@ export default class BarChart extends Chart{
      * Finally the axes and bars are drawn.
      */
     Draw(){
-        this.xScale = Axes.CreateBandXScale(this.options.data, this.dimensions.innerWidth);
-        this.yScale = Axes.CreateLinearYScale(this.options.data, this.dimensions.innerHeight);
+        this.xScale = Axes.CreateBandXScale(this.data, this.dimensions.innerWidth);
+        this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
         this.g.append("g").classed("y axis-grid", true).attr("transform", "translate(0,0)");
 
@@ -43,7 +41,7 @@ export default class BarChart extends Chart{
      * removed or added depending on the case of the redraw function. 
      */
     AppendRectanglesToChart(){
-        let rectangles = this.g.selectAll("rect").data(this.options.data);
+        let rectangles = this.g.selectAll("rect").data(this.data);
               
         rectangles
             .enter()
@@ -90,7 +88,7 @@ export default class BarChart extends Chart{
     Redraw(){
         // Scale domains must be redone since the axises 
         // and bars and grid lines need to change 
-        this.xScale.domain(this.options.data.map(d => d.label));
+        this.xScale.domain(this.data.map(d => d.label));
         this.UpdateAxes();
         this.BuildGridLineHorizontal();
         this.AppendRectanglesToChart();
