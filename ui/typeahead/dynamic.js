@@ -2,10 +2,19 @@ import Typeahead from './typeahead.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
+/**
+ * Dynamic typeahead module
+ * @module ui/typeahead/dynamic
+ * @extends Typeahead
+ */
 export default Core.Templatable("Basic.Components.DynamicTypeahead", class DynamicTypeahead extends Typeahead {
 		
 	set storeFn(value) { this._storeFn = value; }
 	
+	/**
+	 * Return ui text in both languages
+	 * @returns {object.<string, string>} Text for each language
+	 */		
 	static Nls() {
 		return {
 			"Search_Typeahead_Title": {
@@ -23,10 +32,21 @@ export default Core.Templatable("Basic.Components.DynamicTypeahead", class Dynam
 		}
 	}
 	
+	/**
+	 * Call constructor of base class (Typeahead) and initialize typeahead
+	 * @param {object} container - div container and properties
+	 * @param {object} options - any additional options to assign (not typically used)
+	 * @returns {void}
+	 */			
 	constructor(container, options) {	
 		super(container, options);
 	}
 	
+	/**
+	 * Get list of possible matches for search string from db
+	 * @param {string} mask - Search string
+	 * @returns {Promise} A promise object associated with query results (with resolve and reject functions)
+	 */
 	Refresh(mask) {
 		var d = Core.Defer();
 		
@@ -45,6 +65,10 @@ export default Core.Templatable("Basic.Components.DynamicTypeahead", class Dynam
 		return d.promise;
 	}
 	
+	/**
+	 * Create HTML for typeahead input box
+	 * @returns {string} HTML for typeahead input box
+	 */		
 	Template() {        
 		return "<div handle='root' class='typeahead collapsed'>" +
 				 "<input handle='input' type='text' class='input' placeholder='nls(Search_Typeahead_Placeholder)' title='nls(Search_Typeahead_Title)'>" + 
