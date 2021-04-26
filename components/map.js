@@ -103,21 +103,6 @@ export default class Map extends Evented {
 	 * (MapImageLayer, GraphicsLayer). 
 	 * @param {*} id - item ID
 	 */
-	AddFeatureLayer(id, url, labels, visibility, index){
-		var layer = new ESRI.layers.FeatureLayer({
-			url: url,
-			fields:[{
-				name: id,
-				alias: labels
-			}],
-			visible: visibility
-		});
-
-		this._layers[id] = layer;
-
-		this._map.add(layer, index);
-	}
-	
 	AddFeatureLayer(id, url, expression, outFields, renderer, index) {
 		var options = { url:url, outFields:outFields };
 		
@@ -131,7 +116,7 @@ export default class Map extends Evented {
 		
 		return this._layers[id];
 	}
-	
+		
 	/**
 	 * @description
 	 * Display data from server (map service) to the map based on request. 
