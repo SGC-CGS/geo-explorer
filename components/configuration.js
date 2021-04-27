@@ -27,7 +27,7 @@ export default class Configuration {
 	/**
 	 * Get symbol properties from JSON object
 	 * @param {string} id - Symbol name (ex. selection, identify)
-	 * @returns {object} - Object containing symbol properties (type, color, style, outline)
+	 * @returns {object} Object containing symbol properties (type, color, style, outline)
 	 */
 	symbol(id) {
 		var s = this._json.symbols[id];
@@ -49,7 +49,6 @@ export default class Configuration {
 	
 	/**
 	 * Get the ids (field names) and labels for the table header.
-	 * @returns {object} Object containing ids and labels in the current language
 	 */
 	get tableHeaders() { 
 		return this._json.table.headers.map(h => {
@@ -62,7 +61,6 @@ export default class Configuration {
 
 	/**
 	 * Return label name from JSON object - This function does not appear to be in use.
-	 * @returns {string} Label in specified language.
 	 */
 	get labelName() {
 		return this._json.name.label[Core.locale];
@@ -70,7 +68,6 @@ export default class Configuration {
 
 	/**
 	 * Get the id, label, and url for the legend items
-	 * @returns {object} Object containing id, label and url of legend items
 	 */
 	get legendItems(){
 		return this._json.legend.items.map(i => {
@@ -84,7 +81,6 @@ export default class Configuration {
 	
 	/**
 	 * Get the bookmarks in alphabetical order along with their extents
-	 * @returns {object} Object sorted by name containing name and extent xmin, xmax, ymin, ymax)
 	 */
 	get bookmarks() {
 		var bookmarks = this._json.bookmarks.sort((a,b) => {
@@ -110,7 +106,7 @@ export default class Configuration {
 	
 	/**
 	 * Initialize configuration class by setting json and context (data) 
-	 * @param {object} - json with page content (bookmarks, colors, context, layers, legend, map, symbols, tables)
+	 * @param {object} json - json with page content (bookmarks, colors, context, layers, legend, map, symbols, tables)
 	 * @returns {void}
 	 */	
 	constructor(json) {

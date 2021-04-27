@@ -6,20 +6,30 @@ import Net from '../tools/net.js';
 import Requests from '../tools/requests.js';
 import Evented from './evented.js';
 
+/**
+ * Map module
+ * @module components/map
+ * @extends Evented
+  */
 export default class Map extends Evented { 
 
 	/**
-	 * @description get the popup and view content from the feature's attributes
+	 * Get the popup and view content from the feature attributes
 	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Popup.html|ArcGIS API for JavaScript}
 	 */
 	get popup() { return this._view.popup; }
 
 	/**
-	 * @description get the view
+	 * Get the view
 	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-views-View.html#ui|ArcGIS API for JavaScript}
 	 */
 	get view() { return this._view; }
 
+	/**
+	 * Call constructor of base class (Evented) and initialize map class 
+	 * @param {object} container - Container for map div properties
+	 * @returns {void}
+	 */		
 	constructor(container) {
 		super();
 		
@@ -48,11 +58,10 @@ export default class Map extends Evented {
 	}
 	
 	/**
-	 * @description
 	 * Add behavior to map (rectangle select, point identify)
-	 * @param {*} id - item ID
-	 * @param {*} behavior - The behavior to add
-	 * @returns - The behavior
+	 * @param {string} id - Layer Id (ex "selection")
+	 * @param {object} behavior - Behavior to be added
+	 * @returns {object} Behavior that was added
 	 */
 	AddBehavior(id, behavior) {
 		this._behaviors[id] = behavior;
@@ -61,32 +70,29 @@ export default class Map extends Evented {
 	}
 	
 	/**
-	 * @description
-	 * Get the behavior in a map
-	 * @param {*} id - item ID
-	 * @returns - The behavior
+	 * Get the behavior object for a specified behavior Id
+	 * @param {string} id - Behavior Id (ex "identify")
+	 * @returns {object} Behavior matching specified Id
 	 */
 	Behavior(id) {
 		return this._behaviors[id] || null;
 	}
 	
 	/**
-	 * @description
 	 * Place components (elements) in a suitable position on the UI
-	 * @param {*} elements - element to be added 
-	 * @param {*} position - position for the element to be added
-	 * @todo
-	 * Test for spread operator in Rollup
+	 * @param {string[]} elements - Dom elements to be added 
+	 * @param {string} position - position for the element to be added
+	 * @returns {void}
+	 * @todo Test for spread operator in Rollup
 	 */
 	Place(elements, position) {
 		elements.forEach(e => this._view.ui.add(e, position));
 	}
 	
 	/**
-	 * @description
-	 * Graphics are displayed in a GraphicsLayer and can contain more
-	 * than one vector geometry (point, line, polygon). 
-	 * @param {*} id - item ID
+	 * Add client-side vector graphics layer to map. 
+	 * @param {string} id - Layer Id (ex "selection")
+	 * @returns {void}
 	 */
 	AddGraphicsLayer(id) {
 		var layer = new ESRI.layers.GraphicsLayer();
@@ -97,11 +103,17 @@ export default class Map extends Evented {
 	}
 
 	/**
-	 * @description
 	 * Feature layers group similar vector geometry features. The appearance
 	 * of a feature layer over a base map is more manageable than other web layers
 	 * (MapImageLayer, GraphicsLayer). 
-	 * @param {*} id - item ID
+	 * @param {string} id - Layer ID
+	 * @param {url} url - URL for map service
+	 * @param {string} expression - Expression for filtering features
+	 * @param {string[]} outFields - Field names to be included
+	 * @param {object} renderer - Renderer assigned to the layer
+	 * @param {number} index - Index number to assign in layers collection
+	 * @returns {object} Layer object at specified id in layers collection
+	 * @todo Verify this code is in use. Reference is commented out in application.js.
 	 */
 	AddFeatureLayer(id, url, expression, outFields, renderer, index) {
 		var options = { url:url, outFields:outFields };
@@ -118,14 +130,14 @@ export default class Map extends Evented {
 	}
 		
 	/**
-	 * @description
 	 * Display data from server (map service) to the map based on request. 
 	 * Much faster dynamically exporting image layers than exporting by features.
-	 * @param {*} id - item ID
-	 * @param {*} url - Map Server url for the layer
-	 * @param {*} opacity - transparency between 0 to 1
-	 * @param {*} dpi - dots per inch for dot density
-	 * @param {*} format 
+	 * @param {string} id - Layer Id (ex "main")
+	 * @param {string} url - Map Server url for the layer
+	 * @param {number} opacity - Opacity between 0 to 1
+	 * @param {number} dpi - Dots per inch for dot density 
+	 * @param {string} format - Image format
+	 * @returns {void}
 	 */
 	AddMapImageLayer(id, url, opacity, dpi, format) {
 		if (this._layers[id]) throw new Error("Layer already exists in map.");
@@ -144,53 +156,49 @@ export default class Map extends Evented {
 	}
 	
 	/**
-	 * @description
-	 * Clean a layer of all it's sublayers
-	 * @param {*} id - item ID
+	 * Remove sublayers from specified layer id
+	 * @param {string} id - Layer Id (ex "main")
+	 * @returns {void}
 	 */
 	EmptyLayer(id) {
 		this.Layer(id).sublayers.removeAll();
 	}
 	
 	/**
-	 * @description
-	 * Map services contain sublayers. Add a sublayer to
-	 * a layer.
-	 * @param {*} id - item ID
-	 * @param {*} sublayer - One of the several layers part of a group layer
+	 * Add map service sublayer to a layer.
+	 * @param {string} id - Layer Id (ex "main")
+	 * @param {object} sublayer - One of the several layers part of a group layer
+	 * @returns {void}
 	 */
 	AddSubLayer(id, sublayer) {
 		this.Layer(id).sublayers.add(sublayer);
 	}
 	
 	/**
-	 * @description
-	 * Map services contain sublayers. Add sublayers to
-	 * a layer.
-	 * @param {*} id - item ID
-	 * @param {*} sublayer - One of the several layers part of a group layer
+	 * Add map service sublayers to a layer.
+	 * @param {string} id - Layer Id (ex "main")
+	 * @param {object} sublayers - Layers that are part of a group layer
+	 * @returns {void}
+	 * @todo Verify that this function is being used.
 	 */
 	AddSubLayers(id, sublayers) {
 		this.Layer(id).sublayers.addMany(sublayer);
 	}
 	
 	/**
-	 * @description
-	 * Get the layer from layers
-	 * @param {*} id - item ID
-	 * @returns - A layer
+	 * Get the layer from layers array by layer id
+	 * @param {string} id - Layer Id (ex "main")
+	 * @returns {object} Layer object
 	 */
 	Layer(id) {
 		return this._layers[id] || null;
 	}
 	
 	/**
-	 * @description
 	 * Identify the selected feature in a layer
-	 * @param {*} layer - reference to a dataset containing spatial properties
-	 * @param {*} geometry - holds type (point, polygon, line), extent, 
-	 * spatial reference, lat, long, etc. 
-	 * @returns - Async operation outcome
+	 * @param {object} layer - Reference to a dataset containing spatial properties
+	 * @param {object} geometry - holds type (point, polygon, line), extent, spatial reference, lat, long, etc. 
+	 * @returns {promise} Promise with spatial query results if resolved
 	 */
 	Identify(layer, geometry) {
 		var d = Core.Defer();
@@ -203,20 +211,29 @@ export default class Map extends Evented {
 	}
 	
 	/**
-	 * @description
-	 * Occurs when you search for a place or zoom into a feature in
-	 * the map. Takes the current view and moves it to the desired
-	 * location.
-	 * @param {*} target - Where to view
+	 * Occurs when you search for a place or zoom into a feature in the map. Takes the current 
+	 * view and moves it to the desired location.
+	 * @param {object} target - Location to view
+	 * @returns {void}
 	 */
 	GoTo(target) {
 		this._view.goTo(target);
 	}
 	
+	/**
+	 * Call emit when map is clicked
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnMapView_Click(ev) {		
 		this.Emit("Click", ev);
 	}
 	
+	/**
+	 * Emit map error when one occurs
+	 * @param {object} error - Error object
+	 * @returns {void}
+	 */
 	OnMapView_Error(error) {		
 		this.Emit("Error", { error:error });
 	}

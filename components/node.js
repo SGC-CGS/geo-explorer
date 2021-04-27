@@ -4,18 +4,16 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
 /**
- * @description
- * A given element is entered through the constructor
- * and .On() function is used to add event listeners.
- * The constructor is called in templated.js.
- * You can see the list of event listeners for the given 
- * element by using getEventListeners(this._elem) in the
- * console. 
+ * A given element is entered through the constructor and .On() function is used 
+ * to add event listeners. The constructor is called in templated.js. You can see 
+ * the list of event listeners for the given element by using 
+ * getEventListeners(this._elem) in the console. 
+ * @module components/node
  */
 export default class _Node { 
 
 	/**
-	 * @description get a HTML DOM
+	 * Get an HTML DOM element
 	 */
 	get elem() { return this._elem; }
 
@@ -24,7 +22,6 @@ export default class _Node {
 	}
 	
 	/**
-	 * @description
 	 * Add a full event listener
 	 * @param {*} type - name of the event to listen for
 	 * @param {*} handler - The event handler 
@@ -34,7 +31,6 @@ export default class _Node {
 	}
 	
 	/**
-	 * @description
 	 * Get an element
 	 * @param {*} selector - A DOMString 
 	 * @returns - NodeList
@@ -46,7 +42,6 @@ export default class _Node {
 	}
 	
 	/**
-	 * @description
 	 * Get the full element list
 	 * @param {*} selector - A DOMString 
 	 * @returns - NodeList
@@ -61,7 +56,6 @@ export default class _Node {
 	}
 	
 	/**
-	 * @description
 	 * Get a node
 	 * @param {*} selector - A DOMString 
 	 * @returns - NodeList

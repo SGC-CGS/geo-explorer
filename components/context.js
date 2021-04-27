@@ -67,7 +67,7 @@ export default class Context extends Evented {
 	
 	/**
 	 * Call constructor of base class (Evented) and initialize context class 
-	 * @param {object} - JSON object containing values for selecting data (category, filters, geography, subject, theme, value)
+	 * @param {object} json - JSON object containing values for selecting data (category, filters, geography, subject, theme, value)
 	 * @returns {void}
 	 */		
 	constructor (json) {
@@ -107,7 +107,7 @@ export default class Context extends Evented {
 	/**
 	 * Update dependent config properties with chained promises
 	 * @param {object} config - Context object  (listeners, _lookups, _selection, _metadata:, _sublayer)
-	 * @returns {promise} Promise with if resolved
+	 * @returns {promise} Promise with all properties set if resolved
 	 */
 	Initialize(config) {
 		this.Emit("Busy");
@@ -136,7 +136,7 @@ export default class Context extends Evented {
 	/**
 	 * Convert a JS value to a JSON string and then into an object
 	 * @param {Object.prototype} pojo - Plain Old JS Object
-	 * @returns - de-referenced object
+	 * @returns {object} de-referenced object
 	 */
 	Clone(pojo) {
 		return JSON.parse(JSON.stringify(pojo));
@@ -290,7 +290,7 @@ export default class Context extends Evented {
 	/**
 	 * Set the geographic level when the user changes the geographic level selection
 	 * @param {string} geography - Selected Geographic Level (GeographicLevelId)
-	 * @returns {promise} - Promise with updated geography if resolved
+	 * @returns {promise} Promise with updated geography if resolved
 	 */
 	ChangeGeography(geography) {
 		var d = Core.Defer();
@@ -305,7 +305,7 @@ export default class Context extends Evented {
 	/**
 	 * Look up an Id in lookups.current and return the object
 	 * @param {string} id - Id string that matches an item in lookups.current object
-	 * @returns {object} - Object from _lookups.current 
+	 * @returns {object} Object from _lookups.current 
 	 */
 	Lookup(id) {
 		return this._lookups.current[id];
