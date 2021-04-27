@@ -57,19 +57,19 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 
 		// Bar Chart by default
 		if (this.chartType == "BarChart") {
-			this.chart = new BarChart({ data:[], element:element });
+			this.chart = new BarChart({ element:element });
 		} 
 		
 		else if (this.chartType == "PieChart") {
-		  this.chart = new PieChart({ data:[], element:element });
+		  this.chart = new PieChart({ element:element });
 		} 
 		
 		else if (this.chartType == "LineChart") {
-		  this.chart = new LineChart({ data:[], element:element });
+		  this.chart = new LineChart({ element:element });
 		} 
 		
 		else if (this.chartType == "ScatterPlot") {
-		  this.chart = new ScatterPlot({ data:[], element:element });
+		  this.chart = new ScatterPlot({ element:element });
 		}
 		
 		// No data is in the chart yet so hide the SVG
@@ -88,7 +88,8 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		else {
 			this.ShowChart();
 			this.chart.data = data;
-			this.chart.Redraw();
+			// Updated
+			this.chart.Draw();
 		}
     }
 

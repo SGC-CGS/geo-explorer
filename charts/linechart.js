@@ -4,6 +4,12 @@ import Axes from "./axes.js";
 /**
  * @description 
  * The overall goal is to draw the lineChart onto the CSGE.
+ * - Step one: Append the necessary groups and path
+ * - Step two: Define the scales and use them for building the line chart. The 
+ * text on the bottom axis requires pre-processing to avoid texting leaving the SVG. 
+ * - Step three: Add line to the chart
+ * 
+ * @note
  * Please refer to the the README in the charts folder for 
  * more information on the D3 concepts presented in this code.
  */
@@ -11,7 +17,27 @@ export default class LineChart extends Chart{
     constructor(options) {
         super(options)
 
-        this.Draw();
+        // Append the x grid line group
+        this.g.append("g")
+              .classed("x axis-grid", true)
+              .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+
+        // Append the y grid line group
+        this.g.append("g")
+              .classed("y axis-grid", true)
+              .attr("transform", "translate(0,0)");
+
+        // Append the left (vertical) axis group
+        this.g.append('g')
+        .classed("left axis", true);
+    
+        // Append the bottom (horizontal) axis group
+        this.g.append('g')
+            .classed("bottom axis", true)
+            .attr("transform", `translate(0, ${this.dimensions.innerHeight})`);
+
+        // Append the line path
+        this.line = this.g.append("path");
     }
 
     /**
@@ -24,20 +50,18 @@ export default class LineChart extends Chart{
         this.xScale = Axes.CreateLinearXScale(this.data, this.dimensions.innerWidth);
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
-        this.g.append("g")
-              .classed("x axis-grid", true)
-              .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+        this.g.selectAll("g.x.axis-grid")
+            .call(Axes.GridLineVertical(this.xScale, this.dimensions.innerHeight));
 
-        this.BuildGridLineVertical(); 
+        this.g.selectAll("g.y.axis-grid")
+            .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
-        this.g.append("g")
-              .classed("y axis-grid", true)
-              .attr("transform", "translate(0,0)");
 
-        this.BuildGridLineHorizontal(); 
-        this.BuildAxes();
+        this.g
+			.selectAll("g.left.axis")
+			.call(d3.axisLeft(this.yScale).ticks())
 
-        this.line = this.g.append("path");
+        this.SetBottomAxisAttributes();
 
         this.AppendLineToChart();
     }
@@ -73,19 +97,5 @@ export default class LineChart extends Chart{
             .transition()
             .duration(2000)
             .attr('stroke-dashoffset', 0);
-    }
-
-    /**
-     * @description
-     * Called when data is removed or added. 
-     * The domain of the scales and 
-     * visual elements need to be updated.
-     */
-    Redraw() {
-        this.xScale.domain([0, this.data.length - 1]);
-        this.UpdateAxes();
-        this.BuildGridLineVertical();
-        this.BuildGridLineHorizontal();
-        this.AppendLineToChart();
     }
 }

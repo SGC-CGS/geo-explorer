@@ -96,64 +96,6 @@ export default class Chart {
 
     /**
      * @description
-     * Some charts may require a column separator, so a vertical grid
-     * line should be built using the xScale and innerHeight.
-     */
-    BuildGridLineVertical() {
-        this.g.selectAll("g.x.axis-grid")
-            .call(Axes.GridLineVertical(this.xScale, this.dimensions.innerHeight));
-    }
-
-    /**
-     * @description
-     * Some charts (bar, line, and scatter) may require a row separator, 
-     * so a horizontal grid line should be built using the yScale and innerWidth.
-     */
-    BuildGridLineHorizontal() {
-        this.g.selectAll("g.y.axis-grid")
-            .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
-    }
-
-    /**
-     * @description
-     * Using the scales, the axes are built for some charts (bar, line, and scatter).
-     * Building the axes is only performed once for any given chart type. The text on 
-     * the bottom axis requires pre-processing to avoid texting leaving the SVG. 
-     */
-    BuildAxes() { 
-        // Left (vertical) axis
-        this.g.append('g')
-            .call(d3.axisLeft(this.yScale).ticks())
-            .classed("left axis", true);
-        
-        // Bottom (horizontal) axis
-        this.g.append('g')
-            .classed("bottom axis", true)
-            .attr("transform", `translate(0, ${this.dimensions.innerHeight})`);
-
-        this.SetBottomAxisAttributes();
-    }
-
-    /**
-     * @description
-     * To update the axes on some chart, the xScale and yScale domains must be updated.
-     * The xScale is updated in the child classes as the attributes are dependent on 
-     * the chart type whereas the yScale is simply updated below. 
-     */
-    UpdateAxes() {
-        this.SetBottomAxisAttributes();
-        
-		// Note: For readability, I suggest computing the domain ahead		
-		var domain = [d3.max(this.data, (d) => d.value), 0];
-		var axis = d3.axisLeft(this.yScale.domain(domain)).ticks()
-		
-        this.g
-			.selectAll("g.left.axis")
-			.call(axis);
-    }
-
-    /**
-     * @description
      * Draw the bottom horizontal axis on the group element, and adjust the elements 
      * at the tick marks to not exceed the extent of the SVG.
      */

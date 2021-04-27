@@ -29,8 +29,6 @@ export default class PieChart extends Chart {
 										   .style('height', this.dimensions.height / 3)
         
         this.foreignObject.append("xhtml:div")
-        
-        this.Draw();
     }
 
     /**
@@ -98,12 +96,4 @@ export default class PieChart extends Chart {
             .html(htmlContent)
     }
 
-    /**
-     * @description
-     * Called when data is removed or added. 
-     * The visual elements need to be updated.
-     */
-    Redraw() {
-        this.Draw()    
-    }
 }
