@@ -32,7 +32,7 @@ export default class Map extends Evented {
 	 */
 	get map() { return this._map; }
 
-	constructor(container) {
+	constructor(container, options) {
 		super();
 		
 		this._layers = {};
@@ -41,11 +41,11 @@ export default class Map extends Evented {
 		this._map = new ESRI.Map({ basemap: "streets" });
 		
 		this._view = new ESRI.views.MapView({
-			animation : false,
-			center: [-100, 63], 
+			animation : options && options.animation || false,
+			center: options && options.center || [-100, 63], 
 			container: container, 
 			map: this._map,  
-			zoom: 4 
+			zoom: options && options.zoom || 4 
 		});
 		
 		this._view.popup.collapseEnabled = false;

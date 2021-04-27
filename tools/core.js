@@ -126,6 +126,14 @@ export default class Core {
 		return s;
 	}
 	
+	static LocalizeNumber(value, locale) {
+        if (value == null) return null;
+		
+		var loc = (locale || Core.locale) == "en" ? "en-CA" : "fr-CA";
+
+		return new Number(value).toLocaleString(loc);
+	}
+	
 	/**
 	* Disables or enables all focusable elements in an array of nodes
 	* @param {string[]} nodes - Array of DOM elements, where focusable elements will be disabled or enabled

@@ -1,4 +1,4 @@
-import TemplatedTable from '../../components/templated-table.js';
+import DefaultBreak from './default-break.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
@@ -7,39 +7,28 @@ import Dom from '../../tools/dom.js';
  * @module widgets/legend/legend-break
  * @extends TemplatedTable
  */
-export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak extends TemplatedTable {
+export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak extends DefaultBreak {
 	
 	/**
 	 * Get/set min value for breaks
 	 */
-	get Min() {
-		return this.min;
+	get min() {
+		return this._min;
 	}
 	
-	set Min(value) {
-		this.min = value;
-		
-		this.Elem("lFrom").innerHTML = this.min.toLocaleString(Core.locale);
+	set min(value) {
+		this._min = value;
 	}
 	
 	/**
 	 * Get/set max value for breaks
 	 */
-	get Max() {
-		return this.max;
+	get max() {
+		return this._max;
 	}
 	
-	set Max(value) {
-		this.max = value;
-		
-		this.Elem("lTo").innerHTML = this.max.toLocaleString(Core.locale);
-	}
-	
-	/**
-	 * Get color for legend breaks
-	 */
-	get Color() {
-		return this.color;
+	set max(value) {
+		this._max = value;
 	}
 
 	/**
@@ -47,8 +36,10 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	 * @returns {object.<string, string>} Legend break text for each language
 	 */	
 	static Nls(nls) {
-		nls.Add("Legend_Item_Join", "en", " to ");
-		nls.Add("Legend_Item_Join", "fr", " jusqu'à ");		
+		nls.Add("Legend_Unavailable", "en", "unavailable");
+		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
+		nls.Add("Legend_Item", "en", "{0} to {1}");
+		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");		
 	}
 	
 	/**
@@ -60,26 +51,12 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	constructor(container, info) {	
 		super(container, info);
 		
-		this.Min = info.minValue;
-		this.Max = info.maxValue;
+		this.min = info.minValue;
+		this.max = info.maxValue;
 		
-		this.color = info.symbol.color;
+		var lMin = Core.LocalizeNumber(this.min);
+		var lMax = Core.LocalizeNumber(this.max);
 		
-		this.Elem("color").style.backgroundColor = this.color.toHex();
-	}
-	
-	/**
-	 * Create HTML for legend breaks
-	 * @returns {string} HTML for legend breaks
-	 */	
-	Template() {
-		return "<tr handle='container' class='break-line'>" +
-				 "<td class='break-color-container'>" + 
-					"<div handle='color' class='break-color'></div>" +
-				 "</td>" + 
-				 "<td handle='lFrom'></td>" + 
-				 "<td>nls(Legend_Item_Join)</td>" + 
-				 "<td handle='lTo'></td>" + 
-			   "</tr>";
+		this.label = this.Nls("Legend_Item", [lMin, lMax]);
 	}
 })
