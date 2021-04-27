@@ -16,73 +16,39 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * Return text for styler widget in both languages
 	 * @returns {object.<string, string>} Styler widget text for each language
 	 */		
-	static Nls() {
-		return {
-			"Styler_Title" : {
-				"en" : "Change map style",
-				"fr" : "Modifier le style de la carte"
-			},
-			"Styler_Instructions_1" : {
-				"en" : "Use the options below to change how to render the indicator on the map. To confirm your changes, click 'Apply' at the end of the form.",
-				"fr" : "Utiliser les options ci-dessous pour changer la façon dont l’indicateur apparaît sur la carte. Pour confirmer les changements, cliquer sur « Appliquer » en bas du formulaire."
-			},
-			"Styler_Instructions_3" : {
-				"en" : "* Geographies with no data or that do not fit in the ranges below are transparent on the map but still interactive.",
-				"fr" : "* Les régions géographiques n’ayant pas de données ou ne tenant pas dans les plages ci-dessous apparaissent en transparence sur la carte, mais sont toujours interactives."
-			},
-			"Styler_Method" : {
-				"en" : "Classification method",
-				"fr" : "Méthode de classification"
-			},
-			"Styler_Color_Range" : {
-				"en" : "Color range",
-				"fr" : "Gamme de couleurs"
-			},
-			"Styler_Color_Start" : {
-				"en" : "Start color",
-				"fr" : "Couleur de départ"
-			},
-			"Styler_Color_End" : {
-				"en" : "End color",
-				"fr" : "Couleur de fin"
-			},
-			"Styler_Breaks" : {
-				"en" : "Number of breaks (1 to 10)",
-				"fr" : "Nombre de bornes (1 à 10)"
-			},
-			"Styler_Style" : {
-				"en" : "Map style",
-				"fr" : "Style de la carte"
-			},
-			"Styler_Method_Equal": {
-				"en": "Equal intervals",
-				"fr": "Intervalles égaux"
-			},
-			"Styler_Method_Natural": {
-				"en": "Natural breaks",
-				"fr": "Bornes naturelles"
-			},
-			"Styler_Method_Quantile": {
-				"en": "Quantiles",
-				"fr": "Quantiles"
-			},
-			"Styler_Max_Lt_Min" : {
-				"en" : "New maximum value is less than the current minimum value for the layer. Input a higher value.",
-				"fr" : "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée."
-			},
-			"Styler_Max_Gt_Next" : {
-				"en" : "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.",
-				"fr" : "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante."
-			},
-			"Styler_Button_Apply" : {
-				"en" : "Apply",
-				"fr" : "Appliquer"
-			},
-			"Styler_Button_Close" : {
-				"en" : "Cancel",
-				"fr" : "Annuler"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Styler_Title", "en", "Change map style");
+		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
+		nls.Add("Styler_Instructions_1", "en", "Use the options below to change how to render the indicator on the map. To confirm your changes, click 'Apply' at the end of the form.");
+		nls.Add("Styler_Instructions_1", "fr", "Utiliser les options ci-dessous pour changer la façon dont l’indicateur apparaît sur la carte. Pour confirmer les changements, cliquer sur « Appliquer » en bas du formulaire.");
+		nls.Add("Styler_Instructions_3", "en", "* Geographies with no data or that do not fit in the ranges below are transparent on the map but still interactive.");
+		nls.Add("Styler_Instructions_3", "fr", "* Les régions géographiques n’ayant pas de données ou ne tenant pas dans les plages ci-dessous apparaissent en transparence sur la carte, mais sont toujours interactives.");
+		nls.Add("Styler_Method", "en", "Classification method");
+		nls.Add("Styler_Method", "fr", "Méthode de classification");
+		nls.Add("Styler_Color_Range", "en", "Color range");
+		nls.Add("Styler_Color_Range", "fr", "Gamme de couleurs");
+		nls.Add("Styler_Color_Start", "en", "Start color");
+		nls.Add("Styler_Color_Start", "fr", "Couleur de départ");
+		nls.Add("Styler_Color_End", "en", "End color");
+		nls.Add("Styler_Color_End", "fr", "Couleur de fin");
+		nls.Add("Styler_Breaks", "en", "Number of breaks (1 to 10)");
+		nls.Add("Styler_Breaks", "fr", "Nombre de bornes (1 à 10)");
+		nls.Add("Styler_Style", "en", "Map style");
+		nls.Add("Styler_Style", "fr", "Style de la carte");
+		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
+		nls.Add("Styler_Method_Equal", "fr", "Intervalles égaux");
+		nls.Add("Styler_Method_Natural", "en", "Natural breaks");
+		nls.Add("Styler_Method_Natural", "fr", "Bornes naturelles");
+		nls.Add("Styler_Method_Quantile", "en", "Quantiles");
+		nls.Add("Styler_Method_Quantile", "fr", "Quantiles");
+		nls.Add("Styler_Max_Lt_Min", "en", "New maximum value is less than the current minimum value for the layer. Input a higher value.");
+		nls.Add("Styler_Max_Lt_Min", "fr", "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée.");
+		nls.Add("Styler_Max_Gt_Next", "en", "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.");
+		nls.Add("Styler_Max_Gt_Next", "fr", "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante.");
+		nls.Add("Styler_Button_Apply", "en", "Apply");
+		nls.Add("Styler_Button_Apply", "fr", "Appliquer");		
+		nls.Add("Styler_Button_Close", "en", "Cancel");
+		nls.Add("Styler_Button_Close", "fr", "Annuler");
 	}
 
 	/**

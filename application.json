@@ -44,6 +44,12 @@
         "value": 3037,
         "geography": "A0007"
     },
+    "chart": {
+        "field" : {
+            "en" : "DisplayNameLong_EN",
+            "fr" : "DisplayNameLong_FR"
+        }
+    },
     "table": {
         "headers": [{
                 "id": {

@@ -34,13 +34,9 @@ export default Core.Templatable("App.Widgets.Basemap", class Basemap extends Tem
 	 * Return basemap button title in both languages
 	 * @returns {object.<string, string>} Basemap titles for each language
 	 */
-	static Nls() {
-		return {
-			"Basemap_Title" : {
-				"en": "Change basemap",
-				"fr": "Changer de fond de carte"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Basemap_Title", "en", "Change basemap");
+		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
 	}
 	
 	/**

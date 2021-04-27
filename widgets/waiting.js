@@ -13,13 +13,9 @@ export default Core.Templatable("App.Widgets.Waiting", class Waiting extends Tem
 	 * Return text for waiting widget in both languages
 	 * @returns {object.<string, string>} Waiting widget text for each language
 	 */
-	static Nls() {
-		return {
-			"Waiting_Label": {
-				"en" : "Working...",
-				"fr" : "Chargement..."
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Waiting_Label", "en", "Working...");
+		nls.Add("Waiting_Label", "fr", "Chargement...");		
 	}
 	
 	/**

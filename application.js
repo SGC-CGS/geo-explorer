@@ -16,6 +16,7 @@ import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
 import Overlay from './widgets/overlay.js';
 import Dom from './tools/dom.js';
+import wChart from './widgets/wChart.js';
 
 export default class Application extends Templated { 
 
@@ -23,37 +24,23 @@ export default class Application extends Templated {
 	
 	get context() { return this._config.context; }
 
-	static Nls() {
-		return {
-			"Selector_Title" : {
-				"en" : "Select Data",
-				"fr" : "Sélectionner des données"
-			},
-			"Styler_Title" : {
-				"en" : "Change map style",
-				"fr" : "Modifier le style de la carte"
-			},
-			"Legend_Title" : {
-				"en" : "Map legend",
-				"fr" : "Légende de la carte"
-			},
-			"Bookmarks_Title" : {
-				"en": "Bookmarks",
-				"fr": "Géosignets"
-			},
-			"Behaviour_Title" : {
-				"en" : "Toggle map click behaviour",
-				"fr" : "Basculer le comportement des clics sur la carte"
-			},
-			"Basemap_Title" : {
-				"en": "Change basemap",
-				"fr": "Changer de fond de carte"
-			},
-			"Search_Icon_Alt" : {
-				"en" : "Magnifying glass",
-				"fr" : "Loupe"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Selector_Title", "en", "Select Data");
+		nls.Add("Selector_Title", "fr", "Sélectionner des données");
+		nls.Add("Styler_Title", "en", "Change map style");
+		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
+		nls.Add("Chart_Title", "en", "View chart");
+		nls.Add("Chart_Title", "fr", "Type de Diagramme");
+		nls.Add("Legend_Title", "en", "Map legend");
+		nls.Add("Legend_Title", "fr", "Légende de la carte");
+		nls.Add("Bookmarks_Title", "en", "Bookmarks");
+		nls.Add("Bookmarks_Title", "fr", "Géosignets");
+		nls.Add("Behaviour_Title", "en", "Toggle map click behaviour");
+		nls.Add("Behaviour_Title", "fr", "Basculer le comportement des clics sur la carte");
+		nls.Add("Basemap_Title", "en", "Change basemap");
+		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
+		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
+		nls.Add("Search_Icon_Alt", "fr", "Loupe");
 	}
 
 	constructor(node, config) {		
@@ -68,6 +55,7 @@ export default class Application extends Templated {
 
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
+		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
 		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
 		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
 		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
@@ -96,20 +84,21 @@ export default class Application extends Templated {
 		
 		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 
+		this.Elem("chart").labelField = this.config.chart.field;
 		this.Elem("table").headers = this.config.tableHeaders;
 		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-		/*
-	    this.config.legendItems.forEach(i => {
-			this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
-			this.Elem("legend").AddContextLayer(i.label, i, false);
-		})
-		*/
+	
+	    // this.config.LegendItems.forEach(i => {
+		// 	this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
+		// 	this.Elem("legend").AddContextLayer(i.label, i, false);
+		// })
+		
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
-			
+
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
 			this.Elem("legend").Update(this.context);
@@ -172,6 +161,7 @@ export default class Application extends Templated {
 		});	
 	}
 	
+	// Add event handler
 	HandleEvents(node, changeHandler) {
 		if (changeHandler) node.On('Change', changeHandler);
 		
@@ -231,13 +221,14 @@ export default class Application extends Templated {
 	}
 	
 	OnMap_SelectDraw(ev) {
-		this.Elem("table").Populate(ev.selection);
+		this.Elem("table").data = ev.selection;
+		this.Elem("chart").data = ev.selection;
 	}
 	
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior("selection").layer.remove(ev.graphic);
-				
-		this.Elem("table").Populate(this.map.Behavior("selection").graphics);
+		this.Elem("table").data = this.map.Behavior("selection").Graphics;
+		this.Elem("chart").data = this.map.Behavior("selection").Graphics;
 	}
 	
 	OnWidget_Busy(ev) {
@@ -264,6 +255,7 @@ export default class Application extends Templated {
 					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
 					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
 					"<div handle='styler' widget='App.Widgets.Styler'></div>" +
+					"<div handle='chart' widget='App.Widgets.WChart'></div>" +
 					"<div handle='legend' widget='App.Widgets.Legend'></div>" +
 					"<div handle='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' widget='App.Widgets.Bookmarks'></div>" +

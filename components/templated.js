@@ -19,9 +19,11 @@ export default class Templated extends Evented {
 		
 		this._options = options || { };
 		
-		var json = this.constructor.Nls ? this.constructor.Nls() : {};
+		this._nls = new Nls();
 		
-		this._nls = new Nls(json);
+		var json = this.constructor.Nls ? this.constructor.Nls(this._nls) : {};
+		
+		// this._nls = new Nls(json);
 		
 		this.BuildTemplate();
 		
@@ -38,10 +40,12 @@ export default class Templated extends Evented {
 	 * @description
 	 * Get a localized nls string resource
 	 * @param {*} id — the id of the nls resource to retrieve
+	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
+	 * @param {String} locale - the locale for the nls resource
 	 * @returns - the localized nls string resource
 	 */
-	Nls(id) {
-		return this.nls.Resource(id);
+	Nls(id, subs, locale) {
+		return this.nls.Resource(id, subs, locale);
 	}
 	
 	BuildTemplate() {

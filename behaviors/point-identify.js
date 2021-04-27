@@ -7,7 +7,6 @@ import Behavior from './behavior.js';
 
 export default class PointIdentifyBehavior extends Behavior { 
 
-
 	get layer() { return this._map.Layer("identify"); }
 
 	get graphics() { return this.layer.graphics; }

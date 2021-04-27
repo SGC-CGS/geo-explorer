@@ -48,13 +48,9 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	 * Return text for breaks in both languages
 	 * @returns {object.<string, string>} Break text for each language
 	 */	
-	static Nls() {
-		return {
-			"Styler_Item_Join" : {
-				"en" : " to ",
-				"fr" : " jusqu'à "
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Styler_Item_Join", "en", " to ");
+		nls.Add("Styler_Item_Join", "fr", " jusqu'à ");	
 	}
 
 	/**
