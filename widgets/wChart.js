@@ -10,6 +10,8 @@ import ScatterPlot from "../charts/scatterPlot.js";
  * Chart widget where a chart is selected and
  * built onto the UI
  * @todo Handle product changes in Application.js?
+ * @module widgets/WChart
+ * @extends Templated
  */
 export default Core.Templatable("App.Widgets.WChart", class WChart extends Templated {
     set labelField(value) { this._title = value; }

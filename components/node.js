@@ -17,14 +17,19 @@ export default class _Node {
 	 */
 	get elem() { return this._elem; }
 
+	/**
+	 * Initialize node class 
+	 * @param {object} elem - Object containing Dom element
+	 * @returns {void}
+	 */
 	constructor(elem) {
 		this._elem = elem;
 	}
 	
 	/**
-	 * Add a full event listener
-	 * @param {*} type - name of the event to listen for
-	 * @param {*} handler - The event handler 
+	 * Add a full event listener to specified element
+	 * @param {string} type - Name of the event to listen for (ex "input")
+	 * @param {function} handler - Event handler function
 	 */
 	On(type, handler) {
 		this._elem.addEventListener(type, handler);
@@ -32,8 +37,8 @@ export default class _Node {
 	
 	/**
 	 * Get an element
-	 * @param {*} selector - A DOMString 
-	 * @returns - NodeList
+	 * @param {string} selector - A DOMString 
+	 * @returns {object} NodeList
 	 */
 	Elem(selector) {
 		var elem = this._elem.querySelector(selector);
@@ -43,8 +48,8 @@ export default class _Node {
 	
 	/**
 	 * Get the full element list
-	 * @param {*} selector - A DOMString 
-	 * @returns - NodeList
+	 * @param {string} selector - A DOMString 
+	 * @returns {object} NodeList
 	 */
 	Elems(selector) {
 		var elems = this._elem.querySelectorAll(selector);
@@ -57,8 +62,8 @@ export default class _Node {
 	
 	/**
 	 * Get a node
-	 * @param {*} selector - A DOMString 
-	 * @returns - NodeList
+	 * @param {string} selector - A DOMString 
+	 * @returns {object} NodeList
 	 */
 	Node(selector) {
 		var elem = this._elem.querySelector(selector);
@@ -67,10 +72,9 @@ export default class _Node {
 	}
 	
 	/**
-	 * @description
 	 * Get the full node list
-	 * @param {*} selector - A DOMString 
-	 * @returns - NodeList
+	 * @param {string} selector - A DOMString 
+	 * @returns {object} NodeList
 	 */
 	Nodes(selector) {
 		var elems = this._elem.querySelectorAll(selector);

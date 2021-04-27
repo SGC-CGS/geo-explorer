@@ -6,14 +6,33 @@ import Evented from './evented.js';
 import Node from './node.js';
 import Nls from './nls.js';
 
+/**
+ * @module components/templated
+ * @extends Evented
+ */
 export default class Templated extends Evented { 
 
+	/**
+	 * Get container object
+	 */
 	get container() { return this._container; }
 
+	/**
+	 * Get roots object
+	 */
 	get roots() { return this._roots; }
 
+	/**
+	 * Get nls object
+	 */
 	get nls() { return this._nls; }
 
+	/**
+	 * Call constructor of base class (Evented) and initialize templated class
+	 * @param {object} container - div container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)
+	 * @returns {void}
+	 */	
 	constructor(container, options) {
 		super();
 		
@@ -37,17 +56,20 @@ export default class Templated extends Evented {
 	}
 	
 	/**
-	 * @description
 	 * Get a localized nls string resource
-	 * @param {*} id — the id of the nls resource to retrieve
-	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
-	 * @param {String} locale - the locale for the nls resource
-	 * @returns - the localized nls string resource
+	 * @param {string} id - Id of the nls resource to retrieve
+	 * @param {string[]} subs - Array of Strings to substitute in the localized nls string resource
+	 * @param {string} locale - Locale for the nls resource
+	 * @returns {string} Localized nls string resource
 	 */
 	Nls(id, subs, locale) {
 		return this.nls.Resource(id, subs, locale);
 	}
 	
+	/**
+	 * Build the template div with nls strings
+	 * @returns {void}
+	 */
 	BuildTemplate() {
 		// Use template provided in options first, use Template function second
 		var html = this._options.template ? this._options.template : this.Template();
@@ -66,6 +88,10 @@ export default class Templated extends Evented {
 		this._template = Dom.Create("div", { innerHTML:html });
 	}
 	
+	/**
+	 * Set children in class from template
+	 * @returns {void}
+	 */
 	SetRoots() {
 		this._roots = [];
 		
@@ -74,6 +100,10 @@ export default class Templated extends Evented {
 		}
 	}
 	
+	/**
+	 * Set named nodes in class from template
+	 * @returns {void}
+	 */
 	SetNamedNodes() {		
 		var named = this._template.querySelectorAll("[handle]");
 		
@@ -87,6 +117,10 @@ export default class Templated extends Evented {
 		}
 	}
 	
+	/**
+	 * Build widgets under each node
+	 * @returns {void}
+	 */
 	BuildSubWidgets() {		
 		var nodes = this._template.querySelectorAll("[widget]");
 		
@@ -101,20 +135,40 @@ export default class Templated extends Evented {
 		}
 	}
 	
+	/**
+	 * Set up roots in container
+	 * @param {object} container - div container and properties
+	 * @returns{void}
+	 */
 	Place(container) {
 		this._container = container;
 		
 		this._roots.forEach(r => { Dom.Place(r, this._container); });
 	}
 	
+	/**
+	 * Set CSS for each root
+	 * @param {string} css - CSS to be set
+	 */
 	SetCss(css) {
 		this._roots.forEach(r => { Dom.SetCss(r, css); });
 	}
 	
+	/**
+	 * Return null from function
+	 * @returns {void}
+	 */
 	Template() {
 		return null;		
 	}
 
+	/**
+	 * Replace pattern in HTML
+	 * @param {string} str - HTML string on which to perform replace
+	 * @param {string} expr - Pattern to match
+	 * @param {function} delegate - Function to be used in replace
+	 * @returns {string} Updated HTML string
+	 */
 	Replace(str, expr, delegate) {
 		var m = str.match(expr);
 		
@@ -126,19 +180,37 @@ export default class Templated extends Evented {
 		return str;
 	}
 	
+	/**
+	 * Create a node for the specified element
+	 * @param {string} id - Element Id (ex. "input")
+	 * @returns {object} Node object
+	 */
 	Node(id) {
 		return new Node(this._nodes[id]);
 	}
 	
+	/**
+	 * Return node object for specified element id
+	 * @param {string} id - Element Id (ex. typeahead)
+	 * @returns {object} Node object
+	 */
 	Elem(id) {
 		return this._nodes[id];
 	}
 	
+	/**
+	 * Test function
+	 * @param  {...any} ids 
+	 */
 	// NOTE : Test for spread operator in Rollup
 	Nodes(...ids) {
 		return ids.map(id => new Node(this._nodes[id]));
 	}
 	
+	/**
+	 * Test function
+	 * @param  {...any} ids 
+	 */
 	// NOTE : Test for spread operator in Rollup
 	Elems(...ids) {
 		return ids.map(id => this._nodes[id]);

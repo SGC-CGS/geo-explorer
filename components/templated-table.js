@@ -6,12 +6,17 @@ import Evented from './evented.js';
 import Templated from './templated.js';
 
 /**
- * @description
  * Extends templated to create the table body element
+ * @module components/templated-table
+ * @extends Templated
  */
 
 export default class templatedTable extends Templated { 
 
+	/**
+	 * Build the table template with nls strings
+	 * @returns {void}
+	 */
 	BuildTemplate() {
 		// Use template provided in options first, use Template function second
 		var html = this._options.template ? this._options.template : this.Template();

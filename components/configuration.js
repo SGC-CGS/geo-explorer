@@ -44,8 +44,7 @@ export default class Configuration {
 	
 
 	/**
-	 * @description get the chart configuration
-	 * (field)
+	 * Get the chart configuration
 	 */
 	get chart() { 
 		return {
