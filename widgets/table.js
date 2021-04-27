@@ -38,21 +38,13 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 	 Return messages for table widget in both languages
 	 * @returns {object.<string, string>} Table text for each language
 	 */
-	static Nls() {
-		return {
-			"Table_Message" : {
-				"en" : "Please select geometries on the map to show their attributes in the table.",
-				"fr" : "Veuillez sélectionner des géométries sur la carte afin d'afficher leur attributs dans le tableau."
-			},
-			"Table_Row_Title": {
-				"en": "Click to zoom to geometry ({0})",
-				"fr": "Cliquer pour zoomer sur la géométrie ({0})"
-			},
-			"Table_Thrash_Title": {
-				"en": "Click to remove geometry ({0}) from selection",
-				"fr": "Cliquer retirer la géométrie ({0}) de la sélection"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Table_Message", "en", "Please select geometries on the map to show their attributes in the table.");
+		nls.Add("Table_Message", "fr", "Veuillez sélectionner des géométries sur la carte afin d'afficher leur attributs dans le tableau.");	
+		nls.Add("Table_Row_Title", "en", "Click to zoom to geometry ({0})");
+		nls.Add("Table_Row_Title", "fr", "Cliquer pour zoomer sur la géométrie ({0})");	
+		nls.Add("Table_Thrash_Title", "en", "Click to remove geometry ({0}) from selection");
+		nls.Add("Table_Thrash_Title", "fr", "Cliquer retirer la géométrie ({0}) de la sélection");	
 	}
 	
 	/**

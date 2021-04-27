@@ -32,16 +32,20 @@ export default class Overlay extends Templated {
 	get widget() { return this._widget; }
 	
 	/**
+	 * Set the overlay top css rule
+	 * @type {string}
+	 */
+	set css(value) {
+		Dom.AddCss(this.roots[0], value);
+	}
+	
+	/**
 	 Return hover text for overlay close button in both languages
 	 * @returns {object.<string, string>} Button text for each language
 	 */
-	static Nls() {
-		return {
-			"Overlay_Close" : {
-				"en" : "Cancel",
-				"fr" : "Annuler"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Overlay_Close", "en", "Cancel");
+		nls.Add("Overlay_Close", "fr", "Annuler");		
 	}
 	
 	/**
@@ -49,12 +53,18 @@ export default class Overlay extends Templated {
 	 * @param {object} container - div.map-container and properties
 	 * @returns {void}
 	 */
-	constructor(container) {	
+	constructor(container, options) {	
 		super(container);
 		
 		this.SetStyle(0, "hidden");
 		
 		this.Node("close").On("click", this.onBtnClose_Click.bind(this));
+		
+		if (!options) return;
+
+		if (options.css) this.css = options.css;		
+		if (options.widget)	this.widget = options.widget;	
+		if (options.title) this.title = options.title;		
 	}
 	
 	/**

@@ -27,21 +27,13 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		this.DrawChart(data);
     }
 
-	static Nls() {
-		return {
-			"Chart_Title" : {
-				"en" : "View chart",
-				"fr" : "Type de Diagramme"
-			},
-			"Chart_Type" : {
-				"en" : "Chart Type",
-				"fr" : "Type de Graphique"
-			},
-			"Chart_Type_Placeholder" : {
-				"en": "Select a Chart Type",
-				"fr": "Sélectionnez un Type de Graphique"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Chart_Title", "en", "View chart");
+		nls.Add("Chart_Title", "fr", "Type de Diagramme");		
+		nls.Add("Chart_Type", "en", "Chart Type");
+		nls.Add("Chart_Type", "fr", "Type de Graphique");		
+		nls.Add("Chart_Type_Placeholder", "en", "Select a Chart Type");
+		nls.Add("Chart_Type_Placeholder", "fr", "Sélectionnez un Type de Graphique");	
 	}
 
     constructor(container, options) {

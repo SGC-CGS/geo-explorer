@@ -19,6 +19,18 @@ export default class Map extends Evented {
 	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-views-View.html#ui|ArcGIS API for JavaScript}
 	 */
 	get view() { return this._view; }
+	
+	/**
+	 * Get the layers available on the map
+	 * @type {array}
+	 */
+	get layers() { return this._layers; }
+	
+	/**
+	 * Get the ESRI map object associated 
+	 * @type {array}
+	 */
+	get map() { return this._map; }
 
 	constructor(container) {
 		super();

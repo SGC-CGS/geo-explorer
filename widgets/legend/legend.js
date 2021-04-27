@@ -26,41 +26,23 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 	 * Return text for legend widget in both languages
 	 * @returns {object.<string, string>} Legend widget text for each language
 	 */	
-	static Nls() {
-		return {
-			"Legend_Title" : {
-				"en" : "Map legend",
-				"fr" : "Légende de la carte"
-			},
-			"Legend_Indicators" : {
-				"en" : "Selected indicators",
-				"fr" : "Indicateurs sélectionnés"
-			},
-			"Legend_Opacity" : {
-				"en" : "Opacity",
-				"fr" : "Opacité"
-			},
-			"Legend_Opacity_Less" : {
-				"en" : "Less",
-				"fr" : "Moins"
-			},
-			"Legend_Opacity_More" : {
-				"en" : "More",
-				"fr" : "Plus"
-			},
-			"Legend_Context_Layers" : {
-				"en" : "Context layers",
-				"fr" : "Données contextuelles"
-			},
-			"Legend_Label_Name" : {
-				"en" : "Map labels",
-				"fr" : "Étiquettes sur la carte"
-			},
-			"Legend_Show_label" : {
-					"en" : " Show label",
-					"fr" : " Afficher les étiquettes"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Legend_Title", "en", "Map legend");
+		nls.Add("Legend_Title", "fr", "Légende de la carte");	
+		nls.Add("Legend_Indicators", "en", "Selected indicators");
+		nls.Add("Legend_Indicators", "fr", "Indicateurs sélectionnés");	
+		nls.Add("Legend_Opacity", "en", "Opacity");
+		nls.Add("Legend_Opacity", "fr", "Opacité");	
+		nls.Add("Legend_Opacity_Less", "en", "Less");
+		nls.Add("Legend_Opacity_Less", "fr", "Moins");	
+		nls.Add("Legend_Opacity_More", "en", "More");
+		nls.Add("Legend_Opacity_More", "fr", "Plus");	
+		nls.Add("Legend_Context_Layers", "en", "Context layers");
+		nls.Add("Legend_Context_Layers", "fr", "Données contextuelles");	
+		nls.Add("Legend_Label_Name", "en", "Map labels");
+		nls.Add("Legend_Label_Name", "fr", "Étiquettes sur la carte");	
+		nls.Add("Legend_Show_label", "en", " Show label");
+		nls.Add("Legend_Show_label", "fr", " Afficher les étiquettes");	
 	}
 	
 	/**

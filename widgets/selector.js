@@ -15,69 +15,37 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 Return select box text in both languages
 	 * @returns {object.<string, string>} Select box text for each language
 	 */
-	static Nls() {
-		return {
-			"Selector_Title" : {
-				"en" : "Select Data",
-				"fr" : "Sélectionner des données"
-			},
-			"Selector_Subject" : {
-				"en" : "Subject",
-				"fr" : "Sujet"
-			},
-			"Selector_Subject_Placeholder" : {
-				"en": "Select a subject",
-				"fr": "Sélectionnez un sujet"
-			},
-			"Selector_Theme" : {
-				"en" : "Theme",
-				"fr" : "Thème"
-			},
-			"Selector_Theme_Placeholder" : {
-				"en": "*... Select a theme",
-				"fr": "*... Sélectionnez un thème"
-			},
-			"Selector_Category" : {
-				"en" : "Category (Product)",
-				"fr" : "Catégorie (Produit)"
-			},
-			"Selector_Category_Placeholder" : {
-				"en" : "*... Select a product",
-				"fr" : "*... Sélectionnez un produit"
-			},
-			"Selector_Value" : {
-				"en" : "Value to Display",
-				"fr" : "Valeur à afficher"
-			},
-			"Selector_Value_Placeholder" : {
-				"en" : "*... Select a value to Display",
-				"fr" : "*... Sélectionnez une valeur à afficher"
-			},
-			"Selector_Geography" : {
-				"en" : "Geographic Level",
-				"fr" : "Niveau géographique"
-			},
-			"Selector_Geography_Placeholder" : {
-				"en" : "*... Select a geographic Level",
-				"fr" : "*... Sélectionnez un niveau géographique"
-			},
-			"Selector_Filter_Label" : {
-				"en" : "Filters",
-				"fr" : "Filtres"
-			},
-			"Selector_Filter_Instructions" : {
-				"en" : "Select a subject, theme and category (product) to show available filters.",
-				"fr" : "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles."
-			},
-			"Selector_Button_Apply" : {
-				"en" : "Apply",
-				"fr" : "Appliquer"
-			},
-			"Selector_Button_Close" : {
-				"en" : "Cancel",
-				"fr" : "Annuler"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Selector_Title", "en", "Select Data");
+		nls.Add("Selector_Title", "fr", "Sélectionner des données");
+		nls.Add("Selector_Subject", "en", "Subject");
+		nls.Add("Selector_Subject", "fr", "Sujet");
+		nls.Add("Selector_Subject_Placeholder", "en", "Select a subject");
+		nls.Add("Selector_Subject_Placeholder", "fr", "Sélectionnez un sujet");
+		nls.Add("Selector_Theme", "en", "Theme");
+		nls.Add("Selector_Theme", "fr", "Thème");
+		nls.Add("Selector_Theme_Placeholder", "en", "*... Select a theme");
+		nls.Add("Selector_Theme_Placeholder", "fr", "*... Sélectionnez un thème");
+		nls.Add("Selector_Category", "en", "Category (Product)");
+		nls.Add("Selector_Category", "fr", "Catégorie (Produit)");
+		nls.Add("Selector_Category_Placeholder", "en", "*... Select a product");
+		nls.Add("Selector_Category_Placeholder", "fr", "*... Sélectionnez un produit");
+		nls.Add("Selector_Value", "en", "Value to Display");
+		nls.Add("Selector_Value", "fr", "Valeur à afficher");
+		nls.Add("Selector_Value_Placeholder", "en", "*... Select a value to Display");
+		nls.Add("Selector_Value_Placeholder", "fr", "*... Sélectionnez une valeur à afficher");
+		nls.Add("Selector_Geography", "en", "Geographic Level");
+		nls.Add("Selector_Geography", "fr", "Niveau géographique");
+		nls.Add("Selector_Geography_Placeholder", "en", "*... Select a geographic Level");
+		nls.Add("Selector_Geography_Placeholder", "fr", "*... Sélectionnez un niveau géographique");
+		nls.Add("Selector_Filter_Label", "en", "Filters");
+		nls.Add("Selector_Filter_Label", "fr", "Filtres");
+		nls.Add("Selector_Filter_Instructions", "en", "Select a subject, theme and category (product) to show available filters.");
+		nls.Add("Selector_Filter_Instructions", "fr", "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles.");
+		nls.Add("Selector_Button_Apply", "en", "Apply");
+		nls.Add("Selector_Button_Apply", "fr", "Appliquer");
+		nls.Add("Selector_Button_Close", "en", "Cancel");
+		nls.Add("Selector_Button_Close", "fr", "Annuler");		
 	}
 	
 	/**

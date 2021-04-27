@@ -46,13 +46,9 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	 * Return text for legend breaks in both languages
 	 * @returns {object.<string, string>} Legend break text for each language
 	 */	
-	static Nls() {
-		return {
-			"Legend_Item_Join" : {
-				"en" : " to ",
-				"fr" : " jusqu'à "
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Legend_Item_Join", "en", " to ");
+		nls.Add("Legend_Item_Join", "fr", " jusqu'à ");		
 	}
 	
 	/**

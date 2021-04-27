@@ -24,41 +24,23 @@ export default class Application extends Templated {
 	
 	get context() { return this._config.context; }
 
-	static Nls() {
-		return {
-			"Selector_Title" : {
-				"en" : "Select Data",
-				"fr" : "Sélectionner des données"
-			},
-			"Styler_Title" : {
-				"en" : "Change map style",
-				"fr" : "Modifier le style de la carte"
-			},
-			"Chart_Title" : {
-				"en" : "View chart",
-				"fr" : "Type de Diagramme"
-			},
-			"Legend_Title" : {
-				"en" : "Map legend",
-				"fr" : "Légende de la carte"
-			},
-			"Bookmarks_Title" : {
-				"en": "Bookmarks",
-				"fr": "Géosignets"
-			},
-			"Behaviour_Title" : {
-				"en" : "Toggle map click behaviour",
-				"fr" : "Basculer le comportement des clics sur la carte"
-			},
-			"Basemap_Title" : {
-				"en": "Change basemap",
-				"fr": "Changer de fond de carte"
-			},
-			"Search_Icon_Alt" : {
-				"en" : "Magnifying glass",
-				"fr" : "Loupe"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Selector_Title", "en", "Select Data");
+		nls.Add("Selector_Title", "fr", "Sélectionner des données");
+		nls.Add("Styler_Title", "en", "Change map style");
+		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
+		nls.Add("Chart_Title", "en", "View chart");
+		nls.Add("Chart_Title", "fr", "Type de Diagramme");
+		nls.Add("Legend_Title", "en", "Map legend");
+		nls.Add("Legend_Title", "fr", "Légende de la carte");
+		nls.Add("Bookmarks_Title", "en", "Bookmarks");
+		nls.Add("Bookmarks_Title", "fr", "Géosignets");
+		nls.Add("Behaviour_Title", "en", "Toggle map click behaviour");
+		nls.Add("Behaviour_Title", "fr", "Basculer le comportement des clics sur la carte");
+		nls.Add("Basemap_Title", "en", "Change basemap");
+		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
+		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
+		nls.Add("Search_Icon_Alt", "fr", "Loupe");
 	}
 
 	constructor(node, config) {		

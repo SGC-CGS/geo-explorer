@@ -35,13 +35,9 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * Return bookmarks button title in both languages
 	 * @returns {object.<string, string>} Basemap titles for each language
 	 */	
-	static Nls() {
-		return {
-			"Bookmarks_Title" : {
-				"en": "Bookmarks",
-				"fr": "Géosignets"
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Bookmarks_Title", "en", "Bookmarks");
+		nls.Add("Bookmarks_Title", "fr", "Géosignets");
 	}
 	
 	/**

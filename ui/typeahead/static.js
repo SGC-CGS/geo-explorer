@@ -12,21 +12,13 @@ export default Core.Templatable("Basic.Components.StaticTypeahead", class Static
 	 * Return ui text in both languages
 	 * @returns {object.<string, string>} Text for each language
 	 */	
-	static Nls() {
-		return {
-			"Search_Typeahead_Title": {
-				"en": "A Filtered list of items will appear as characters are typed.",
-				"fr": "Une liste filtrée d'objets apparaîtra lorsque des caractères seront saisis."
-			},
-			"Search_Typeahead_Placeholder": {
-				"en" : "Find a place on the map...",
-				"fr" : "Rechercher un endroit sur la carte..."
-			},
-			"Search_Typeahead_loading" : {
-				"en": "loading...",
-				"fr": "en chargement..."
-			}
-		}
+	static Nls(nls) {
+		nls.Add("Search_Typeahead_Title", "en", "A Filtered list of items will appear as characters are typed.");
+		nls.Add("Search_Typeahead_Title", "fr", "Une liste filtrée d'objets apparaîtra lorsque des caractères seront saisis.");
+		nls.Add("Search_Typeahead_Placeholder", "en", "Find a place on the map...");
+		nls.Add("Search_Typeahead_Placeholder", "fr", "Rechercher un endroit sur la carte...");
+		nls.Add("Search_Typeahead_loading", "en", "loading...");
+		nls.Add("Search_Typeahead_loading", "fr", "en chargement...");
 	}
 	
 	/**

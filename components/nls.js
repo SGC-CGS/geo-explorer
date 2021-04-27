@@ -5,7 +5,7 @@ import Core from '../tools/core.js';
 export default class Nls { 
 
 	constructor(strings) {	
-		this.strings = strings;
+		this.strings = strings || {};
 	}
 	
 	/**
@@ -28,6 +28,12 @@ export default class Nls {
 		if (!txt) throw new Error("String does not exist for requested language.");
 
 		return this.Format(txt, subs);
+	}
+	
+	Add(id, locale, string) {
+		if (!this.strings[id]) this.strings[id] = {};
+				
+		this.strings[id][locale] = string;
 	}
 	
 	/**
