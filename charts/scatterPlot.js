@@ -10,8 +10,31 @@ import Axes from "./axes.js";
 export default class ScatterPlot extends Chart{ 
     constructor(options) {
         super(options);
+
+        // Append the x grid line group
+        this.g.append("g")
+                .classed("x axis-grid", true)
+                .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+  
+        // Append the y grid line group
+        this.g.append("g")
+                .classed("y axis-grid", true)
+                .attr("transform", "translate(0,0)");
+  
+        // Append the left (vertical) axis group
+        this.g.append('g')
+          .classed("left axis", true);
+      
+        // Append the bottom (horizontal) axis group
+        this.g.append('g')
+              .classed("bottom axis", true)
+              .attr("transform", `translate(0, ${this.dimensions.innerHeight})`);
         
-        this.Draw();
+        // Append the points group
+        this.points = this.g.append("g")
+              .attr("fill", "steelblue")
+              .attr("stroke", "steelblue")
+              .attr("stroke-width", 2);
     }
 
     /**
@@ -24,24 +47,17 @@ export default class ScatterPlot extends Chart{
         this.xScale = Axes.CreateLinearXScale(this.data, this.dimensions.innerWidth);
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
-        this.g.append("g")
-              .classed("x axis-grid", true)
-              .attr('transform', 'translate(0,' + this.dimensions.innerHeight + ')');
+        this.g.selectAll("g.x.axis-grid")
+            .call(Axes.GridLineVertical(this.xScale, this.dimensions.innerHeight));
 
-        this.BuildGridLineVertical(); 
+        this.g.selectAll("g.y.axis-grid")
+            .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
-        this.g.append("g")
-              .classed("y axis-grid", true)
-              .attr("transform", "translate(0,0)");
+        this.g
+			.selectAll("g.left.axis")
+			.call(d3.axisLeft(this.yScale).ticks())
 
-        this.BuildGridLineHorizontal(); 
-
-        this.BuildAxes();
-
-        this.points = this.g.append("g")
-                            .attr("fill", "steelblue")
-                            .attr("stroke", "steelblue")
-                            .attr("stroke-width", 2);
+        this.SetBottomAxisAttributes();
 
         this.AppendPointsToChart();
     }
@@ -70,19 +86,5 @@ export default class ScatterPlot extends Chart{
                 .attr("r", 5);
 
         points.exit().remove();
-    }
-
-    /**
-     * @description
-     * Called when data is removed or added. 
-     * The domain of the scales and 
-     * visual elements need to be updated.
-     */
-    Redraw() {
-        this.xScale.domain([0, this.data.length - 1]);
-        this.UpdateAxes();
-        this.BuildGridLineVertical();
-        this.BuildGridLineHorizontal();
-        this.AppendPointsToChart();
     }
 }

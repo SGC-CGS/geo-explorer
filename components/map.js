@@ -40,9 +40,10 @@ export default class Map extends Evented {
 	/**
 	 * Call constructor of base class (Evented) and initialize map class 
 	 * @param {object} container - Container for map div properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)	 
 	 * @returns {void}
 	 */		
-	constructor(container) {
+	constructor(container, options) {
 		super();
 		
 		this._layers = {};
@@ -51,11 +52,11 @@ export default class Map extends Evented {
 		this._map = new ESRI.Map({ basemap: "streets" });
 		
 		this._view = new ESRI.views.MapView({
-			animation : false,
-			center: [-100, 63], 
+			animation : options && options.animation || false,
+			center: options && options.center || [-100, 63], 
 			container: container, 
 			map: this._map,  
-			zoom: 4 
+			zoom: options && options.zoom || 4 
 		});
 		
 		this._view.popup.collapseEnabled = false;

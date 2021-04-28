@@ -30,8 +30,8 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Templat
 		});
 	}
 
-	set data(value){
-		this.Populate(value)
+	set data(selection){
+		this.Populate(selection.items);
 	}
 	
 	/**

@@ -227,8 +227,8 @@ export default class Application extends Templated {
 	
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior("selection").layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior("selection").Graphics;
-		this.Elem("chart").data = this.map.Behavior("selection").Graphics;
+		this.Elem("table").data = this.map.Behavior("selection").graphics;
+		this.Elem("chart").data = this.map.Behavior("selection").graphics;
 	}
 	
 	OnWidget_Busy(ev) {

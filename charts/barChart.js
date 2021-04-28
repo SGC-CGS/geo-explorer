@@ -4,6 +4,12 @@ import Axes from "./axes.js";
 /**
  * @description 
  * The overall goal is to draw the barChart onto the CSGE.
+ * - Step one: Append the necessary groups and get the color scale
+ * - Step two: Define the scales and use them for building the bar chart. The 
+ * text on the bottom axis requires pre-processing to avoid texting leaving the SVG. 
+ * - Step three: Add rectangles to the chart
+ * 
+ * @note
  * Please refer to the the README in the charts folder for 
  * more information on the D3 concepts presented in this code.
  */
@@ -14,7 +20,17 @@ export default class BarChart extends Chart{
 
         this.color = this.GetColor();
 
-        this.Draw();
+        // Append the grid line group
+        this.g.append("g").classed("y axis-grid", true).attr("transform", "translate(0,0)");
+
+        // Append the left (vertical) axis group
+        this.g.append('g')
+        .classed("left axis", true);
+    
+        // Append the bottom (horizontal) axis group
+        this.g.append('g')
+            .classed("bottom axis", true)
+            .attr("transform", `translate(0, ${this.dimensions.innerHeight})`);
     }
 
     /**
@@ -25,12 +41,18 @@ export default class BarChart extends Chart{
      */
     Draw(){
         this.xScale = Axes.CreateBandXScale(this.data, this.dimensions.innerWidth);
+
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
+        
+        this.g.selectAll("g.y.axis-grid")
+            .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
-        this.g.append("g").classed("y axis-grid", true).attr("transform", "translate(0,0)");
+        this.g
+			.selectAll("g.left.axis")
+			.call(d3.axisLeft(this.yScale).ticks())
 
-        this.BuildGridLineHorizontal(); 
-        this.BuildAxes();
+        this.SetBottomAxisAttributes();
+
         this.AppendRectanglesToChart();
     }
     
@@ -76,21 +98,5 @@ export default class BarChart extends Chart{
             .ease(d3.easeLinear)
             .attr("y", (d) => this.yScale(d.value))
             .attr("height", (d) => this.dimensions.innerHeight - this.yScale(d.value));
-    }
-
-
-    /**
-     * @description
-     * Called when data is removed or added. 
-     * The domain of the scales and 
-     * visual elements need to be updated.
-     */
-    Redraw(){
-        // Scale domains must be redone since the axises 
-        // and bars and grid lines need to change 
-        this.xScale.domain(this.data.map(d => d.label));
-        this.UpdateAxes();
-        this.BuildGridLineHorizontal();
-        this.AppendRectanglesToChart();
     }
 }
