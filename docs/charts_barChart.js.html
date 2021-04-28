@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: charts/barChart.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: charts/barChart.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Chart from "./chart.js";
+import Axes from "./axes.js";
+
+/**
+ * @description 
+ * The overall goal is to draw the barChart onto the CSGE.
+ * Please refer to the the README in the charts folder for 
+ * more information on the D3 concepts presented in this code.
+ */
+export default class BarChart extends Chart{ 
+
+    constructor(options) {
+        super(options)
+
+        this.color = this.GetColor();
+
+        this.Draw();
+    }
+
+    /**
+     * @description
+     * First, the scales for the x and y axes are created.
+     * Next, grid lines are drawn horizontally. 
+     * Finally the axes and bars are drawn.
+     */
+    Draw(){
+        this.xScale = Axes.CreateBandXScale(this.data, this.dimensions.innerWidth);
+        this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
+
+        this.g.append("g").classed("y axis-grid", true).attr("transform", "translate(0,0)");
+
+        this.BuildGridLineHorizontal(); 
+        this.BuildAxes();
+        this.AppendRectanglesToChart();
+    }
+    
+    /**
+     * @description
+     * For each tick mark on the x-axis, a rectangle is added. When
+     * the rectangles are first added, their heights are zero. Rectangles may be
+     * removed or added depending on the case of the redraw function. 
+     */
+    AppendRectanglesToChart(){
+        let rectangles = this.g.selectAll("rect").data(this.data);
+              
+        rectangles
+            .enter()
+            .append("rect")
+            .merge(rectangles)
+            .attr("x", (d) => this.xScale(d.label))
+            .attr("y", this.yScale(0))
+            // Compute the width for each rectangle
+            .attr("width", this.xScale.bandwidth())
+            // Compute height for each rectangle
+            .attr("height", this.dimensions.innerHeight - this.yScale(0))
+            .style("fill", (d) => this.color(d.value))
+            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.label, d.value, n[i]))
+            .on("mousemove", () => this.OnMouseMove())
+            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]));
+
+        // Remove surplus bars and previous dataset out of graph
+        rectangles.exit().remove();
+        
+        this.TransitionOnTheVertical();
+    }
+
+    /**
+     * @description
+     * The transition function is called to grow 
+     * all the rectangles to the appropriate height.
+     */
+    TransitionOnTheVertical() {
+        this.g.selectAll("rect")   
+            .transition()
+            .duration(700)
+            .ease(d3.easeLinear)
+            .attr("y", (d) => this.yScale(d.value))
+            .attr("height", (d) => this.dimensions.innerHeight - this.yScale(d.value));
+    }
+
+
+    /**
+     * @description
+     * Called when data is removed or added. 
+     * The domain of the scales and 
+     * visual elements need to be updated.
+     */
+    Redraw(){
+        // Scale domains must be redone since the axises 
+        // and bars and grid lines need to change 
+        this.xScale.domain(this.data.map(d => d.label));
+        this.UpdateAxes();
+        this.BuildGridLineHorizontal();
+        this.AppendRectanglesToChart();
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li></ul><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AddGroupToSVG">AddGroupToSVG</a></li><li><a href="global.html#AppendLineToChart">AppendLineToChart</a></li><li><a href="global.html#AppendPointsToChart">AppendPointsToChart</a></li><li><a href="global.html#AppendRectanglesToChart">AppendRectanglesToChart</a></li><li><a href="global.html#AppendSVGtoContainerElement">AppendSVGtoContainerElement</a></li><li><a href="global.html#BuildAxes">BuildAxes</a></li><li><a href="global.html#BuildChart">BuildChart</a></li><li><a href="global.html#BuildDimensions">BuildDimensions</a></li><li><a href="global.html#BuildGridLineHorizontal">BuildGridLineHorizontal</a></li><li><a href="global.html#BuildGridLineVertical">BuildGridLineVertical</a></li><li><a href="global.html#ClearChart">ClearChart</a></li><li><a href="global.html#CreateBandXScale">CreateBandXScale</a></li><li><a href="global.html#CreateLinearXScale">CreateLinearXScale</a></li><li><a href="global.html#CreateLinearYScale">CreateLinearYScale</a></li><li><a href="global.html#Draw">Draw</a></li><li><a href="global.html#DrawChart">DrawChart</a></li><li><a href="global.html#GridLineHorizontal">GridLineHorizontal</a></li><li><a href="global.html#GridLineVertical">GridLineVertical</a></li><li><a href="global.html#Legend">Legend</a></li><li><a href="global.html#OnMouseEnter">OnMouseEnter</a></li><li><a href="global.html#OnMouseLeave">OnMouseLeave</a></li><li><a href="global.html#OnMouseMove">OnMouseMove</a></li><li><a href="global.html#Redraw">Redraw</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#SetBottomAxisAttributes">SetBottomAxisAttributes</a></li><li><a href="global.html#SetDefaultDimensions">SetDefaultDimensions</a></li><li><a href="global.html#TransitionOnTheVertical">TransitionOnTheVertical</a></li><li><a href="global.html#UpdateAxes">UpdateAxes</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Apr 27 2021 15:15:05 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/configuration.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/configuration.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Core from '../tools/core.js';
+import Context from './context.js';
+
+/**
+ * Grab all the JSON content from application.json
+ * and use get accessors to retrieve parts of the content.
+ * You can see the accessors being used in application.js.
+ * @module components/configuration
+ */
+export default class Configuration {
+	
+	/**
+	 * Get the map object and all its contents
+	 */
+	get map() { return this._json.map; }
+	
+	/**
+	 * Get the MapServer url for the map
+	 */
+	get mapUrl() { return this._json.map.url; }
+	
+	/**
+	 * Get the opacity of the map
+	 */
+	get mapOpacity() { return this._json.map.opacity; }
+	
+	/**
+	 * Get symbol properties from JSON object
+	 * @param {string} id - Symbol name (ex. selection, identify)
+	 * @returns {object} Object containing symbol properties (type, color, style, outline)
+	 */
+	symbol(id) {
+		var s = this._json.symbols[id];
+		
+		if (!s) throw new Error(`Symbol ${0} does not exist is the configuration file.`);
+		
+		return s;
+	}
+	
+	/**
+	 * Get the context object and all its contents (subject, theme, category, etc.)
+	 */
+	get context() { return this._context; }
+	
+
+	/**
+	 * Get the chart configuration
+	 */
+	get chart() { 
+		return {
+			field : this._json.chart.field[Core.locale]
+		}
+	}
+	
+	/**
+	 * Get the table object and all its contents (headers)
+	 */
+	get table() { return this._json.table; }
+	
+	/**
+	 * Get the ids (field names) and labels for the table header.
+	 */
+	get tableHeaders() { 
+		return this._json.table.headers.map(h => {
+			return {
+				id : h.id[Core.locale],
+				label : h.label[Core.locale]
+			}
+		}); 
+	}
+
+	/**
+	 * Return label name from JSON object - This function does not appear to be in use.
+	 */
+	get labelName() {
+		return this._json.name.label[Core.locale];
+	}
+
+	/**
+	 * Get the id, label, and url for the legend items
+	 */
+	get legendItems(){
+		return this._json.legend.items.map(i => {
+			return {
+				id : i.id,
+				label : i.label[Core.locale],
+				url : i.url
+			}
+		});
+	}
+	
+	/**
+	 * Get the bookmarks in alphabetical order along with their extents
+	 */
+	get bookmarks() {
+		var bookmarks = this._json.bookmarks.sort((a,b) => {
+			if (a.name > b.name) return 1;
+			
+			if (a.name &lt; b.name) return -1;
+			
+			return 0;
+		})
+		
+		return bookmarks.map(b => {
+			return {
+				name : b.name,
+				extent : {
+					xmin : b.extent[0][0],
+					xmax : b.extent[1][0],
+					ymin : b.extent[0][1],
+					ymax : b.extent[1][1],
+				}
+			}
+		}); 
+	}
+	
+	/**
+	 * Initialize configuration class by setting json and context (data) 
+	 * @param {object} json - json with page content (bookmarks, colors, context, layers, legend, map, symbols, tables)
+	 * @returns {void}
+	 */	
+	constructor(json) {
+		this._json = json;
+		
+		this._context = new Context(json.context);
+	}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_WChart.html">widgets/WChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 09:24:52 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

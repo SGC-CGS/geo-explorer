@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: legend/legend.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: legend/legend.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Templated from '../../components/templated.js';
+import Core from '../../tools/core.js';
+import Dom from '../../tools/dom.js';
+
+import LegendBreak from './legend-break.js';
+
+/**
+ * Legend widget module
+ * @module widgets/legend/legend
+ * @extends Templated
+ */
+export default Core.Templatable("App.Widgets.Legend", class Legend extends Templated {
+	
+	/**
+	 * Get/set opacity
+	 */
+	set Opacity(value) {
+		this.Elem('sOpacity').value = value * 100;
+	}
+	
+	get Opacity() {
+		return this.Elem('sOpacity').value / 100;
+	}
+	
+	/**
+	 * Return text for legend widget in both languages
+	 * @returns {object.&lt;string, string>} Legend widget text for each language
+	 */	
+	static Nls() {
+		return {
+			"Legend_Title" : {
+				"en" : "Map legend",
+				"fr" : "Légende de la carte"
+			},
+			"Legend_Indicators" : {
+				"en" : "Selected indicators",
+				"fr" : "Indicateurs sélectionnés"
+			},
+			"Legend_Opacity" : {
+				"en" : "Opacity",
+				"fr" : "Opacité"
+			},
+			"Legend_Opacity_Less" : {
+				"en" : "Less",
+				"fr" : "Moins"
+			},
+			"Legend_Opacity_More" : {
+				"en" : "More",
+				"fr" : "Plus"
+			},
+			"Legend_Context_Layers" : {
+				"en" : "Context layers",
+				"fr" : "Données contextuelles"
+			},
+			"Legend_Label_Name" : {
+				"en" : "Map labels",
+				"fr" : "Étiquettes sur la carte"
+			},
+			"Legend_Show_label" : {
+					"en" : " Show label",
+					"fr" : " Afficher les étiquettes"
+			}
+		}
+	}
+	
+	/**
+	 * Call constructor of base class (Templated) and initialize legend widget
+	 * @param {object} container - div legend container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)	  
+	 * @returns {void}
+	 */	
+	constructor(container, options) {	
+		super(container, options);
+		
+		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
+
+		this.Node('labelChk').On("click", ev => {
+			this.Emit("LabelName", { checked: this.Elem('labelChk').checked });
+		})
+	}
+	
+	/**
+	 * Load indicators and class breaks and clear checked values on legend widget
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */	
+	Update(context) {	
+		this.context = context;
+		
+		this.LoadIndicators(context.IndicatorItems());
+		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
+
+		this.Elem("labelChk").checked = false;
+		this.Elem("labelChk").removeAttribute("checked");
+		
+	}
+	
+	/**
+	 * Create list elements in Dom for selected indicators
+	 * @param {object[]} indicators - List of indicator IDs and labels to load
+	 * @returns {void}
+	 */
+	LoadIndicators(indicators) {
+		Dom.Empty(this.Elem("indicators"));
+		
+		indicators.forEach((i) => {
+			Dom.Create("li", { innerHTML:i.label }, this.Elem("indicators"));			
+		});
+	}
+	
+	/**
+	 * Create legend break object from class break info
+	 * @param {object[]} classBreakInfos - Object describing class breaks
+	 * @returns {void}
+	 */
+	LoadClassBreaks(classBreakInfos) {
+		Dom.Empty(this.Elem("breaks"));
+		
+		this.breaks = classBreakInfos.map((c, i) => {
+			return new LegendBreak(this.Elem('breaks'), c);
+		});
+	}
+	
+	/**
+	 * Add context layer information to Dom
+	 * @param {string} label - Label for context layer
+	 * @param {oject} data - Data to add to event listener (confirm)
+	 * @param {string} checked - Value for checkbox (confirm)
+	 * @returns {void}
+	 */
+	AddContextLayer(label, data, checked) {
+		var div = Dom.Create("li", { className:"context-layer" }, this.Elem("cLayers"));
+		var chk = Dom.Create("input", { id:Core.NextId(), className:"context-layer-check", type:"checkbox", checked: checked}, div);
+		var lbl = Dom.Create("label", { htmlFor:chk.id, className:"context-layer-label", innerHTML:label }, div);
+
+		chk.addEventListener("change", ev => {
+			this.Emit("LayerVisibility", {data: data, checked:chk.checked});
+		});
+	}
+
+	/**
+	 * Respond to change in opacity slider
+	 * @param {object} ev - Event received from opacity slider
+	 * @returns {void}
+	 */
+	OnOpacity_Changed(ev) {
+		this.Emit("Opacity", { opacity:this.Opacity });
+	}
+	
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for legend widget
+	 */	
+	Template() {
+		return	"&lt;div class='overlay-body' handle='body'>" + 
+				"&lt;label>nls(Legend_Indicators)&lt;/label>" +
+				"&lt;ul handle='indicators'>&lt;/ul>" +
+				"&lt;label>nls(Legend_Title)&lt;/label>" +
+				"&lt;table handle='breaks' class='breaks-container'>" + 
+					// Class breaks go here, dynamically created
+				"&lt;/table>" +
+				"&lt;label>nls(Legend_Opacity)&lt;/label>" +
+				"&lt;div class='opacity-container'>" +
+				   "&lt;input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
+				   "&lt;div class='opacity-labels-container'>" +
+					  "&lt;label>nls(Legend_Opacity_Less)&lt;/label>" +
+					  "&lt;label>nls(Legend_Opacity_More)&lt;/label>" +
+				   "&lt;/div>" +
+				"&lt;/div>" +
+				"&lt;label>nls(Legend_Context_Layers)&lt;/label>" +
+				"&lt;ul handle='cLayers' class='context-layers-container'>" + 
+				"&lt;/div>" +
+				"&lt;label>nls(Legend_Label_Name)&lt;/label>" +
+				"&lt;ul class='label-name-container'>" +
+					"&lt;li class='labelName'>" +
+						"&lt;input handle='labelChk' type=checkbox class='labelName-checkbox'>" + 
+						"&lt;label class='labelName-label'>nls(Legend_Show_label)&lt;/label>" + 
+					"&lt;/li>" +
+				"&lt;/ul>";
+	}
+})
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li></ul><h3>Classes</h3><ul><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Apr 16 2021 15:09:57 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

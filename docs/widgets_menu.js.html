@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: widgets/menu.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: widgets/menu.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code> 'use strict';
+
+import Core from '../tools/core.js';
+import Dom from '../tools/dom.js';
+
+/**
+ * Menu widget module
+ * @module widgets/menu
+ */
+export default class Menu { 
+
+	/**
+	 * gets list of buttons
+	 */
+	get buttons() {
+		var buttons = [];
+		
+		for (var id in this.items) buttons.push(this.items[id].button);
+		
+		return buttons;
+	}
+
+	/**
+	 * Initialize class variables
+	 */
+	constructor() {				
+		this.current = null;
+		this.items = {};
+	}
+	
+	/**
+	 * Gets button from items for specified id
+	 * @param {string} id - Button ID
+	 * @returns {object} Button object
+	 */
+	Item(id) {
+		return this.items[id];
+	}
+	
+	/**
+	 * Gets button HTML from items for specified id
+	 * @param {string} id - Button ID
+	 * @returns {string} HTML of button
+	 */
+	Button(id) {
+		return this.Item(id).button;
+	}
+	
+	/**
+	 * Get overlay for id
+	 * @param {object} id - Item object for Id
+	 * @returns {object} Overlay
+	 */
+	Overlay(id) {
+		return this.Item(id).overlay;
+	}
+	
+	/**
+	 * Get overlay widget for id
+	 * @param {object} id - Item object for Id
+	 * @returns {object} Overlay widget
+	 */
+	Widget(id) {
+		return this.Item[id].overlay.widget;
+	}
+	
+	/**
+	 * Add specified item to menu
+	 * @param {string} id - item id
+	 * @param {object} item - button and overlay to add
+	 * @returns {void}
+	 */
+	AddItem(id, item) {
+		if (this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} already exists in menu.`);
+		
+		this.items[id] = item;
+	}
+
+	/**
+	 * Add button to Dom
+	 * @param {string} id - button id
+	 * @param {string} title - title to apply to the button
+	 * @returns {void}
+	 */
+	AddButton(id, title){
+		var item = {
+			button : Dom.Create("button", { title:title, className:`button-icon large-icon ${id}` })
+		}
+		
+		this.AddItem(id, item);
+	}
+	
+	/**
+	 * Overlay widget buttons
+	 * @param {string} id - button id
+	 * @param {string} title - Title to apply to the overlay
+	 * @param {object} overlay - Overlay object with all properties
+	 * @returns {void}
+	 */
+	AddOverlay(id, title, overlay) {
+		var item = {
+			button : Dom.Create("button", { title:title, className:`button-icon large-icon ${id}` }),
+			overlay : overlay
+		}
+		
+		this.AddItem(id, item);
+		
+		item.button.addEventListener("click", this.OnMenuButton_Click.bind(this, item));
+		
+		overlay.widget.On("Close", this.OnOverlay_Hide.bind(this, item));
+		overlay.On("Close", this.OnOverlay_Hide.bind(this, item));
+	}
+	
+	/**
+	 * Set the overlay when the user clicks a menu button
+	 * @param {object} item - Button and overlay
+	 * @param {object} ev - event
+	 * @returns {void}
+	 */
+	OnMenuButton_Click(item, ev) {
+		this.SetOverlay(item);
+	}	
+	
+	/**
+	 * Hide overlay and reset current button
+	 * @param {object} item - Button and overlay
+	 * @param {object} ev - event
+	 * @returns {void}
+	 */
+	OnOverlay_Hide(item, ev) {
+		this.HideOverlay(item);
+		
+		this.current = null;
+	}
+	
+	/**
+	 * Show the overlay for the currently selected button
+	 * @param {object} item - Button and overlay
+	 * @returns {void}
+	 */
+	SetOverlay(item) {
+		if (this.current) this.HideOverlay(this.current);
+		
+		this.current = (this.current == item) ? null : item;
+		
+		if (this.current) this.ShowOverlay(this.current);
+	}
+	
+	/**
+	 * Hide the overlay and uncheck the specified item
+	 * @param {object} item - Button and overlay
+	 * @returns {void}
+	 */
+	HideOverlay(item) {
+		item.overlay.Hide();
+		
+		Dom.RemoveCss(item.button, "checked");
+	}
+	
+	/**
+	 * Show the overlay and check the specified item
+	 * @param {object} item - Button and overlay
+	 * @returns {void}
+	 */
+	ShowOverlay(item) {		
+		item.overlay.Show();
+		
+		Dom.AddCss(item.button, "checked");
+	}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_WChart.html">widgets/WChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 09:24:52 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

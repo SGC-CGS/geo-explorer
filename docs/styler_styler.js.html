@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: styler/styler.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: styler/styler.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Templated from '../../components/templated.js';
+import Core from '../../tools/core.js';
+import Dom from '../../tools/dom.js';
+import Requests from '../../tools/requests.js';
+import Picker from '../../ui/picker.js';
+import StylerBreak from './styler-break.js';
+
+/**
+ * Styler widget module
+ * @module widgets/styler/styler
+ * @extends Templated
+ */
+export default Core.Templatable("App.Widgets.Styler", class Styler extends Templated {
+
+	/**
+	 * Return text for styler widget in both languages
+	 * @returns {object.&lt;string, string>} Styler widget text for each language
+	 */		
+	static Nls() {
+		return {
+			"Styler_Title" : {
+				"en" : "Change map style",
+				"fr" : "Modifier le style de la carte"
+			},
+			"Styler_Instructions_1" : {
+				"en" : "Use the options below to change how to render the indicator on the map. To confirm your changes, click 'Apply' at the end of the form.",
+				"fr" : "Utiliser les options ci-dessous pour changer la façon dont l’indicateur apparaît sur la carte. Pour confirmer les changements, cliquer sur « Appliquer » en bas du formulaire."
+			},
+			"Styler_Instructions_3" : {
+				"en" : "* Geographies with no data or that do not fit in the ranges below are transparent on the map but still interactive.",
+				"fr" : "* Les régions géographiques n’ayant pas de données ou ne tenant pas dans les plages ci-dessous apparaissent en transparence sur la carte, mais sont toujours interactives."
+			},
+			"Styler_Method" : {
+				"en" : "Classification method",
+				"fr" : "Méthode de classification"
+			},
+			"Styler_Color_Range" : {
+				"en" : "Color range",
+				"fr" : "Gamme de couleurs"
+			},
+			"Styler_Color_Start" : {
+				"en" : "Start color",
+				"fr" : "Couleur de départ"
+			},
+			"Styler_Color_End" : {
+				"en" : "End color",
+				"fr" : "Couleur de fin"
+			},
+			"Styler_Breaks" : {
+				"en" : "Number of breaks (1 to 10)",
+				"fr" : "Nombre de bornes (1 à 10)"
+			},
+			"Styler_Style" : {
+				"en" : "Map style",
+				"fr" : "Style de la carte"
+			},
+			"Styler_Method_Equal": {
+				"en": "Equal intervals",
+				"fr": "Intervalles égaux"
+			},
+			"Styler_Method_Natural": {
+				"en": "Natural breaks",
+				"fr": "Bornes naturelles"
+			},
+			"Styler_Method_Quantile": {
+				"en": "Quantiles",
+				"fr": "Quantiles"
+			},
+			"Styler_Max_Lt_Min" : {
+				"en" : "New maximum value is less than the current minimum value for the layer. Input a higher value.",
+				"fr" : "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée."
+			},
+			"Styler_Max_Gt_Next" : {
+				"en" : "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.",
+				"fr" : "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante."
+			},
+			"Styler_Button_Apply" : {
+				"en" : "Apply",
+				"fr" : "Appliquer"
+			},
+			"Styler_Button_Close" : {
+				"en" : "Cancel",
+				"fr" : "Annuler"
+			}
+		}
+	}
+
+	/**
+	 * Call constructor of base class (Templated) and initialize styler widget
+	 * @param {object} container - div styler container and properties
+	 * @param {object} options - any additional options to assign to the widget (not typically used)	  
+	 * @returns {void}
+	 */	
+	constructor(container, options) {
+		super(container, options);
+
+		this.metadata = null;
+		this.breaks = null;
+
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), null, { id:1, algo:"esriClassifyEqualInterval" });
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
+
+		this.Node('bColorS').On("Finished", this.OnPicker_Finished.bind(this));
+		this.Node('bColorE').On("Finished", this.OnPicker_Finished.bind(this));
+
+		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
+
+		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
+		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
+
+		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
+		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
+	}
+
+	/**
+	 * Load class method, breaks, stard and end colours to styler widget
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */	
+	Update(context) {
+		this.context = context;
+
+		var n = context.sublayer.renderer.classBreakInfos.length;
+
+		var idx = this.Elem('sMethod').FindIndex(i => i.algo === context.metadata.breaks.algo);
+
+		this.Elem("sMethod").value = idx;
+		this.Elem("iBreaks").value = n;
+
+		this.Elem("bColorS").color = context.sublayer.renderer.classBreakInfos[0].symbol.color;
+		this.Elem("bColorE").color = context.sublayer.renderer.classBreakInfos[n - 1].symbol.color;
+
+		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
+	}
+
+	/**
+	 * Remove class break
+	 * @param {number} i - Index number to remove from class breaks
+	 * @returns {void}
+	 */
+	Remove(i) {
+		var brk = this.breaks[i];
+		var prev = this.breaks[i-1];
+		var next = this.breaks[i+1];
+		
+		if (next &amp;&amp; prev) next.Min = prev.Max;
+
+		// TODO: implement this in DOM (eventually?)
+		this.Elem('breaks').removeChild(brk.Elem('container'));
+		this.breaks.splice(i,1);
+						
+		this.Elem("iBreaks").value = this.breaks.length;
+	}
+
+	/**
+	 * Create break object from class break info
+	 * @param {object[]} classBreakInfos - Object describing class breaks
+	 * @returns {void}
+	 */	
+	LoadClassBreaks(classBreakInfos) {
+		Dom.Empty(this.Elem("breaks"));
+
+		this.breaks = classBreakInfos.map((c, i) => {
+			var brk = new StylerBreak(this.Elem('breaks'), c);
+
+			brk.On("apply", this.OnBreak_Apply.bind(this, i));
+
+			brk.On("remove", this.OnBreak_Remove.bind(this, i));
+
+			return brk;
+		});
+	}
+
+	/**
+	 * Apply new break value when checkmark next to break is clicked
+	 * @param {number} i - Index number of break value to change
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
+	OnBreak_Apply(i, ev) {
+		var curr = this.breaks[i];
+		var next = this.breaks[i + 1];
+
+		if (next &amp;&amp; ev.value > next.Max) alert(this.Nls("Styler_Max_Gt_Next"));
+
+		else if (ev.value &lt; curr.Min) alert(this.Nls("Styler_Max_Lt_Min"));
+
+		else {
+			ev.target.Save();
+			ev.target.StopEdit();
+
+			next.Min = curr.Max;
+		}
+	}
+
+	/**
+	 * Make a call to remove a class break if there is more than one
+	 * @param {number} i - Index number to remove
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
+	OnBreak_Remove(i, ev) {
+		// Last break cannot be removed
+		if (this.breaks.length == 1) return;
+		
+		var i = this.breaks.indexOf(ev.target);
+		
+		this.Remove(i);
+	}
+
+	/**
+	 * Change start or end colour after choice is made from colour picker
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
+	OnPicker_Finished(ev) {
+		this.context.metadata.colors.start = this.Elem("bColorS").EsriColor;
+		this.context.metadata.colors.end = this.Elem("bColorE").EsriColor;
+
+		this.Refresh();
+	}
+
+	/**
+	 * Change number of breaks when up or down arrows are clicked or new number is entered
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
+	onIBreaks_Change(ev) {
+		this.context.metadata.breaks.n = ev.target.value;
+
+		this.Refresh();
+	}
+
+	/**
+	 * Change classification method
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
+	onMethod_Change(ev) {
+		this.context.metadata.breaks.algo = ev.target.selected.algo;
+
+		this.Refresh();
+	}
+
+	/**
+	 * Update map when apply button is clicked on styler widget
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
+	OnApply_Click(ev) {
+		this.context.Commit();
+
+		var json = this.context.sublayer.renderer.toJSON();
+
+		json.min = this.breaks[0].min;
+
+		var symbol = this.context.sublayer.renderer.classBreakInfos[0].symbol;
+
+		var breaks = this.breaks.map(b => {
+			json.classBreakInfos = this.breaks.map(b => {
+				symbol.color = b.Color;
+
+				return {
+					description : "",
+					label : `${b.Min} - ${b.Max}`,
+					classMaxValue: b.Max,
+					symbol: symbol.toJSON()
+				}
+			});
+		});
+
+		var renderer = ESRI.renderers.support.jsonUtils.fromJSON(json);
+
+		this.Emit("Change", { renderer:renderer });
+	}
+
+	/**
+	 * Close styler widget when Cancel button is clicked
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
+	OnClose_Click(ev) {
+		this.context.Revert();
+
+		this.Emit("Close");
+
+		this.Update(this.context);
+	}
+
+	/**
+	 * Emits error when there is a problem loading class breaks
+	 * @param {object} error - Error object
+	 * @returns {void}
+	 */
+	OnRequests_Error (error) {
+		this.Emit("Error", { error:error });
+	}
+
+	/**
+	 * Refresh class breaks based on currently selected options
+	 * @returns {void}
+	 */
+	Refresh() {
+		this.Emit("Busy");
+
+		Requests.Renderer(this.context).then(sublayer => {
+			this.Emit("Idle");
+
+			this.LoadClassBreaks(sublayer.renderer.classBreakInfos);
+		}, error => this.OnRequests_Error(error));
+	}
+
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for styler widget
+	 */	
+	Template() {
+		return	"&lt;p>nls(Styler_Instructions_1)&lt;/p>" +
+				"&lt;label>nls(Styler_Method)&lt;/label>" +
+				"&lt;div handle='sMethod' widget='Basic.Components.Select'>&lt;/div>" +
+				"&lt;label>nls(Styler_Breaks)&lt;/label>" +
+				"&lt;input handle='iBreaks' type='number' min='1' max='10' />" +
+				"&lt;label>nls(Styler_Color_Range)&lt;/label>" +
+				"&lt;div class='color-range'>" +
+					"&lt;label>nls(Styler_Color_Start)&lt;/label>" +
+					"&lt;div handle='bColorS' class='color start' widget='Basic.Components.Picker'>&lt;/div>" +
+					"&lt;label>nls(Styler_Color_End)&lt;/label>" +
+					"&lt;div handle='bColorE' class='color end' widget='Basic.Components.Picker'>&lt;/div>" +
+				"&lt;/div>" +
+				"&lt;label>nls(Styler_Style)&lt;/label>" +
+				"&lt;table handle='breaks' class='breaks-container'>" +
+					// Class breaks go here, dynamically created
+				"&lt;/table>" +
+				"&lt;p>nls(Styler_Instructions_3)&lt;/p>" +
+				"&lt;div class='button-container'>" +
+				   "&lt;button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)&lt;/button>" +
+				   "&lt;button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)&lt;/button>" +
+				"&lt;/div>";
+	}
+})
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li></ul><h3>Classes</h3><ul><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Apr 16 2021 15:09:57 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
