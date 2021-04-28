@@ -4,8 +4,9 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
 /**
- * @description
- * A given element is entered through the constructor
+ * Node module
+ * @module components/node
+ * @description A given element is entered through the constructor
  * and .On() function is used to add event listeners.
  * The constructor is called in templated.js.
  * You can see the list of event listeners for the given 

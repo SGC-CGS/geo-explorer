@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ui/select.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ui/select.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+import Core from '../tools/core.js';
+import Dom from '../tools/dom.js';
+
+import Templated from '../components/templated.js';
+
+/**
+ * Select box module
+ * @module ui/select
+ * @extends Templated
+ */
+export default Core.Templatable("Basic.Components.Select", class Select extends Templated {
+	
+	/**
+	 * Get/set select box value
+	 */
+	get value() {
+		return this.Elem("root").value;
+	}
+	
+	set value(value) {
+		this.Elem("root").value = value;
+	}
+	
+	/**
+	 * Get/set disabled value
+	 */
+	set disabled(value) {
+		this.Elem("root").disabled = value;
+	}
+	
+	get disabled() {
+		return this.Elem("root").disabled;
+	}
+	
+	/**
+	 * Get selected element object (label, value)
+	 */
+	get selected() {
+		var i = this.Elem("root").value;
+		
+		return this._items[i];
+	}
+	
+	/**
+	 * Set initial value of select box
+	 */
+	set placeholder(value) {
+		this._ph = Dom.Create("option", { innerHTML:value, value:-1, className:"select-placeholder" });
+		
+		this._ph.disabled = true;
+		this._ph.selected = true;
+		
+		this.Elem("root").insertBefore(this._ph, this.Elem("root").firstChild);
+	}
+	
+	/**
+	 * Call constructor of base class (Templated) and initialize select
+	 * @param {object} container - div container and properties
+	 * @param {object} options - any additional options to assign (not typically used)
+	 * @returns {void}
+	 */	
+	constructor(container, options) {
+		super(container, options);
+		
+		this._items = [];
+		
+		this._ph = null;
+		
+		this.Node("root").On("change", this.OnSelect_Change.bind(this));
+	}
+	
+	/**
+	 * Populate options in select box
+	 * @param {string} label - Label of select option
+	 * @param {string} title - Title of select option
+	 * @param {object} item - Object containing option description, label, and value
+	 * @returns {void}
+	 */
+	Add(label, title, item) {
+		Dom.Create("option", { innerHTML:label, value:this._items.length, title:title }, this.Elem("root"));
+		
+		this._items.push(item);
+	}
+	
+	/**
+	 * Call from delegate to FindIndex
+	 * @param {function} delegate  - Delegate function
+	 * @returns {void}
+	 */
+	Select(delegate) {		
+		this.value = this.FindIndex(delegate);
+	}
+	
+	/**
+	 * Finds index of selected classification method through link to styler widget
+	 * @param {function} delegate - Delegate function
+	 * @returns {number} Index number of selected classification method (-1 if none)
+	 */
+	FindIndex(delegate) {
+		for (var i = 0; i &lt; this._items.length; i++) {
+			if (delegate(this._items[i], i)) return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Emit change event when a new option is selected
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
+	OnSelect_Change(ev) {
+		var item = this._items[ev.target.value];
+		
+		this.Emit("Change", { index:ev.target.value, item:item, label:ev.target.innerHTML });
+	}
+	
+	/**
+	 * Create HTML for select element
+	 * @returns {string} HTML for select element
+	 */
+	Template() {
+		return '&lt;select handle="root">&lt;/select>';
+	}
+	
+	/**
+	 * Empty items in select box
+	 * @returns {void}
+	 */
+	Empty() {
+		Dom.Empty(this.Elem("root"));
+		
+		this._items = [];
+		
+		if (!this._ph) return;
+		
+		Dom.Place(this._ph, this.Elem("root"));
+	
+		this._ph.selected = true;
+	}
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-charts_axes.html">charts/axes</a></li><li><a href="module-charts_barChart.html">charts/barChart</a></li><li><a href="module-charts_chart.html">charts/chart</a></li><li><a href="module-charts_linechart.html">charts/linechart</a></li><li><a href="module-charts_pieChart.html">charts/pieChart</a></li><li><a href="module-charts_scatterPlot.html">charts/scatterPlot</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_popup.html">ui/popup</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_wChart.html">widgets/wChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul><h3>Global</h3><ul><li><a href="global.html#set">set</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 14:44:33 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

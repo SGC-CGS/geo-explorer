@@ -2,6 +2,11 @@ import Dom from '../tools/dom.js';
 import Core from '../tools/core.js';
 import Templated from '../components/templated.js';
 
+/**
+ * Popup module
+ * @module ui/popup
+ * @extends Templated
+ */
 export default class Popup extends Templated { 
 	
 	set Title(value) {

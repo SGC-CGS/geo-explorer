@@ -2,6 +2,10 @@
 
 import Core from '../tools/core.js';
 
+/**
+ * Nls module
+ * @module components/nls
+ */
 export default class Nls { 
 
 	constructor(strings) {	

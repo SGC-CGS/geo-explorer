@@ -2,9 +2,10 @@ import Axes from "./axes.js"
 import Tooltip from "../ui/tooltip.js"
 
 /**
- * @description 
- * The parent class for all chart types (bar, pie, etc.).
- * Please refer to the the README in the charts folder for 
+ * Chart module
+ * @module charts/chart
+ * @description The parent class for all chart types (bar, pie, etc.).
+ * @note Please refer to the the README in the charts folder for 
  * more information on the overall workflow and overview of 
  * the D3 concepts. 
  */

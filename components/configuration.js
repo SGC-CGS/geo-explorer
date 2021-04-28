@@ -2,8 +2,9 @@ import Core from '../tools/core.js';
 import Context from './context.js';
 
 /**
- * @description
- * Grab all the JSON content from application.json
+ * Configuration module
+ * @module components/configuration
+ * @description Grab all the JSON content from application.json
  * and use get accessors to retrieve parts of the content.
  * You can see the accessors being used in application.js.
  */

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/templated.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/templated.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+import Core from '../tools/core.js';
+import Dom from '../tools/dom.js';
+import Evented from './evented.js';
+import Node from './node.js';
+import Nls from './nls.js';
+
+/**
+ * Templated module
+ * @module components/templated
+ * @extends Evented
+ */
+export default class Templated extends Evented { 
+
+	get container() { return this._container; }
+
+	get roots() { return this._roots; }
+
+	get nls() { return this._nls; }
+
+	constructor(container, options) {
+		super();
+		
+		this._options = options || { };
+		
+		this._nls = new Nls();
+		
+		var json = this.constructor.Nls ? this.constructor.Nls(this._nls) : {};
+		
+		// this._nls = new Nls(json);
+		
+		this.BuildTemplate();
+		
+		if (this._template) this.SetNamedNodes();
+	
+		if (this._template) this.BuildSubWidgets();
+		
+		this.SetRoots();
+		
+		if (container) this.Place(container);
+	}
+	
+	/**
+	 * @description
+	 * Get a localized nls string resource
+	 * @param {*} id — the id of the nls resource to retrieve
+	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
+	 * @param {String} locale - the locale for the nls resource
+	 * @returns - the localized nls string resource
+	 */
+	Nls(id, subs, locale) {
+		return this.nls.Resource(id, subs, locale);
+	}
+	
+	BuildTemplate() {
+		// Use template provided in options first, use Template function second
+		var html = this._options.template ? this._options.template : this.Template();
+		
+		// TODO : I think it still works with empty templates.
+		if (!html) return;
+		
+		// Trailing whitespaces can cause issues when parsing the template, remove them
+		html = html.trim();
+		
+		var nls = this._nls;
+		
+		// Replace all nls strings in template. Nls string pattern in templates is nls(StringId)
+		html = this.Replace(html, /nls\((.*?)\)/, function(m) { return nls.Resource(m); });
+		
+		this._template = Dom.Create("div", { innerHTML:html });
+	}
+	
+	SetRoots() {
+		this._roots = [];
+		
+		for (var i = 0; i &lt; this._template.children.length; i++) {
+			this._roots.push(this._template.children[i]);
+		}
+	}
+	
+	SetNamedNodes() {		
+		var named = this._template.querySelectorAll("[handle]");
+		
+		this._nodes = {};
+		
+		// Can't use Array ForEach here since named is a NodeList, not an array
+		for (var i = 0; i &lt; named.length; i++) { 
+			var name = Dom.GetAttribute(named[i], "handle");
+			
+			this._nodes[name] = named[i];
+		}
+	}
+	
+	BuildSubWidgets() {		
+		var nodes = this._template.querySelectorAll("[widget]");
+		
+		// Can't use Array ForEach here since nodes is a NodeList, not an array
+		for (var i = 0; i &lt; nodes.length; i++) {
+			var path = Dom.GetAttribute(nodes[i], "widget");
+			var module = Core.Templatable(path);
+			var widget = new module(nodes[i]);
+			var handle = Dom.GetAttribute(widget.container, "handle");
+			
+			if (handle) this._nodes[handle] = widget;
+		}
+	}
+	
+	Place(container) {
+		this._container = container;
+		
+		this._roots.forEach(r => { Dom.Place(r, this._container); });
+	}
+	
+	SetCss(css) {
+		this._roots.forEach(r => { Dom.SetCss(r, css); });
+	}
+	
+	Template() {
+		return null;		
+	}
+
+	Replace(str, expr, delegate) {
+		var m = str.match(expr);
+		
+		while (m) {
+			str = str.replace(m[0], delegate(m[1]));
+			m = str.match(expr);
+		}
+		
+		return str;
+	}
+	
+	Node(id) {
+		return new Node(this._nodes[id]);
+	}
+	
+	Elem(id) {
+		return this._nodes[id];
+	}
+	
+	// NOTE : Test for spread operator in Rollup
+	Nodes(...ids) {
+		return ids.map(id => new Node(this._nodes[id]));
+	}
+	
+	// NOTE : Test for spread operator in Rollup
+	Elems(...ids) {
+		return ids.map(id => this._nodes[id]);
+	}
+	
+	// TODO : Build a root function
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-charts_axes.html">charts/axes</a></li><li><a href="module-charts_barChart.html">charts/barChart</a></li><li><a href="module-charts_chart.html">charts/chart</a></li><li><a href="module-charts_linechart.html">charts/linechart</a></li><li><a href="module-charts_pieChart.html">charts/pieChart</a></li><li><a href="module-charts_scatterPlot.html">charts/scatterPlot</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_popup.html">ui/popup</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_wChart.html">widgets/wChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul><h3>Global</h3><ul><li><a href="global.html#set">set</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 14:44:33 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -2,6 +2,10 @@
 
 import Core from '../tools/core.js';
 
+/**
+ * Evented module
+ * @module components/evented
+ */
 export default class Evented { 
 
 	constructor() {
@@ -31,7 +35,7 @@ export default class Evented {
 	 * Remove an event listener from the list of event listeners.
 	 * @param {*} type - name of the event
 	 * @param {*} callback - a callback function that listens for an event
-	 * @returns 
+	 * @returns itself
 	 */
 	removeEventListener(type, callback){
 		if (!(type in this._listeners)) return;
@@ -51,7 +55,6 @@ export default class Evented {
 	 * @description
 	 * Invoke an event listener.
 	 * @param {*} event - event occurring in the DOM
-	 * @returns 
 	 */
 	dispatchEvent(event){
 		if (!(event.type in this._listeners)) return;

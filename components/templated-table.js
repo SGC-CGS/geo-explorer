@@ -6,10 +6,11 @@ import Evented from './evented.js';
 import Templated from './templated.js';
 
 /**
- * @description
- * Extends templated to create the table body element
+ * Templated Table module
+ * @module components/templated-table
+ * @extends Templated
+ * @description Extends templated to create the table body element
  */
-
 export default class templatedTable extends Templated { 
 
 	BuildTemplate() {
