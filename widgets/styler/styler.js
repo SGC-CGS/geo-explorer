@@ -25,6 +25,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Instructions_3", "fr", "* Les régions géographiques n’ayant pas de données ou ne tenant pas dans les plages ci-dessous apparaissent en transparence sur la carte, mais sont toujours interactives.");
 		nls.Add("Styler_Method", "en", "Classification method");
 		nls.Add("Styler_Method", "fr", "Méthode de classification");
+		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
+		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
 		nls.Add("Styler_Color_Range", "en", "Color range");
 		nls.Add("Styler_Color_Range", "fr", "Gamme de couleurs");
 		nls.Add("Styler_Color_Start", "en", "Start color");
@@ -41,6 +43,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Method_Natural", "fr", "Bornes naturelles");
 		nls.Add("Styler_Method_Quantile", "en", "Quantiles");
 		nls.Add("Styler_Method_Quantile", "fr", "Quantiles");
+		nls.Add("Styler_Scheme_Divergent", "en", "Divergent");
+		nls.Add("Styler_Scheme_Divergent", "fr", "Divergente");
+		nls.Add("Styler_Scheme_Sequential", "en", "Sequential");
+		nls.Add("Styler_Scheme_Sequential", "fr", "Séquentielle");
+		nls.Add("Styler_Scheme_Categorical", "en", "Reverse");
+		nls.Add("Styler_Scheme_Categorical", "fr", "Inverse");
 		nls.Add("Styler_Max_Lt_Min", "en", "New maximum value is less than the current minimum value for the layer. Input a higher value.");
 		nls.Add("Styler_Max_Lt_Min", "fr", "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée.");
 		nls.Add("Styler_Max_Gt_Next", "en", "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.");
@@ -77,6 +85,133 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
+
+		this.CreateColorPalettes();
+
+		this.addColorPalettesToStyler();
+
+		this.addListenersToScheme();
+	}
+
+	// TODO: Find a cleaner approach
+	CreateColorPalettes() {
+		this.divergingColors = [
+			colorbrewer.BrBG,
+			colorbrewer.PiYG,
+			colorbrewer.PRGn,
+			colorbrewer.PuOr,
+			colorbrewer.RdBu,
+			colorbrewer.RdGy,
+			// colorbrewer.RdYlBu,
+			colorbrewer.RdYlGn,
+			// colorbrewer.Spectral
+		]
+
+		this.sequentialColors = [
+			// Single Hue
+			colorbrewer.Blues,
+			colorbrewer.Greens,
+			colorbrewer.Greys,
+			colorbrewer.Oranges,
+			colorbrewer.Purples,
+			colorbrewer.Reds,
+			// Multi-Hue
+			// colorbrewer.BuGn,
+			colorbrewer.BuPu,
+			colorbrewer.GnBu,
+			// colorbrewer.OrRd,
+			// colorbrewer.PuBu,
+			// colorbrewer.PuBuGn,
+			colorbrewer.PuRd,
+			colorbrewer.RdPu,
+			// colorbrewer.YlGn,
+			// colorbrewer.YlGnBu,
+			// colorbrewer.YlOrBr,
+			// colorbrewer.YlOrRd
+		]
+
+		this.categoricalColors = [
+			colorbrewer.Accent,
+			colorbrewer.Dark2,
+			colorbrewer.Paired,
+			colorbrewer.Pastel1,
+			colorbrewer.Pastel2,
+			colorbrewer.Set1,
+			colorbrewer.Set2,
+			colorbrewer.Set3
+		]	
+	}
+
+	addColorPalettesToStyler() {
+		this.colorPaletteAdder(this.Node("divergent").elem, this.divergingColors);
+		this.colorPaletteAdder(this.Node("sequential").elem, this.sequentialColors);
+		this.colorPaletteAdder(this.Node("categorical").elem, this.categoricalColors);
+	}
+
+	colorPaletteAdder(dom, colorScheme) {
+		for (let index = 0; index < colorScheme.length; index++) {
+
+			// Create color palette 
+			let palette = document.createElement('span');
+			palette.className = "palette";
+			// Tell the user the color
+			palette.addEventListener("click", () => {
+				// Tooltip?
+				console.log("do something");
+			})
+
+			// Add 5 swatches to the palette
+			const elem = colorScheme[index][5];
+
+			for (let index = 0; index < elem.length; index++) {
+				const color = elem[index];
+				let swatch = document.createElement('span');
+				swatch.className = "swatch";
+				swatch.style.backgroundColor = color;
+	
+				palette.appendChild(swatch);
+				
+			}
+			dom.appendChild(palette);
+		}
+	}
+
+	addListenersToScheme() {
+		// Get a collection of the button
+		let colls = this.Node("collapsibles")._elem.getElementsByClassName("collapsible");
+
+		// Show divergent as active and show its content
+		colls[0].classList.toggle("active");
+		let content = colls[0].nextElementSibling;
+		content.style.maxHeight = "100px";
+
+		function toggleContent(content) {
+			if (content.style.maxHeight) {
+				content.style.maxHeight = null;
+			} else {
+				content.style.maxHeight = content.scrollHeight + 'px';
+			}
+		}
+
+		for (let i = 0; i < colls.length; i++) {
+			colls[i].addEventListener("click", function () {
+				for (let j = 0; j < colls.length; j++) {
+					if (j == i) {
+						if (this.classList.contains('active')) {
+							this.classList.remove('active');
+						} else {
+							this.classList.toggle("active");
+						}
+						toggleContent(this.nextElementSibling);
+					} else {
+						if (colls[j].classList.contains('active')) {
+							colls[j].classList.remove('active');
+							toggleContent(colls[j].nextElementSibling);
+						}
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -287,6 +422,17 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
 				"<label>nls(Styler_Breaks)</label>" +
 				"<input handle='iBreaks' type='number' min='1' max='10' />" +
+				// New color style (divergent, sequential, categorical)
+				"<label>nls(Styler_Color_Scheme)</label>" +
+				"<div class='collapsibles' handle='collapsibles'>" +
+					"<button class='collapsible'>nls(Styler_Scheme_Divergent)</button>" +
+						"<div handle='divergent' class='content'></div>" +
+					"<button class='collapsible'>nls(Styler_Scheme_Sequential)</button>" +
+						"<div  handle='sequential' class='content'></div>" +
+					"<button class='collapsible'>nls(Styler_Scheme_Categorical)</button>" +
+						"<div handle='categorical' class='content'></div>" +
+				"</div>"+
+				// Color range
 				"<label>nls(Styler_Color_Range)</label>" +
 				"<div class='color-range'>" +
 					"<label>nls(Styler_Color_Start)</label>" +
