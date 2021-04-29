@@ -1,121 +1,196 @@
 'use strict';
 
 import Core from '../geo-explorer/tools/core.js';
-import CODR from './util/codr.js';
+import CODR from '../geo-explorer/tools/codr.js';
+import Dom from '../geo-explorer/tools/dom.js';
 import Templated from '../geo-explorer/components/templated.js';
-import Map from './map.js';
 import Menu from '../geo-explorer/widgets/menu.js';
 import Waiting from '../geo-explorer/widgets/waiting.js';
 import Basemap from '../geo-explorer/widgets/basemap.js';
+import Overlay from '../geo-explorer/widgets/overlay.js';
+import IdentifyBehavior from '../geo-explorer/behaviors/point-identify.js';
+import SimpleLegend from './widgets/SimpleLegend.js';
+import Selector from './widgets/selector.js';
 import Configuration from './components/config.js';
 import Style from './util/style.js';
+import Map from './map.js';
 
 export default class Application extends Templated { 
+
+	static Nls(nls) {		
+		nls.Add("Basemap_Title", "en", "Change basemap");
+		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
+		nls.Add("Legend_Title", "en", "Legend");
+		nls.Add("Legend_Title", "fr", "Légende");
+		nls.Add("LoadingData_Title", "en", "Loading Data...");
+		nls.Add("LoadingData_Title", "fr", "Chargement des données...");
+		nls.Add("TableViewer_Label", "en", "Statistics Canada. Table {0}");
+		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0}");
+		nls.Add("RefPeriod_Label", "en", "Reference period {0}");
+		nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
+	}
 
 	constructor(node, config) {		
 		super(node);
 
-		this.title = document.querySelector("#_indicator");
-
 		this.config = Configuration.FromJson(config);
 
-		// Build context, map, menu, widgets and other UI components
-		this.map = new Map(this.Elem('map'));
+		// Build map, menu, widgets and other UI components
+		this.map = new Map(this.Elem('map'), { center:[-100, 60], zoom:4 });
 		this.menu = new Menu();
 		
-		this.menu.AddOverlay("basemap", Core.Nls("Basemap_Title"), this.Elem("basemap"));
-
+		this.AddPointIdentify();
+		this.AddOverlay(this.menu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "top-right");
+		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+        
 		// Move all widgets inside the map div, required for fullscreen
-		this.map.Place(this.menu.Buttons, "bottom-left");
-		this.map.Place([this.Elem("basemap").container], "bottom-left");
-
-		// Hookup events to map	
-		this.map.On('Busy', this.OnWidget_Busy.bind(this));
-		this.map.On('Idle', this.OnWidget_Idle.bind(this));
-		this.map.On('Error', this.OnApplication_Error.bind(this));
+		this.map.Place(this.menu.buttons, "top-left");
+        this.map.Place([this.Elem("waiting").container], "manual");
 		
 		this.Elem('basemap').Map = this.map;
-		
-		var p = this.LoadCodrData(this.config.product, this.config.coordinates, this.config.geo);
-		
-		p.then(this.OnCodr_Ready.bind(this), this.OnApplication_Error.bind(this));
-	}
-	
-	LoadCodrData(product, coordinates, geo) {
-		var d = Core.Defer();
-		
-		CODR.GetCubeMetadata(product).then(metadata => {			
-			var code = CODR.GeoLookup(geo);
+
+		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
 			
-			metadata.geo.members = metadata.geo.members.filter(m => m.geoLevel == code);
-
-			this.title.innerHTML = this.GetTitle(coordinates, metadata);
-			
-			CODR.GetCoordinateData(metadata, coordinates).then(data => {
-				d.Resolve({ metadata:metadata, data:data });
-			}, error => d.Reject(error));
-		}, error => d.Reject(error));
+        this.LoadCodrData(this.config.product);
+	}
+	
+	AddPointIdentify() {
+		// point identify click behavior
+		this.behavior = this.map.AddBehavior("identify", new IdentifyBehavior(this.map));
 		
-		return d.promise;
+		this.behavior.symbol = this.config.Symbol("identify");
+		
+		this.behavior.On('Busy', ev => this.Elem("waiting").Show());
+		this.behavior.On('Idle', ev => this.Elem("waiting").Hide());
+		this.behavior.On('Error', this.OnApplication_Error.bind(this));
+		this.behavior.On('Change', this.OnIdentify_Change.bind(this));
+		
+        this.behavior.Activate();
 	}
 	
-	GetTitle (coordinates, metadata) {
-		var names = [];
+	AddOverlay(menu, id, title, widget, position) {
+		var options = { title:title, widget:widget, css:id };
+		var overlay = new Overlay(this.Elem("map-container"), options);
+		
+		menu.AddOverlay(id, title, overlay);
+		
+		this.map.Place([overlay.roots[0]], position);
+	}
 
-		for (var i = 0; i < coordinates.length; i++) {
-			if (coordinates[i] == "*") continue;
+	LoadCodrData(product) {
+        CODR.GetCubeMetadata(product).then(metadata => {	
+            this.metadata = metadata;
+	
+			document.querySelector("#app-title").innerHTML = metadata.productName;
+			
+			this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [metadata.id]); 
+			this.Elem("link").href = metadata.tvLink; 
+			
+            // Create the drop down lists from the dimensions and memebers
+			this.Elem("selector").Initialize(this.metadata);
 
-			var j = coordinates[i];
-			var name = metadata.dimensions[i].members[j].name;
+            this.Elem("mapcontainer").className = "map-container";
+            this.Elem("loadingtitle").className = "loading-title hidden";
+			
+			if (!this.config.initialSelection) return;
+			
+			this.Elem("selector").ApplyInitialSelection(this.config.initialSelection);
+        }, error => this.OnApplication_Error(error));
 
-			names.push(name);
-		}
+        CODR.GetCodeSets().then(codesets => {
+            this.codesets = codesets;
+        }, error => this.OnApplication_Error(error));
+    }
 
-		return names.join(", ");
+	OnSelector_Change(ev) {
+		this.Elem("indicator").innerHTML = this.metadata.IndicatorLabel(ev.coordinates);
+		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
+		this.Elem("waiting").Show();
+
+        CODR.GetCoordinateData(this.metadata, ev.coordinates).then(data => {
+			this.data = data;			
+			
+			this.LoadLayer(ev.geo, data);
+		}, error => this.OnApplication_Error(error));
 	}
 	
-	LoadLayer(geo) {		
-		var url = this.config.layer;
+    LoadLayer(geo, data) {		
+		var decodedGeo = CODR.GeoLookup(geo);
+        var url = this.config.Layer(decodedGeo);
 		
 		if (!url) {
-			d.Reject(new Error("Geographic Level (geoLevel) requested is not supported."));
+			this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."))
 			
 			return;
 		}
+				
+        var ids = this.metadata.geoMembers.map(m => `'${m.code}'`).join(",");
+        var exp = `${this.config.Id(decodedGeo)} IN (${ids})`;
 		
-		var ids = this.metadata.geo.members.map(m => `'${m.code}'`).join(",");
-		var exp = `${this.config.id} IN (${ids})`;
+        // Remove the current layer if it exists before adding a new one
+        this.map.RemoveFeatureLayer("geo");
 		
-		var renderer = Style.Renderer(this.data, this.config.id, this.config.colors);
+        var renderer = Style.Renderer(data, this.config.Id(decodedGeo), this.config.ramps, this.config.defColor);
 		
-		return this.map.AddFeatureLayer("geo", url, exp, this.config.id, renderer);
+        if (renderer) {
+            var layer = this.map.AddFeatureLayer("geo", url, exp, this.config.Id(decodedGeo), renderer, 0);
+            
+			this.WaitForLayer(layer);
+			
+			this.behavior.Clear();
+			this.behavior.target = layer;
+
+            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
+		}
 	}
 	
-	OnCodr_Ready(response) {
-		this.metadata = response.metadata;
-		this.data = response.data;
-		
-		this.layer = this.LoadLayer(this.config.geo);
-	}
-		
-	OnWidget_Busy(ev) {
-		this.Elem("waiting").Show();
-	}
-	
-	OnWidget_Idle(ev) {
-		this.Elem("waiting").Hide();
+	WaitForLayer(layer) {
+		this.map.view.whenLayerView(layer).then(layerView => {				
+			// listen until the layerView is loaded
+			layerView.when(() => {
+				this.menu.SetOverlay(this.menu.Item("legend"));
+				this.Elem("waiting").Hide()
+			}, this.OnApplication_Error.bind(this));
+		}, this.OnApplication_Error.bind(this))
 	}
 	
+    OnIdentify_Change(ev) {
+        // Get the polygon name and id as the bubble title. For example: Ottawa(350421)
+        var geo = CODR.GeoLookup(this.metadata.geoLevel);
+        var identify = this.config.Identify(geo);
+        var fid = ev.feature.attributes[identify.id];
+	
+        // Get the value corresponding to the datapoint, properly formatted for French and English 
+        // Ex: French: 35 024, 56   -   English 35, 204.56        
+		var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
+		var content = this.codesets.FormatDP(this.data[fid]);
+		
+		this.map.popup.open({ location:ev.mapPoint, title:title, content:content });
+    }
+		
 	OnApplication_Error(error) {
+		this.Elem("waiting").Hide();
+		
 		alert(error.message);
 		
 		console.error(error);
 	}
 
-	Template() {
-		return	"<div class='map-container'>" +
-					"<div handle='map'></div>" +
-					"<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
+	Template() {		
+        return  "<div class='row'>" +
+                    "<h2 handle='loadingtitle' class='col-md-12 mrgn-tp-sm'>nls(LoadingData_Title)</h2>" +
+				"</div>" +
+				"<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
+				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
+				"<div class='map-container hidden' handle='mapcontainer'>" +
+                    "<div handle='map'></div>" +
+                    "<div handle='legend' class='legend' widget='App.Widgets.SimpleLegend'></div>" +
+                    "<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
+                    "<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
+				"</div>" +
+				"<div class='pull-right'>" + 
+					"<a handle='link' target='_blank'></a>" +
 				"</div>";
 	}
 }

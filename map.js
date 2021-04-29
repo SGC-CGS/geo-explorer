@@ -5,11 +5,11 @@ import Map from '../geo-explorer/components/map.js';
 
 export default class MapExt extends Map { 
 
-	constructor(container) {		
-		super(container);
+	constructor(container, options) {		
+		super(container, options);
 	}
 	
-	AddFeatureLayer(id, url, expression, outFields, renderer) {
+	AddFeatureLayer(id, url, expression, outFields, renderer, index) {
 		var options = { url:url, outFields:outFields };
 		
 		if (expression) options.definitionExpression = expression;
@@ -18,8 +18,17 @@ export default class MapExt extends Map {
 		
 		this.layers[id] = new ESRI.layers.FeatureLayer(options);
 		
-		this.map.add(this.layers[id]);
+		this.map.add(this.layers[id], index);
 		
 		return this.layers[id];
-	}
+    }
+
+    RemoveFeatureLayer(id) {
+        if (!this.layers[id])
+            return;
+
+        this.map.remove(this.layers[id]);
+
+        this.layers[id] = null;
+    }
 }

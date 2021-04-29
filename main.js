@@ -4,48 +4,36 @@ import Net from "../geo-explorer/tools/net.js";
 
 import Application from "./application.js";
 
-Core.WaitForDocument().then(DocumentReady);
+if (wb && wb.isReady) DocumentReady();
+else $(document).on("wb-ready.wb", ev => DocumentReady());
 
 window.ESRI = null;
 
 function DocumentReady() {	
-	var p1 = Net.JSON(`./nls.json`);
-	var p2 = Net.JSON(`./application.json`);
-	var p3 = LoadEsri();
+	var p1 = Net.JSON(`./application.json`);
+	var p2 = LoadEsri();
 
-	Promise.all([p1, p2, p3]).then(Start, Fail);
+	Promise.all([p1, p2]).then(Start, Fail);
 }
 
-function Start(responses) {	
-	Core.locale = document.documentElement.lang || "en";
-	Core.nls = responses[0];
-	
-	var config = responses[1];
+function Start(responses) {
+	var config = responses[0];
 	
 	config.data = {
-		product: Net.GetUrlParameter("pid"),
-		coordinates: Net.GetUrlParameter("coordinates"),
-		geo: Net.GetUrlParameter("geo")
+        product: Net.GetUrlParameter("pid"),
+        initialSelection: Net.GetUrlParameter("selected")
 	}
 	
-	if (!config.data.product || !config.data.coordinates || !config.data.geo) {
-		throw new Error("Missing URL parameter, pid (Product id), geo (geographic level) and/or coordinates.");
+	if (!config.data.product) {
+		throw new Error("Missing URL parameter pid (Product id).");
 	}
 	
 	config.data.product = +config.data.product;
 	
 	if (isNaN(config.data.product)) {
 		throw new Error("pid (Product id) provided is not a number.");
-	}
-	
-	config.data.coordinates = config.data.coordinates.split(".").map(c => {
-		return c == "*" ? c : +c;		
-	});
-	
-	if (config.data.coordinates.indexOf("*") == -1) {
-		throw new Error("No geometry dimension identified in coordinates provided. The geometry dimension must be identified by an asterisk (*)");
-	}
-	
+    }
+    
 	var div = Dom.Node(document.body, "#app-container");
 	
 	var app = new Application(div, config);

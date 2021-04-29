@@ -24,7 +24,7 @@ export default class Style {
 
         // the lower_class_limits matrix is used as indexes into itself
         // here: the `k` variable is reused in each iteration.
-        while (countNum > 1) {
+        while (countNum > 1 && k > -1) {
             kclass[countNum - 1] = data[lower_class_limits[k][countNum] - 2];
             k = lower_class_limits[k][countNum] - 1;
             countNum--;
@@ -136,7 +136,7 @@ export default class Style {
 			style: "solid",
 			outline: {
 				color: [255, 255, 255, 225],
-				width: 1
+				width: 0.5
 			}
 		}
 	}
@@ -155,7 +155,24 @@ export default class Style {
 		return classBreaks;
 	}
 	
-	static Renderer(data, field, colors) {
+	static GetColors(data, ramps) {
+		var length = Object.keys(data).length;
+		
+		if (length < 5) return ramps[1];
+		
+		if (length < 20) return ramps[2];
+		
+		if (length < 50) return ramps[3];
+		
+		if (length < 100) return ramps[4];
+		
+		// if (length < 500) return ramps[5];
+		
+		return ramps[5];
+	}
+	
+	static Renderer(data, field, ramps, defColor) {
+		var colors = Style.GetColors(data, ramps);
 		var n = colors.length;
 		var aData = [];
 
@@ -163,24 +180,30 @@ export default class Style {
 			if (!data[id] || data[id].value == null) continue;
 
 			aData.push(data[id].value);
-		}
-		
-		var classes = Style.Classes(aData, n);
-		var symbols = colors.map(c => Style.Symbol(c));
-		var classBreaks = Style.ClassBreaks(classes, symbols);
+        }
 
-		var expression = `
-			var data = ${JSON.stringify(data)};
-			var id = $feature.${field};
-			
-			return data[id];
-		`;
+        var renderer = null;
 		
-		var renderer = {
-		  type: "class-breaks", 
-		  valueExpression: expression,
-		  classBreakInfos: classBreaks
-		};
+        if (aData.length > 0) {
+            var classes = Style.Classes(aData, n);
+            var symbols = colors.map(c => Style.Symbol(c));
+            var classBreaks = Style.ClassBreaks(classes, symbols);
+
+			// TODO: Review this, the expression is shady. Possibly better to render features one by one.
+            var expression = `
+				var data = ${JSON.stringify(data)};
+				var id = $feature.${field};
+				
+				return data[id];
+			`;
+
+            var renderer = {
+                type: "class-breaks",
+                valueExpression: expression,
+                classBreakInfos: classBreaks,
+				defaultSymbol: Style.Symbol(defColor)
+            };
+        }
 
 		return renderer;
 	}
