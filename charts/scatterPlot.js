@@ -2,9 +2,11 @@ import Chart from "./chart.js";
 import Axes from "./axes.js";
 
 /**
- * @description 
- * The overall goal is to draw the scatterPlot onto the CSGE.
- * Please refer to the the README in the charts folder for 
+ * Scatter Plot module
+ * @module charts/scatterPlot
+ * @extends Chart
+ * @description The overall goal is to draw the scatter plot onto the CSGE.
+ * @note Please refer to the the README in the charts folder for 
  * more information on the D3 concepts presented in this code.
  */
 export default class ScatterPlot extends Chart{ 

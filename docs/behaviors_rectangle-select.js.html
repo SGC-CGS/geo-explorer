@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: behaviors/rectangle-select.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: behaviors/rectangle-select.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code> 'use strict';
+
+import Core from '../tools/core.js';
+import Requests from '../tools/requests.js';
+import Evented from '../components/evented.js';
+import Behavior from './behavior.js';
+
+/**
+ * Rectangle Select module
+ * @module behaviors/rectangle-select
+ * @extends Behavior
+ */
+export default class RectangleSelectBehavior extends Behavior { 
+
+	get layer() { return this._map.Layer('selection'); }
+
+	get graphics() { return this.layer.graphics; }
+
+	get target() { return this._options.target; }
+
+	set target(value) { 
+		this._options.target = value;
+		
+		this.Clear();
+	}
+
+	get field() { return this._options.field; }
+
+	set field(value) { this._options.field = value; }
+
+	get symbol() { return this._options.symbol; }
+
+	set symbol(value) { this._options.symbol = value; }
+
+	constructor(map, options) {	
+		super();
+		
+		this._options = {};
+		this._map = map;
+		this._draw = new ESRI.views.draw.Draw({ view : this._map.view });
+		this._action = null;
+		
+		this._map.AddGraphicsLayer('selection');
+		
+		this._handlers = {"cursor-update": null, "draw-complete": null};
+	}
+
+	/**
+	 * @description
+	 * Rectangle select is deactivated when point select 
+	 * is activated
+	 */
+	Deactivate(){
+		this.Clear();
+		
+		this._handlers["cursor-update"].remove();
+		this._handlers["draw-complete"].remove();	
+	}
+
+	/**
+	 * @description
+	 * Rectangle select is (re-)activated when point identify is deactivated.
+	 */
+	Activate(){		
+		this._action = this._draw.create("rectangle", { mode: "click" });
+		
+		this._handlers["cursor-update"] = this._action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
+		this._handlers["draw-complete"] = this._action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
+	}
+	
+	/**
+	 * @description
+	 * De-select the selected layers and remove highlight
+	 */
+	Clear() {
+		this.layer.removeAll();
+		this._map.view.graphics.removeAll();
+	}
+	
+	/**
+	 * @description
+	 * Create the shape of the polygon 
+	 * @param {*} vertices - 2D array of #s representing the coordinates of each vertex
+	 * @param {*} sref - Spatial reference
+	 * @returns A geometry
+	 */
+	VerticesToPolygon(vertices, sref) {
+		var p1 = vertices[0];
+		var p2 = vertices[1];
+		
+		// points are [x, y] format
+		var ring = [p1, [p2[0], p1[1]], p2, [p1[0], p2[1]], p1];
+		
+		return { type: "polygon", rings: [ring], spatialReference: sref };
+	}
+	
+	/**
+	 * @description
+	 * Add a graphic polygon to the map for showing the user the rectangular 
+	 * selection 
+	 * {@link https://developers.arcgis.com/javascript/latest/add-a-point-line-and-polygon/|ArcGIS API for JavaScript}
+	 * @param {*} ev - event 
+	 */
+	OnDraw_CursorUpdate(ev) {
+		if (ev.vertices.length &lt; 2) return;
+
+		this._map.view.graphics.removeAll();
+		
+		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
+		var outline = { color: [200, 20, 0], width: 1 }
+		var symbol = { type: "simple-fill", color: [200, 20, 0, 0.3], style: "solid", outline: outline }
+		
+		this._map.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
+	}
+	
+	/**
+	 * @description
+	 * Check if targeted layer(s) were selected by the geometry (rectangle)
+	 * @param {*} ev 
+	 */
+	OnDraw_Complete(ev) {
+		this.Emit("Busy");
+		
+		this._map.view.graphics.removeAll();
+		
+		if (ev.vertices.length &lt; 2) return;
+		
+		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
+		
+		var p = Requests.QueryGeometry(this.target, geometry);
+		
+		p.then(this.OnDraw_QueryComplete.bind(this), error => this.OnDraw_QueryError.bind(this));
+	}
+	
+	/**
+	 * @description
+	 * Highlight the features that were selected by the geometry (rectangle)
+	 * @param {*} results 
+	 */
+	OnDraw_QueryComplete(results) {		
+		results.features.forEach(f => {
+			var exists = this.layer.graphics.find(g => g.attributes[this.field] == f.attributes[this.field]);
+			
+			if (exists) this.layer.remove(exists);
+			
+			else {
+				f.symbol = this.symbol;
+				
+				this.layer.graphics.add(f);
+			}
+		});
+		
+		this.Emit("Idle");
+		
+		this.Emit("Change", { selection:this.layer.graphics });
+
+		this.Activate();
+	}
+	
+	OnDraw_QueryError(error) {
+		this.Emit("Error", { error:error });
+		this.Emit("Idle");
+	}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-charts_axes.html">charts/axes</a></li><li><a href="module-charts_barChart.html">charts/barChart</a></li><li><a href="module-charts_chart.html">charts/chart</a></li><li><a href="module-charts_linechart.html">charts/linechart</a></li><li><a href="module-charts_pieChart.html">charts/pieChart</a></li><li><a href="module-charts_scatterPlot.html">charts/scatterPlot</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_popup.html">ui/popup</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_wChart.html">widgets/wChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul><h3>Global</h3><ul><li><a href="global.html#set">set</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 14:44:33 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -5,9 +5,12 @@ import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";
 import ScatterPlot from "../charts/scatterPlot.js";
 
+
 /**
- * @description
- * Chart widget where a chart is selected and
+ * Chart widget module
+ * @module widgets/wChart
+ * @extends Templated
+ * @description Chart widget where a chart is selected and
  * built onto the UI
  * @todo Handle product changes in Application.js?
  */

@@ -5,6 +5,11 @@ import Requests from '../tools/requests.js';
 import Evented from '../components/evented.js';
 import Behavior from './behavior.js';
 
+/**
+ * Rectangle Select module
+ * @module behaviors/rectangle-select
+ * @extends Behavior
+ */
 export default class RectangleSelectBehavior extends Behavior { 
 
 	get layer() { return this._map.Layer('selection'); }
@@ -77,7 +82,7 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * Create the shape of the polygon 
 	 * @param {*} vertices - 2D array of #s representing the coordinates of each vertex
 	 * @param {*} sref - Spatial reference
-	 * @returns 
+	 * @returns A geometry
 	 */
 	VerticesToPolygon(vertices, sref) {
 		var p1 = vertices[0];
@@ -95,7 +100,6 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * selection 
 	 * {@link https://developers.arcgis.com/javascript/latest/add-a-point-line-and-polygon/|ArcGIS API for JavaScript}
 	 * @param {*} ev - event 
-	 * @returns 
 	 */
 	OnDraw_CursorUpdate(ev) {
 		if (ev.vertices.length < 2) return;
@@ -113,7 +117,6 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @description
 	 * Check if targeted layer(s) were selected by the geometry (rectangle)
 	 * @param {*} ev 
-	 * @returns 
 	 */
 	OnDraw_Complete(ev) {
 		this.Emit("Busy");

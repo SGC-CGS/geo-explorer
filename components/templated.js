@@ -6,6 +6,11 @@ import Evented from './evented.js';
 import Node from './node.js';
 import Nls from './nls.js';
 
+/**
+ * Templated module
+ * @module components/templated
+ * @extends Evented
+ */
 export default class Templated extends Evented { 
 
 	get container() { return this._container; }

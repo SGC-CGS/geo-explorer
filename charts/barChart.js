@@ -2,15 +2,15 @@ import Chart from "./chart.js";
 import Axes from "./axes.js";
 
 /**
- * @description 
- * The overall goal is to draw the barChart onto the CSGE.
- * - Step one: Append the necessary groups and get the color scale
- * - Step two: Define the scales and use them for building the bar chart. The 
+ * Bar Chart module
+ * @module charts/barChart
+ * @extends Chart
+ * @description The overall goal is to draw the barChart onto the CSGE.
+ * Step one: Append the necessary groups and get the color scale
+ * Step two: Define the scales and use them for building the bar chart. The 
  * text on the bottom axis requires pre-processing to avoid texting leaving the SVG. 
- * - Step three: Add rectangles to the chart
- * 
- * @note
- * Please refer to the the README in the charts folder for 
+ * Step three: Add rectangles to the chart
+ * @note Please refer to the the README in the charts folder for 
  * more information on the D3 concepts presented in this code.
  */
 export default class BarChart extends Chart{ 
