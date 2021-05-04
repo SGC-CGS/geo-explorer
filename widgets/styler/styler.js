@@ -2,7 +2,7 @@ import Templated from '../../components/templated.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 import Requests from '../../tools/requests.js';
-import Picker from '../../ui/picker.js';
+import Colors from './colors.js';
 import StylerBreak from './styler-break.js';
 
 /**
@@ -27,14 +27,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Method", "fr", "Méthode de classification");
 		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
 		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
-		nls.Add("Styler_Color_Range", "en", "Color range");
-		nls.Add("Styler_Color_Range", "fr", "Gamme de couleurs");
-		nls.Add("Styler_Color_Start", "en", "Start color");
-		nls.Add("Styler_Color_Start", "fr", "Couleur de départ");
-		nls.Add("Styler_Color_End", "en", "End color");
-		nls.Add("Styler_Color_End", "fr", "Couleur de fin");
-		nls.Add("Styler_Breaks", "en", "Number of breaks (1 to 10)");
-		nls.Add("Styler_Breaks", "fr", "Nombre de bornes (1 à 10)");
+		nls.Add("Styler_Breaks", "en", "Number of breaks (3 to 8)");
+		nls.Add("Styler_Breaks", "fr", "Nombre de bornes (3 à 8)");
 		nls.Add("Styler_Style", "en", "Map style");
 		nls.Add("Styler_Style", "fr", "Style de la carte");
 		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
@@ -47,8 +41,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Scheme_Divergent", "fr", "Divergente");
 		nls.Add("Styler_Scheme_Sequential", "en", "Sequential");
 		nls.Add("Styler_Scheme_Sequential", "fr", "Séquentielle");
-		nls.Add("Styler_Scheme_Categorical", "en", "Reverse");
-		nls.Add("Styler_Scheme_Categorical", "fr", "Inverse");
+		nls.Add("Styler_Scheme_Categorical", "en", "Categorical");
+		nls.Add("Styler_Scheme_Categorical", "fr", "Catégorique");
 		nls.Add("Styler_Max_Lt_Min", "en", "New maximum value is less than the current minimum value for the layer. Input a higher value.");
 		nls.Add("Styler_Max_Lt_Min", "fr", "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée.");
 		nls.Add("Styler_Max_Gt_Next", "en", "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.");
@@ -75,9 +69,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
 
-		this.Node('bColorS').On("Finished", this.OnPicker_Finished.bind(this));
-		this.Node('bColorE').On("Finished", this.OnPicker_Finished.bind(this));
-
 		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
 
 		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
@@ -86,131 +77,52 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 
-		this.CreateColorPalettes();
-
-		this.addColorPalettesToStyler();
-
 		this.addListenersToScheme();
 	}
 
-	// TODO: Find a cleaner approach
-	CreateColorPalettes() {
-		this.divergingColors = [
-			colorbrewer.BrBG,
-			colorbrewer.PiYG,
-			colorbrewer.PRGn,
-			colorbrewer.PuOr,
-			colorbrewer.RdBu,
-			colorbrewer.RdGy,
-			// colorbrewer.RdYlBu,
-			colorbrewer.RdYlGn,
-			// colorbrewer.Spectral
-		]
-
-		this.sequentialColors = [
-			// Single Hue
-			colorbrewer.Blues,
-			colorbrewer.Greens,
-			colorbrewer.Greys,
-			colorbrewer.Oranges,
-			colorbrewer.Purples,
-			colorbrewer.Reds,
-			// Multi-Hue
-			// colorbrewer.BuGn,
-			colorbrewer.BuPu,
-			colorbrewer.GnBu,
-			// colorbrewer.OrRd,
-			// colorbrewer.PuBu,
-			// colorbrewer.PuBuGn,
-			colorbrewer.PuRd,
-			colorbrewer.RdPu,
-			// colorbrewer.YlGn,
-			// colorbrewer.YlGnBu,
-			// colorbrewer.YlOrBr,
-			// colorbrewer.YlOrRd
-		]
-
-		this.categoricalColors = [
-			colorbrewer.Accent,
-			colorbrewer.Dark2,
-			colorbrewer.Paired,
-			colorbrewer.Pastel1,
-			colorbrewer.Pastel2,
-			colorbrewer.Set1,
-			colorbrewer.Set2,
-			colorbrewer.Set3
-		]	
-	}
-
-	addColorPalettesToStyler() {
-		this.colorPaletteAdder(this.Node("divergent").elem, this.divergingColors);
-		this.colorPaletteAdder(this.Node("sequential").elem, this.sequentialColors);
-		this.colorPaletteAdder(this.Node("categorical").elem, this.categoricalColors);
-	}
-
-	colorPaletteAdder(dom, colorScheme) {
-		for (let index = 0; index < colorScheme.length; index++) {
-
-			// Create color palette 
-			let palette = document.createElement('span');
-			palette.className = "palette";
-			// Tell the user the color
-			palette.addEventListener("click", () => {
-				// Tooltip?
-				console.log("do something");
-			})
-
-			// Add 5 swatches to the palette
-			const elem = colorScheme[index][5];
-
-			for (let index = 0; index < elem.length; index++) {
-				const color = elem[index];
-				let swatch = document.createElement('span');
-				swatch.className = "swatch";
-				swatch.style.backgroundColor = color;
-	
-				palette.appendChild(swatch);
-				
-			}
-			dom.appendChild(palette);
-		}
-	}
-
 	addListenersToScheme() {
-		// Get a collection of the button
-		let colls = this.Node("collapsibles")._elem.getElementsByClassName("collapsible");
+		// Get a collection of the collapsibles
+		this.colls = this.Node("collapsibles")._elem.getElementsByClassName("collapsible");
 
-		// Show divergent as active and show its content
-		colls[0].classList.toggle("active");
-		let content = colls[0].nextElementSibling;
+		// Set the first collapsible as active and show its content
+		this.colls[0].classList.toggle("active");
+		let content = this.colls[0].nextElementSibling;
 		content.style.maxHeight = "100px";
 
-		function toggleContent(content) {
-			if (content.style.maxHeight) {
-				content.style.maxHeight = null;
-			} else {
-				content.style.maxHeight = content.scrollHeight + 'px';
+		// Add an event listener to each collapsible
+		for (let i = 0; i < this.colls.length; i++) {
+			this.colls[i].addEventListener("click", function (ev) {
+				this.onCollapsibleClick(ev)
+			}.bind(this));
+		}
+	}
+
+	onCollapsibleClick(ev) {
+		for (let j = 0; j < this.colls.length; j++) {
+			// For opening or closing the clicked collapsible 
+			if (this.colls[j] == ev.target) {
+				if (this.colls[j].classList.contains('active')) {
+					this.colls[j].classList.remove('active');
+				} else {
+					this.colls[j].classList.toggle("active");
+				}
+				this.ToggleContent(this.colls[j].nextElementSibling);
+			} 
+			// For ensuring the non clicked collapsibles stay closed
+			else {
+				if (this.colls[j].classList.contains('active')) {
+					this.colls[j].classList.remove('active');
+					this.ToggleContent(this.colls[j].nextElementSibling);
+				}
 			}
 		}
+	}
 
-		for (let i = 0; i < colls.length; i++) {
-			colls[i].addEventListener("click", function () {
-				for (let j = 0; j < colls.length; j++) {
-					if (j == i) {
-						if (this.classList.contains('active')) {
-							this.classList.remove('active');
-						} else {
-							this.classList.toggle("active");
-						}
-						toggleContent(this.nextElementSibling);
-					} else {
-						if (colls[j].classList.contains('active')) {
-							colls[j].classList.remove('active');
-							toggleContent(colls[j].nextElementSibling);
-						}
-					}
-				}
-			});
+	ToggleContent(content) {
+		if (content.style.maxHeight) {
+			content.style.maxHeight = null;
+		} else {
+			content.style.maxHeight = content.scrollHeight + 'px';
 		}
 	}
 
@@ -229,10 +141,47 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Elem("sMethod").value = idx;
 		this.Elem("iBreaks").value = n;
 
-		this.Elem("bColorS").color = context.sublayer.renderer.classBreakInfos[0].symbol.color;
-		this.Elem("bColorE").color = context.sublayer.renderer.classBreakInfos[n - 1].symbol.color;
-
 		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
+
+		if(this.currentScheme == null) {
+			this.addColorPalettesToStyler();
+		}
+	}
+
+	addColorPalettesToStyler() {
+		this.colorPaletteAdder(this.Node("divergent").elem, Colors.DivergingColors());
+		this.colorPaletteAdder(this.Node("sequential").elem, Colors.SequentialColors());
+		this.colorPaletteAdder(this.Node("categorical").elem, Colors.CategoricalColors());
+	}
+
+	colorPaletteAdder(dom, colorScheme) {
+		for (let index = 0; index < colorScheme.length; index++) {
+
+			// Create color palette 
+			let palette = document.createElement('span');
+			palette.className = "palette";
+			// Tell the user the color
+			palette.addEventListener("click", () => {
+				this.context.metadata.colors.palette = colorScheme[index][parseInt(this.Elem("iBreaks").value)];
+				this.currentScheme = colorScheme[index];
+
+				this.Refresh();
+			})
+
+			// Add 5 swatches to the palette
+			const elem = colorScheme[index][5];
+
+			for (let index = 0; index < elem.length; index++) {
+				const color = elem[index];
+				let swatch = document.createElement('span');
+				swatch.className = "swatch";
+				swatch.style.backgroundColor = color;
+	
+				palette.appendChild(swatch);
+				
+			}
+			dom.appendChild(palette);
+		}
 	}
 
 	/**
@@ -311,24 +260,14 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Change start or end colour after choice is made from colour picker
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
-	OnPicker_Finished(ev) {
-		this.context.metadata.colors.start = this.Elem("bColorS").EsriColor;
-		this.context.metadata.colors.end = this.Elem("bColorE").EsriColor;
-
-		this.Refresh();
-	}
-
-	/**
 	 * Change number of breaks when up or down arrows are clicked or new number is entered
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
 	onIBreaks_Change(ev) {
 		this.context.metadata.breaks.n = ev.target.value;
+
+		this.context.metadata.colors.palette = this.currentScheme[parseInt(this.Elem("iBreaks").value)];
 
 		this.Refresh();
 	}
@@ -421,7 +360,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"<label>nls(Styler_Method)</label>" +
 				"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
 				"<label>nls(Styler_Breaks)</label>" +
-				"<input handle='iBreaks' type='number' min='1' max='10' />" +
+				"<input handle='iBreaks' type='number' min='3' max='8' />" +
 				// New color style (divergent, sequential, categorical)
 				"<label>nls(Styler_Color_Scheme)</label>" +
 				"<div class='collapsibles' handle='collapsibles'>" +
@@ -432,14 +371,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 					"<button class='collapsible'>nls(Styler_Scheme_Categorical)</button>" +
 						"<div handle='categorical' class='content'></div>" +
 				"</div>"+
-				// Color range
-				"<label>nls(Styler_Color_Range)</label>" +
-				"<div class='color-range'>" +
-					"<label>nls(Styler_Color_Start)</label>" +
-					"<div handle='bColorS' class='color start' widget='Basic.Components.Picker'></div>" +
-					"<label>nls(Styler_Color_End)</label>" +
-					"<div handle='bColorE' class='color end' widget='Basic.Components.Picker'></div>" +
-				"</div>" +
 				"<label>nls(Styler_Style)</label>" +
 				"<table handle='breaks' class='breaks-container'>" +
 					// Class breaks go here, dynamically created

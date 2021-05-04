@@ -64,8 +64,8 @@
 		"fr" : "Couleur de fin"
 	},
 	"Styler_Breaks" : {
-		"en" : "Number of breaks (1 to 10)",
-		"fr" : "Nombre de bornes (1 à 10)"
+		"en" : "Number of breaks (3 to 8)",
+		"fr" : "Nombre de bornes (3 à 8)"
 	},
 	"Styler_Style" : {
 		"en" : "Map style",

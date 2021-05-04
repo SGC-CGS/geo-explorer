@@ -331,6 +331,15 @@ export default class Requests {
 		});
 		
 		p.then(renderer => {
+
+			// For ColorBrewer
+			if(meta.colors.palette != undefined) {
+				for (let index = 0; index < renderer.data.classBreakInfos.length; index++) {
+					let metaColor = meta.colors.palette[index];
+					renderer.data.classBreakInfos[index].symbol.color = Core.HexToRgb(metaColor);
+				}
+			}
+
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,
