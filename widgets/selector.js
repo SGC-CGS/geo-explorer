@@ -3,18 +3,45 @@ import Core from '../../geo-explorer/tools/core.js';
 import Dom from '../../geo-explorer/tools/dom.js';
 import CODR from '../../geo-explorer/tools/codr.js';
 
+/**
+ * Selector widget module
+ * @module widgets/selector
+ * @extends Templated
+ * @description This class creates indicator selectors to choose the data to be loaded on the map.
+ */
 export default Core.Templatable("App.Widgets.Selector", class Selector extends Templated {
 
+    /**
+     * @description
+     * Get coordinates selected 
+     */
 	get coordinates() { 
 		return this.dropdowns.map(dd => (dd.id == "1") ? "*" : dd.value);
 	}
-	
+
+    /**
+     * @description
+     * Get the geo select dropdown 
+     */
 	get geoSelect() { return this.dropdowns[this.metadata.geoIndex]; }
-	
+
+    /**
+     * @description
+     * Get the geo level selected 
+     */
 	get geoLevel() { return this.geoSelect.value; }
-	
+
+    /**
+     * @description
+     * Set the value of the geo level selected
+     * @param {String} value - value
+     */
 	set geoLevel(value) { this.geoSelect.value = value; }
 
+    /**
+     * @description
+     * Add the needed language texts
+     */
 	static Nls(nls) {
 		nls.Add("Dropdowns_Title", "en", "Select indicator to display on the map:");
 		nls.Add("Dropdowns_Title", "fr", "Sélectionnez l'indicateur à afficher sur la carte:");		
@@ -25,7 +52,12 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
     constructor(container, options) {
         super(container, options);
     }
-	
+
+    /**
+     * @description
+     * Initialize the selectors, create and load dropdowns with options
+     * @param {String} metadata - metadata
+     */
 	Initialize(metadata) {
 		this.metadata = metadata; 
 		
@@ -38,6 +70,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
         this.Node("submit").On("click", this.OnButtonApply_Click.bind(this));
 	}
 
+    /**
+     * @description
+     * Apply initial indicator selection to the dropdowns if provided through URL parameters
+     * @param {String} selected - selected
+     */
     ApplyInitialSelection(selected) {
         // Parse this.config.initialSelection - something like &selected=[1,4,4,2,6]        
         var initial = JSON.parse(selected);
@@ -65,7 +102,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 		else this.OnButtonApply_Click(null);
     }
-	
+
+    /**
+     * @description
+     * Create dropdowns
+     */
 	CreateDropdowns() {		
         // Loop on dimensions and create the drop down lists
 		this.dropdowns = this.metadata.dimensions.map(dimension => {
@@ -81,7 +122,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			return select;
 		});
 	}
-	
+
+    /**
+     * @description
+     * Load the dropdowns with options from metadata
+     */
 	LoadGeoDropdown() {
 		var items = CODR.GeoLevels(this.metadata);
 
@@ -94,7 +139,12 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 		this.geoSelect.addEventListener("change", ev => this.metadata.geoLevel = ev.target.value);	
     }
-	
+
+    /**
+     * @description
+     * Update map button apply callback
+     * @param {String} ev - ev
+     */
 	OnButtonApply_Click(ev) {        
 		this.Emit("Change", { coordinates:this.coordinates, geo:this.geoLevel });
 	}

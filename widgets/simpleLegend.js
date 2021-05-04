@@ -5,17 +5,33 @@ import Dom from '../../geo-explorer/tools/dom.js';
 import LegendBreak from '../../geo-explorer/widgets/legend/legend-break.js';
 import DefaultBreak from '../../geo-explorer/widgets/legend/default-break.js';
 
+/**
+ * Simple Legend widget module
+ * @module widgets/simpleLegend
+ * @extends Templated
+ * @description This class is a simple legend widget for the map.
+ */
 export default Core.Templatable("App.Widgets.SimpleLegend", class Legend extends Templated {
 
     constructor(container, options) {
         super(container, options);
     }
 
+    /**
+     * @description
+     * Update and load class breaks from the context
+     * @param {String} context - context
+     */
     Update(context) {
         this.context = context;
         this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
     }
 
+    /**
+     * @description
+     * Load the class breaks from renderer settings
+     * @param {String} renderer - renderer object
+     */
     LoadClassBreaks(renderer) {
         Dom.Empty(this.Elem("breaks"));
 
