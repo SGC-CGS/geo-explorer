@@ -13,6 +13,11 @@ const URLS = {
     codesets: "https://www150.statcan.gc.ca/t1/wds/rest/getCodeSets"
 }
 
+/**
+ * CODR module
+ * @module tools/codr
+ * @description This class is used to create requests and connect to CODR web services.
+ */
 export default class CODR {
 	
 	static geoLookup = {
@@ -109,6 +114,11 @@ export default class CODR {
         return Net.Get(proxy + url, headers, "json");
     }
 
+    /**
+     * @description
+     * Get cube metadata by product id
+     * @param {String} product - product id
+     */
 	static GetCubeMetadata(product) {
 		var d = Core.Defer();
 
@@ -130,7 +140,13 @@ export default class CODR {
 		
 		return d.promise;
 	}
-	
+
+    /**
+     * @description
+     * Get requests
+     * @param {String} metadata - metadata
+     * @param {String} coordinates - coordinates
+     */
 	static GetRequests(metadata, coordinates) {
         return metadata.geoMembers.map(m => {
 			var request = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -142,7 +158,14 @@ export default class CODR {
 			return { "productId":metadata.id, "coordinate":request.join("."), "latestN":1 }
 		});
 	}
-	
+
+    /**
+     * @description
+     * Get Coordinate data by batch
+     * @param {String} metadata - metadata
+     * @param {String} data - data
+     * @param {String} datapoints - datapoints
+     */
 	static GetCoordinateDataByBatch(metadata, data, datapoints) {
 		var bust = Math.random() * Math.pow(10,18);
 		
@@ -157,7 +180,13 @@ export default class CODR {
 			});
 		});
 	}
-	
+
+    /**
+     * @description
+     * Get Coordinate data
+     * @param {String} metadata - metadata
+     * @param {String} coordinates - coordinates
+     */
 	static GetCoordinateData(metadata, coordinates) {
 		var d = Core.Defer();
 		
@@ -202,6 +231,10 @@ export default class CODR {
 		return d.promise;
     }
 
+    /**
+     * @description
+     * Get codesets
+     */
     static GetCodeSets() {
         var d = Core.Defer();
 
@@ -219,11 +252,21 @@ export default class CODR {
 
         return d.promise;
     }
-	
+
+    /**
+     * @description
+     * Get geo by code
+     * @param {String} code - code
+     */
 	static GeoLookup(code) {
 		return CODR.geoLookup[code];
 	}
-	
+
+    /**
+     * @description
+     * Get geo levels
+     * @param {String} metadata - metadata
+     */
 	static GeoLevels(metadata) {
 		var geoNls = CODR.GeoNls();
         var levels = [];
