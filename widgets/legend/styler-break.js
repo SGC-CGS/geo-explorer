@@ -59,8 +59,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	 * @param {object} options - additional info on breaks (min, max, colors)
 	 * @returns {void}
 	 */	
-	constructor(container, info) {
-		super(container, info);
+	constructor(container, info, lastBreak) {
+		super(container, info, lastBreak);
 
 		this.Min = info.minValue;
 		this.Max = info.maxValue;
@@ -73,6 +73,13 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
 		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
+	}
+
+	CreateAddLastBreak() {
+		this.addButton = document.createElement('button');
+		this.addButton.className = "remove button-icon small-icon";
+		this.addButton.setAttribute("handle", "eAdd");
+		this.addButton.addEventListener("click", this.OnEditor_Add.bind(this));
 	}
 
 	/**
@@ -147,6 +154,15 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	 */
 	OnEditor_Remove(ev){
 		this.Emit("remove");
+	}
+
+	/**
+	 * Emit add event when delete button of a class break is clicked
+	 * @param {object} ev - Mouse event
+	 * @returns {void}
+	 */
+	 OnEditor_Add(ev){
+		this.Emit("add");
 	}
 
 	/**

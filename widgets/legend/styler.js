@@ -13,24 +13,29 @@ import StylerBreak from './styler-break.js';
 export default Core.Templatable("App.Widgets.Styler", class Styler extends Templated {
 
 	/**
+	 * Get/set opacity
+	 */
+	 set Opacity(value) {
+		this.Elem('sOpacity').value = value * 100;
+	}
+	
+	get Opacity() {
+		return this.Elem('sOpacity').value / 100;
+	}
+
+	/**
 	 * Return text for styler widget in both languages
 	 * @returns {object.<string, string>} Styler widget text for each language
 	 */		
 	static Nls(nls) {
 		nls.Add("Styler_Title", "en", "Change map style");
 		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
-		nls.Add("Styler_Instructions_1", "en", "Use the options below to change how to render the indicator on the map. To confirm your changes, click 'Apply' at the end of the form.");
-		nls.Add("Styler_Instructions_1", "fr", "Utiliser les options ci-dessous pour changer la façon dont l’indicateur apparaît sur la carte. Pour confirmer les changements, cliquer sur « Appliquer » en bas du formulaire.");
-		nls.Add("Styler_Instructions_3", "en", "* Geographies with no data or that do not fit in the ranges below are transparent on the map but still interactive.");
-		nls.Add("Styler_Instructions_3", "fr", "* Les régions géographiques n’ayant pas de données ou ne tenant pas dans les plages ci-dessous apparaissent en transparence sur la carte, mais sont toujours interactives.");
 		nls.Add("Styler_Method", "en", "Classification method");
 		nls.Add("Styler_Method", "fr", "Méthode de classification");
 		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
 		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
-		nls.Add("Styler_Breaks", "en", "Number of breaks (3 to 8)");
-		nls.Add("Styler_Breaks", "fr", "Nombre de bornes (3 à 8)");
-		nls.Add("Styler_Style", "en", "Map style");
-		nls.Add("Styler_Style", "fr", "Style de la carte");
+		nls.Add("Styler_Style", "en", "Map Legend");
+		nls.Add("Styler_Style", "fr", "Légende de la carte");
 		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
 		nls.Add("Styler_Method_Equal", "fr", "Intervalles égaux");
 		nls.Add("Styler_Method_Natural", "en", "Natural breaks");
@@ -47,6 +52,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Max_Lt_Min", "fr", "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée.");
 		nls.Add("Styler_Max_Gt_Next", "en", "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.");
 		nls.Add("Styler_Max_Gt_Next", "fr", "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante.");
+		nls.Add("Legend_Opacity", "en", "Opacity");
+		nls.Add("Legend_Opacity", "fr", "Opacité");	
+		nls.Add("Legend_Opacity_Less", "en", "Less");
+		nls.Add("Legend_Opacity_Less", "fr", "Moins");	
+		nls.Add("Legend_Opacity_More", "en", "More");
+		nls.Add("Legend_Opacity_More", "fr", "Plus");
 		nls.Add("Styler_Button_Apply", "en", "Apply");
 		nls.Add("Styler_Button_Apply", "fr", "Appliquer");		
 		nls.Add("Styler_Button_Close", "en", "Cancel");
@@ -64,15 +75,19 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 		this.metadata = null;
 		this.breaks = null;
+		this.numBreaks = 0;
+		this.minBreaks = 3;
+		this.maxBreaks = 8;
 
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), null, { id:1, algo:"esriClassifyEqualInterval" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
 
-		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
-
-		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
 		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
+
+		this.Node("aRow").On("click", this.OnBreak_Add.bind(this));
+
+		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
@@ -127,7 +142,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Load class method, breaks, stard and end colours to styler widget
+	 * Load class method, breaks, and colours to styler widget
 	 * @param {object} context - Context object
 	 * @returns {void}
 	 */	
@@ -139,7 +154,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		var idx = this.Elem('sMethod').FindIndex(i => i.algo === context.metadata.breaks.algo);
 
 		this.Elem("sMethod").value = idx;
-		this.Elem("iBreaks").value = n;
+		this.numBreaks = n;
 
 		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
 
@@ -162,7 +177,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 			palette.className = "palette";
 			// Tell the user the color
 			palette.addEventListener("click", () => {
-				this.context.metadata.colors.palette = colorScheme[index][parseInt(this.Elem("iBreaks").value)];
+				this.context.metadata.colors.palette = colorScheme[index][this.numBreaks];
 				this.currentScheme = colorScheme[index];
 
 				this.Refresh();
@@ -185,25 +200,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Remove class break
-	 * @param {number} i - Index number to remove from class breaks
-	 * @returns {void}
-	 */
-	Remove(i) {
-		var brk = this.breaks[i];
-		var prev = this.breaks[i-1];
-		var next = this.breaks[i+1];
-		
-		if (next && prev) next.Min = prev.Max;
-
-		// TODO: implement this in DOM (eventually?)
-		this.Elem('breaks').removeChild(brk.Elem('container'));
-		this.breaks.splice(i,1);
-						
-		this.Elem("iBreaks").value = this.breaks.length;
-	}
-
-	/**
 	 * Create break object from class break info
 	 * @param {object[]} classBreakInfos - Object describing class breaks
 	 * @returns {void}
@@ -212,14 +208,49 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		Dom.Empty(this.Elem("breaks"));
 
 		this.breaks = classBreakInfos.map((c, i) => {
-			var brk = new StylerBreak(this.Elem('breaks'), c);
+			let lastBreak = (i == this.numBreaks -1);
+
+			var brk = new StylerBreak(this.Elem('breaks'), c, lastBreak);
 
 			brk.On("apply", this.OnBreak_Apply.bind(this, i));
 
-			brk.On("remove", this.OnBreak_Remove.bind(this, i));
+			brk._nodes.eContainer
+						.querySelector("button.remove.button-icon.small-icon")
+						.style.visibility =  "hidden";
+
+			if (lastBreak && (i != this.minBreaks - 1)) {
+				brk.On("remove", this.OnBreak_Remove.bind(this));
+				brk._nodes.eContainer
+							.querySelector("button.remove.button-icon.small-icon")
+							.style.visibility =  "";
+			}
+
+			if (lastBreak && (i != this.maxBreaks - 1)) {
+				// Issues due to Emit??
+
+			}
 
 			return brk;
 		});
+	}
+
+	// TODO
+	OnBreak_Add(ev) {
+		this.context.metadata.breaks.n += 1;
+		this.numBreaks = this.context.metadata.breaks.n;
+
+		if (this.context.metadata.breaks.n == this.maxBreaks) {
+			this.Node("aRow").elem.hidden = true;
+		} else {
+			this.Node("aRow").elem.hidden = false;
+		}
+
+		// Get the current color scheme for the breaks
+		if (this.currentScheme != undefined) {
+			this.context.metadata.colors.palette = this.currentScheme[this.numBreaks];
+		}
+
+		this.Refresh();
 	}
 
 	/**
@@ -245,29 +276,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Make a call to remove a class break if there is more than one
+	 * Make a call to remove a class break if there is more than the minimum
 	 * @param {number} i - Index number to remove
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-	OnBreak_Remove(i, ev) {
-		// Last break cannot be removed
-		if (this.breaks.length == 1) return;
-		
-		var i = this.breaks.indexOf(ev.target);
-		
-		this.Remove(i);
-	}
+	OnBreak_Remove(ev) {
+		this.context.metadata.breaks.n -= 1;
+		this.numBreaks = this.context.metadata.breaks.n;
 
-	/**
-	 * Change number of breaks when up or down arrows are clicked or new number is entered
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
-	onIBreaks_Change(ev) {
-		this.context.metadata.breaks.n = ev.target.value;
-
-		this.context.metadata.colors.palette = this.currentScheme[parseInt(this.Elem("iBreaks").value)];
+		if (this.currentScheme != undefined) {
+			this.context.metadata.colors.palette = this.currentScheme[this.numBreaks];
+		}
 
 		this.Refresh();
 	}
@@ -352,15 +372,21 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
+	 * Respond to change in opacity slider
+	 * @param {object} ev - Event received from opacity slider
+	 * @returns {void}
+	 */
+	 OnOpacity_Changed(ev) {
+		this.Emit("Opacity", { opacity:this.Opacity });
+	}
+
+	/**
 	 * Create HTML for this widget
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
-		return	"<p>nls(Styler_Instructions_1)</p>" +
-				"<label>nls(Styler_Method)</label>" +
+		return	"<label>nls(Styler_Method)</label>" +
 				"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
-				"<label>nls(Styler_Breaks)</label>" +
-				"<input handle='iBreaks' type='number' min='3' max='8' />" +
 				// New color style (divergent, sequential, categorical)
 				"<label>nls(Styler_Color_Scheme)</label>" +
 				"<div class='collapsibles' handle='collapsibles'>" +
@@ -375,7 +401,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"<table handle='breaks' class='breaks-container'>" +
 					// Class breaks go here, dynamically created
 				"</table>" +
-				"<p>nls(Styler_Instructions_3)</p>" +
+				"<p>Add row" +
+					"<button handle='aRow' class='addRowButton'>+</button>" +
+				"</p>" +
+				// Opacity 
+				"<label>nls(Legend_Opacity)</label>" +
+				"<div class='opacity-container'>" +
+				   "<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
+				   "<div class='opacity-labels-container'>" +
+					  "<label>nls(Legend_Opacity_Less)</label>" +
+					  "<label>nls(Legend_Opacity_More)</label>" +
+				   "</div>" +
+				"</div>" +
 				"<div class='button-container'>" +
 				   "<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
 				   "<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +

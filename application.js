@@ -7,8 +7,7 @@ import SelectBehavior from './behaviors/rectangle-select.js';
 import IdentifyBehavior from './behaviors/point-identify.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
-import Styler from './widgets/styler/styler.js';
-import Legend from './widgets/legend/legend.js';
+import Styler from './widgets/legend/styler.js';
 import Search from './widgets/search.js';
 import Waiting from './widgets/waiting.js';
 import Basemap from './widgets/basemap.js';
@@ -31,8 +30,8 @@ export default class Application extends Templated {
 		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
 		nls.Add("Chart_Title", "en", "View chart");
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");
-		nls.Add("Legend_Title", "en", "Map legend");
-		nls.Add("Legend_Title", "fr", "Légende de la carte");
+		// nls.Add("Legend_Title", "en", "Map legend");
+		// nls.Add("Legend_Title", "fr", "Légende de la carte");
 		nls.Add("Bookmarks_Title", "en", "Bookmarks");
 		nls.Add("Bookmarks_Title", "fr", "Géosignets");
 		nls.Add("Behaviour_Title", "en", "Toggle map click behaviour");
@@ -56,7 +55,7 @@ export default class Application extends Templated {
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
 		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
-		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+		//this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
 		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
 		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
 		this.menu.AddButton("behaviour", this.Nls("Behaviour_Title"));
@@ -77,34 +76,23 @@ export default class Application extends Templated {
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
-		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
-		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
-		
-		this.Node('legend').On('LabelName', this.onLegend_LabelName.bind(this));
+		this.Node('styler').On('Opacity', this.OnStyler_Opacity.bind(this));
 		
 		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 
 		this.Elem("chart").labelField = this.config.chart.field;
 		this.Elem("table").headers = this.config.tableHeaders;
-		this.Elem('legend').Opacity = this.config.mapOpacity;
+		this.Elem('styler').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-	
-	    // this.config.LegendItems.forEach(i => {
-		// 	this.map.AddFeatureLayer(i.id, i.url, i.labels, false);
-		// 	this.Elem("legend").AddContextLayer(i.label, i, false);
-		// })
 		
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
-			this.Elem("legend").Update(this.context);
-			this.Elem("table").Update(this.context);
-			
-			this.menu.SetOverlay(this.menu.Item("legend"));			
+			this.Elem("table").Update(this.context);		
 
 			this.AddSelectBehavior(this.map, this.context, this.config);
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
@@ -186,30 +174,15 @@ export default class Application extends Templated {
 		this.map.Behavior("identify").target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
-		this.Elem("legend").Update(this.context);
 		this.Elem("table").Update(this.context);
 	}
 	
 	OnStyler_Change(ev) {	
 		this.context.sublayer.renderer = ev.renderer;
-		
-		this.Elem("legend").Update(this.context);
 	}
 	
-	OnLegend_Opacity(ev) {
+	OnStyler_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
-	}
-
-	OnLegend_LayerVisibility(ev) {
-		var l = this.map.layer(ev.data.id);
-
-		if (!l)return;
-
-		l.visible = ev.checked;
-	}
-
-	onLegend_LabelName(ev) {
-		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 	
 	OnSearch_Change(ev) {		
@@ -256,7 +229,7 @@ export default class Application extends Templated {
 					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
 					"<div handle='styler' widget='App.Widgets.Styler'></div>" +
 					"<div handle='chart' widget='App.Widgets.WChart'></div>" +
-					"<div handle='legend' widget='App.Widgets.Legend'></div>" +
+					//"<div handle='legend' widget='App.Widgets.Legend'></div>" +
 					"<div handle='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +

@@ -374,32 +374,31 @@
 	display:none;
 }
 
-.gexp .legend label {
+.gexp .styler label {
 	font-weight: bold;
 	font-size: 1.1em;
     margin: 5px 0px;
 }
 
-.gexp .legend .opacity-labels-container label {
+.gexp .styler .opacity-labels-container label {
 	font-size : 0.9em;
 	font-weight : normal;
     margin: 0;
 }
 
-.gexp .legend .opacity-labels-container label:first-child {
+.gexp .styler .opacity-labels-container label:first-child {
 	float:left;
 }
 
-.gexp .legend .opacity-labels-container label:last-child {
+.gexp .styler .opacity-labels-container label:last-child {
 	float:right;
 }
 
-.gexp .legend ul {
+.gexp .styler ul {
     padding-inline-start: 30px;
     margin-bottom: 0px;
 }
 
-.gexp .legend .break-line > *,
 .gexp .styler .break-line > * {
     padding:3px 5px;
 }
@@ -411,7 +410,6 @@
 }
 
 .gexp .styler button.color,
-.gexp .legend .break-line .break-color,
 .gexp .styler .break-line .break-color{
 	width:24px;
 	height:24px;
@@ -460,48 +458,48 @@
 .gexp .styler .break-line .break-to-container button.remove {
     background-image: url(./assets/trashcan-16.png);
 }
-/* Legend Widget */
-.gexp .legend .break-line:not(:first-child) {
+/* Styler / Legend Widget */
+.gexp .styler .break-line:not(:first-child) {
 	border-top : solid thin silver;
 }
 
-.gexp .legend .opacity-container {
+.gexp .styler .opacity-container {
 	text-align:center;
 }
 
-.gexp .legend .opacity-labels-container,
-.gexp .legend input.opacity {
+.gexp .styler .opacity-labels-container,
+.gexp .styler input.opacity {
     width: 90%;
     display: inline-block;
     padding: 0;
 }
 
 
-.gexp .legend .context-layers-container ul {
+.gexp .styler .context-layers-container ul {
     list-style-type:none;
 }
 
-.gexp .legend .context-layers-container .context-layer label {
+.gexp .styler .context-layers-container .context-layer label {
 	font-weight: normal;
 	margin-left: 8px;
 }
 
-.gexp .legend .context-layers-container li > * {
+.gexp .styler .context-layers-container li > * {
     display: inline;
     vertical-align: middle;
 	cursor: pointer;
 }
 
-.gexp .legend .label-name-container ul {
+.gexp .styler .label-name-container ul {
     list-style-type:none;
 }
 
-.gexp .legend .label-name-container .label-name label {
+.gexp .styler .label-name-container .label-name label {
 	font-weight: normal;
 	margin-left: 8px;
 }
 
-.gexp .legend .label-name-container li > * {
+.gexp .styler .label-name-container li > * {
     display: inline;
     vertical-align: middle;
 	cursor: pointer;
@@ -826,4 +824,12 @@
 	display: block;
 	width: 15px;
 	height: 15px;
+  }
+
+  /* Add Row */
+
+  .addRowButton {
+	  font-weight: bold;
+	  background: none;
+	  border: none;
   }
