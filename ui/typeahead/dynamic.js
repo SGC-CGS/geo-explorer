@@ -1,6 +1,6 @@
 import Typeahead from './typeahead.js';
-import Core from '../../tools/core.js';
-import Dom from '../../tools/dom.js';
+import Core from '../../../geo-explorer-api/tools/core.js';
+import Dom from '../../../geo-explorer-api/tools/dom.js';
 
 /**
  * Dynamic typeahead module

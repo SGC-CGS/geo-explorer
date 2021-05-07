@@ -1,6 +1,6 @@
-import Templated from '../components/templated.js';
-import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
+import Templated from '../../geo-explorer-api/components/templated.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Dom from '../../geo-explorer-api/tools/dom.js';
 
 /**
  * Bookmarks widget module

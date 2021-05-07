@@ -1,5 +1,5 @@
 import Typeahead from './typeahead.js';
-import Core from '../../tools/core.js';
+import Core from '../../geo-explorer-api/tools/core.js';
 
 /**
  * Static typeahead module

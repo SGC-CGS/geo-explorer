@@ -1,6 +1,6 @@
-import Dom from '../tools/dom.js';
-import Core from '../tools/core.js';
-import Templated from '../components/templated.js';
+import Dom from '../../geo-explorer-api/tools/dom.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Templated from '../../geo-explorer-api/components/templated.js';
 
 /**
  * Popup module
