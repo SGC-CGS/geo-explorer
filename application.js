@@ -83,8 +83,13 @@ export default class Application extends Templated {
             this.metadata = metadata;
 	
 			document.querySelector("#app-title").innerHTML = metadata.productName;
-			
-			this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [metadata.id]); 
+
+            // Format the product ID according to CODR practices (DD-DD-DDDD)
+            var formattedId = metadata.id;
+            if (metadata.id.length > 4) {
+                formattedId = formattedId.substring(0, 2) + "-" + formattedId.substring(2, 4) + "-" + formattedId.substring(4);
+            }
+            this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [formattedId]); 
 			this.Elem("link").href = metadata.tvLink; 
 			
             // Create the drop down lists from the dimensions and memebers
