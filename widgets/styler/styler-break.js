@@ -59,8 +59,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	 * @param {object} options - additional info on breaks (min, max, colors)
 	 * @returns {void}
 	 */	
-	constructor(container, info, lastBreak) {
-		super(container, info, lastBreak);
+	constructor(container, info) {
+		super(container, info);
 
 		this.Min = info.minValue;
 		this.Max = info.maxValue;
@@ -73,13 +73,7 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
 		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
-	}
-
-	CreateAddLastBreak() {
-		this.addButton = document.createElement('button');
-		this.addButton.className = "remove button-icon small-icon";
-		this.addButton.setAttribute("handle", "eAdd");
-		this.addButton.addEventListener("click", this.OnEditor_Add.bind(this));
+		this.Elem("eAdd").addEventListener("click", this.OnEditor_Add.bind(this));
 	}
 
 	/**
@@ -157,7 +151,7 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	}
 
 	/**
-	 * Emit add event when delete button of a class break is clicked
+	 * Emit add event when add button of a class break is clicked
 	 * @param {object} ev - Mouse event
 	 * @returns {void}
 	 */
@@ -178,7 +172,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 				 "<td>nls(Styler_Item_Join)</td>" +
 				 "<td handle='eContainer' class='break-to-container'>" +
 					"<button handle='bTo' class='to'></button>" +
-					"<button handle='eRemove' class= 'remove button-icon small-icon'></button>" +
+					"<button handle='eRemove' class= 'cancel button-icon small-icon'></button>" +
+					"<button handle='eAdd' class= 'apply button-icon small-icon'></button>" +
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +

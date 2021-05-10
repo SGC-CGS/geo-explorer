@@ -2,7 +2,6 @@ import Templated from '../../components/templated.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 import Requests from '../../tools/requests.js';
-import Colors from './colors.js';
 import StylerBreak from './styler-break.js';
 
 /**
@@ -42,12 +41,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Method_Natural", "fr", "Bornes naturelles");
 		nls.Add("Styler_Method_Quantile", "en", "Quantiles");
 		nls.Add("Styler_Method_Quantile", "fr", "Quantiles");
-		nls.Add("Styler_Scheme_Divergent", "en", "Divergent");
-		nls.Add("Styler_Scheme_Divergent", "fr", "Divergente");
-		nls.Add("Styler_Scheme_Sequential", "en", "Sequential");
-		nls.Add("Styler_Scheme_Sequential", "fr", "Séquentielle");
-		nls.Add("Styler_Scheme_Categorical", "en", "Categorical");
-		nls.Add("Styler_Scheme_Categorical", "fr", "Catégorique");
 		nls.Add("Styler_Max_Lt_Min", "en", "New maximum value is less than the current minimum value for the layer. Input a higher value.");
 		nls.Add("Styler_Max_Lt_Min", "fr", "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée.");
 		nls.Add("Styler_Max_Gt_Next", "en", "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.");
@@ -85,8 +78,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
 
-		this.Node("aRow").On("click", this.OnBreak_Add.bind(this));
-
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
@@ -96,49 +87,21 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	addListenersToScheme() {
-		// Get a collection of the collapsibles
-		this.colls = this.Node("collapsibles")._elem.getElementsByClassName("collapsible");
+		let collapsibleBtn = this.Node("collapsible").elem;
 
-		// Set the first collapsible as active and show its content
-		this.colls[0].classList.toggle("active");
-		let content = this.colls[0].nextElementSibling;
-		content.style.maxHeight = "100px";
+		collapsibleBtn.addEventListener("click", function (ev) {
 
-		// Add an event listener to each collapsible
-		for (let i = 0; i < this.colls.length; i++) {
-			this.colls[i].addEventListener("click", function (ev) {
-				this.onCollapsibleClick(ev)
-			}.bind(this));
-		}
-	}
+			ev.target.classList.toggle("active");
 
-	onCollapsibleClick(ev) {
-		for (let j = 0; j < this.colls.length; j++) {
-			// For opening or closing the clicked collapsible 
-			if (this.colls[j] == ev.target) {
-				if (this.colls[j].classList.contains('active')) {
-					this.colls[j].classList.remove('active');
-				} else {
-					this.colls[j].classList.toggle("active");
-				}
-				this.ToggleContent(this.colls[j].nextElementSibling);
-			} 
-			// For ensuring the non clicked collapsibles stay closed
-			else {
-				if (this.colls[j].classList.contains('active')) {
-					this.colls[j].classList.remove('active');
-					this.ToggleContent(this.colls[j].nextElementSibling);
-				}
+			let content = ev.target.nextElementSibling;
+
+			if (content.style.maxHeight) {
+				content.style.maxHeight = null;
+			} else {
+				content.style.maxHeight = content.scrollHeight + 'px';
 			}
-		}
-	}
-
-	ToggleContent(content) {
-		if (content.style.maxHeight) {
-			content.style.maxHeight = null;
-		} else {
-			content.style.maxHeight = content.scrollHeight + 'px';
-		}
+			
+		}.bind(this));
 	}
 
 	/**
@@ -164,9 +127,21 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	addColorPalettesToStyler() {
-		this.colorPaletteAdder(this.Node("divergent").elem, Colors.DivergingColors());
-		this.colorPaletteAdder(this.Node("sequential").elem, Colors.SequentialColors());
-		this.colorPaletteAdder(this.Node("categorical").elem, Colors.CategoricalColors());
+		this.colorPaletteAdder(this.Node("divergent").elem, [
+			colorbrewer.Blues,
+			colorbrewer.Greens,
+			colorbrewer.Greys,
+			colorbrewer.Oranges,
+			colorbrewer.Purples,
+			colorbrewer.Reds,
+			colorbrewer.BrBG,
+			colorbrewer.PiYG,
+			colorbrewer.PRGn,
+			colorbrewer.PuOr,
+			colorbrewer.RdBu,
+			colorbrewer.RdGy,
+			colorbrewer.RdYlGn
+		]);
 	}
 
 	colorPaletteAdder(dom, colorScheme) {
@@ -208,44 +183,42 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		Dom.Empty(this.Elem("breaks"));
 
 		this.breaks = classBreakInfos.map((c, i) => {
-			let lastBreak = (i == this.numBreaks -1);
-
-			var brk = new StylerBreak(this.Elem('breaks'), c, lastBreak);
+	
+			var brk = new StylerBreak(this.Elem('breaks'), c);
 
 			brk.On("apply", this.OnBreak_Apply.bind(this, i));
 
-			brk._nodes.eContainer
-						.querySelector("button.remove.button-icon.small-icon")
-						.style.visibility =  "hidden";
-
-			if (lastBreak && (i != this.minBreaks - 1)) {
-				brk.On("remove", this.OnBreak_Remove.bind(this));
-				brk._nodes.eContainer
-							.querySelector("button.remove.button-icon.small-icon")
-							.style.visibility =  "";
-			}
-
-			if (lastBreak && (i != this.maxBreaks - 1)) {
-				// Issues due to Emit??
-
-			}
+			this.UpdateBreakIconVisibility(brk, i);
 
 			return brk;
 		});
 	}
 
-	// TODO
+	UpdateBreakIconVisibility(brk, i) {
+		let lastBreak = (i == this.numBreaks -1);
+
+		let eContainerRemove = brk._nodes.eContainer.querySelector("button.cancel.button-icon.small-icon");
+		let eContainerAdd = brk._nodes.eContainer.querySelector("button.apply.button-icon.small-icon");
+
+		if (lastBreak && (i != this.minBreaks - 1)) {
+			brk.On("remove", this.OnBreak_Remove.bind(this));
+			eContainerRemove.style.visibility =  "visible";
+		} else {
+			eContainerRemove.style.visibility =  "hidden";
+		}
+
+		if (lastBreak && (i != this.maxBreaks - 1)) {
+			brk.On("add", this.OnBreak_Add.bind(this));
+			eContainerAdd.style.visibility =  "visible";
+		} else {
+			eContainerAdd.style.visibility =  "hidden";
+		}
+	}
+
 	OnBreak_Add(ev) {
 		this.context.metadata.breaks.n += 1;
 		this.numBreaks = this.context.metadata.breaks.n;
 
-		if (this.context.metadata.breaks.n == this.maxBreaks) {
-			this.Node("aRow").elem.hidden = true;
-		} else {
-			this.Node("aRow").elem.hidden = false;
-		}
-
-		// Get the current color scheme for the breaks
 		if (this.currentScheme != undefined) {
 			this.context.metadata.colors.palette = this.currentScheme[this.numBreaks];
 		}
@@ -385,37 +358,38 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
-		return	"<label>nls(Styler_Method)</label>" +
-				"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
-				// New color style (divergent, sequential, categorical)
-				"<label>nls(Styler_Color_Scheme)</label>" +
-				"<div class='collapsibles' handle='collapsibles'>" +
-					"<button class='collapsible'>nls(Styler_Scheme_Divergent)</button>" +
-						"<div handle='divergent' class='content'></div>" +
-					"<button class='collapsible'>nls(Styler_Scheme_Sequential)</button>" +
-						"<div  handle='sequential' class='content'></div>" +
-					"<button class='collapsible'>nls(Styler_Scheme_Categorical)</button>" +
-						"<div handle='categorical' class='content'></div>" +
-				"</div>"+
-				"<label>nls(Styler_Style)</label>" +
+		return	"<label>nls(Styler_Style)</label>" +
 				"<table handle='breaks' class='breaks-container'>" +
-					// Class breaks go here, dynamically created
+				// Class breaks go here, dynamically created
 				"</table>" +
-				"<p>Add row" +
-					"<button handle='aRow' class='addRowButton'>+</button>" +
-				"</p>" +
-				// Opacity 
-				"<label>nls(Legend_Opacity)</label>" +
-				"<div class='opacity-container'>" +
-				   "<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
-				   "<div class='opacity-labels-container'>" +
-					  "<label>nls(Legend_Opacity_Less)</label>" +
-					  "<label>nls(Legend_Opacity_More)</label>" +
-				   "</div>" +
+
+				"<label></label>" +
+
+				"<div class='collapsibles' handle='collapsibles'>" +
+					"<button handle='collapsible' class='collapsible'><label>Change Map Style</label></button>" +
+						"<div handle='content' class='content'>" +
+							"<label>nls(Styler_Method)</label>" +
+							"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
+
+							// New color style (divergent, sequential, categorical)
+							"<label>nls(Styler_Color_Scheme)</label>" +
+							"<div handle='divergent'></div>" +
+
+							// Opacity 
+							"<label>nls(Legend_Opacity)</label>" +
+							"<div class='opacity-container'>" +
+								"<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
+								"<div class='opacity-labels-container'>" +
+									"<label>nls(Legend_Opacity_Less)</label>" +
+									"<label>nls(Legend_Opacity_More)</label>" +
+								"</div>" +
+							"</div>" +
+						"</div>"+
 				"</div>" +
+
 				"<div class='button-container'>" +
-				   "<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
-				   "<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +
+							"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
+							"<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +
 				"</div>";
 	}
 })

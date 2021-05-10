@@ -421,10 +421,12 @@
 	display:none;
 }
 
+.gexp .styler .break-line .break-to-container.editing button.cancel
 .gexp .styler .break-line .break-to-container.editing button.remove {
 	display:none;
 }
 
+.gexp .styler .break-line:only-child .break-to-container button.cancel
 .gexp .styler .break-line:only-child .break-to-container button.remove {
 	display:none;
 }
@@ -779,14 +781,14 @@
 /* Styler */
 /* https://www.w3schools.com/howto/howto_js_collapsible.asp */
 .collapsibles {
-    border: solid thin silver;
+	border: solid thin silver;
 }
 
 .collapsible {
     background: none;
+	border: none;
 	cursor: pointer;
 	width: 100%;
-	border: none;
 	text-align: left;
 	outline: none;
 	font-size: 15px;
@@ -805,9 +807,11 @@
   
   .content {
 	max-height: 0;
-    overflow: hidden;
 	transition: max-height 0.2s ease-out;
     min-height: fit-content;
+	margin-left: 10px;
+    margin-top: 5px;
+	overflow: hidden;
   }
 
 /* Scales */

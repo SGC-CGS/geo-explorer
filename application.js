@@ -7,7 +7,7 @@ import SelectBehavior from './behaviors/rectangle-select.js';
 import IdentifyBehavior from './behaviors/point-identify.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
-import Styler from './widgets/legend/styler.js';
+import Styler from './widgets/styler/styler.js';
 import Search from './widgets/search.js';
 import Waiting from './widgets/waiting.js';
 import Basemap from './widgets/basemap.js';
@@ -26,12 +26,10 @@ export default class Application extends Templated {
 	static Nls(nls) {
 		nls.Add("Selector_Title", "en", "Select Data");
 		nls.Add("Selector_Title", "fr", "Sélectionner des données");
-		nls.Add("Styler_Title", "en", "Change map style");
-		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
+		nls.Add("Styler_Title", "en", "Map Legend and Styler");
+		nls.Add("Styler_Title", "fr", "Légende de la carte et styler");
 		nls.Add("Chart_Title", "en", "View chart");
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");
-		// nls.Add("Legend_Title", "en", "Map legend");
-		// nls.Add("Legend_Title", "fr", "Légende de la carte");
 		nls.Add("Bookmarks_Title", "en", "Bookmarks");
 		nls.Add("Bookmarks_Title", "fr", "Géosignets");
 		nls.Add("Behaviour_Title", "en", "Toggle map click behaviour");
@@ -55,7 +53,6 @@ export default class Application extends Templated {
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
 		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
-		//this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
 		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
 		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
 		this.menu.AddButton("behaviour", this.Nls("Behaviour_Title"));
@@ -92,7 +89,9 @@ export default class Application extends Templated {
 
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
-			this.Elem("table").Update(this.context);		
+			this.Elem("table").Update(this.context);	
+			
+			this.menu.SetOverlay(this.menu.Item("styler"));	
 
 			this.AddSelectBehavior(this.map, this.context, this.config);
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
@@ -229,7 +228,6 @@ export default class Application extends Templated {
 					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
 					"<div handle='styler' widget='App.Widgets.Styler'></div>" +
 					"<div handle='chart' widget='App.Widgets.WChart'></div>" +
-					//"<div handle='legend' widget='App.Widgets.Legend'></div>" +
 					"<div handle='basemap' widget='App.Widgets.Basemap'></div>" +
 					"<div handle='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
 				"</div>" +
