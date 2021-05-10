@@ -51,6 +51,10 @@ export default class Configuration {
         });
     }
 
+    get TableHeaders() {
+        return this.json.tableHeaders;
+    }
+
 	constructor(json) {		
 		this.json = json;
 	}

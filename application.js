@@ -11,6 +11,7 @@ import Overlay from '../geo-explorer/widgets/overlay.js';
 import IdentifyBehavior from '../geo-explorer/behaviors/point-identify.js';
 import SimpleLegend from './widgets/SimpleLegend.js';
 import Selector from './widgets/selector.js';
+import Table from './widgets/SimpleTable.js';
 import Configuration from './components/config.js';
 import Style from './util/style.js';
 import Map from './map.js';
@@ -119,8 +120,7 @@ export default class Application extends Templated {
         var url = this.config.Layer(decodedGeo);
 		
 		if (!url) {
-			this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."))
-			
+            this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."));			
 			return;
 		}
 				
@@ -141,8 +141,16 @@ export default class Application extends Templated {
 			this.behavior.target = layer;
 
             this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
+
+            this.LoadTable(data);            
 		}
-	}
+    }
+
+    LoadTable(data) {
+        this.Elem("table").Clear();
+        this.Elem("table").headers = this.config.TableHeaders;
+        this.Elem("table").Populate(this.metadata.geoMembers, data, this.codesets);
+    }
 	
 	WaitForLayer(layer) {
 		this.map.view.whenLayerView(layer).then(layerView => {				
@@ -191,6 +199,7 @@ export default class Application extends Templated {
 				"</div>" +
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
-				"</div>";
+                "</div>" +
+                "<div handle='table' class='table' widget='App.Widgets.SimpleTable'></div>";
 	}
 }
