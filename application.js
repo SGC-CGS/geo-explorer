@@ -175,10 +175,18 @@ export default class Application extends Templated {
 	
         // Get the value corresponding to the datapoint, properly formatted for French and English 
         // Ex: French: 35 024, 56   -   English 35, 204.56        
-		var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
-		var content = this.codesets.FormatDP(this.data[fid]);
+        var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
+
+        // Get the vintage / reference period
+        var dataPoint = this.metadata.geoMembers.filter(dp => dp.code == fid);
+        var refPer = "";
+        if (dataPoint && dataPoint.length > 0) {
+            refPer = dataPoint = dataPoint[0].vintage;
+        }
+
+        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], refPer);
 		
-		this.map.popup.open({ location:ev.mapPoint, title:title, content:content });
+		this.map.popup.open({ location:ev.mapPoint, title:title, content: content });
     }
 		
 	OnApplication_Error(error) {

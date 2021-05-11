@@ -287,3 +287,11 @@
 .gexp .table-widget table tbody tr:nth-child(odd) {
     background: rgb(240,240,240);
 }
+
+.gexp .popup-table tr {
+    padding: 2px;
+}
+
+.gexp .popup-table td {
+    padding: 2px;
+}
