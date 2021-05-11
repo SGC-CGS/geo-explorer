@@ -1,6 +1,7 @@
 ﻿'use strict';
 
 import Core from '../../tools/core.js';
+import Nls from '../nls.js';
 
 /**
  * CodeSets module
@@ -13,6 +14,8 @@ export default class CodeSets {
     get json() { return this._json; }
 
     set json(value) { this._json = value; }
+
+    get nls() { return this._nls; }
 
     /**
      * @description
@@ -110,6 +113,76 @@ export default class CodeSets {
 		return uom[fld];
     }
 
+    static Nls(nls) {
+        nls.Add("ValueColumn", "en", "Value:");
+        nls.Add("ValueColumn", "fr", "Valeur:");
+
+        nls.Add("FreqColumn", "en", "Frequency:");
+        nls.Add("FreqColumn", "fr", "Fréquence:");
+
+        nls.Add("RefPerColumn", "en", "Reference Period:");
+        nls.Add("RefPerColumn", "fr", "Période de référence:");
+
+        nls.Add("UomColumn", "en", "Unit of measure:");
+        nls.Add("UomColumn", "fr", "Unité de mesure:");
+
+        nls.Add("ScalarColumn", "en", "Scalar factor:");
+        nls.Add("ScalarColumn", "fr", "Facteur scalaire:");
+    }
+
+
+    /**
+     * @description
+     * Format a Datapoint description in html format - for a specific locale, including symbol, uom, etc.
+     * @param {String} dp - Datapoint object
+     * @param {String} locale - locale, en/fr
+     */
+    FormatDP_HTMLTable(dp, refPer, locale) {
+        var htmlTable = "<table class='popup-table'><tbody handle='body'>";
+        
+        var content = dp.Format(locale || Core.locale);
+
+        var security = this.security(dp.security);
+        var status = this.status(dp.status);
+        var symbol = this.symbol(dp.symbol);
+        var scalar = this.scalar(dp.scalar);
+        var frequency = this.frequency(dp.frequency);
+        var uom = this.uom(dp.uom);
+
+        // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
+        if (security) {
+            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + security + "</td></tr></tbody></table>";
+            return htmlTable;
+        }
+
+        if (status) {
+            var letters = ["A", "B", "C", "D", "E", "F"];
+
+            content = letters.indexOf(status) > -1 ? content + status.sup() : status;
+        }
+
+        // Any standard table symbol associated to the value as supercript        
+        if (symbol) content += symbol.sup();
+        
+        htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + content + "</td></tr>";
+
+        if (!frequency) frequency = "";
+        htmlTable += "<tr><td>" + this.Nls("FreqColumn") + "</td><td>" + frequency + "</td></tr>";
+        
+        if (!refPer) refPer = "";
+        htmlTable += "<tr><td>" + this.Nls("RefPerColumn") + "</td><td>" + refPer + "</td></tr>";
+        
+        if (!uom) uom = ""; 
+        htmlTable += "<tr><td>" + this.Nls("UomColumn") + "</td><td>" + uom + "</td></tr>";
+        
+        if (!scalar) scalar = "";
+        htmlTable += "<tr><td>" + this.Nls("ScalarColumn") + "</td><td>" + scalar + "</td></tr>";
+        
+        htmlTable += "</tbody></table>";
+
+        return htmlTable;
+    }
+
     /**
      * @description
      * Format a Datapoint description for a specific locale, including symbol, uom, etc.
@@ -150,6 +223,20 @@ export default class CodeSets {
 
     constructor(json) {
         this.json = json;        
+        this._nls = new Nls();
+        this.constructor.Nls(this._nls);
+    }
+
+    /**
+	 * @description
+	 * Get a localized nls string resource
+	 * @param {*} id — the id of the nls resource to retrieve
+	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
+	 * @param {String} locale - the locale for the nls resource
+	 * @returns - the localized nls string resource
+	 */
+    Nls(id, subs, locale) {
+        return this.nls.Resource(id, subs, locale);
     }
 
     /**
