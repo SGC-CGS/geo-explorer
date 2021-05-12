@@ -72,8 +72,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("bTo").addEventListener("click", this.OnEditor_Button.bind(this));
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
-		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
 		this.Elem("eAdd").addEventListener("click", this.OnEditor_Add.bind(this));
+		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
 	}
 
 	/**
@@ -171,9 +171,9 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 				 "<td handle='lFrom'></td>" +
 				 "<td>nls(Styler_Item_Join)</td>" +
 				 "<td handle='eContainer' class='break-to-container'>" +
-					"<button handle='bTo' class='to'></button>" +
-					"<button handle='eRemove' class= 'cancel button-icon small-icon'></button>" +
-					"<button handle='eAdd' class= 'apply button-icon small-icon'></button>" +
+					"<button handle='bTo' class='to'></button>" +	
+					"<button handle='eAdd' class= 'fa fa-plus custom button-icon small-icon' style='color:green'></button>" +
+					"<button handle='eRemove' class= 'fa fa-minus custom button-icon small-icon' style='color:red'></button>" +
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +

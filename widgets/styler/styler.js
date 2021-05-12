@@ -188,33 +188,44 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 			brk.On("apply", this.OnBreak_Apply.bind(this, i));
 
-			this.UpdateBreakIconVisibility(brk, i);
+			this.UpdateBreakRemoveAndAdd(brk, i);
 
 			return brk;
 		});
 	}
 
-	UpdateBreakIconVisibility(brk, i) {
+	/**
+	 * Make calls for the add or remove class breaks
+	 * @param {object} brk - Object returned from styler.break.js
+	 * @param {object} i - index of the class break
+	 * @returns {void}
+	 */
+	UpdateBreakRemoveAndAdd(brk, i) {
 		let lastBreak = (i == this.numBreaks -1);
 
-		let eContainerRemove = brk._nodes.eContainer.querySelector("button.cancel.button-icon.small-icon");
-		let eContainerAdd = brk._nodes.eContainer.querySelector("button.apply.button-icon.small-icon");
+		let eRemove = brk.Node("eRemove").elem;
+		let eAdd = brk.Node("eAdd").elem;
 
 		if (lastBreak && (i != this.minBreaks - 1)) {
 			brk.On("remove", this.OnBreak_Remove.bind(this));
-			eContainerRemove.style.visibility =  "visible";
+			eRemove.style.display =  "";
 		} else {
-			eContainerRemove.style.visibility =  "hidden";
+			eRemove.style.display =  "none";
 		}
 
 		if (lastBreak && (i != this.maxBreaks - 1)) {
 			brk.On("add", this.OnBreak_Add.bind(this));
-			eContainerAdd.style.visibility =  "visible";
+			eAdd.style.display =  "";
 		} else {
-			eContainerAdd.style.visibility =  "hidden";
+			eAdd.style.display =  "none";
 		}
 	}
 
+	/**
+	 * Make a call to add a class break
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnBreak_Add(ev) {
 		this.context.metadata.breaks.n += 1;
 		this.numBreaks = this.context.metadata.breaks.n;
@@ -249,8 +260,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Make a call to remove a class break if there is more than the minimum
-	 * @param {number} i - Index number to remove
+	 * Make a call to remove a class break
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
@@ -366,7 +376,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"<label></label>" +
 
 				"<div class='collapsibles' handle='collapsibles'>" +
-					"<button handle='collapsible' class='collapsible'><label>Change Map Style</label></button>" +
+					"<button handle='collapsible' class='collapsible'>Change Map Style</button>" +
 						"<div handle='content' class='content'>" +
 							"<label>nls(Styler_Method)</label>" +
 							"<div handle='sMethod' widget='Basic.Components.Select'></div>" +

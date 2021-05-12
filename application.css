@@ -73,7 +73,7 @@
 }
 
 .gexp button.button-icon.small-icon {
-    width:16px;
+    /* width:16px; */
     height:16px;
 }
 
@@ -251,7 +251,7 @@
 .gexp .map-container .esri-ui .button-icon,
 .gexp .map-container .esri-ui .esri-fullscreen {
 	margin-bottom:0px;
-	border-bottom:solid 1px rgba(110,110,110,0.3);
+	/* border-bottom:solid 1px rgba(110,110,110,0.3); */
 }
 
 /* Widgets overlaid on the map */
@@ -259,7 +259,6 @@
 .gexp .overlay {
 	background:rgba(255, 255, 255, 0.925);
 	padding:10px;
-	
 	transition:opacity 125ms ease-in-out;
 }
 
@@ -321,8 +320,7 @@
 	width:450px;
 }
 
-.gexp .bookmarks,
-.gexp .legend {
+.gexp .bookmarks {
 	width:350px;
 }
 
@@ -421,13 +419,11 @@
 	display:none;
 }
 
-.gexp .styler .break-line .break-to-container.editing button.cancel
-.gexp .styler .break-line .break-to-container.editing button.remove {
+.gexp .styler .break-line .break-to-container.editing button.custom {
 	display:none;
 }
 
-.gexp .styler .break-line:only-child .break-to-container button.cancel
-.gexp .styler .break-line:only-child .break-to-container button.remove {
+.gexp .styler .break-line:only-child .break-to-container button.custom {
 	display:none;
 }
 
@@ -456,6 +452,10 @@
 .gexp .styler .break-line .break-to-container button.cancel {
     background-image: url(./assets/close-16.png);
 }
+
+/* .gexp .styler .break-line .break-to-container button.custom {
+	background: none;
+} */
 
 .gexp .styler .break-line .break-to-container button.remove {
     background-image: url(./assets/trashcan-16.png);
@@ -781,17 +781,21 @@
 /* Styler */
 /* https://www.w3schools.com/howto/howto_js_collapsible.asp */
 .collapsibles {
-	border: solid thin silver;
+	/* border: solid thin silver; */
+	border: none;
 }
 
 .collapsible {
-    background: none;
-	border: none;
+    /* background: none;
+	border: none; */
 	cursor: pointer;
 	width: 100%;
 	text-align: left;
 	outline: none;
 	font-size: 15px;
+	font-weight: bold;
+	font-size: 1.1em;
+	margin: 5px 0px;
   }
     
   .collapsible:after {
