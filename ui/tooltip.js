@@ -42,13 +42,13 @@ export default class Tooltip extends Templated  {
 	 * @returns {string} HTML for tooltip div
 	 */			
 	Template() {
-		return '<div handle="root" class="tooltip">' +
+		return '<div handle="root" class="gexp tooltip">' +
 				  '<div handle="content"></div>' +
 			   '</div>';
 	}
 		
 	/**
-	 * Create tooltip box and set position
+	 * Set new coordinates for tooltip based on offsets and coords of a bounding box
 	 * @param {object} target - Target element
 	 * @param {number[]} offset - Offset coordinates
 	 * @returns {void}
@@ -66,7 +66,7 @@ export default class Tooltip extends Templated  {
 	}
 	
 	/**
-	 * Set element position to specified coodinates
+	 * Set tooltip position to specified coodinates
 	 * @param {number} x - X coordinate
 	 * @param {number} y - Y coordinate
 	 * @returns {void}

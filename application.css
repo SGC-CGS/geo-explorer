@@ -625,11 +625,14 @@
 
 /* Tooltip */
 .gexp.tooltip {
+    background: rgba(255, 255, 255, 1);
+    border-style: solid;
+    border-width: thin;
+    box-shadow: 1px 1px #888;
+    font-size: 0.7em;
 	max-width: 300px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 2px;
-    padding: 10px;
-	transition:opacity 125ms ease-in-out;
+    padding: 4px;
+	transition: opacity 125ms ease-in-out;
 }
 
 .gexp.tooltip ul {
