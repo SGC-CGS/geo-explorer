@@ -28,7 +28,9 @@ export default class Application extends Templated {
 		nls.Add("TableViewer_Label", "en", "Statistics Canada. Table {0}");
 		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0}");
 		nls.Add("RefPeriod_Label", "en", "Reference period {0}");
-		nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
+        nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
+        nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the information table section.");
+        nls.Add("SkipTheMapLink", "fr", "Ignorez la carte visuelle interactive et accédez directement à la section du tableau d'informations.");
 	}
 
 	constructor(node, config) {		
@@ -201,7 +203,8 @@ export default class Application extends Templated {
         return  "<div class='row'>" +
                     "<h2 handle='loadingtitle' class='col-md-12 mrgn-tp-sm'>nls(LoadingData_Title)</h2>" +
 				"</div>" +
-				"<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+                "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+                "<div class='text-center'><a href='#simpletable' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
 				"<div class='map-container hidden' handle='mapcontainer'>" +
@@ -213,6 +216,6 @@ export default class Application extends Templated {
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
                 "</div>" +
-                "<div handle='table' class='table' widget='App.Widgets.SimpleTable'></div>";
+                "<div id='simpletable' handle='table' class='table' widget='App.Widgets.SimpleTable'></div>";
 	}
 }
