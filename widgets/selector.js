@@ -276,12 +276,14 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	}
 	
 	/**
-	 * Close selector window when user clicks cancel
+	 * Cancel any changes made in selector window and emit close event
 	 * @param {Object} ev - Mouse event object
 	 * @returns {void}
 	 */
 	OnClose_Click(ev) {
 		this.context.Revert();
+
+		this.ResetFilter(); // prevents filter doubling bug
 		
 		this.Update(this.context);
 		
