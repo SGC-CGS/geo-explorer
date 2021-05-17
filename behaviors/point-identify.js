@@ -12,10 +12,19 @@ import Behavior from './behavior.js';
  */
 export default class PointIdentifyBehavior extends Behavior { 
 
+	/**
+	 * Get identify layer object
+	 */	
 	get layer() { return this._map.Layer("identify"); }
 
+	/**
+	 * Get layer vector graphics
+	 */	
 	get graphics() { return this.layer.graphics; }
 
+	/**
+	 * Get/set target object from layer
+	 */	
 	get target() { return this._options.target; }
 
 	set target(value) { 
@@ -24,10 +33,20 @@ export default class PointIdentifyBehavior extends Behavior {
 		this._options.target = value; 
 	}
 
+	/**
+	 * Get/set symbol object for highlighting selection (type, color, style, outline)
+	 */	
 	get symbol() { return this._options.symbol; }
 
 	set symbol(value) { this._options.symbol = value; }
 
+	/**
+	 * Call constructor of base class (Behavior) and initialize point-identify class 
+	 * Adds identify graphics layer and click handler.
+	 * @param {object} map - Map object
+	 * @param {object} options - Map options (not generally used)
+	 * @returns {void}
+	 */	
 	constructor(map, options) {	
 		super();
 
@@ -40,9 +59,8 @@ export default class PointIdentifyBehavior extends Behavior {
 	}
 
 	/**
-	 * @description
-	 * Point identify is deactivated when rectangle select 
-	 * is activated
+	 * Call clear function and stop listening for map click events
+	 * @returns {void}
 	 */
 	Deactivate(){
 		this.Clear();
@@ -51,18 +69,16 @@ export default class PointIdentifyBehavior extends Behavior {
 	}
 
 	/**
-	 * @description
-	 * By default, point identify is activated. Point identify
-	 * is re-activated when rectangle select is deactivated.
+	 * Start listening for map click events
+	 * @returns {void}
 	 */
 	Activate(){
 		this._map.On("Click", this.ClickHandler);
 	}
 	
 	/**
-	 * @description
-	 * De-select the selected layers, remove highlight
-	 * and hide popup.
+	 * Clear selected layers and close popup
+	 * @returns {void}
 	 */
 	Clear() {
 		this.layer.removeAll();
@@ -71,12 +87,10 @@ export default class PointIdentifyBehavior extends Behavior {
 	}
 		
 	/**
-	 * @description
-	 * Fires after the map is clicked with point-identify.
-	 * mapPoint will indicate the point location of the click on the view
-	 * so that the popup may appear on the selected target. The selected feature
-	 * will also be outlined.
-	 * @param {*} ev - event
+	 * When map is clicked, find the polygon containing the selected point, highlight the feature, 
+	 * and emit change event for the map and feature.
+	 * @param {object} ev - Event object
+	 * @returns {void}
 	 */
 	OnMap_Click(ev) {		
 		this.Emit("Busy");
@@ -94,6 +108,11 @@ export default class PointIdentifyBehavior extends Behavior {
 		}, error => this.OnIdentify_Error(error));
 	}
 	
+	/**
+	 * Emit error when there is a problem with the behavior
+	 * @param {object} error - Error object
+	 * @returns {void}
+	 */	
 	OnIdentify_Error(error) {
 		this.Emit("Error", { error:error });
 		this.Emit("Idle");
