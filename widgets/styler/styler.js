@@ -4,6 +4,7 @@ import Dom from '../../tools/dom.js';
 import Requests from '../../tools/requests.js';
 import StylerBreak from './styler-break.js';
 import DefaultBreak from './default-break.js';
+import Tooltip from "../../ui/tooltip.js"
 
 /**
  * Styler widget module
@@ -28,10 +29,10 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {object.<string, string>} Styler widget text for each language
 	 */		
 	static Nls(nls) {
-		nls.Add("Styler_Title", "en", "Change map style");
-		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
 		nls.Add("Styler_Method", "en", "Classification method");
 		nls.Add("Styler_Method", "fr", "Méthode de classification");
+		nls.Add("Styler_Breaks", "en", "Number of breaks (3 to 8)");
+		nls.Add("Styler_Breaks", "fr", "Nombre de bornes (3 à 8)");
 		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
 		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
 		nls.Add("Styler_Style", "en", "Map Legend");
@@ -69,45 +70,23 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 		this.metadata = null;
 		this.breaks = null;
-		this.numBreaks = 0;
-		this.minBreaks = 3;
-		this.maxBreaks = 8;
+		this.tooltip = new Tooltip();
 
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), null, { id:1, algo:"esriClassifyEqualInterval" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
 
-		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
+		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
 
+		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
+		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 
-		this.addListenersToScheme();
-	}
-
-	addListenersToScheme() {
-		let collapsibleBtn = this.Node("collapsible").elem;
-
-		let content = this.Node("content").elem;
-
-		let icon = this.Node("collapsibleIcon").elem;
-
-		collapsibleBtn.addEventListener("click", function (ev) {
-
-			ev.target.classList.toggle("active");
-
-			if (content.style.maxHeight) {
-				content.style.maxHeight = null;
-				icon.className = "fa fa-caret-down active";
-
-			} else {
-				content.style.maxHeight = content.scrollHeight + 'px';
-				icon.className = "fa fa-caret-up active";
-			}
-			
-		}.bind(this));
+		this.LoadOtherBreaks();
+		this.AddDropdownMechanism();
 	}
 
 	/**
@@ -123,17 +102,22 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		var idx = this.Elem('sMethod').FindIndex(i => i.algo === context.metadata.breaks.algo);
 
 		this.Elem("sMethod").value = idx;
-		this.numBreaks = n;
+		this.Elem("iBreaks").value = n;
 
 		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
 
-		if(this.currentScheme == null) {
-			this.addColorPalettesToStyler();
+		if(this.currentColorScheme == null) {
+			this.LoadColorSchemes();
 		}
 	}
 
-	addColorPalettesToStyler() {
-		this.colorPaletteAdder(this.Node("divergent").elem, [
+	/**
+	 * @description Create color schemes and load them to the colorScheme DIV, 
+	 * and add interaction with the color scheme palettes
+	 * @returns {void}
+	 */	
+	 LoadColorSchemes() {
+		let colorSchemes = [
 			colorbrewer.Blues,
 			colorbrewer.Greens,
 			colorbrewer.Greys,
@@ -147,37 +131,77 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 			colorbrewer.RdBu,
 			colorbrewer.RdGy,
 			colorbrewer.RdYlGn
-		]);
+		];
+
+		this.AddColorSchemes(this.Node("colorScheme").elem, colorSchemes);
 	}
 
-	colorPaletteAdder(dom, colorScheme) {
-		for (let index = 0; index < colorScheme.length; index++) {
+	/**
+	 * @description Create the palettes, add interaction and append them to the dom
+	 * @param {object} dom - The final target DIV to hold the color schemes
+	 * @param {Array} colorSchemes - A subset of color schemes from color brewer
+	 * @returns {void}
+	 */	
+	AddColorSchemes(dom, colorSchemes) {
+		for (let index = 0; index < colorSchemes.length; index++) {
 
-			// Create color palette 
 			let palette = document.createElement('span');
-			palette.className = "palette";
-			// Tell the user the color
-			palette.addEventListener("click", () => {
-				this.context.metadata.colors.palette = colorScheme[index][this.numBreaks];
-				this.currentScheme = colorScheme[index];
 
-				this.Refresh();
-			})
+			palette.className = "palette";
+
+			this.AddPaletteEvents(palette, colorSchemes[index]);
+			
+			let colorScheme = colorSchemes[index][5];
 
 			// Add 5 swatches to the palette
-			const elem = colorScheme[index][5];
+			for (let index = 0; index < colorScheme.length; index++) {
+				let color = colorScheme[index];
 
-			for (let index = 0; index < elem.length; index++) {
-				const color = elem[index];
 				let swatch = document.createElement('span');
+
 				swatch.className = "swatch";
+
 				swatch.style.backgroundColor = color;
 	
-				palette.appendChild(swatch);
-				
-			}
+				palette.appendChild(swatch);	
+			};
+
 			dom.appendChild(palette);
 		}
+	}
+
+	/**
+	 * @description Add event listeners to a palette. The "click" event is used
+	 * for handling when a user chooses a new color scheme for the map. The other 
+	 * event listeners are for handling the tooltip.
+	 * @param {object} palette - Palette containing a color scheme
+	 * @param {object} colorScheme - A color scheme from the subset of color schemes 
+	 * @returns {void}
+	 */	
+	AddPaletteEvents(palette, colorScheme) {
+		palette.addEventListener("click", () => {
+			this.context.metadata.colors.palette = colorScheme[this.Elem("iBreaks").value];
+			
+			this.currentColorScheme = colorScheme;
+
+			this.Refresh();
+		})
+
+		palette.addEventListener("mouseenter", () => {
+			let content;
+			
+			for(let colorName in colorbrewer) {
+				if(colorScheme == colorbrewer[colorName]) { content = colorName };
+			};
+
+			this.tooltip.content = `${content}`;
+		})
+
+		palette.addEventListener("mousemove", (ev) => {
+			this.tooltip.Show(ev.pageX + 10 , ev.pageY - 28);
+		})
+
+		palette.addEventListener("mouseleave", () => this.tooltip.Hide());
 	}
 
 	/**
@@ -194,62 +218,20 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 			brk.On("apply", this.OnBreak_Apply.bind(this, i));
 
-			this.UpdateBreakRemoveAndAdd(brk, i);
-
 			return brk;
 		});
-
-		// Add default break here 
-		let s = {
-				type: "simple-fill",
-				color: [128, 128, 128, 255],
-				style: "solid",
-				outline: {
-					color: [0, 0, 0, 225],
-					width: 0.5
-				}
-			}
-		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol: s }));
 	}
 
 	/**
-	 * Make calls for the add or remove class breaks
-	 * @param {object} brk - Object returned from styler.break.js
-	 * @param {object} i - index of the class break
-	 * @returns {void}
-	 */
-	UpdateBreakRemoveAndAdd(brk, i) {
-		let lastBreak = (i == this.numBreaks -1);
-
-		let eRemove = brk.Node("eRemove").elem;
-		let eAdd = brk.Node("eAdd").elem;
-
-		if (this.numBreaks != this.minBreaks) {
-			brk.On("remove", this.OnBreak_Remove.bind(this));
-			eRemove.style.display =  "";
-		} else {
-			eRemove.style.display =  "none";
-		}
-
-		if (lastBreak && (i != this.maxBreaks - 1)) {
-			brk.On("add", this.OnBreak_Add.bind(this));
-			eAdd.style.display =  "";
-		} else {
-			eAdd.style.display =  "none";
-		}
-	}
-
-	/**
-	 * Make a call to add a class break
+	 * Change number of breaks when up or down arrows are clicked or new number is entered
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-	OnBreak_Add(ev) {
-		this.context.metadata.breaks.n += 1;
-		this.numBreaks = this.context.metadata.breaks.n;
+	 onIBreaks_Change(ev) {
+		this.context.metadata.breaks.n = ev.target.value;
 
-		if (this.currentScheme != undefined) {
-			this.context.metadata.colors.palette = this.currentScheme[this.numBreaks];
+		if (this.currentColorScheme != undefined) {
+			this.context.metadata.colors.palette = this.currentColorScheme[this.Elem("iBreaks").value];
 		}
 
 		this.Refresh();
@@ -275,22 +257,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 			next.Min = curr.Max;
 		}
-	}
-
-	/**
-	 * Make a call to remove a class break
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
-	OnBreak_Remove(ev) {
-		this.context.metadata.breaks.n -= 1;
-		this.numBreaks = this.context.metadata.breaks.n;
-
-		if (this.currentScheme != undefined) {
-			this.context.metadata.colors.palette = this.currentScheme[this.numBreaks];
-		}
-
-		this.Refresh();
 	}
 
 	/**
@@ -350,12 +316,68 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
+	 * @description To allow breaks for other values (restricted, confidential, etc.)
+	 * @returns {void}
+	 */
+	LoadOtherBreaks() {
+
+		let symbol = {
+			type: "simple-fill",
+			color: [128, 128, 128, 255],
+			style: "solid",
+			outline: {
+				color: [0, 0, 0, 225],
+				width: 0.5
+			}
+		}
+
+		new DefaultBreak(this.Elem('otherBreaks'), { symbol: symbol })
+	}
+
+	/**
+	 * @description Add dropdown mechanism for the 
+	 * Map Style changer to hide / show content
+	 * @returns {void}
+	 */
+	AddDropdownMechanism() {
+		let collapsibleBtn = this.Node("collapsible").elem;
+
+		let content = this.Node("content").elem;
+
+		let icon = this.Node("collapsibleIcon").elem;
+
+		collapsibleBtn.addEventListener("click", function (ev) {
+
+			ev.target.classList.toggle("active");
+
+			if (content.style.maxHeight) {
+				content.style.maxHeight = null;
+				icon.className = "fa fa-caret-down active";
+
+			} else {
+				content.style.maxHeight = content.scrollHeight + 'px';
+				icon.className = "fa fa-caret-up active";
+			}
+			
+		}.bind(this));
+	}
+
+	/**
 	 * Emits error when there is a problem loading class breaks
 	 * @param {object} error - Error object
 	 * @returns {void}
 	 */
 	OnRequests_Error (error) {
 		this.Emit("Error", { error:error });
+	}
+
+	/**
+	 * Respond to change in opacity slider
+	 * @param {object} ev - Event received from opacity slider
+	 * @returns {void}
+	 */
+	OnOpacity_Changed(ev) {
+		this.Emit("Opacity", { opacity:this.Opacity });
 	}
 
 	/**
@@ -373,50 +395,43 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Respond to change in opacity slider
-	 * @param {object} ev - Event received from opacity slider
-	 * @returns {void}
-	 */
-	 OnOpacity_Changed(ev) {
-		this.Emit("Opacity", { opacity:this.Opacity });
-	}
-
-	/**
 	 * Create HTML for this widget
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
-		return	"<table handle='breaks' class='breaks-container' style='margin-top: 15px; margin-bottom: 15px;'>" +
-				// Class breaks go here, dynamically created
+		return	"<table handle='breaks' class='breaks-container' style='border-collapse: separate; margin-top: 15px;'>" +
+					// Class breaks go here, dynamically created
 				"</table>" +
 
-				"<div class='collapsibles' handle='collapsibles'>" +
+				"<table handle='otherBreaks' class='breaks-container' style='border-collapse: separate; margin-bottom: 15px;'>" +
+					// Other class breaks go here, manually created
+				"</table>" +
 
-					"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
-						"<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px;'></i>" +
-					"</h2>" +
+				"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
+					"<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px;'></i>" +
+				"</h2>" +
 
-						"<div handle='content' class='content'>" +
+				"<div handle='content' class='content'>" +
 
-							"<label>nls(Styler_Method)</label>" +
-							"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
+					"<label>nls(Styler_Method)</label>" +
+					"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
 
-							// New color style (divergent, sequential, categorical)
-							"<label>nls(Styler_Color_Scheme)</label>" +
-							"<div handle='divergent'></div>" +
+					"<label>nls(Styler_Breaks)</label>" +
+					"<input handle='iBreaks' type='number' min='3' max='8' />" +
 
-							// Opacity 
-							"<label>nls(Legend_Opacity)</label>" +
-							"<div class='opacity-container'>" +
-								"<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
-								"<div class='opacity-labels-container'>" +
-									"<label>nls(Legend_Opacity_Less)</label>" +
-									"<label>nls(Legend_Opacity_More)</label>" +
-								"</div>" +
-							"</div>" +
+					"<label>nls(Styler_Color_Scheme)</label>" +
+					"<div handle='colorScheme'></div>" +
 
-						"</div>"+
-				"</div>" +
+					"<label>nls(Legend_Opacity)</label>" +
+					"<div class='opacity-container'>" +
+						"<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
+						"<div class='opacity-labels-container'>" +
+							"<label>nls(Legend_Opacity_Less)</label>" +
+							"<label>nls(Legend_Opacity_More)</label>" +
+						"</div>" +
+					"</div>" +
+
+				"</div>"+
 
 				"<div class='button-container'>" +
 					"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +

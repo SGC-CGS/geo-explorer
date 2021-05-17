@@ -341,14 +341,6 @@ export default class Requests {
 				}
 			}
 
-			// let last = renderer.data.classBreakInfos[len - 1];
-			// var clone = Object.assign({}, last);
-			// clone.classMinValue = null;
-			// clone.classMaxValue = null;
-			// clone.label = "Data invalid";
-			// clone.symbol.color = [0, 0, 0, 255];
-			// renderer.data.classBreakInfos.push(clone)
-
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,

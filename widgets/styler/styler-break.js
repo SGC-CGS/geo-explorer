@@ -72,8 +72,6 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("bTo").addEventListener("click", this.OnEditor_Button.bind(this));
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
-		this.Elem("eAdd").addEventListener("click", this.OnEditor_Add.bind(this));
-		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
 	}
 
 	/**
@@ -142,24 +140,6 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	}
 
 	/**
-	 * Emit remove event when delete button of a class break is clicked
-	 * @param {object} ev - Mouse event
-	 * @returns {void}
-	 */
-	OnEditor_Remove(ev){
-		this.Emit("remove");
-	}
-
-	/**
-	 * Emit add event when add button of a class break is clicked
-	 * @param {object} ev - Mouse event
-	 * @returns {void}
-	 */
-	 OnEditor_Add(ev){
-		this.Emit("add");
-	}
-
-	/**
 	 * Create HTML for breaks
 	 * @returns {string} HTML for breaks
 	 */		
@@ -172,8 +152,6 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 				 "<td>nls(Styler_Item_Join)</td>" +
 				 "<td handle='eContainer' class='break-to-container'>" +
 					"<button handle='bTo' class='to'></button>" +	
-					"<button handle='eRemove' class= 'fa fa-minus custom button-icon small-icon' style='color:red'></button>" +
-					"<button handle='eAdd' class= 'fa fa-plus custom button-icon small-icon' style='color:green'></button>" +
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +
