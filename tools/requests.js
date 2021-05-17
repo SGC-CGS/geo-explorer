@@ -333,12 +333,21 @@ export default class Requests {
 		p.then(renderer => {
 
 			// For ColorBrewer
+			let len = renderer.data.classBreakInfos.length;
 			if(meta.colors.palette != undefined) {
-				for (let index = 0; index < renderer.data.classBreakInfos.length; index++) {
+				for (let index = 0; index < len; index++) {
 					let metaColor = meta.colors.palette[index];
 					renderer.data.classBreakInfos[index].symbol.color = Core.HexToRgb(metaColor);
 				}
 			}
+
+			// let last = renderer.data.classBreakInfos[len - 1];
+			// var clone = Object.assign({}, last);
+			// clone.classMinValue = null;
+			// clone.classMaxValue = null;
+			// clone.label = "Data invalid";
+			// clone.symbol.color = [0, 0, 0, 255];
+			// renderer.data.classBreakInfos.push(clone)
 
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
@@ -388,10 +397,9 @@ export default class Requests {
 					maxScale: 0
 				  }]
 			});
-			
+
 			d.Resolve(sublayer);
 		}, error => { d.Reject(new Error(error.message)) });
-		
 		return d.promise;
 	}
 	

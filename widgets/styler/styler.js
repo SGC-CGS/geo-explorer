@@ -3,6 +3,7 @@ import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 import Requests from '../../tools/requests.js';
 import StylerBreak from './styler-break.js';
+import DefaultBreak from './default-break.js';
 
 /**
  * Styler widget module
@@ -89,16 +90,21 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	addListenersToScheme() {
 		let collapsibleBtn = this.Node("collapsible").elem;
 
+		let content = this.Node("content").elem;
+
+		let icon = this.Node("collapsibleIcon").elem;
+
 		collapsibleBtn.addEventListener("click", function (ev) {
 
 			ev.target.classList.toggle("active");
 
-			let content = ev.target.nextElementSibling;
-
 			if (content.style.maxHeight) {
 				content.style.maxHeight = null;
+				icon.className = "fa fa-caret-down active";
+
 			} else {
 				content.style.maxHeight = content.scrollHeight + 'px';
+				icon.className = "fa fa-caret-up active";
 			}
 			
 		}.bind(this));
@@ -192,6 +198,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 			return brk;
 		});
+
+		// Add default break here 
+		let s = {
+				type: "simple-fill",
+				color: [128, 128, 128, 255],
+				style: "solid",
+				outline: {
+					color: [0, 0, 0, 225],
+					width: 0.5
+				}
+			}
+		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol: s }));
 	}
 
 	/**
@@ -206,7 +224,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		let eRemove = brk.Node("eRemove").elem;
 		let eAdd = brk.Node("eAdd").elem;
 
-		if (lastBreak && (i != this.minBreaks - 1)) {
+		if (this.numBreaks != this.minBreaks) {
 			brk.On("remove", this.OnBreak_Remove.bind(this));
 			eRemove.style.display =  "";
 		} else {
@@ -368,16 +386,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
-		return	"<label>nls(Styler_Style)</label>" +
-				"<table handle='breaks' class='breaks-container'>" +
+		return	"<table handle='breaks' class='breaks-container' style='margin-top: 15px; margin-bottom: 15px;'>" +
 				// Class breaks go here, dynamically created
 				"</table>" +
 
-				"<label></label>" +
-
 				"<div class='collapsibles' handle='collapsibles'>" +
-					"<button handle='collapsible' class='collapsible'>Change Map Style</button>" +
+
+					"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
+						"<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px;'></i>" +
+					"</h2>" +
+
 						"<div handle='content' class='content'>" +
+
 							"<label>nls(Styler_Method)</label>" +
 							"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
 
@@ -394,12 +414,13 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 									"<label>nls(Legend_Opacity_More)</label>" +
 								"</div>" +
 							"</div>" +
+
 						"</div>"+
 				"</div>" +
 
 				"<div class='button-container'>" +
-							"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
-							"<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +
+					"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
+					"<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +
 				"</div>";
 	}
 })

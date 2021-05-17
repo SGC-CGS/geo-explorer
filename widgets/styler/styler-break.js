@@ -172,8 +172,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 				 "<td>nls(Styler_Item_Join)</td>" +
 				 "<td handle='eContainer' class='break-to-container'>" +
 					"<button handle='bTo' class='to'></button>" +	
-					"<button handle='eAdd' class= 'fa fa-plus custom button-icon small-icon' style='color:green'></button>" +
 					"<button handle='eRemove' class= 'fa fa-minus custom button-icon small-icon' style='color:red'></button>" +
+					"<button handle='eAdd' class= 'fa fa-plus custom button-icon small-icon' style='color:green'></button>" +
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +

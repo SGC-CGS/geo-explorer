@@ -26,8 +26,8 @@ export default class Application extends Templated {
 	static Nls(nls) {
 		nls.Add("Selector_Title", "en", "Select Data");
 		nls.Add("Selector_Title", "fr", "Sélectionner des données");
-		nls.Add("Styler_Title", "en", "Map Legend and Styler");
-		nls.Add("Styler_Title", "fr", "Légende de la carte et styler");
+		nls.Add("Styler_Title", "en", "Map Legend");
+		nls.Add("Styler_Title", "fr", "Légende de la carte");
 		nls.Add("Chart_Title", "en", "View chart");
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");
 		nls.Add("Bookmarks_Title", "en", "Bookmarks");

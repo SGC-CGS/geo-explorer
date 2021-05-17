@@ -453,9 +453,9 @@
     background-image: url(./assets/close-16.png);
 }
 
-/* .gexp .styler .break-line .break-to-container button.custom {
-	background: none;
-} */
+.gexp .styler .break-line .break-to-container button.custom {
+	background-color: transparent;
+}
 
 .gexp .styler .break-line .break-to-container button.remove {
     background-image: url(./assets/trashcan-16.png);
@@ -785,31 +785,16 @@
 	border: none;
 }
 
-.collapsible {
-    /* background: none;
-	border: none; */
+/* h2 instead of button, button styled as h2 */
+/* <i class="fa fa-caret-down" style="margin-left: 10px;"></i> */
+.gexp .collapsible {
+    background: none;
+	border: none;
 	cursor: pointer;
 	width: 100%;
-	text-align: left;
-	outline: none;
-	font-size: 15px;
-	font-weight: bold;
-	font-size: 1.1em;
-	margin: 5px 0px;
-  }
-    
-  .collapsible:after {
-	content: '\002B';
-	font-weight: bold;
-	float: right;
-	margin-left: 5px;
   }
   
-  .active:after {
-	content: "\2212";
-  }
-  
-  .content {
+.gexp .content {
 	max-height: 0;
 	transition: max-height 0.2s ease-out;
     min-height: fit-content;
@@ -819,7 +804,7 @@
   }
 
 /* Scales */
-  .palette {
+.gexp .palette {
 	cursor: pointer;
 	display: inline-block;
 	margin: 4px 0 4px 6px;
@@ -828,7 +813,7 @@
 	border: solid 1px #aaa;
   }
   
-  .swatch {
+.gexp .swatch {
 	display: block;
 	width: 15px;
 	height: 15px;
@@ -836,7 +821,7 @@
 
   /* Add Row */
 
-  .addRowButton {
+.gexp .addRowButton {
 	  font-weight: bold;
 	  background: none;
 	  border: none;
