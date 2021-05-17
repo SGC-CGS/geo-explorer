@@ -49,6 +49,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
         nls.Add("UpdateMapBtn_Title", "fr", "Recharger la Carte");	
         nls.Add("AppDescription", "en", "This map will display a thematic map according to the indicator selected. Use the dropdown lists below to select dimension members for each dimensions of the current CODR product. Then, click on the 'update map' button to display the thematic map. A data table at the bottom contains the data shown on the map.");
         nls.Add("AppDescription", "fr", "Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'mettre à jour la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte.");
+        nls.Add("Options_Title", "en", "Choose an option for ");
+        nls.Add("Options_Title", "fr", "Choisissez une option pour ");
 	}
 	
     constructor(container, options) {
@@ -114,7 +116,12 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.dropdowns = this.metadata.dimensions.map(dimension => {
 			var row = Dom.Create("div", { className:"row mrgn-tp-xs" }, this.Elem("dimensions"));
 			var label = Dom.Create("label", { innerHTML:dimension.name, htmlFor:dimension.position, className:"col-md-6 mrgn-tp-xs" }, row);
-            var select = Dom.Create("select", { id:dimension.position, name:dimension.position, className:"col-md-6 mrgn-tp-xs" }, row);
+            var select = Dom.Create("select", {
+                id: dimension.position,
+                name: dimension.position,
+                className: "col-md-6 mrgn-tp-xs",
+                title: this.Nls("Options_Title") + dimension.name
+            }, row);
             
 			if (dimension.position != "1") {
 				// Get unique geo codes from metadata dimensions 			
@@ -156,7 +163,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
                 "<div class='text-center'><a href='#' class='wb-inv wb-show-onfocus wb-sl'>nls(AppDescription)</a></div>" +            
 				"<div handle='dimensions' class='dimensions'></div>" +
 				"<div class='row mrgn-tp-sm'>" +
-					"<button handle='submit' type='submit' class='btn btn-primary col-md-2 pull-right hidden'>nls(UpdateMapBtn_Title)</button>" +
+                "<button handle='submit' type='submit' class='btn btn-primary col-md-2 pull-right hidden' title='nls(UpdateMapBtn_Title)'>" +
+                "nls(UpdateMapBtn_Title)</button > " +
 				"</div>";
     }
 })
