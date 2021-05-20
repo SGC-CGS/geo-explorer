@@ -6,6 +6,11 @@ import Net from '../tools/net.js';
 import Requests from '../tools/requests.js';
 import Evented from './evented.js';
 
+/**
+ * Map module
+ * @module components/map
+ * @extends Evented
+ */
 export default class Map extends Evented { 
 
 	/**

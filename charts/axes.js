@@ -1,4 +1,6 @@
 /**
+ * Axes module
+ * @module charts/axes
  * @description 
  * Please refer to the the README in the charts folder for 
  * more information on the D3 concepts presented in this code.
@@ -12,7 +14,7 @@ export default class Axes {
      * Create a new band scale for the x-axis with a domain composed of titles. 
      * @param {Object} data - The entire dataset for the chart 
      * @param {number} width - The extent to which the bands will be spread / mapped
-     * @returns {d3.scaleBand() function}
+     * @returns A d3.scaleBand() function
      */
     static CreateBandXScale(data, width){
         return d3.scaleBand()
@@ -30,7 +32,7 @@ export default class Axes {
      * Create a new linear scale for the x-axis.
      * @param {Object} data - The entire dataset for the chart 
      * @param {number} width - The extent to which parts of the domain will be spread / mapped
-     * @returns {d3.scaleLinear() function}
+     * @returns A d3.scaleLinear() function
      */
     static CreateLinearXScale(data, width){
         return d3.scaleLinear()
@@ -43,7 +45,7 @@ export default class Axes {
      * Create a new linear scale for the y-axis with a domain composed of values.
      * @param {Object} data - The entire dataset for the chart 
      * @param {number} height - The extent to which the bands will be spread / mapped
-     * @returns {d3.scaleLinear() function}
+     * @returns A d3.scaleLinear() function
      */
     static CreateLinearYScale(data, height){
         // Could also use .domain(d3.extent(data, (d) => d.value ))
@@ -65,7 +67,7 @@ export default class Axes {
      * lines from the y-axis tick marks.
      * @param {*} yScale - The linear scale for the vertical axis
      * @param {*} width - The extent of the chart by width
-     * @returns {d3.axisLeft() function}
+     * @returns A d3.axisLeft() function
      */
     static GridLineHorizontal(yScale, width) {
         return d3.axisLeft(yScale)
@@ -81,7 +83,7 @@ export default class Axes {
      * lines from the x-axis tick marks.
      * @param {*} xScale - The linear scale for the horizontal axis
      * @param {*} height - The extent of the chart by height
-     * @returns {d3.axisBottom() function}
+     * @returns A d3.axisBottom() function
      */
     static GridLineVertical(xScale, height) {
         return d3.axisBottom(xScale)

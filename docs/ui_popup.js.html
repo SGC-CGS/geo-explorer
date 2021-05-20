@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ui/popup.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ui/popup.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Dom from '../tools/dom.js';
+import Core from '../tools/core.js';
+import Templated from '../components/templated.js';
+
+/**
+ * Popup module
+ * @module ui/popup
+ * @extends Templated
+ */
+export default class Popup extends Templated { 
+	
+	set Title(value) {
+		this.Elem("title").innerHTML = value;
+	}
+	
+	set Widget(widget) {
+		this.Empty();
+		
+		this._widget = widget;
+		
+		widget.Place(this.Elem("body"));
+	}
+	
+	get Widget() { return this._widget; }
+	
+	constructor(container) {	
+		super(container || document.body);
+				
+		this.onBody_KeyUp_Bound = this.onBody_KeyUp.bind(this);
+		
+		this._h = null;
+		
+		this._nodes.blocker = Dom.Create("div", { className:"popup-blocker" }, document.body);
+		
+		this.SetStyle(0, "hidden");
+		
+		this.Node("close").On("click", this.onBtnClose_Click.bind(this));
+		this.Node("blocker").On("click", this.onModal_Click.bind(this));
+	}
+	
+	SetStyle(opacity, visibility) {
+		this.Elem("blocker").style.opacity = opacity;
+		this.Elem("blocker").style.visibility = visibility;
+		this.Elem("popup").style.opacity = opacity;
+		this.Elem("popup").style.visibility = visibility;
+	}
+	
+	Empty() {
+		Dom.Empty(this.Elem("body"));
+	}
+	
+	Show() {		
+		this._h = document.body.addEventListener("keyup", this.onBody_KeyUp_Bound);
+		
+		this.SetStyle(1, "visible");
+		
+		this.Emit("Show", { popup:this });
+		
+		this.Elem("close").focus();
+	}
+	
+	Hide() {		
+		document.body.removeEventListener("keyup", this.onBody_KeyUp_Bound);
+		
+		this.SetStyle(0, "hidden");
+		
+		this.Emit("Hide", { popup:this });
+	}
+	
+	onBody_KeyUp(ev) {
+		if (ev.keyCode == 27) this.Hide();
+	}
+	
+	onModal_Click(ev) {
+		this.Hide();
+	}
+	
+	onBtnClose_Click(ev) {
+		this.Hide();
+	}
+	
+	Template() {
+		return "&lt;div handle='popup' class='popup'>" +
+				  "&lt;div class='popup-header'>" +
+					  "&lt;h2 class='popup-title' handle='title'>&lt;/h2>" +
+					  "&lt;button class='close' handle='close' title='nls(Popup_Close)'>×&lt;/button>" +
+				  "&lt;/div>" +
+					
+				  "&lt;div class='popup-body' handle='body'>&lt;/div>" +
+			   "&lt;/div>";
+	}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-charts_axes.html">charts/axes</a></li><li><a href="module-charts_barChart.html">charts/barChart</a></li><li><a href="module-charts_chart.html">charts/chart</a></li><li><a href="module-charts_linechart.html">charts/linechart</a></li><li><a href="module-charts_pieChart.html">charts/pieChart</a></li><li><a href="module-charts_scatterPlot.html">charts/scatterPlot</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_popup.html">ui/popup</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_wChart.html">widgets/wChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul><h3>Global</h3><ul><li><a href="global.html#set">set</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 14:44:33 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

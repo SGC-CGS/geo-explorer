@@ -5,10 +5,12 @@ import Evented from './evented.js';
 import Requests from '../tools/requests.js';
 
 /**
- * @description
- * Context is called from configuration.js
+ * Context module
+ * @module components/context
+ * @extends Evented
+ * @description Context is called from configuration.js
  * to handle changes / updates related to subject, theme, 
- * category, etc. 
+ * category, etc.
  */
 export default class Context extends Evented { 
 	

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: widgets/table.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: widgets/table.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Templated from '../components/templated.js';
+import Core from '../tools/core.js';
+import Dom from '../tools/dom.js';
+import Net from "../tools/net.js";
+
+/**
+ * Table widget module
+ * @module widgets/table
+ * @extends Templated
+ */
+export default Core.Templatable("App.Widgets.Table", class Table extends Templated {
+	
+	/**
+	 * Set table title
+	 */
+	set title(value) { this.Elem("title").innerHTML = value; }
+	
+	/**
+	 * Get/set table headers
+	 */
+	get headers() { return this._headers; }
+	
+	set headers(value) {
+		this._headers = value; 
+		
+		Dom.Create("th", { }, this.Elem("header"));
+		
+		this._headers.forEach(h => {
+			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
+		});
+	}
+
+	set data(selection){
+		this.Populate(selection.items);
+	}
+	
+	/**
+	 Return messages for table widget in both languages
+	 * @returns {object.&lt;string, string>} Table text for each language
+	 */
+	static Nls(nls) {
+		nls.Add("Table_Message", "en", "Please select geometries on the map to show their attributes in the table.");
+		nls.Add("Table_Message", "fr", "Veuillez sélectionner des géométries sur la carte afin d'afficher leur attributs dans le tableau.");	
+		nls.Add("Table_Row_Title", "en", "Click to zoom to geometry ({0})");
+		nls.Add("Table_Row_Title", "fr", "Cliquer pour zoomer sur la géométrie ({0})");	
+		nls.Add("Table_Thrash_Title", "en", "Click to remove geometry ({0}) from selection");
+		nls.Add("Table_Thrash_Title", "fr", "Cliquer retirer la géométrie ({0}) de la sélection");	
+	}
+	
+	/**
+	 * Call constructor of base class (Templated) and initialize table widget
+	 * @param {object} container - div table container and properties
+	 * @returns {void}
+	 */
+	constructor(container) {	
+		super(container);
+		
+		Dom.AddCss(this.container, 'hidden');
+	}
+
+	/**
+	 * Clears and hides table element
+	 * @param {object} context - Context object
+	 * @returns {void}
+	 */
+	Update(context) {
+		this.context = context; 
+		
+		Dom.Empty(this.Elem('body'));
+		
+		Dom.RemoveCss(this.container, 'hidden');
+		
+		this.UpdateTableVisibility();
+		
+		this.title = this.context.IndicatorsLabel();
+	}
+
+	/**
+	 * Update the table content with the correct data of the DBU 
+	 * @param {object} graphics - Selected locations from map
+	 * @returns {void}
+	 */
+	Populate(graphics) {
+		Dom.Empty(this.Elem('body'));
+		
+		graphics.forEach(g => {
+			var name = g.attributes[this.headers[1].id];
+			
+			var tr = Dom.Create("tr", { className:"table-row" }, this.Elem("body"));
+			
+			this.CreateButton(tr, g, name);
+			
+			this.headers.forEach(f => {				
+				Dom.Create("td", { className:"table-cell", innerHTML:g.attributes[f.id] }, tr);
+			});
+						
+			tr.title = this.Nls("Table_Row_Title", [name]);
+			
+			tr.addEventListener("click", ev => this.Emit("RowClick", { feature:g }));
+		});
+		
+		this.UpdateTableVisibility();
+	}
+
+	/**
+	 * Create trash button for each row of table
+	 * @param {object} tr - Table row
+	 * @param {object} g - Accessor for map
+	 * @param {string} name - Name of location in table row
+	 * @returns {void}
+	 */
+	CreateButton(tr, g, name){
+		var td = Dom.Create("td", { className:"table-cell" }, tr);
+		var bt = Dom.Create("button", { className:"table-button", title:this.Nls("Table_Thrash_Title", [name]) }, td);
+		var ic = Dom.Create("i", { className:"fa fa-trash" }, bt);
+		
+		bt.addEventListener("click", ev => {
+			ev.stopPropagation();
+			
+			this.Emit("RowButtonClick", { graphic:g })
+		});
+	}
+	
+	/**
+	 * Update CSS to toggle table visibility
+	 * @returns void
+	 */
+	UpdateTableVisibility() {
+		var isVisible = this.Elem("body").children.length > 0;
+		
+		Dom.ToggleCss(this.Elem("message"), 'hidden', isVisible);
+		Dom.ToggleCss(this.Elem("table"), 'hidden', !isVisible);
+	}
+	
+	/**
+	 * Create HTML for this widget
+	 * @returns {string} HTML for table widget
+	 */
+	Template() {
+		return "&lt;div class='table-widget'>" +
+				  "&lt;h2 handle='title'>&lt;/h2>" +
+			      "&lt;div handle='message' class='table-message'>nls(Table_Message)&lt;/div>"+
+			      "&lt;div handle='table' class='table-container hidden'>" + 
+					 // "&lt;summary handle='description'>&lt;/summary>" +
+				     "&lt;table>" +
+				        "&lt;thead>" + 
+				           "&lt;tr handle='header'>&lt;/tr>" + 
+				        "&lt;/thead>" +
+				        "&lt;tbody handle='body'>&lt;/tbody>" + 
+				     "&lt;/table>" + 
+			      "&lt;/div>" + 
+			   "&lt;/div>"
+	}
+})</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-behaviors_behavior.html">behaviors/behavior</a></li><li><a href="module-behaviors_point-identify.html">behaviors/point-identify</a></li><li><a href="module-behaviors_rectangle-select.html">behaviors/rectangle-select</a></li><li><a href="module-charts_axes.html">charts/axes</a></li><li><a href="module-charts_barChart.html">charts/barChart</a></li><li><a href="module-charts_chart.html">charts/chart</a></li><li><a href="module-charts_linechart.html">charts/linechart</a></li><li><a href="module-charts_pieChart.html">charts/pieChart</a></li><li><a href="module-charts_scatterPlot.html">charts/scatterPlot</a></li><li><a href="module-components_configuration.html">components/configuration</a></li><li><a href="module-components_context.html">components/context</a></li><li><a href="module-components_evented.html">components/evented</a></li><li><a href="module-components_map.html">components/map</a></li><li><a href="module-components_nls.html">components/nls</a></li><li><a href="module-components_node.html">components/node</a></li><li><a href="module-components_templated.html">components/templated</a></li><li><a href="module-components_templated-table.html">components/templated-table</a></li><li><a href="module-tools_core.html">tools/core</a></li><li><a href="module-tools_dom.html">tools/dom</a></li><li><a href="module-tools_net.html">tools/net</a></li><li><a href="module-tools_requests.html">tools/requests</a></li><li><a href="module-ui_picker.html">ui/picker</a></li><li><a href="module-ui_popup.html">ui/popup</a></li><li><a href="module-ui_select.html">ui/select</a></li><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-ui_typeahead_dynamic.html">ui/typeahead/dynamic</a></li><li><a href="module-ui_typeahead_static.html">ui/typeahead/static</a></li><li><a href="module-ui_typeahead_typeahead.html">ui/typeahead/typeahead</a></li><li><a href="module-widgets_basemap.html">widgets/basemap</a></li><li><a href="module-widgets_bookmarks.html">widgets/bookmarks</a></li><li><a href="module-widgets_legend_legend.html">widgets/legend/legend</a></li><li><a href="module-widgets_legend_legend-break.html">widgets/legend/legend-break</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li><li><a href="module-widgets_search.html">widgets/search</a></li><li><a href="module-widgets_selector.html">widgets/selector</a></li><li><a href="module-widgets_styler_styler.html">widgets/styler/styler</a></li><li><a href="module-widgets_styler_styler-break.html">widgets/styler/styler-break</a></li><li><a href="module-widgets_table.html">widgets/table</a></li><li><a href="module-widgets_waiting.html">widgets/waiting</a></li><li><a href="module-widgets_wChart.html">widgets/wChart</a></li></ul><h3>Classes</h3><ul><li><a href="module-ui_tooltip.html">ui/tooltip</a></li><li><a href="module-widgets_menu.html">widgets/menu</a></li><li><a href="module-widgets_overlay.html">widgets/overlay</a></li></ul><h3>Global</h3><ul><li><a href="global.html#set">set</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 28 2021 14:44:33 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

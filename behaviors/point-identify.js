@@ -5,6 +5,11 @@ import Requests from '../tools/requests.js';
 import Evented from '../components/evented.js';
 import Behavior from './behavior.js';
 
+/**
+ * Point Identify module
+ * @module behaviors/point-identify
+ * @extends Behavior
+ */
 export default class PointIdentifyBehavior extends Behavior { 
 
 	get layer() { return this._map.Layer("identify"); }

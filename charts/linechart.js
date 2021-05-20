@@ -2,15 +2,15 @@ import Chart from "./chart.js";
 import Axes from "./axes.js";
 
 /**
- * @description 
- * The overall goal is to draw the lineChart onto the CSGE.
- * - Step one: Append the necessary groups and path
- * - Step two: Define the scales and use them for building the line chart. The 
+ * Line Chart module
+ * @module charts/linechart
+ * @extends Chart
+ * @description The overall goal is to draw the lineChart onto the CSGE.
+ * Step one: Append the necessary groups and path
+ * Step two: Define the scales and use them for building the line chart. The 
  * text on the bottom axis requires pre-processing to avoid texting leaving the SVG. 
- * - Step three: Add line to the chart
- * 
- * @note
- * Please refer to the the README in the charts folder for 
+ * Step three: Add line to the chart
+ * @note Please refer to the the README in the charts folder for 
  * more information on the D3 concepts presented in this code.
  */
 export default class LineChart extends Chart{ 

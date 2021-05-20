@@ -56,7 +56,7 @@ export default class Overlay extends Templated {
 	constructor(container, options) {	
 		super(container);
 		
-		this.SetStyle(0, "hidden");
+		this.SetStyle(0, "none");
 		
 		this.Node("close").On("click", this.onBtnClose_Click.bind(this));
 		
@@ -69,13 +69,13 @@ export default class Overlay extends Templated {
 	
 	/**
 	 * Set css style of overlay
-	 * @param {number} opacity - Opacity of overlay (0-1)
-	 * @param {string} visibility - Visiblity of overlay (visible/hidden)
+	 * @param {number} opacity - Opacity property value for overlay (ex. 0-1)
+	 * @param {string} display - Display property value for overlay (ex. none/inline/block)
 	 * @returns {void}
 	 */
-	SetStyle(opacity, visibility) {
+	SetStyle(opacity, display) {
 		this.roots[0].style.opacity = opacity;
-		this.roots[0].style.visibility = visibility;
+		this.roots[0].style.display = display;
 	}
 	
 	/**
@@ -91,7 +91,7 @@ export default class Overlay extends Templated {
 	 * @returns {void}
 	 */
 	Show() {		
-		this.SetStyle(1, "visible");
+		this.SetStyle(1, "block");
 		
 		this.Emit("Show", { overlay:this });
 		
@@ -103,7 +103,7 @@ export default class Overlay extends Templated {
 	 * @returns {void}
 	 */
 	Hide() {				
-		this.SetStyle(0, "hidden");
+		this.SetStyle(0, "none");
 		
 		this.Emit("Hide", { overlay:this });
 	}
