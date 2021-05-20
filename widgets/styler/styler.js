@@ -31,10 +31,16 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	static Nls(nls) {
 		nls.Add("Styler_Method", "en", "Classification method");
 		nls.Add("Styler_Method", "fr", "Méthode de classification");
-		nls.Add("Styler_Breaks", "en", "Number of breaks (3 to 8)");
-		nls.Add("Styler_Breaks", "fr", "Nombre de bornes (3 à 8)");
+		nls.Add("Styler_Method_Info", "en", "Classification method");
+		nls.Add("Styler_Method_Info", "fr", "Méthode de classification");
+		nls.Add("Styler_Breaks", "en", "Number of breaks");
+		nls.Add("Styler_Breaks", "fr", "Nombre de bornes");
+		nls.Add("Styler_Breaks_Info", "en", "Number of breaks (3 to 8)");
+		nls.Add("Styler_Breaks_Info", "fr", "Nombre de bornes (3 à 8)");
 		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
 		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
+		nls.Add("Styler_Color_Scheme_Info", "en", "Color Schemes");
+		nls.Add("Styler_Color_Scheme_Info", "fr", "Gamme de schèmas");
 		nls.Add("Styler_Style", "en", "Map Legend");
 		nls.Add("Styler_Style", "fr", "Légende de la carte");
 		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
@@ -49,6 +55,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Max_Gt_Next", "fr", "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante.");
 		nls.Add("Legend_Opacity", "en", "Opacity");
 		nls.Add("Legend_Opacity", "fr", "Opacité");	
+		nls.Add("Legend_Opacity_Info", "en", "Opacity");
+		nls.Add("Legend_Opacity_Info", "fr", "Opacité");	
 		nls.Add("Legend_Opacity_Less", "en", "Less");
 		nls.Add("Legend_Opacity_Less", "fr", "Moins");	
 		nls.Add("Legend_Opacity_More", "en", "More");
@@ -340,21 +348,21 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {void}
 	 */
 	AddDropdownMechanism() {
-		let collapsibleBtn = this.Node("collapsible").elem;
-
 		let content = this.Node("content").elem;
 
 		let icon = this.Node("collapsibleIcon").elem;
 
-		collapsibleBtn.addEventListener("click", function (ev) {
+		icon.addEventListener("click", function (ev) {
 
 			ev.target.classList.toggle("active");
 
 			if (content.style.maxHeight) {
+				content.style.display = "none";
 				content.style.maxHeight = null;
 				icon.className = "fa fa-caret-down active";
 
 			} else {
+				content.style.display = "block";
 				content.style.maxHeight = content.scrollHeight + 'px';
 				icon.className = "fa fa-caret-up active";
 			}
@@ -408,21 +416,25 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"</table>" +
 
 				"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
-					"<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px;'></i>" +
+					"<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px;' cursor: pointer;></i>" +
 				"</h2>" +
 
 				"<div handle='content' class='content'>" +
 
 					"<label>nls(Styler_Method)</label>" +
+					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
 					"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
 
 					"<label>nls(Styler_Breaks)</label>" +
+					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Breaks_Info)</span></i>" +
 					"<input handle='iBreaks' type='number' min='3' max='8' />" +
 
 					"<label>nls(Styler_Color_Scheme)</label>" +
+					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Color_Scheme_Info)</span></i>" +
 					"<div handle='colorScheme'></div>" +
 
 					"<label>nls(Legend_Opacity)</label>" +
+					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Legend_Opacity_Info)</span></i>" +
 					"<div class='opacity-container'>" +
 						"<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
 						"<div class='opacity-labels-container'>" +

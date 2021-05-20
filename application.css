@@ -742,7 +742,7 @@
     fill: none;
     shape-rendering: crispedges;
     stroke: #e4e4e4;   
-  }
+}
 
 /* Style the dots by assigning a fill and stroke */
 .gexp .dot {
@@ -770,18 +770,16 @@
 .gexp .collapsible {
     background: none;
 	border: none;
-	cursor: pointer;
 	width: 100%;
   }
   
 .gexp .content {
 	max-height: 0;
-	transition: max-height 0.2s ease-out;
     min-height: fit-content;
 	margin-left: 10px;
     margin-top: 5px;
-	overflow: hidden;
-  }
+	display: none;
+}
 
 /* Scales */
 .gexp .palette {
@@ -791,10 +789,55 @@
 	padding: 4px;
 	background: #fff;
 	border: solid 1px #aaa;
-  }
+}
   
 .gexp .swatch {
 	display: block;
 	width: 15px;
 	height: 15px;
-  }
+}
+
+.gexp .fa.fa-info-circle {
+	position: relative;
+	display: inline-block;
+	margin-left: 5px; 
+	cursor: pointer;
+}
+
+.gexp .fa.fa-info-circle .tooltiptext {
+	border-width: thin;
+	border-style: solid;
+	padding: 6px;
+	background-color: white;
+	color: black;
+	visibility: hidden;
+	position: absolute;
+	width: 200px;
+	text-align: center;
+	border-radius: 6px;
+	z-index: 1;
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+.gexp .fa.fa-info-circle .tooltiptext::after {
+	content: "";
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: transparent transparent #555 transparent;
+}
+
+.gexp .fa.fa-info-circle:hover .tooltiptext {
+	visibility: visible;
+	opacity: 1;
+}
+
+.gexp .tooltip-bottom {
+	top: 135%;
+	left: 50%;
+	margin-left: -100px;
+}
