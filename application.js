@@ -160,6 +160,8 @@ export default class Application extends Templated {
 			
 			this.map.popup.open({ location:r.mapPoint, title:title, content:content });
 		});	
+
+		this.HandleEvents(behavior, this.OnMap_SelectClick.bind(this)); //NEW for table
 	}
 	
 	// Add event handler
@@ -221,6 +223,11 @@ export default class Application extends Templated {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
+	OnMap_SelectClick(ev) { //NEW
+		this.Elem("table").data = ev.target.graphics;
+		this.Elem("chart").data = ev.target.graphics;
+	}
+
 	OnMap_SelectDraw(ev) {
 		this.Elem("table").data = ev.selection;
 		this.Elem("chart").data = ev.selection;
