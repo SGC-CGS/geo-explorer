@@ -34,6 +34,16 @@
                 "width": 1.5,
                 "style": "solid"
             }
+        },        
+        "point-select": {
+            "type": "simple-fill",
+            "color": [0, 0, 0, 0.2],
+            "style": "none",
+            "outline": {
+                "color": [0, 222, 222, 1],
+                "width": 1.5,
+                "style": "solid"
+            }
         }
     },
     "context": {
@@ -306,7 +316,7 @@
             "key": "GeographyReferenceId",
             "label": "SearchDisplayName"
         },
-        "identify": {
+        "point-select": {
             "title": "DisplayNameShort_",
             "unit": "UOM_",
             "value": "FormattedValue_",

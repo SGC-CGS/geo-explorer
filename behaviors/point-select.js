@@ -6,24 +6,32 @@ import Evented from '../components/evented.js';
 import Behavior from './behavior.js';
 
 /**
- * Point Identify module
- * @module behaviors/point-identify
+ * Point Select module
+ * @module behaviors/point-select
  * @extends Behavior
  */
 export default class PointIdentifyBehavior extends Behavior { 
 
 	/**
-	 * Get layer object
+	 * Get/set field name (ex. "GeographyReferenceId")
 	 */	
-	get layer() { return this._map.Layer("identify"); }
+     get field() { return this._options.field; }
+
+     set field(value) { this._options.field = value; }
+
+	/**
+	 * Get point-select layer object
+	 */	
+	get layer() { return this._map.Layer("point-select"); }
 
 	/**
 	 * Get layer vector graphics
 	 */	
 	get graphics() { return this.layer.graphics; }
 
+
 	/**
-	 * Get/set target layer object
+	 * Get/set target object from layer
 	 */	
 	get target() { return this._options.target; }
 
@@ -41,8 +49,8 @@ export default class PointIdentifyBehavior extends Behavior {
 	set symbol(value) { this._options.symbol = value; }
 
 	/**
-	 * Call constructor of base class (Behavior) and initialize point-identify class 
-	 * Adds identify graphics layer and click handler.
+	 * Call constructor of base class (Behavior) and initialize point-select class 
+	 * Adds point-select graphics layer and click handler.
 	 * @param {object} map - Map object
 	 * @param {object} options - Map options (not generally used)
 	 * @returns {void}
@@ -53,7 +61,7 @@ export default class PointIdentifyBehavior extends Behavior {
 		this._options = {};
 		this._map = map;
 		
-		this._map.AddGraphicsLayer('identify');
+		this._map.AddGraphicsLayer('point-select');
 		
 		this.ClickHandler = this.OnMap_Click.bind(this);
 	}
@@ -87,25 +95,38 @@ export default class PointIdentifyBehavior extends Behavior {
 	}
 		
 	/**
-	 * When map is clicked, find the polygon containing the selected point, highlight the feature, 
-	 * and emit change event for the map and feature.
+	 * When map is clicked, find the polygon containing the selected point, select/deselect the feature,
+     * update the table.
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
 	OnMap_Click(ev) {		
 		this.Emit("Busy");
 		
+		// identify selected point within polygon, then update selection 
 		this._map.Identify(this.target, ev.mapPoint).then((r) => {
 			this.Emit("Idle");	
 			
-			this.layer.removeAll();
+			r.feature.symbol = this.symbol; // selected polygon style
 			
-			r.feature.symbol = this.symbol;
-			
-			this.layer.add(r.feature);
-			
-			this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature });
+            var exists = this.layer.graphics.find(g => g.attributes[this.field] == r.feature.attributes[this.field]);
+
+			if (exists) {
+                this.layer.remove(exists);
+            } else {
+                this.layer.add(r.feature);
+                this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature }); // popup
+            }
+
 		}, error => this.OnIdentify_Error(error));
+
+		// add selection to table - separate event?
+		// rebuild table from this.layer
+
+        // var p = Requests.QueryGeometry(this.target, this.layer); // NEW
+		// 
+		// p.then(this.OnDraw_QueryComplete.bind(this), error => this.OnDraw_QueryError.bind(this)); //NEW        
+
 	}
 	
 	/**

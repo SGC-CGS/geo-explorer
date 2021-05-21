@@ -4,7 +4,7 @@ import Core from './tools/core.js';
 import Templated from './components/templated.js';
 import Map from './components/map.js';
 import SelectBehavior from './behaviors/rectangle-select.js';
-import IdentifyBehavior from './behaviors/point-identify.js';
+import IdentifyBehavior from './behaviors/point-select.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -109,8 +109,8 @@ export default class Application extends Templated {
 			this.AddSelectBehavior(this.map, this.context, this.config);
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
-			this.map.Behavior("identify").Activate();
-			this.behavior = "identify";
+			this.map.Behavior("point-select").Activate();
+			this.behavior = "point-select";
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -139,10 +139,11 @@ export default class Application extends Templated {
 	}
 	
 	AddIdentifyBehavior(map, context, config) {
-		var behavior = this.map.AddBehavior("identify", new IdentifyBehavior(map));
+		var behavior = this.map.AddBehavior("point-select", new IdentifyBehavior(map));
 
 		behavior.target = context.sublayer;
-		behavior.symbol = config.symbol("identify");
+		behavior.field = "GeographyReferenceId";
+		behavior.symbol = config.symbol("point-select");
 
 		this.HandleEvents(behavior, r => {
 			var locale = Core.locale.toUpperCase();
@@ -173,7 +174,7 @@ export default class Application extends Templated {
     BehaviourButton_Click(ev){
 		this.map.Behavior(this.behavior).Deactivate();
 
-		this.behavior = (this.behavior == "identify") ? "selection" : "identify";
+		this.behavior = (this.behavior == "point-select") ? "selection" : "point-select";
 
 		this.map.Behavior(this.behavior).Activate();
 	}
@@ -183,7 +184,7 @@ export default class Application extends Templated {
 		this.map.AddSubLayer('main', this.context.sublayer);
 		
 		this.map.Behavior("selection").target = this.context.sublayer;
-		this.map.Behavior("identify").target = this.context.sublayer;
+		this.map.Behavior("point-select").target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
