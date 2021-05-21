@@ -109,8 +109,8 @@ export default class Application extends Templated {
 			this.AddSelectBehavior(this.map, this.context, this.config);
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
-			this.map.Behavior("point-select").Activate();
-			this.behavior = "point-select";
+			this.map.Behavior("pointselect").Activate();
+			this.behavior = "pointselect";
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -139,29 +139,31 @@ export default class Application extends Templated {
 	}
 	
 	AddIdentifyBehavior(map, context, config) {
-		var behavior = this.map.AddBehavior("point-select", new IdentifyBehavior(map));
+		var behavior = this.map.AddBehavior("pointselect", new IdentifyBehavior(map));
 
 		behavior.target = context.sublayer;
 		behavior.field = "GeographyReferenceId";
-		behavior.symbol = config.symbol("point-select");
+		behavior.symbol = config.symbol("pointselect");
 
-		this.HandleEvents(behavior, r => {
-			var locale = Core.locale.toUpperCase();
-			var f = r.feature;
-			
-			var title = f.attributes[`DisplayNameShort_${locale}`];
-			var unit = f.attributes[`UOM_${locale}`];
-			var value = f.attributes[`FormattedValue_${locale}`];
-			var html = f.attributes[`IndicatorDisplay_${locale}`];
-			var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
-			var value_symbol_foot = f.attributes[`Symbol`] || ''; 
-			var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
-			var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
-			
-			this.map.popup.open({ location:r.mapPoint, title:title, content:content });
+		this.HandleEvents(behavior, r => { // for poup
+			if (r.feature) {
+				var locale = Core.locale.toUpperCase();
+				var f = r.feature;
+				
+				var title = f.attributes[`DisplayNameShort_${locale}`];
+				var unit = f.attributes[`UOM_${locale}`];
+				var value = f.attributes[`FormattedValue_${locale}`];
+				var html = f.attributes[`IndicatorDisplay_${locale}`];
+				var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
+				var value_symbol_foot = f.attributes[`Symbol`] || ''; 
+				var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
+				var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
+				
+				this.map.popup.open({ location:r.mapPoint, title:title, content:content });
+			}
 		});	
 
-		this.HandleEvents(behavior, this.OnMap_SelectClick.bind(this)); //NEW for table
+		this.HandleEvents(behavior, this.OnMap_SelectClick.bind(this)); // for table
 	}
 	
 	// Add event handler
@@ -176,7 +178,7 @@ export default class Application extends Templated {
     BehaviourButton_Click(ev){
 		this.map.Behavior(this.behavior).Deactivate();
 
-		this.behavior = (this.behavior == "point-select") ? "selection" : "point-select";
+		this.behavior = (this.behavior == "pointselect") ? "selection" : "pointselect";
 
 		this.map.Behavior(this.behavior).Activate();
 	}
@@ -186,7 +188,7 @@ export default class Application extends Templated {
 		this.map.AddSubLayer('main', this.context.sublayer);
 		
 		this.map.Behavior("selection").target = this.context.sublayer;
-		this.map.Behavior("point-select").target = this.context.sublayer;
+		this.map.Behavior("pointselect").target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
@@ -223,9 +225,9 @@ export default class Application extends Templated {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	OnMap_SelectClick(ev) { //NEW
-		this.Elem("table").data = ev.target.graphics;
-		this.Elem("chart").data = ev.target.graphics;
+	OnMap_SelectClick(ev) { 
+		this.Elem("table").data = ev.pointselect; 
+		this.Elem("chart").data = ev.pointselect;
 	}
 
 	OnMap_SelectDraw(ev) {
@@ -233,10 +235,14 @@ export default class Application extends Templated {
 		this.Elem("chart").data = ev.selection;
 	}
 	
+	/**
+	 * Delete selected table row and remove from selection 
+	 * @param {object} ev 
+	 */
 	OnTable_RowButtonClick(ev) {
-		this.map.Behavior("selection").layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior("selection").graphics;
-		this.Elem("chart").data = this.map.Behavior("selection").graphics;
+		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
+		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
+		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
 	}
 	
 	OnWidget_Busy(ev) {

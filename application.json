@@ -35,7 +35,7 @@
                 "style": "solid"
             }
         },        
-        "point-select": {
+        "pointselect": {
             "type": "simple-fill",
             "color": [0, 0, 0, 0.2],
             "style": "none",

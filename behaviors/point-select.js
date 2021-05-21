@@ -22,7 +22,7 @@ export default class PointIdentifyBehavior extends Behavior {
 	/**
 	 * Get point-select layer object
 	 */	
-	get layer() { return this._map.Layer("point-select"); }
+	get layer() { return this._map.Layer("pointselect"); }
 
 	/**
 	 * Get layer vector graphics
@@ -61,7 +61,7 @@ export default class PointIdentifyBehavior extends Behavior {
 		this._options = {};
 		this._map = map;
 		
-		this._map.AddGraphicsLayer('point-select');
+		this._map.AddGraphicsLayer('pointselect');
 		
 		this.ClickHandler = this.OnMap_Click.bind(this);
 	}
@@ -113,19 +113,14 @@ export default class PointIdentifyBehavior extends Behavior {
 
 			if (exists) {
                 this.layer.remove(exists);
+                this.Emit("Change", { pointselect:this.graphics }); // for table				
             } else {
                 this.layer.add(r.feature);
-                this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature }); // popup
+                this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature, pointselect:this.graphics }); // for popup + table
             }
 
 		}, error => this.OnIdentify_Error(error));
 
-		// add selection to table - separate event?
-		// rebuild table from this.layer
-
-        // var p = Requests.QueryGeometry(this.target, this.layer); // NEW
-		// 
-		// p.then(this.OnDraw_QueryComplete.bind(this), error => this.OnDraw_QueryError.bind(this)); //NEW        
 
 	}
 	
