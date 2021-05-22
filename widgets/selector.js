@@ -3,6 +3,7 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Requests from '../tools/requests.js';
 import Select from '../ui/select.js';
+import StaticTypeahead from "../ui/typeahead/static.js";
 
 /**
  * Selector widget module
@@ -20,8 +21,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		nls.Add("Selector_Title", "fr", "Sélectionner des données");
 		nls.Add("Selector_Subject", "en", "Subject");
 		nls.Add("Selector_Subject", "fr", "Sujet");
-		nls.Add("Selector_Subject_Placeholder", "en", "Select a subject");
-		nls.Add("Selector_Subject_Placeholder", "fr", "Sélectionnez un sujet");
+		nls.Add("Selector_Subject_Placeholder", "en", "*... Select a subject");
+		nls.Add("Selector_Subject_Placeholder", "fr", "*... Sélectionnez un sujet");
 		nls.Add("Selector_Theme", "en", "Theme");
 		nls.Add("Selector_Theme", "fr", "Thème");
 		nls.Add("Selector_Theme_Placeholder", "en", "*... Select a theme");
@@ -59,26 +60,53 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.filters = [];
 		this.metadata = null;
 		
-		this.Node("sSubject").On("Change", this.OnSubject_Change.bind(this));
-		this.Node("sTheme").On("Change", this.OnTheme_Change.bind(this));
-		this.Node("sCategory").On("Change", this.OnCategory_Change.bind(this));
-		this.Node("sValue").On("Change", this.OnValue_Change.bind(this));
-		this.Node("sGeography").On("Change", this.OnGeography_Change.bind(this));
+		// this.Node("sSubject").On("Change", this.OnSubject_Change.bind(this));
+		// this.Node("sTheme").On("Change", this.OnTheme_Change.bind(this));
+		// this.Node("sCategory").On("Change", this.OnCategory_Change.bind(this));
+		// this.Node("sValue").On("Change", this.OnValue_Change.bind(this));
+		// this.Node("sGeography").On("Change", this.OnGeography_Change.bind(this));
 		
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
-		
+
+		// See typehead folder in UI, requests.js, and search.js
+
+		let arr = [
+			{"label": "Health", "id": "Health"}, 
+			{"label": "Health Region", "id": "Health Region"}, 
+			{"label": "Finances", "id": "Finances"},
+			{"label": "12345678", "id": "12345678"}
+		]
+
+		//this.Elem("sSubject").store = arr;
+
+		this.Elem("sSubject").On("Change", this.OnTypeahead_Change.bind(this));
+
 		this.Elem('sSubject').placeholder = this.Nls("Selector_Subject_Placeholder");
 		this.Elem('sTheme').placeholder = this.Nls("Selector_Theme_Placeholder");
 		this.Elem('sCategory').placeholder = this.Nls("Selector_Category_Placeholder");
 		this.Elem('sValue').placeholder = this.Nls("Selector_Value_Placeholder");
 		this.Elem('sGeography').placeholder = this.Nls("Selector_Geography_Placeholder");
 		
-		this.Elem('sTheme').disabled = true;
-		this.Elem('sCategory').disabled = true;
-		this.Elem('sValue').disabled = true;
-		this.Elem('sGeography').disabled = true;
+		// this.Elem('sTheme').roots[0].disabled = true;
+		// this.Elem('sCategory').roots[0].disabled = true;
+		// this.Elem('sValue').roots[0].disabled = true;
+		// this.Elem('sGeography').roots[0].disabled = true;
 		this.Elem('bApply').disabled = true;
+
+		
+	}
+
+	OnTypeahead_Change(ev) {
+		this.Emit("Busy");
+		
+		Requests.Placename(ev.item.id, ev.item.label).then(feature => {
+			this.Emit("Idle");
+		
+			this.Emit("Change", { feature:feature });
+		}, error => {
+			this.Emit("Error", { error:error });
+		});
 	}
 	
 	/**
@@ -88,14 +116,14 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 */
 	Update(context) {
 		this.context = context;
-		
+
 		this.LoadDropDown(this.Elem("sSubject"), context.Lookup("subjects"));
 		this.LoadDropDown(this.Elem("sTheme"), context.Lookup("themes"));
 		this.LoadDropDown(this.Elem("sCategory"), context.Lookup("categories"));
 		this.LoadDropDown(this.Elem("sGeography"), context.Lookup("geographies"));
 		this.LoadDropDown(this.Elem('sValue'), context.Lookup("values"));
 		
-		this.LoadFilters(context.Lookup("filters"));
+		// this.LoadFilters(context.Lookup("filters"));
 		
 		this.Elem("sSubject").Select(i => i.value == context.subject);
 		this.Elem("sTheme").Select(i => i.value == context.theme);
@@ -103,9 +131,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Elem("sGeography").Select(i => i.value == context.geography);
 		this.Elem("sValue").Select(i => i.value == context.value);
 		
-		this.filters.forEach((f, i) => {
-			f.Select(j => j.value == context.filters[i]);
-		});
+		// this.filters.forEach((f, i) => {
+		// 	f.Select(j => j.value == context.filters[i]);
+		// });
 	}
 		
 	/**
@@ -117,7 +145,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	LoadDropDown(select, items) {
 		select.Empty();
 		
-		items.forEach(item => select.Add(item.label, item.description, item));
+		select.store = items;
 		
 		select.disabled = false;
 	}
@@ -303,20 +331,20 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 */
 	Template() {
 		return	"<label class='sm-label'>nls(Selector_Subject)</label>" + 
-				"<div handle='sSubject' widget='Basic.Components.Select'></div>" +
+				"<div handle='sSubject' widget='Basic.Components.StaticTypeahead'></div>" +
 				"<label class='sm-label'>nls(Selector_Theme)</label>" + 
-				"<div handle='sTheme' widget='Basic.Components.Select'></div>" +
+				"<div handle='sTheme' widget='Basic.Components.StaticTypeahead'></div>" +
 				"<label>nls(Selector_Category)</label>" +
-				"<div handle='sCategory' widget='Basic.Components.Select'></div>" +
+				"<div handle='sCategory' widget='Basic.Components.StaticTypeahead'></div>" +
 				"<div class='filter-container'>" + 
 					"<label>nls(Selector_Filter_Label)</label>" +
 					"<div handle='instructions' class='filter-instructions'>nls(Selector_Filter_Instructions)</div>" +
 					"<div handle='filter' class='filter'></div>" +
 				"</div>" +
 				"<label>nls(Selector_Value)</label>" +
-				"<div handle='sValue' widget='Basic.Components.Select'></div>" +
+				"<div handle='sValue' widget='Basic.Components.StaticTypeahead'></div>" +
 				"<label>nls(Selector_Geography)</label>" +
-				"<div handle='sGeography' widget='Basic.Components.Select'></div>" +
+				"<div handle='sGeography' widget='Basic.Components.StaticTypeahead'></div>" +
 				"<div class='button-container'>" + 
 					"<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
 					"<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +

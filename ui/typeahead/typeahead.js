@@ -8,6 +8,19 @@ import Dom from '../../tools/dom.js';
  * @extends Templated
  */
 export default Core.Templatable("Basic.Components.Typeahead", class Typeahead extends Templated {
+
+	/**
+	 * Return ui text in both languages
+	 * @returns {object.<string, string>} Text for each language
+	 */	
+	 static Nls(nls) {
+		nls.Add("Search_Typeahead_Title", "en", "A Filtered list of items will appear as characters are typed.");
+		nls.Add("Search_Typeahead_Title", "fr", "Une liste filtrée d'objets apparaîtra lorsque des caractères seront saisis.");
+		nls.Add("Search_Typeahead_Placeholder", "en", "Find a place on the map...");
+		nls.Add("Search_Typeahead_Placeholder", "fr", "Rechercher un endroit sur la carte...");
+		nls.Add("Search_Typeahead_loading", "en", "loading...");
+		nls.Add("Search_Typeahead_loading", "fr", "en chargement...");
+	}
 	
 	/**
 	 * Set placeholder value
@@ -45,6 +58,17 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	
 	get current() {
 		return this._curr;
+	}
+
+	/**
+	 * Get/set disabled value
+	 */
+	 set disabled(value) {
+		this.Elem("root").disabled = value;
+	}
+	
+	get disabled() {
+		return this.Elem("root").disabled;
 	}
 	
 	/**
@@ -240,7 +264,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * @returns {void}
 	 */
 	onLiClick_Handler(item, ev) {
-		ev.stopPropagation();
+		//ev.stopPropagation();
 		// ev.preventDefault();
 		
 		this.current = item;
