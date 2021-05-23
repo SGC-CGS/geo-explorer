@@ -5,22 +5,34 @@ import Requests from '../tools/requests.js';
 import Evented from '../components/evented.js';
 
 /**
- * Behavior module
+ * Parent class of the other behaviors 
  * @module behaviors/behavior
  * @extends Evented
- * @description Parent class of the other behaviors seen in the
- * behaviors folder
  */
 export default class Behavior extends Evented { 
 
+	/**
+	 * Calls constructor of parent class (Evented)
+	 * @param {object} map - Map object (if present)
+	 * @param {object} options - Map options 
+	 * @returns {void}
+	 */	
 	constructor(map, options) {	
 		super();
 	}
 
+	/**
+	 * Throws error if called directly
+	 * @returns {void}
+	 */	
 	Deactivate(){
         throw new Error("Deactivate must be implemented by inheriting class.");
 	}
 
+	/**
+	 * Throws error if called directly
+	 * @returns {void}
+	 */	
 	Activate(){
         throw new Error("Activate must be implemented by inheriting class.");
 	}
