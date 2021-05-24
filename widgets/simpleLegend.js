@@ -1,9 +1,9 @@
-import Templated from '../../geo-explorer/components/templated.js';
-import Core from '../../geo-explorer/tools/core.js';
-import Dom from '../../geo-explorer/tools/dom.js';
+import Templated from '../../geo-explorer-api/components/templated.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Dom from '../../geo-explorer-api/tools/dom.js';
 
-import LegendBreak from '../../geo-explorer/widgets/legend/legend-break.js';
-import DefaultBreak from '../../geo-explorer/widgets/legend/default-break.js';
+import LegendBreak from '../../geo-explorer-api/widgets/legend/legend-break.js';
+import DefaultBreak from '../../geo-explorer-api/widgets/legend/default-break.js';
 
 /**
  * Simple Legend widget module

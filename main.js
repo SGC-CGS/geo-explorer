@@ -1,6 +1,6 @@
-import Core from "../geo-explorer/tools/core.js";
-import Dom from "../geo-explorer/tools/dom.js";
-import Net from "../geo-explorer/tools/net.js";
+import Core from "../geo-explorer-api/tools/core.js";
+import Dom from "../geo-explorer-api/tools/dom.js";
+import Net from "../geo-explorer-api/tools/net.js";
 
 import Application from "./application.js";
 

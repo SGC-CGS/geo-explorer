@@ -1,7 +1,7 @@
-import Templated from '../../geo-explorer/components/templated.js';
-import Core from '../../geo-explorer/tools/core.js';
-import Dom from '../../geo-explorer/tools/dom.js';
-import CODR from '../../geo-explorer/tools/codr.js';
+import Templated from '../../geo-explorer-api/components/templated.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Dom from '../../geo-explorer-api/tools/dom.js';
+import CODR from '../../geo-explorer-api/tools/codr.js';
 
 /**
  * Selector widget module

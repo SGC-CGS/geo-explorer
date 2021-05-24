@@ -1,14 +1,14 @@
 'use strict';
 
-import Core from '../geo-explorer/tools/core.js';
-import CODR from '../geo-explorer/tools/codr.js';
-import Dom from '../geo-explorer/tools/dom.js';
-import Templated from '../geo-explorer/components/templated.js';
-import Menu from '../geo-explorer/widgets/menu.js';
-import Waiting from '../geo-explorer/widgets/waiting.js';
-import Basemap from '../geo-explorer/widgets/basemap.js';
-import Overlay from '../geo-explorer/widgets/overlay.js';
-import IdentifyBehavior from '../geo-explorer/behaviors/point-identify.js';
+import Core from '../geo-explorer-api/tools/core.js';
+import CODR from '../geo-explorer-api/tools/codr.js';
+import Dom from '../geo-explorer-api/tools/dom.js';
+import Templated from '../geo-explorer-api/components/templated.js';
+import Menu from '../geo-explorer-api/widgets/menu.js';
+import Waiting from '../geo-explorer-api/widgets/waiting.js';
+import Basemap from '../geo-explorer-api/widgets/basemap.js';
+import Overlay from '../geo-explorer-api/widgets/overlay.js';
+import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
 import SimpleLegend from './widgets/SimpleLegend.js';
 import Selector from './widgets/selector.js';
 import Table from './widgets/SimpleTable.js';
