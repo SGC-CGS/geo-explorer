@@ -779,3 +779,11 @@
     margin-top:5px; 
     margin-left:5px;
 }
+
+.gexp .popup-table tr {
+    padding: 2px;
+}
+
+.gexp .popup-table td {
+    padding: 2px;
+}
