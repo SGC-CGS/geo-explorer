@@ -2,21 +2,45 @@
 
 import Core from '../../geo-explorer/tools/core.js';
 
-
+/**
+ * Configuration module
+ * @module components/config
+ * @description This class is used to parse and access application configurations.
+ */
 export default class Configuration { 
 
+    /**
+     * @description
+     * Get the product 
+     */
 	get product() { return this.json.data.product; }
 
+    /**
+     * @description
+     * Get the initial selection 
+     */
     get initialSelection() { return this.json.data.initialSelection; }
 
+    /**
+     * @description
+     * Get the ramps 
+     */
 	get ramps() { return this.json.ramps }
 
+    /**
+     * @description
+     * Get the defColor 
+     */
 	get defColor() { return this.json.defColor }
 
 	get json() { return this._json; }
 
 	set json(value) { this._json = value; }
-    
+
+    /**
+     * @description
+     * Get the legend items 
+     */
     get LegendItems() {
         return this.json.legend.items.map(i => {
             return {
@@ -27,6 +51,10 @@ export default class Configuration {
         });
     }
 
+    get TableHeaders() {
+        return this.json.tableHeaders;
+    }
+
 	constructor(json) {		
 		this.json = json;
 	}
@@ -35,10 +63,25 @@ export default class Configuration {
 		return new Configuration(json);
     }
 
+    /**
+     * @description
+     * Get the layer by geo
+     * @param {String} geo - geo
+     */
     Layer (geo) { return this.json.layers[geo]; }
 
+    /**
+     * @description
+     * Get the id by geo
+     * @param {String} geo - geo
+     */
     Id(geo) { return this.json.id[geo]; }
 
+    /**
+     * @description
+     * Get identify configs by geo
+     * @param {String} geo - geo
+     */
 	Identify(geo) {
 		var fld = Core.locale == "en" ? "nameEn" : "nameFr";
 		
@@ -48,6 +91,11 @@ export default class Configuration {
 		}
 	}
 
+    /**
+     * @description
+     * Get symbol by id
+     * @param {String} id - id
+     */
 	Symbol(id) {
 		var s = this.json.symbols[id];
 		

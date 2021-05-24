@@ -1,76 +1,162 @@
 {
-    "layers": {
-        "PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
-        "CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
-        "CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
-    },
-    "layers_new": {
-        "PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
-        "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
-        "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
-        "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3"
-    },
-    "id": {
-        "PR": "PRUID",
-        "CD": "CDUID",
-        "CSD": "CSDUID"
-    },
-    "id_new": {
-        "PR": "PRCODE",
-        "CD": "CD_UID",
-        "CCS": "CCS_UID",
-        "CSD": "CSD_UID"
-    },
-    "ramps": {
-        "1": [[158,202,225,0.65]],
-        "2": [[222,235,247,0.65],[49,130,189,0.65]],
-        "3": [[222,235,247,0.65],[158,202,225,0.65],[49,130,189,0.65]],
-        "4": [[239,243,255,0.65],[189,215,231,0.65],[107,174,214,0.65],[33,113,181,0.65]],
-        "5": [[239,243,255,0.65],[189,215,231,0.65],[107,174,214,0.65],[49,130,189,0.65],[8,81,156,0.65]]
-    },
-	"defColor": [125,125,125,0.65],
-    "symbols": {
-        "identify": {
-            "type": "simple-fill",
-            "color": [0, 0, 0, 0.2],
-            "style": "none",
-            "outline": {
-                "color": [54, 69, 79, 1],
-                "width": 1.5,
-                "style": "solid"
-            }
-        }
-    },
+  "layers": {
+    "PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
+    "CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
+    "CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
+  },
+  "layers_new": {
+    "PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
+    "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
+    "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
+    "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3"
+  },
+  "id": {
+    "PR": "PRUID",
+    "CD": "CDUID",
+    "CSD": "CSDUID"
+  },
+  "id_new": {
+    "PR": "PRCODE",
+    "CD": "CD_UID",
+    "CCS": "CCS_UID",
+    "CSD": "CSD_UID"
+  },
+  "ramps": {
+    "1": [[158,202,225,0.65]],
+    "2": [[222,235,247,0.65],[49,130,189,0.65]],
+    "3": [[222,235,247,0.65],[158,202,225,0.65],[49,130,189,0.65]],
+    "4": [[239,243,255,0.65],[189,215,231,0.65],[107,174,214,0.65],[33,113,181,0.65]],
+    "5": [[239,243,255,0.65],[189,215,231,0.65],[107,174,214,0.65],[49,130,189,0.65],[8,81,156,0.65]]
+  },
+  "defColor": [125,125,125,0.65],
+  "symbols": {
     "identify": {
-        "PR": {
-            "id": "PRUID",
-            "nameEn": "PRENAME",
-            "nameFr": "PRFNAME"
-        },
-        "PR_new": {
-            "id": "PRCODE",
-            "nameEn": "ENG_LABEL",
-            "nameFr": "FRE_LABEL"
-        },
-        "CD": {
-            "id": "CD_UID",
-            "nameEn": "ENGNAME",
-            "nameFr": "FRENAME"
-        },
-        "CCS": {
-            "id": "CCS_UID",
-            "nameEn": "OFFNAME",
-            "nameFr": "OFFNAME"
-        },
-        "CSD": {
-            "id": "CSDUID",
-            "nameEn": "CSDNAME",
-            "nameFr": "CSDNAME"
-        },
-        "CSD_new": {
-            "id": "CSD_UID",
-            "nameEn": "ENGNAME",
-            "nameFr": "FRENAME"
-        }
+      "type": "simple-fill",
+      "color": [0, 0, 0, 0.2],
+      "style": "none",
+      "outline": {
+        "color": [54, 69, 79, 1],
+        "width": 1.5,
+        "style": "solid"
+      }
     }
+  },
+  "identify": {
+    "PR": {
+      "id": "PRUID",
+      "nameEn": "PRENAME",
+      "nameFr": "PRFNAME"
+    },
+    "PR_new": {
+      "id": "PRCODE",
+      "nameEn": "ENG_LABEL",
+      "nameFr": "FRE_LABEL"
+    },
+    "CD": {
+      "id": "CD_UID",
+      "nameEn": "ENGNAME",
+      "nameFr": "FRENAME"
+    },
+    "CCS": {
+      "id": "CCS_UID",
+      "nameEn": "OFFNAME",
+      "nameFr": "OFFNAME"
+    },
+    "CSD": {
+      "id": "CSDUID",
+      "nameEn": "CSDNAME",
+      "nameFr": "CSDNAME"
+    },
+    "CSD_new": {
+      "id": "CSD_UID",
+      "nameEn": "ENGNAME",
+      "nameFr": "FRENAME"
+    }
+  },
+  "tableHeaders": [
+    {
+      "id": "code",
+      "label": {
+        "en": "Code",
+        "fr": "Code"
+      }
+    },
+    {
+      "id": "name",
+      "label": {
+        "en": "Name",
+        "fr": "Nom"
+      }
+    },
+    {
+      "id": "terminated",
+      "label": {
+        "en": "Terminated",
+        "fr": "Terminé"
+      }
+    },
+    {
+      "id": "vintage",
+      "label": {
+        "en": "Vintage",
+        "fr": "Vintage"
+      }
+    },
+    {
+      "id": "value",
+      "label": {
+        "en": "Value",
+        "fr": "Valeur"
+      }
+    },
+    {
+      "id": "date",
+      "label": {
+        "en": "Date",
+        "fr": "Date"
+      }
+    },
+    {
+      "id": "frequency",
+      "label": {
+        "en": "Frequency",
+        "fr": "Fréquence"
+      }
+    },
+    {
+      "id": "scalar",
+      "label": {
+        "en": "Scalar factor",
+        "fr": "Facteur scalaire"
+      }
+    },
+    {
+      "id": "security",
+      "label": {
+        "en": "Security level",
+        "fr": "Niveau de sécurité"
+      }
+    },
+    {
+      "id": "status",
+      "label": {
+        "en": "Status",
+        "fr": "Statut"
+      }
+    },
+    {
+      "id": "symbol",
+      "label": {
+        "en": "Symbol",
+        "fr": "Symbole"
+      }
+    },
+    {
+      "id": "uom",
+      "label": {
+        "en": "Unit of measure",
+        "fr": "Unité de mesure"
+      }
+    }
+  ]
 }

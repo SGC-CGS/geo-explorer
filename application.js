@@ -11,6 +11,7 @@ import Overlay from '../geo-explorer/widgets/overlay.js';
 import IdentifyBehavior from '../geo-explorer/behaviors/point-identify.js';
 import SimpleLegend from './widgets/SimpleLegend.js';
 import Selector from './widgets/selector.js';
+import Table from './widgets/SimpleTable.js';
 import Configuration from './components/config.js';
 import Style from './util/style.js';
 import Map from './map.js';
@@ -27,7 +28,9 @@ export default class Application extends Templated {
 		nls.Add("TableViewer_Label", "en", "Statistics Canada. Table {0}");
 		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0}");
 		nls.Add("RefPeriod_Label", "en", "Reference period {0}");
-		nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
+        nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
+        nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the information table section.");
+        nls.Add("SkipTheMapLink", "fr", "Ignorez la carte visuelle interactive et accédez directement à la section du tableau d'informations.");
 	}
 
 	constructor(node, config) {		
@@ -82,8 +85,14 @@ export default class Application extends Templated {
             this.metadata = metadata;
 	
 			document.querySelector("#app-title").innerHTML = metadata.productName;
-			
-			this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [metadata.id]); 
+
+			// REVIEW: Move to metadata object as a getter (get productLabel or something like that)
+            // Format the product ID according to CODR practices (DD-DD-DDDD)
+            var formattedId = metadata.id;
+            if (metadata.id.length > 4) {
+                formattedId = formattedId.substring(0, 2) + "-" + formattedId.substring(2, 4) + "-" + formattedId.substring(4);
+            }
+            this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [formattedId]); 
 			this.Elem("link").href = metadata.tvLink; 
 			
             // Create the drop down lists from the dimensions and memebers
@@ -119,8 +128,7 @@ export default class Application extends Templated {
         var url = this.config.Layer(decodedGeo);
 		
 		if (!url) {
-			this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."))
-			
+            this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."));			
 			return;
 		}
 				
@@ -141,8 +149,17 @@ export default class Application extends Templated {
 			this.behavior.target = layer;
 
             this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
+
+			// REVIEW: Move to after the call to LoadLayer (after line 122). This is to decouple both functions. 
+            this.LoadTable(data);            
 		}
-	}
+    }
+
+    LoadTable(data) {
+        this.Elem("table").Clear();
+        this.Elem("table").headers = this.config.TableHeaders;
+        this.Elem("table").Populate(this.metadata.geoMembers, data, this.codesets);
+    }
 	
 	WaitForLayer(layer) {
 		this.map.view.whenLayerView(layer).then(layerView => {				
@@ -162,10 +179,21 @@ export default class Application extends Templated {
 	
         // Get the value corresponding to the datapoint, properly formatted for French and English 
         // Ex: French: 35 024, 56   -   English 35, 204.56        
-		var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
-		var content = this.codesets.FormatDP(this.data[fid]);
+        var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
+
+        // Get the vintage / reference period
+		// REVIEW: dataPoint is not the right name, it should be member or something like this.
+		// REVIEW: Use find instead of filter.
+        var dataPoint = this.metadata.geoMembers.filter(dp => dp.code == fid);
+        var refPer = "";
+        if (dataPoint && dataPoint.length > 0) {
+			// REVIEW: Why double equal?
+            refPer = dataPoint = dataPoint[0].vintage;
+        }
+
+        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], refPer);
 		
-		this.map.popup.open({ location:ev.mapPoint, title:title, content:content });
+		this.map.popup.open({ location:ev.mapPoint, title:title, content: content });
     }
 		
 	OnApplication_Error(error) {
@@ -180,7 +208,8 @@ export default class Application extends Templated {
         return  "<div class='row'>" +
                     "<h2 handle='loadingtitle' class='col-md-12 mrgn-tp-sm'>nls(LoadingData_Title)</h2>" +
 				"</div>" +
-				"<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+                "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+                "<div class='text-center'><a href='#simpletable' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
 				"<div class='map-container hidden' handle='mapcontainer'>" +
@@ -191,6 +220,7 @@ export default class Application extends Templated {
 				"</div>" +
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
-				"</div>";
+                "</div>" +
+                "<div id='simpletable' handle='table' class='table' widget='App.Widgets.SimpleTable'></div>";
 	}
 }
