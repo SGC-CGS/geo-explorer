@@ -1,4 +1,4 @@
-import Core from '../tools/core.js';
+import Core from '../../geo-explorer-api/tools/core.js';
 import Context from './context.js';
 
 /**

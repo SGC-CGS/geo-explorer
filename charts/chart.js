@@ -1,5 +1,5 @@
 import Axes from "./axes.js"
-import Tooltip from "../ui/tooltip.js"
+import Tooltip from "../../geo-explorer-api/ui/tooltip.js"
 
 /**
  * Chart module

@@ -1,20 +1,21 @@
 'use strict';
 
-import Core from './tools/core.js';
-import Templated from './components/templated.js';
-import Map from './components/map.js';
-import IdentifyBehavior from './behaviors/point-select.js';
-import Menu from './widgets/menu.js';
+import Core from '../geo-explorer-api/tools/core.js';
+import Dom from '../geo-explorer-api/tools/dom.js';
+import Templated from '../geo-explorer-api/components/templated.js';
+import Map from '../geo-explorer-api/components/map.js';
+import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
+import Overlay from '../geo-explorer-api/widgets/overlay.js';
+import Waiting from '../geo-explorer-api/widgets/waiting.js';
+import Basemap from '../geo-explorer-api/widgets/basemap.js';
+import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
+import Legend from '../geo-explorer-api/widgets/legend/legend.js';
+import Menu from '../geo-explorer-api/widgets/menu.js';
+
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
-import Legend from './widgets/legend/legend.js';
 import Search from './widgets/search.js';
-import Waiting from './widgets/waiting.js';
-import Basemap from './widgets/basemap.js';
-import Bookmarks from './widgets/bookmarks.js';
 import Table from './widgets/table.js';
-import Overlay from './widgets/overlay.js';
-import Dom from './tools/dom.js';
 import wChart from './widgets/wChart.js';
 
 export default class Application extends Templated { 
