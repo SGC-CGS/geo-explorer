@@ -69,6 +69,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 
+		// REVIEW: This is just for testing?
 		// See typehead folder in UI, requests.js, and search.js
 
 		let arr = [

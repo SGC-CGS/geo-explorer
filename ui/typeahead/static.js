@@ -61,6 +61,7 @@ export default Core.Templatable("Basic.Components.StaticTypeahead", class Static
 		return d.promise;
 	}
 
+	// REVIEW: I don't understand the description, can we clarify?
 	/**
 	 * Call from delegate to FindIndex
 	 * @param {function} delegate  - Delegate function
