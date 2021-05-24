@@ -3,8 +3,7 @@
 import Core from './tools/core.js';
 import Templated from './components/templated.js';
 import Map from './components/map.js';
-import SelectBehavior from './behaviors/rectangle-select.js';
-import IdentifyBehavior from './behaviors/point-identify.js';
+import IdentifyBehavior from './behaviors/point-select.js';
 import Menu from './widgets/menu.js';
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -23,6 +22,8 @@ export default class Application extends Templated {
 	
 	get context() { return this._config.context; }
 
+	get behavior() { return "pointselect"; }
+
 	static Nls(nls) {
 		nls.Add("Selector_Title", "en", "Select Data");
 		nls.Add("Selector_Title", "fr", "Sélectionner des données");
@@ -32,8 +33,6 @@ export default class Application extends Templated {
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");
 		nls.Add("Bookmarks_Title", "en", "Bookmarks");
 		nls.Add("Bookmarks_Title", "fr", "Géosignets");
-		nls.Add("Behaviour_Title", "en", "Toggle map click behaviour");
-		nls.Add("Behaviour_Title", "fr", "Basculer le comportement des clics sur la carte");
 		nls.Add("Basemap_Title", "en", "Change basemap");
 		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
 		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
@@ -55,7 +54,6 @@ export default class Application extends Templated {
 		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
 		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
 		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
-		this.menu.AddButton("behaviour", this.Nls("Behaviour_Title"));
 
 		// Move all widgets inside the map div, required for fullscreen
 		this.map.Place(this.bMenu.buttons, "bottom-left");
@@ -68,8 +66,6 @@ export default class Application extends Templated {
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
-
-		this.menu.Button("behaviour").addEventListener("click", this.BehaviourButton_Click.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
@@ -79,11 +75,11 @@ export default class Application extends Templated {
 
 		this.Elem("chart").labelField = this.config.chart.field;
 		this.Elem("table").headers = this.config.tableHeaders;
-		this.Elem('styler').Opacity = this.config.mapOpacity;
+		this.Elem('styler').opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-		
+
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
@@ -93,11 +89,9 @@ export default class Application extends Templated {
 			
 			this.menu.SetOverlay(this.menu.Item("styler"));	
 
-			this.AddSelectBehavior(this.map, this.context, this.config);
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
-			this.map.Behavior("identify").Activate();
-			this.behavior = "identify";
+			this.map.Behavior("pointselect").Activate();
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -115,37 +109,38 @@ export default class Application extends Templated {
 		this.map.Place([overlay.roots[0]], position);
 	}
 	
-	AddSelectBehavior(map, context, config) {
-		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map));
-		
+	AddIdentifyBehavior(map, context, config) {
+		var behavior = this.map.AddBehavior("pointselect", new IdentifyBehavior(map));
+
 		behavior.target = context.sublayer;
 		behavior.field = "GeographyReferenceId";
-		behavior.symbol = config.symbol("selection");
-		
-		this.HandleEvents(behavior, this.OnMap_SelectDraw.bind(this));
+		behavior.symbol = config.symbol("pointselect");
+
+		this.HandleEvents(behavior, ev => {
+			// REVIEW: Removed second HandleEvents because it adds double listeners  
+			// on busy and idle. They can be combined into one
+			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature);
+			
+			this.Elem("table").data = ev.pointselect; 
+			this.Elem("chart").data = ev.pointselect;
+		});	
 	}
 	
-	AddIdentifyBehavior(map, context, config) {
-		var behavior = this.map.AddBehavior("identify", new IdentifyBehavior(map));
-
-		behavior.target = context.sublayer;
-		behavior.symbol = config.symbol("identify");
-
-		this.HandleEvents(behavior, r => {
-			var locale = Core.locale.toUpperCase();
-			var f = r.feature;
-			
-			var title = f.attributes[`DisplayNameShort_${locale}`];
-			var unit = f.attributes[`UOM_${locale}`];
-			var value = f.attributes[`FormattedValue_${locale}`];
-			var html = f.attributes[`IndicatorDisplay_${locale}`];
-			var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
-			var value_symbol_foot = f.attributes[`Symbol`] || ''; 
-			var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
-			var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
-			
-			this.map.popup.open({ location:r.mapPoint, title:title, content:content });
-		});	
+	ShowInfoPopup(mapPoint, f) {
+		// REVIEW: all of the following field names should come from the config file. 
+		// REVIEW: the config file should handle the locale for fields.
+		var locale = Core.locale.toUpperCase();
+		
+		var title = f.attributes[`DisplayNameShort_${locale}`];
+		var unit = f.attributes[`UOM_${locale}`];
+		var value = f.attributes[`FormattedValue_${locale}`];
+		var html = f.attributes[`IndicatorDisplay_${locale}`];
+		var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
+		var value_symbol_foot = f.attributes[`Symbol`] || ''; 
+		var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
+		var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
+		
+		this.map.popup.open({ location:mapPoint, title:title, content:content });
 	}
 	
 	// Add event handler
@@ -156,21 +151,13 @@ export default class Application extends Templated {
 		node.On('Idle', this.OnWidget_Idle.bind(this));
 		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
-	
-    BehaviourButton_Click(ev){
-		this.map.Behavior(this.behavior).Deactivate();
-
-		this.behavior = (this.behavior == "identify") ? "selection" : "identify";
-
-		this.map.Behavior(this.behavior).Activate();
-	}
 
 	OnSelector_Change(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
-		
-		this.map.Behavior("selection").target = this.context.sublayer;
-		this.map.Behavior("identify").target = this.context.sublayer;
+
+		// Note: This assumes all behaviors have a target, this may change in the future.
+		this.map.behaviors.forEach(b => b.target = this.context.sublayer);
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("table").Update(this.context);
@@ -192,15 +179,10 @@ export default class Application extends Templated {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	OnMap_SelectDraw(ev) {
-		this.Elem("table").data = ev.selection;
-		this.Elem("chart").data = ev.selection;
-	}
-	
 	OnTable_RowButtonClick(ev) {
-		this.map.Behavior("selection").layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior("selection").graphics;
-		this.Elem("chart").data = this.map.Behavior("selection").graphics;
+		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
+		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
+		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
 	}
 	
 	OnWidget_Busy(ev) {

@@ -34,6 +34,16 @@
                 "width": 1.5,
                 "style": "solid"
             }
+        },        
+        "pointselect": {
+            "type": "simple-fill",
+            "color": [0, 0, 0, 0.2],
+            "style": "none",
+            "outline": {
+                "color": [0, 222, 222, 1],
+                "width": 1.5,
+                "style": "solid"
+            }
         }
     },
     "context": {
@@ -245,73 +255,5 @@
             "name": "Kingston",
             "extent": [[-76.904469, 44.095203], [-76.167373, 44.740694]]
         }
-    ],
-    "NOT_USED_requests_NOT_USED": {
-        "indicator": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/3",
-            "key": "ParentThemeId",
-            "value": "IndicatorThemeId",
-            "label": "IndicatorTheme",
-            "description": "IndicatorThemeDescription"
-        },
-        "dimension": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/8",
-            "key": "DimensionId",
-            "label": "Dimension_",
-            "type": "DimensionType",
-            "order": "DisplayOrder"
-        },
-        "value": {
-            "value": "DimensionValueId",
-            "label": "Display",
-            "description": null,
-            "types": {
-                "filter": "Filter",
-                "value": "Value"
-            }
-        },
-        "metadata": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/1",
-            "key": "DimensionUniqueKey",
-            "indicator": "IndicatorId",
-            "query": "PrimaryQuery",
-            "breaks": {
-                "n": "DefaultBreaks",
-                "algoId": "DefaultBreaksAlgorithmId",
-                "algo": "BreakAlgorithm"
-            },
-            "colors": {
-                "start": "ColorFrom",
-                "end": "ColorTo"
-            }
-        },
-        "geography": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/2",
-            "key": "IndicatorId",
-            "value": "GeographicLevelId",
-            "label": "LevelName",
-            "description": "LevelDescription"
-        },
-        "breaks": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/4",
-            "key": "BreakAlgorithmId"
-        },
-        "renderer": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/dynamicLayer/generateRenderer",
-            "workspace": "stcdv_dyn_service",
-            "oid": "GeographyReferenceId"
-        },
-        "placename": {
-            "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_lookup/MapServer/0",
-            "key": "GeographyReferenceId",
-            "label": "SearchDisplayName"
-        },
-        "identify": {
-            "title": "DisplayNameShort_",
-            "unit": "UOM_",
-            "value": "FormattedValue_",
-            "html": "IndicatorDisplay_"
-        }
-    }
-    
+    ]
 }

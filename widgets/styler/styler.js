@@ -6,6 +6,9 @@ import StylerBreak from './styler-break.js';
 import DefaultBreak from './default-break.js';
 import Tooltip from "../../ui/tooltip.js"
 
+// REVIEW: We should provide feedback to users when hovering over palettes
+// REVIEW: Pointer cursor on expando triangle
+
 /**
  * Styler widget module
  * @module widgets/styler/styler
@@ -16,11 +19,11 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	/**
 	 * Get/set opacity
 	 */
-	 set Opacity(value) {
+	 set opacity(value) {
 		this.Elem('sOpacity').value = value * 100;
 	}
 	
-	get Opacity() {
+	get opacity() {
 		return this.Elem('sOpacity').value / 100;
 	}
 
@@ -84,6 +87,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
 
+
 		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
 
 		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
@@ -125,6 +129,9 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {void}
 	 */	
 	 LoadColorSchemes() {
+		 // REVIEW: We shouldn't use colorBrewer as an external reference. Also, this script adds a global 
+		 // variable (for the color ramps) which we should avoid. I suggest we put all the ramps in our config
+		 // or in a separate config.
 		let colorSchemes = [
 			colorbrewer.Blues,
 			colorbrewer.Greens,
@@ -141,6 +148,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 			colorbrewer.RdYlGn
 		];
 
+		// REVIEW: Why the split in two functions? I suggest instead to have one function to build a single ramp, 
+		// then call it in a loop.
 		this.AddColorSchemes(this.Node("colorScheme").elem, colorSchemes);
 	}
 
@@ -150,9 +159,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @param {Array} colorSchemes - A subset of color schemes from color brewer
 	 * @returns {void}
 	 */	
+	 // REVIEW: dom is not a good name, it stands for document object model. I suggest using, node, element or container.
 	AddColorSchemes(dom, colorSchemes) {
+		// REVIEW: Consider using forEach colorScheme.forEach(c => { ... })
 		for (let index = 0; index < colorSchemes.length; index++) {
 
+			// REVIEW: Use Dom.Create("span", { class:"palette" }, container)
 			let palette = document.createElement('span');
 
 			palette.className = "palette";
@@ -198,8 +210,10 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		palette.addEventListener("mouseenter", () => {
 			let content;
 			
-			for(let colorName in colorbrewer) {
-				if(colorScheme == colorbrewer[colorName]) { content = colorName };
+			// REVIEW: This is awkward. The name of the palette should be available on the currentColorScheme object.
+			// This will require some refactoring of how to handle the colorBrewer ramps.
+			for (let colorName in colorbrewer) {
+				if (colorScheme == colorbrewer[colorName]) content = colorName;
 			};
 
 			this.tooltip.content = `${content}`;
@@ -207,7 +221,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 
 		palette.addEventListener("mousemove", (ev) => {
 			this.tooltip.Show(ev.pageX + 10 , ev.pageY - 28);
-		})
+		});
 
 		palette.addEventListener("mouseleave", () => this.tooltip.Hide());
 	}
@@ -221,7 +235,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		Dom.Empty(this.Elem("breaks"));
 
 		this.breaks = classBreakInfos.map((c, i) => {
-	
 			var brk = new StylerBreak(this.Elem('breaks'), c);
 
 			brk.On("apply", this.OnBreak_Apply.bind(this, i));
@@ -327,6 +340,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @description To allow breaks for other values (restricted, confidential, etc.)
 	 * @returns {void}
 	 */
+	 // REVIEW: Use name that better reflects the function (i.e, LoadDefaultBreak)
 	LoadOtherBreaks() {
 
 		let symbol = {
@@ -348,14 +362,16 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {void}
 	 */
 	AddDropdownMechanism() {
+		// REVIEW: There's a .Elem function on Templated objects. this.Elem("content") == this.Node("content").elem;
 		let content = this.Node("content").elem;
 
 		let icon = this.Node("collapsibleIcon").elem;
 
 		icon.addEventListener("click", function (ev) {
-
 			ev.target.classList.toggle("active");
 
+			// REVIEW: This can be done with CSS alone. I suggest a more representative class name, i.e, expanded or collapsed
+			// When done all with CSS, there will be barely any code here therefore, it can be moved back to the contructor.
 			if (content.style.maxHeight) {
 				content.style.display = "none";
 				content.style.maxHeight = null;
@@ -385,7 +401,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {void}
 	 */
 	OnOpacity_Changed(ev) {
-		this.Emit("Opacity", { opacity:this.Opacity });
+		this.Emit("Opacity", { opacity:this.opacity });
 	}
 
 	/**
@@ -407,6 +423,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
+		// REVIEW: Not 100% sure but, I think tables will be an accessibility problem. We should use something else, maybe ul and li?
 		return	"<table handle='breaks' class='breaks-container' style='border-collapse: separate; margin-top: 15px;'>" +
 					// Class breaks go here, dynamically created
 				"</table>" +
@@ -420,7 +437,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"</h2>" +
 
 				"<div handle='content' class='content'>" +
-
+					// REVIEW: For sMethod and iBreaks, the input should be inline with their label.
 					"<label>nls(Styler_Method)</label>" +
 					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
 					"<div handle='sMethod' widget='Basic.Components.Select'></div>" +

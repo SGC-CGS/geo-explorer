@@ -36,6 +36,12 @@ export default class Map extends Evented {
 	 * @type {array}
 	 */
 	get map() { return this._map; }
+	
+	/**
+	 * Get the array of behaviors added to the map
+	 * @type {array}
+	 */
+	get behaviors() { return this._behaviors; }
 
 	constructor(container, options) {
 		super();

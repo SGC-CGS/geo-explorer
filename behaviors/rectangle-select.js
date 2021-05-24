@@ -12,10 +12,19 @@ import Behavior from './behavior.js';
  */
 export default class RectangleSelectBehavior extends Behavior { 
 
+	/**
+	 * Get selection layer object
+	 */	
 	get layer() { return this._map.Layer('selection'); }
 
+	/**
+	 * Get layer vector graphics
+	 */	
 	get graphics() { return this.layer.graphics; }
 
+	/**
+	 * Get/set target object from layer
+	 */	
 	get target() { return this._options.target; }
 
 	set target(value) { 
@@ -24,14 +33,27 @@ export default class RectangleSelectBehavior extends Behavior {
 		this.Clear();
 	}
 
+	/**
+	 * Get/set field name (ex. "GeographyReferenceId")
+	 */	
 	get field() { return this._options.field; }
 
 	set field(value) { this._options.field = value; }
 
+	/**
+	 * Get/set symbol object for highlighting selections (type, color, style, outline)
+	 */	
 	get symbol() { return this._options.symbol; }
 
 	set symbol(value) { this._options.symbol = value; }
 
+	/**
+	 * Call constructor of base class (Behavior) and initialize rectangle-select class 
+	 * Adds drawing, selection graphics layer, and handlers.
+	 * @param {object} map - Map object
+	 * @param {object} options - Map options 
+	 * @returns {void}
+	 */	
 	constructor(map, options) {	
 		super();
 		
@@ -46,9 +68,8 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 
 	/**
-	 * @description
-	 * Rectangle select is deactivated when point select 
-	 * is activated
+	 * Clear selection and remove drawing event hanlders
+	 * @returns {void}
 	 */
 	Deactivate(){
 		this.Clear();
@@ -58,8 +79,8 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 
 	/**
-	 * @description
-	 * Rectangle select is (re-)activated when point identify is deactivated.
+	 * Setup rectangle drawing and bind drawing event handlers
+	 * @returns {void}
 	 */
 	Activate(){		
 		this._action = this._draw.create("rectangle", { mode: "click" });
@@ -69,8 +90,8 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 	
 	/**
-	 * @description
 	 * De-select the selected layers and remove highlight
+	 * @returns {void}
 	 */
 	Clear() {
 		this.layer.removeAll();
@@ -78,11 +99,10 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 	
 	/**
-	 * @description
-	 * Create the shape of the polygon 
-	 * @param {*} vertices - 2D array of #s representing the coordinates of each vertex
-	 * @param {*} sref - Spatial reference
-	 * @returns A geometry
+	 * Create a polygon from the given vertices
+	 * @param {number[]} vertices - 2D array of numbers representing the coordinates of each vertex
+	 * @param {object} sref - Spatial reference object
+	 * @returns {object} Object defining polygon (type, rings, spatialReference)
 	 */
 	VerticesToPolygon(vertices, sref) {
 		var p1 = vertices[0];
@@ -95,11 +115,10 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 	
 	/**
-	 * @description
-	 * Add a graphic polygon to the map for showing the user the rectangular 
-	 * selection 
-	 * {@link https://developers.arcgis.com/javascript/latest/add-a-point-line-and-polygon/|ArcGIS API for JavaScript}
-	 * @param {*} ev - event 
+	 * Add a graphic polygon to the map to show the rectangular selection 
+	 * {@link https://developers.arcgis.com/javascript/latest/add-a-point-line-and-polygon/}
+	 * @param {Object} ev - Event object
+	 * @returns {void}
 	 */
 	OnDraw_CursorUpdate(ev) {
 		if (ev.vertices.length < 2) return;
@@ -114,9 +133,9 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 	
 	/**
-	 * @description
-	 * Check if targeted layer(s) were selected by the geometry (rectangle)
-	 * @param {*} ev 
+	 * If targeted layer(s) were selected by the geometry (rectangle) submit query and finish drawing
+	 * @param {object} ev - Event object
+	 * @returns {void}
 	 */
 	OnDraw_Complete(ev) {
 		this.Emit("Busy");
@@ -133,9 +152,10 @@ export default class RectangleSelectBehavior extends Behavior {
 	}
 	
 	/**
-	 * @description
-	 * Highlight the features that were selected by the geometry (rectangle)
-	 * @param {*} results 
+	 * When query results are ready, apply the symbol and add the graphic to highlight the features 
+	 * that the user selected when they drew the rectangle. 
+	 * @param {object} results - Spatial object with query results
+	 * @returns {void}
 	 */
 	OnDraw_QueryComplete(results) {		
 		results.features.forEach(f => {
@@ -157,6 +177,11 @@ export default class RectangleSelectBehavior extends Behavior {
 		this.Activate();
 	}
 	
+	/**
+	 * Emit error when there is a problem with the behavior
+	 * @param {object} error - Error object
+	 * @returns {void}
+	 */		
 	OnDraw_QueryError(error) {
 		this.Emit("Error", { error:error });
 		this.Emit("Idle");
