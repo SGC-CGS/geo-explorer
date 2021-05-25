@@ -118,7 +118,21 @@ export default class Metadata {
      * @description
      * Get the frequency code 
      */
-	get frequency() { return this._json.frequencyCode; }
+    get frequency() { return this._json.frequencyCode; }
+
+    /**
+     * @description
+     * Get the product Label 
+     */
+    get productLabel() {
+        // Format the product ID according to CODR practices (DD-DD-DDDD)
+        var formattedId = this.json.productId;
+        if (formattedId.length > 4) {
+            formattedId = formattedId.substring(0, 2) + "-" + formattedId.substring(2, 4) + "-" + formattedId.substring(4);
+        }
+        return formattedId;
+    }
+
 
 	constructor(json) {	
 		this.json = json;
