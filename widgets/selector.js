@@ -2,7 +2,6 @@ import Templated from '../../geo-explorer-api/components/templated.js';
 import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import Requests from '../../geo-explorer-api/tools/requests.js';
-import Select from '../../geo-explorer-api/ui/select.js';
 import StaticTypeahead from "../../geo-explorer-api/ui/typeahead/static.js";
 
 /**
@@ -104,14 +103,14 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.LoadFilters(context.Lookup("filters"));
 
 		// Update placeholder based on context.selection.current
-		this.Elem('sSubject').placeholder = this.GetPlaceHolder("subjects", "subject");
+		this.Elem('sSubject').placeholder = "potato";
 		this.Elem('sTheme').placeholder = this.GetPlaceHolder("themes", "theme");
 		this.Elem('sCategory').placeholder = this.GetPlaceHolder("categories", "category");
 		this.Elem('sValue').placeholder = this.GetPlaceHolder("values", "value");
 		this.Elem('sGeography').placeholder = this.GetPlaceHolder("geographies", "geography");
 		
 		// Why do all of these need to be run for classification method??
-		// this.Elem("sSubject").Select(i => i.value == context.subject);
+		this.Elem("sSubject").Select(i => i.value == context.subject);
 		// this.Elem("sTheme").Select(i => i.value == context.theme);
 		// this.Elem("sCategory").Select(i => i.value == context.category);
 		// this.Elem("sGeography").Select(i => i.value == context.geography);

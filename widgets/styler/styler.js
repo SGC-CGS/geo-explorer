@@ -3,6 +3,7 @@ import Core from '../../../geo-explorer-api/tools/core.js';
 import Dom from '../../../geo-explorer-api/tools/dom.js';
 import Requests from '../../../geo-explorer-api/tools/requests.js';
 import Picker from '../../../geo-explorer-api/ui/picker.js';
+import Select from '../../../geo-explorer-api/ui/select.js';
 import StylerBreak from './styler-break.js';
 
 /**
