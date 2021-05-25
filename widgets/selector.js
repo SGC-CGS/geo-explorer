@@ -118,9 +118,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			var label = Dom.Create("label", { innerHTML:dimension.name, htmlFor:dimension.position, className:"col-md-6 mrgn-tp-xs" }, row);
             var select = Dom.Create("select", {
                 id: dimension.position,
-                name: dimension.position,	// REVIEW: Do we need the name attribute?
                 className: "col-md-6 mrgn-tp-xs",
-                title: this.Nls("Options_Title") + dimension.name	// REVIEW: Lowercase the dimension.name
+                title: this.Nls("Options_Title") + dimension.name.toLowerCase()	
             }, row);
             
 			if (dimension.position != "1") {

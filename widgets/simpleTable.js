@@ -23,39 +23,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 		this._headers.forEach(h => {
             Dom.Create("td", { innerHTML: h.label[Core.locale] }, headerRow);
         });
-
-		// REVIEW: Clean dead code if not used.
-        /*
-         Other fields we can add to the config file:    
-			{
-			  "id": "release",
-			  "label": {
-				"en": "Release",
-				"fr": "Release"
-			  }
-			},
-			{
-			  "id": "id",
-			  "label": {
-				"en": "ID",
-				"fr": "ID"
-			  }
-			},
-			{
-			  "id": "type",
-			  "label": {
-				"en": "Type",
-				"fr": "Type"
-			  }
-			},    
-			{
-			  "id": "decimals",
-			  "label": {
-				"en": "Decimals",
-				"fr": "Decimals"
-			  }
-			},
-         */
+		
 	}
 
 	/**
@@ -97,6 +65,17 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             tr.type = dp.type;
             tr.vintage = dp.vintage;
 
+            tr.date = "";
+            tr.decimals = "";
+            tr.frequency = "";
+            tr.release = "";
+            tr.scalar = "";
+            tr.security = "";
+            tr.status = "";
+            tr.symbol = "";
+            tr.value = "";
+            tr.uom = "";
+
             var dataobj = data[dp.code];
 
             if (dataobj && dataobj.value) {
@@ -106,35 +85,12 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
                 tr.release = dataobj.release;
 
                 // Decode the values using codesets
-				// REVIEW: Use ternary operator or an "or" operator to lighten the code here.
-                tr.frequency = codesets.frequency(dataobj.frequency);
-                if (tr.frequency == null) tr.frequency = "";
-                tr.scalar = codesets.scalar(dataobj.scalar);
-                if (tr.scalar == null) tr.scalar = "";
-                tr.security = codesets.security(dataobj.security);
-                if (tr.security == null) tr.security = "";
-                tr.status = codesets.status(dataobj.status);
-                if (tr.status == null) tr.status = "";
-                tr.symbol = codesets.symbol(dataobj.symbol);
-                if (tr.symbol == null) tr.symbol = "";
-                tr.uom = codesets.uom(dataobj.uom);
-                if (tr.uom == null) tr.uom = "";
-
-            }
-			
-			// REVIEW: I think it would be clearer if we just assigned empty strings to everything by default, 
-			// then overwrite if dataObj exists.
-            else {
-                tr.date = "";
-                tr.decimals = "";
-                tr.frequency = "";
-                tr.release = "";
-                tr.scalar = "";
-                tr.security = "";
-                tr.status = "";
-                tr.symbol = "";
-                tr.value = "";
-                tr.uom = "";
+				tr.frequency = codesets.frequency(dataobj.frequency) || "";
+                tr.scalar = codesets.scalar(dataobj.scalar) || "";
+                tr.security = codesets.security(dataobj.security) || "";
+                tr.status = codesets.status(dataobj.status) || "";
+                tr.symbol = codesets.symbol(dataobj.symbol) || "";
+                tr.uom = codesets.uom(dataobj.uom) || "";
             }
                 
             this._tableData.push(tr);

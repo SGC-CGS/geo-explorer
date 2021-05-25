@@ -86,12 +86,8 @@ export default class Application extends Templated {
 	
 			document.querySelector("#app-title").innerHTML = metadata.productName;
 
-			// REVIEW: Move to metadata object as a getter (get productLabel or something like that)
-            // Format the product ID according to CODR practices (DD-DD-DDDD)
-            var formattedId = metadata.id;
-            if (metadata.id.length > 4) {
-                formattedId = formattedId.substring(0, 2) + "-" + formattedId.substring(2, 4) + "-" + formattedId.substring(4);
-            }
+			// Format the product ID according to CODR practices (DD-DD-DDDD)
+            var formattedId = metadata.productLabel;
             this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [formattedId]); 
 			this.Elem("link").href = metadata.tvLink; 
 			
@@ -119,7 +115,9 @@ export default class Application extends Templated {
         CODR.GetCoordinateData(this.metadata, ev.coordinates).then(data => {
 			this.data = data;			
 			
-			this.LoadLayer(ev.geo, data);
+            this.LoadLayer(ev.geo, data);
+
+            this.LoadTable(data);        
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -148,10 +146,7 @@ export default class Application extends Templated {
 			this.behavior.Clear();
 			this.behavior.target = layer;
 
-            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
-
-			// REVIEW: Move to after the call to LoadLayer (after line 122). This is to decouple both functions. 
-            this.LoadTable(data);            
+            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);			    
 		}
     }
 
@@ -182,13 +177,10 @@ export default class Application extends Templated {
         var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
 
         // Get the vintage / reference period
-		// REVIEW: dataPoint is not the right name, it should be member or something like this.
-		// REVIEW: Use find instead of filter.
-        var dataPoint = this.metadata.geoMembers.filter(dp => dp.code == fid);
+		var member = this.metadata.geoMembers.find(dp => dp.code == fid);
         var refPer = "";
-        if (dataPoint && dataPoint.length > 0) {
-			// REVIEW: Why double equal?
-            refPer = dataPoint = dataPoint[0].vintage;
+        if (member) {
+			refPer = member.vintage;
         }
 
         var content = this.codesets.FormatDP_HTMLTable(this.data[fid], refPer);
