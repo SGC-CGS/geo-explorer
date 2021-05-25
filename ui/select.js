@@ -84,6 +84,7 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 		this._items.push(item);
 	}
 	
+	// REVIEW: I don't understand the description, can we clarify?
 	/**
 	 * Call from delegate to FindIndex
 	 * @param {function} delegate  - Delegate function

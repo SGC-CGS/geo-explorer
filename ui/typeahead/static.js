@@ -60,27 +60,4 @@ export default Core.Templatable("Basic.Components.StaticTypeahead", class Static
 		
 		return d.promise;
 	}
-
-	// REVIEW: I don't understand the description, can we clarify?
-	/**
-	 * Call from delegate to FindIndex
-	 * @param {function} delegate  - Delegate function
-	 * @returns {void}
-	 */
-	 Select(delegate) {		
-		this.value = this.FindIndex(delegate);
-	}
-
-	/**
-	 * Finds index of selected classification method through link to styler widget
-	 * @param {function} delegate - Delegate function
-	 * @returns {number} Index number of selected classification method (-1 if none)
-	 */
-	 FindIndex(delegate) {
-		for (var i = 0; i < this._items.length; i++) {
-			if (delegate(this._items[i], i)) return i;
-		}
-		
-		return -1;
-	}
 })

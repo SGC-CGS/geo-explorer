@@ -70,6 +70,21 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	get disabled() {
 		return this.Elem("root").disabled;
 	}
+
+	/**
+	 * Get the value required to show possible matches.
+	 * In DynamicTypeahead since there are calls to a DB, you want to avoid
+	 * returning to many possible matches so wait until the user enters 3 characters. 
+	 * In a StaticTypeahead you should should possible matches whenever character are entered.
+	 */
+	 get showMatches() {
+		if(this.constructor.name == "DynamicTypeahead"){
+			return 3;
+		} 
+		else { 
+			return -1; 
+		}
+	}
 	
 	/**
 	 * Call constructor of base class (Templated) and initialize typeahead
@@ -175,7 +190,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		var value = ev.target.value;
 		// var value = this.Elem("input").value;	// If can'T use ...args in debounce
 		
-		if (value.length < 3) return;
+		if (value.length < this.showMatches) return;
 		
 		this.Empty();
 		
@@ -192,7 +207,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * @returns {void}
 	 */
 	OnInputClick_Handler(ev) {			
-		if (ev.target.value.length < 3) return;
+		if (ev.target.value.length < this.showMatches) return;
 		
 		this.Refresh(ev.target.value).then(items => { 
 			this.Fill(items, ev.target.value);
