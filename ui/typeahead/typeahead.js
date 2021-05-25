@@ -50,20 +50,20 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	}
 	
 	/**
-	 * Get/set current selection in match list
+	 * Get/set select box value
 	 */
-	set current(value) {
-		this._curr = value;
+	get value() {
+		return this._curr.data;
 	}
 	
-	get current() {
-		return this._curr;
+	set value(value) {
+		this._curr = value;
 	}
 
 	/**
 	 * Get/set disabled value
 	 */
-	 set disabled(value) {
+	set disabled(value) {
 		this.Elem("root").disabled = value;
 	}
 	
@@ -165,6 +165,21 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		Dom.ToggleCss(this.Elem("root"), "collapsed", this._items.length == 0);
 	}
 	
+	/**
+	 * Finds an item in the typeahead using a delegate function
+	 * @param {function} delegate  - Delegate function
+	 * @returns {void}
+	 */
+	Select(delegate) {		
+		for (var i = 0; i < this._items.length; i++) {
+			if (delegate(this._items[i].data, i)) break;
+		}
+		
+		this.value = this._items[i];
+		
+		this.Elem("input").value = this.value.label;
+	}
+		
 	/**
 	 * Empty match list and populate search box after user makes a selection
 	 * @returns {void}

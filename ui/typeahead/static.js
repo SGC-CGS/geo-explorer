@@ -9,17 +9,6 @@ import Core from '../../tools/core.js';
 export default Core.Templatable("Basic.Components.StaticTypeahead", class StaticTypeahead extends Typeahead {
 
 	/**
-	 * Get/set select box value
-	 */
-	 get value() {
-		return this.Elem("root").value;
-	}
-	
-	set value(value) {
-		this.Elem("root").value = value;
-	}
-
-	/**
 	 * Return ui text in both languages
 	 * @returns {object.<string, string>} Text for each language
 	 */	
