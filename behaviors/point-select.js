@@ -95,7 +95,7 @@ export default class PointIdentifyBehavior extends Behavior {
 		
 	/**
 	 * When map is clicked, find the polygon containing the selected point, select/deselect the feature,
-     * update the table.
+     * and update the table.
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
@@ -106,27 +106,29 @@ export default class PointIdentifyBehavior extends Behavior {
 		this._map.Identify(this.target, ev.mapPoint).then((r) => {
 			this.Emit("Idle");	
 			
-			r.feature.symbol = this.symbol; // selected polygon style
+			if (r.feature) {
+				r.feature.symbol = this.symbol; // selected polygon style
 			
-			// REVIEW: We should think of having a proper selection class to handle the following logic.
-			// The team needs to talk about this, nothing to do for now.
-            var exists = this.layer.graphics.find(g => g.attributes[this.field] == r.feature.attributes[this.field]);
-			
-			// REVIEW: Something to keep in mind. If/when we have a very large selection, 
-			// hundreds of rows for example, rendering the whole table can be slow. In that
-			// case, we may have to make a more intelligent pointselect behavior. I.E., it 
-			// should say whether we are adding or removing from the selection and return
-			// the feature added or removed. This won't be an issue if we make a paged table,
-			// which is pretty likely. Nothing to do for now.
-			if (exists) {
-                this.layer.remove(exists);
-                this.Emit("Change", { pointselect:this.graphics }); // for table				
-            } 
-			
-			else {
-                this.layer.add(r.feature);
-                this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature, pointselect:this.graphics }); // for popup + table
-            }
+				// REVIEW: We should think of having a proper selection class to handle the following logic.
+				// The team needs to talk about this, nothing to do for now.
+				var exists = this.layer.graphics.find(g => g.attributes[this.field] == r.feature.attributes[this.field]);
+				
+				// REVIEW: Something to keep in mind. If/when we have a very large selection, 
+				// hundreds of rows for example, rendering the whole table can be slow. In that
+				// case, we may have to make a more intelligent pointselect behavior. I.E., it 
+				// should say whether we are adding or removing from the selection and return
+				// the feature added or removed. This won't be an issue if we make a paged table,
+				// which is pretty likely. Nothing to do for now.
+				if (exists) {
+					this.layer.remove(exists);
+					this.Emit("Change", { pointselect:this.graphics }); // for table				
+				} 
+				
+				else {
+					this.layer.add(r.feature);
+					this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature, pointselect:this.graphics }); // for popup + table
+				}
+			}
 		}, error => this.OnIdentify_Error(error));
 	}
 	
