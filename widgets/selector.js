@@ -40,6 +40,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		nls.Add("Selector_Geography_Placeholder", "fr", "*... Sélectionnez un niveau géographique");
 		nls.Add("Selector_Filter_Label", "en", "Filters");
 		nls.Add("Selector_Filter_Label", "fr", "Filtres");
+		nls.Add("Selector_Filter_Placeholder", "en", "*... Select a Filter");
+		nls.Add("Selector_Filter_Placeholder", "fr", "*... Sélectionnez un filtre");
 		nls.Add("Selector_Filter_Instructions", "en", "Select a subject, theme and category (product) to show available filters.");
 		nls.Add("Selector_Filter_Instructions", "fr", "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles.");
 		nls.Add("Selector_Button_Apply", "en", "Apply");
@@ -49,7 +51,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	}
 	
 	/**
-	 * Call constructor of base class (Templated) and initialize selector widget
+	 * Call constructor of base class (Templated) and initialize selector widget with placeholders,
+	 * and events
 	 * @param {object} container - div selector container and properties
 	 * @param {object} options - any additional options to assign to the widget (not typically used)
 	 * @returns {void}
@@ -59,7 +62,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.filters = [];
 		this.metadata = null;
 		
-		// Add change events to each selector
 		this.Node("sSubject").On("Change", this.OnSubject_Change.bind(this));
 		this.Node("sTheme").On("Change", this.OnTheme_Change.bind(this));
 		this.Node("sCategory").On("Change", this.OnCategory_Change.bind(this));
@@ -69,25 +71,22 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 
-		// Default placeholders for each selector from NLS
 		this.Elem('sSubject').placeholder = this.Nls("Selector_Subject_Placeholder");
 		this.Elem('sTheme').placeholder = this.Nls("Selector_Theme_Placeholder");
 		this.Elem('sCategory').placeholder = this.Nls("Selector_Category_Placeholder");
 		this.Elem('sValue').placeholder = this.Nls("Selector_Value_Placeholder");
 		this.Elem('sGeography').placeholder = this.Nls("Selector_Geography_Placeholder");
 		
-		// TODO: Make this cleaner later
-		// Disable input for each selector
-		this.Elem('sSubject').Node("input").elem.disabled = true;
-		this.Elem('sTheme').Node("input").elem.disabled = true;
-		this.Elem('sCategory').Node("input").elem.disabled = true;
-		this.Elem('sValue').Node("input").elem.disabled = true;
-		this.Elem('sGeography').Node("input").elem.disabled = true;
+		this.Elem('sSubject').disabled = true;
+		this.Elem('sTheme').disabled = true;
+		this.Elem('sCategory').disabled = true;
+		this.Elem('sValue').disabled = true;
+		this.Elem('sGeography').disabled = true;
 		this.Elem('bApply').disabled = true;
 	}
 	
 	/**
-	 * Load data to select elements
+	 * Load data to select elements 
 	 * @param {object} context - Context object
 	 * @returns {void}
 	 */
@@ -97,29 +96,20 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.LoadDropDown(this.Elem("sSubject"), context.Lookup("subjects"));
 		this.LoadDropDown(this.Elem("sTheme"), context.Lookup("themes"));
 		this.LoadDropDown(this.Elem("sCategory"), context.Lookup("categories"));
-		this.LoadDropDown(this.Elem("sGeography"), context.Lookup("geographies"));
 		this.LoadDropDown(this.Elem('sValue'), context.Lookup("values"));
+		this.LoadDropDown(this.Elem("sGeography"), context.Lookup("geographies"));
 		
 		this.LoadFilters(context.Lookup("filters"));
 
-		// Update placeholder based on context.selection.current
-		this.Elem('sSubject').placeholder = "potato";
-		this.Elem('sTheme').placeholder = this.GetPlaceHolder("themes", "theme");
-		this.Elem('sCategory').placeholder = this.GetPlaceHolder("categories", "category");
-		this.Elem('sValue').placeholder = this.GetPlaceHolder("values", "value");
-		this.Elem('sGeography').placeholder = this.GetPlaceHolder("geographies", "geography");
-		
-		// Why do all of these need to be run for classification method??
 		this.Elem("sSubject").Select(i => i.value == context.subject);
-		// this.Elem("sTheme").Select(i => i.value == context.theme);
-		// this.Elem("sCategory").Select(i => i.value == context.category);
-		// this.Elem("sGeography").Select(i => i.value == context.geography);
-		// this.Elem("sValue").Select(i => i.value == context.value);
-	}
+		this.Elem("sTheme").Select(i => i.value == context.theme);
+		this.Elem("sCategory").Select(i => i.value == context.category);
+		this.Elem("sValue").Select(i => i.value == context.value);
+		this.Elem("sGeography").Select(i => i.value == context.geography);
 
-	GetPlaceHolder(currentLookup, selection) {
-		let result = this.context.Lookup(currentLookup).filter(i => i.value == this.context[selection]);
-		return result[0].label
+		this.filters.forEach((f, i) => {
+			f.Select(j => j.value == context.filters[i]);
+		});
 	}
 		
 	/**
@@ -129,11 +119,11 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @returns {void}
 	 */
 	LoadDropDown(select, items) {
-		//select.Empty()
+		select.Empty();
 
 		select.store = items;
 		
-		select.Node("input").elem.disabled = false;
+		select.disabled = false;
 	}
 	
 	/**
@@ -160,35 +150,30 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 
 			var div = Dom.Create("div", null, this.Elem('filter'));
 			
-			var select = new StaticTypeahead(div)
+			var select = new StaticTypeahead(div);
 
 			select.store = d.values;
 
-			select.placeholder = d.values[0].label;
-			
-			select.On("Change", this.OnValue_Change.bind(this));
+			select.placeholder = this.Nls("Selector_Filter_Placeholder");
+
+			select.value = d.values[0];
+
+			select.On("Change", this.OnFilterChange.bind(this));
 			
 			return select;
 		});
 	}
-	
+
 	/**
 	 * Deselect and disable specified select elements
 	 * @param {string[]} elements - List of select elements to be disabled
 	 * @returns {void}
 	 */	
 	Disable(elements) {
-		elements.forEach(e => {
-			if (this.Elem(e).roots == undefined) return;
+		elements.forEach(e => this.Elem(e).disabled = true);
 
-			this.Elem(e).Node("input").elem.disabled = true;
-			
-			// Why?
-			this.Elem(e).value = -1;
-		});
-		
 		if (elements.indexOf('sValue') == -1) return;
-		
+
 		this.ResetFilter();
 	}
 	
@@ -206,6 +191,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			this.Emit("Idle");
 		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
+
+			this.Elem("sTheme").Select(i => i.value == i.value);
+
 		}, error => this.OnRequests_Error(error));		
 	}
 	
@@ -223,6 +211,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			this.Emit("Idle");
 		
 			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
+
+			this.Elem("sCategory").Select(i => i.value == i.value);
+			
 		}, error => this.OnRequests_Error(error));		
 	}
 	
@@ -232,42 +223,75 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @returns {void}
 	 */
 	OnCategory_Change(ev) {
-		this.Disable(['sValue', 'sGeography', 'bApply']);
+		this.Disable(['sGeography', 'bApply']);
 		
 		this.Emit("Busy");
-		
+
 		this.context.ChangeCategory(ev.item.value).then(c => {
 			this.Emit("Idle");
+
+			this.ResetFilter();
 		
 			this.LoadFilters(this.context.Lookup("filters"));
+
 			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
+
+			this.filters.forEach((f, i) => {
+				f.Select(j => j.value == this.filters[i].value.value);
+			});
+
+			this.Elem("sValue").Select(i => i.value == i.value);
+
 		}, error => this.OnRequests_Error(error));		
 	}
 	
+	/**
+	 * Update filter select element and call OnValueAndFilterChange()
+	 * @param {*} ev - Event object
+	 * @returns {void}
+	 */
+	OnFilterChange(ev) {
+		let index = this.filters.indexOf(ev.target);
+
+		this.filters[index].value = ev.item;
+
+		this.OnValueAndFilterChange();
+	}
+	
+	/**
+	 * Update value select element and call OnValueAndFilterChange()
+	 * @param {*} ev - Event object
+	 * @returns {void}
+	 */
+	OnValue_Change(ev) {
+		this.Elem("sValue").value = ev.item;
+		
+		this.OnValueAndFilterChange();	
+	}
+
 	/**
 	 * Update geographic level select element when a value to display is selected
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-	OnValue_Change(ev) {
-		if (this.Elem("sValue").value == -1) return;
-		
+	OnValueAndFilterChange() {
 		this.Disable(['sGeography', 'bApply']);
-		
-		// Error here
-		// value is undefined
 
-		// f.current.data.value
-		// TODO
-		var filters = this.filters.map(f => f.current.data.value);
-		var value = this.Elem("sValue").selected.value;
-		
+		var value = this.Elem("sValue").value.value;
+
+		var filters = this.filters.map((f, i)=> {
+			return f.value.value
+		});
+
 		this.Emit("Busy");
-		
+
 		this.context.ChangeIndicators(filters, value).then(c => {	
 			this.Emit("Idle");
 					
 			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
+
+			this.Elem("sGeography").Select(i => i.value == i.value);
+
 		}, error => this.OnRequests_Error(error));
 	}
 	

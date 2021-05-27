@@ -165,8 +165,7 @@ export default class Application extends Templated {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 
-		// Note: This assumes all behaviors have a target, this may change in the future.
-		this.map.behaviors.forEach(b => b.target = this.context.sublayer);
+		this.map.Behavior("pointselect").target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
