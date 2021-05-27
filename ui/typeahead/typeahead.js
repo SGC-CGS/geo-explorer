@@ -53,7 +53,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * Get/set select box value
 	 */
 	get value() {
-		return this._curr.data;
+		return this._curr;
 	}
 	
 	set value(value) {
@@ -64,11 +64,11 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * Get/set disabled value
 	 */
 	set disabled(value) {
-		this.Elem("root").disabled = value;
+		this.Elem('input').disabled = value;
 	}
 	
 	get disabled() {
-		return this.Elem("root").disabled;
+		return this.Elem('input').disabled = value;;
 	}
 
 	/**
@@ -175,7 +175,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 			if (delegate(this._items[i].data, i)) break;
 		}
 		
-		this.value = this._items[i];
+		this.value = this._items[i].data;
 		
 		this.Elem("input").value = this.value.label;
 	}
@@ -295,7 +295,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 */
 	onLiClick_Handler(item, ev) {
 		//ev.stopPropagation();
-		// ev.preventDefault();
+		ev.preventDefault();
 		
 		this.current = item;
 		
