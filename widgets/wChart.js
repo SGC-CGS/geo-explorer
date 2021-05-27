@@ -20,10 +20,12 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
     get labelField() { return this._title; }
 
     set data(value) {
-		var data = value.items.map(item => {		
+		var data = value.items.map(item => {
+			let label = item["attributes"][this.labelField];
+			let value = item["attributes"]["Value"] == null ? 0 : item["attributes"]["Value"];
 			return {
-				label: item["attributes"][this.labelField],
-				value: item["attributes"]["Value"],
+				label: label,
+				value: value,
 			}
 		});
 
@@ -122,8 +124,7 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
     }
 
     Template() {
-      return "<label class='sm-label'>nls(Chart_Type)</label>" +
-			 "<div handle='ChartsContainer' width='430' height='400'></div>";
+      return "<div handle='ChartsContainer' width='430' height='400'></div>";
     }
   }
 );
