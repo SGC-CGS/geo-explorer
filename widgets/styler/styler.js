@@ -5,9 +5,7 @@ import Requests from '../../tools/requests.js';
 import StylerBreak from './styler-break.js';
 import DefaultBreak from './default-break.js';
 import Tooltip from "../../ui/tooltip.js"
-
-// REVIEW: We should provide feedback to users when hovering over palettes
-// REVIEW: Pointer cursor on expando triangle
+import Colors from './colors.js';
 
 /**
  * Styler widget module
@@ -34,16 +32,22 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	static Nls(nls) {
 		nls.Add("Styler_Method", "en", "Classification method");
 		nls.Add("Styler_Method", "fr", "Méthode de classification");
-		nls.Add("Styler_Method_Info", "en", "Classification method");
-		nls.Add("Styler_Method_Info", "fr", "Méthode de classification");
+		nls.Add("Styler_Method_Info", "en", "Classification methods help organize data thematically.\n" + 
+											"Equal Intervals: Data range is divided equally between the maximum and minimum by the # of classes.\n" + 
+											"Natural Breaks: Complex approach to cluster data as accurately as possible.\n" +
+											"Quintiles: Classifies data by an equal number of units for each category.\n");
+		nls.Add("Styler_Method_Info", "fr", "Les méthodes de classification aident à organiser les données de manière thématique.\n" +
+											"Intervalles égaux : la plage de données est divisée également entre le maximum et le minimum par le nombre de classes.\n" + 
+											"Bornes naturelles : Approche complexe pour regrouper les données aussi précisément que possible.\n" +
+											"Quintiles: classe les données par un nombre égal d'unités pour chaque catégorie.\n");
 		nls.Add("Styler_Breaks", "en", "Number of breaks");
 		nls.Add("Styler_Breaks", "fr", "Nombre de bornes");
-		nls.Add("Styler_Breaks_Info", "en", "Number of breaks (3 to 8)");
-		nls.Add("Styler_Breaks_Info", "fr", "Nombre de bornes (3 à 8)");
+		nls.Add("Styler_Breaks_Info", "en", "The number of breaks are used for dividing features in a classification within the maximum and minimum constraints. You may choose between 3 to 8 breaks.");
+		nls.Add("Styler_Breaks_Info", "fr", "Le nombre de coupures est utilisé pour diviser les entités dans une classification dans les limites maximales et minimales. Vous pouvez choisir entre 3 à 8 pauses.");
 		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
 		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
-		nls.Add("Styler_Color_Scheme_Info", "en", "Color Schemes");
-		nls.Add("Styler_Color_Scheme_Info", "fr", "Gamme de schèmas");
+		nls.Add("Styler_Color_Scheme_Info", "en", "Select a palette to update the map's color scheme. This palette is called: ");
+		nls.Add("Styler_Color_Scheme_Info", "fr", "Sélectionnez une palette pour mettre à jour le schéma de couleurs de la carte. Cette palette s'appelle: ");
 		nls.Add("Styler_Style", "en", "Map Legend");
 		nls.Add("Styler_Style", "fr", "Légende de la carte");
 		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
@@ -58,8 +62,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Max_Gt_Next", "fr", "La nouvelle valeur maximale dépasse la valeur maximale de la plage suivante. Saisir une valeur inférieure ou augmenter d’abord la plage suivante.");
 		nls.Add("Legend_Opacity", "en", "Opacity");
 		nls.Add("Legend_Opacity", "fr", "Opacité");	
-		nls.Add("Legend_Opacity_Info", "en", "Opacity");
-		nls.Add("Legend_Opacity_Info", "fr", "Opacité");	
+		nls.Add("Legend_Opacity_Info", "en", "Use the opacity bar to update the transparency of the features on the map. The closer the slider is to «Less», the lower the transparency value, and vice versa.");
+		nls.Add("Legend_Opacity_Info", "fr", "Utilisez la barre d'opacité pour mettre à jour la transparence des entités sur la carte. Plus le curseur est proche de «Moins», plus la valeur de transparence est faible, et vice versa.");	
 		nls.Add("Legend_Opacity_Less", "en", "Less");
 		nls.Add("Legend_Opacity_Less", "fr", "Moins");	
 		nls.Add("Legend_Opacity_More", "en", "More");
@@ -87,7 +91,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
 
-
 		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
 
 		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
@@ -97,8 +100,17 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
 
-		this.LoadOtherBreaks();
-		this.AddDropdownMechanism();
+		this.LoadDefaultBreak();
+		
+		this.Elem("dropdownBtn").addEventListener("click", function (ev) {
+			
+			this.Elem("content").classList.toggle("active");
+
+			if(ev.target.className == "collapsedDropdown"){ ev.target.className = "expandedDropdown"; } 
+
+			else { ev.target.className = "collapsedDropdown"; }
+
+		}.bind(this));
 	}
 
 	/**
@@ -124,70 +136,26 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * @description Create color schemes and load them to the colorScheme DIV, 
-	 * and add interaction with the color scheme palettes
+	 * @description Use a subset of color schemes from ColorBrewer, and 
+	 * create palettes and palette events for the colorScheme container.  
 	 * @returns {void}
 	 */	
 	 LoadColorSchemes() {
-		 // REVIEW: We shouldn't use colorBrewer as an external reference. Also, this script adds a global 
-		 // variable (for the color ramps) which we should avoid. I suggest we put all the ramps in our config
-		 // or in a separate config.
-		let colorSchemes = [
-			colorbrewer.Blues,
-			colorbrewer.Greens,
-			colorbrewer.Greys,
-			colorbrewer.Oranges,
-			colorbrewer.Purples,
-			colorbrewer.Reds,
-			colorbrewer.BrBG,
-			colorbrewer.PiYG,
-			colorbrewer.PRGn,
-			colorbrewer.PuOr,
-			colorbrewer.RdBu,
-			colorbrewer.RdGy,
-			colorbrewer.RdYlGn
-		];
+		let container = this.Elem("colorScheme");
 
-		// REVIEW: Why the split in two functions? I suggest instead to have one function to build a single ramp, 
-		// then call it in a loop.
-		this.AddColorSchemes(this.Node("colorScheme").elem, colorSchemes);
-	}
+		Object.values(Colors.ColorSchemes()).forEach(colorScheme =>{
 
-	/**
-	 * @description Create the palettes, add interaction and append them to the dom
-	 * @param {object} dom - The final target DIV to hold the color schemes
-	 * @param {Array} colorSchemes - A subset of color schemes from color brewer
-	 * @returns {void}
-	 */	
-	 // REVIEW: dom is not a good name, it stands for document object model. I suggest using, node, element or container.
-	AddColorSchemes(dom, colorSchemes) {
-		// REVIEW: Consider using forEach colorScheme.forEach(c => { ... })
-		for (let index = 0; index < colorSchemes.length; index++) {
+			let palette = Dom.Create("span", { className:"palette" }, container);
 
-			// REVIEW: Use Dom.Create("span", { class:"palette" }, container)
-			let palette = document.createElement('span');
-
-			palette.className = "palette";
-
-			this.AddPaletteEvents(palette, colorSchemes[index]);
+			this.AddPaletteEvents(palette, colorScheme);
 			
-			let colorScheme = colorSchemes[index][5];
-
 			// Add 5 swatches to the palette
-			for (let index = 0; index < colorScheme.length; index++) {
-				let color = colorScheme[index];
-
-				let swatch = document.createElement('span');
-
-				swatch.className = "swatch";
+			colorScheme[5].forEach(color => {
+				let swatch = Dom.Create("span", { className:"swatch" }, palette);
 
 				swatch.style.backgroundColor = color;
-	
-				palette.appendChild(swatch);	
-			};
-
-			dom.appendChild(palette);
-		}
+			})
+		})
 	}
 
 	/**
@@ -208,15 +176,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		})
 
 		palette.addEventListener("mouseenter", () => {
-			let content;
-			
-			// REVIEW: This is awkward. The name of the palette should be available on the currentColorScheme object.
-			// This will require some refactoring of how to handle the colorBrewer ramps.
-			for (let colorName in colorbrewer) {
-				if (colorScheme == colorbrewer[colorName]) content = colorName;
-			};
-
-			this.tooltip.content = `${content}`;
+			this.tooltip.content = `${this.Nls("Styler_Color_Scheme_Info")} ${colorScheme.label[Core.locale]}`;
 		})
 
 		palette.addEventListener("mousemove", (ev) => {
@@ -340,8 +300,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @description To allow breaks for other values (restricted, confidential, etc.)
 	 * @returns {void}
 	 */
-	 // REVIEW: Use name that better reflects the function (i.e, LoadDefaultBreak)
-	LoadOtherBreaks() {
+	 LoadDefaultBreak() {
 
 		let symbol = {
 			type: "simple-fill",
@@ -354,36 +313,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		}
 
 		new DefaultBreak(this.Elem('otherBreaks'), { symbol: symbol })
-	}
-
-	/**
-	 * @description Add dropdown mechanism for the 
-	 * Map Style changer to hide / show content
-	 * @returns {void}
-	 */
-	AddDropdownMechanism() {
-		// REVIEW: There's a .Elem function on Templated objects. this.Elem("content") == this.Node("content").elem;
-		let content = this.Node("content").elem;
-
-		let icon = this.Node("collapsibleIcon").elem;
-
-		icon.addEventListener("click", function (ev) {
-			ev.target.classList.toggle("active");
-
-			// REVIEW: This can be done with CSS alone. I suggest a more representative class name, i.e, expanded or collapsed
-			// When done all with CSS, there will be barely any code here therefore, it can be moved back to the contructor.
-			if (content.style.maxHeight) {
-				content.style.display = "none";
-				content.style.maxHeight = null;
-				icon.className = "fa fa-caret-down active";
-
-			} else {
-				content.style.display = "block";
-				content.style.maxHeight = content.scrollHeight + 'px';
-				icon.className = "fa fa-caret-up active";
-			}
-			
-		}.bind(this));
 	}
 
 	/**
@@ -433,21 +362,28 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"</table>" +
 
 				"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
-					"<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px;' cursor: pointer;></i>" +
+					"<i handle='dropdownBtn' class='collapsedDropdown'></i>" +
+					// "<i handle='collapsibleIcon' class='fa fa-caret-down' style='margin-left: 10px; cursor: pointer;'></i>" +
 				"</h2>" +
 
 				"<div handle='content' class='content'>" +
 					// REVIEW: For sMethod and iBreaks, the input should be inline with their label.
-					"<label>nls(Styler_Method)</label>" +
-					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
-					"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
+					// REVIEW: Put sMethod and iBreaks side by side? Remove div tags for that.
+					"<label>nls(Styler_Method)" +
+						"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
+						"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
+					"</label>" +
+					
+					"<div></div>"+
 
-					"<label>nls(Styler_Breaks)</label>" +
-					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Breaks_Info)</span></i>" +
-					"<input handle='iBreaks' type='number' min='3' max='8' />" +
+					"<label>nls(Styler_Breaks)" +
+						"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Breaks_Info)</span></i>" +
+						"<input handle='iBreaks' type='number' min='3' max='8' />" +
+					"</label>" +
+
+					"<div></div>"+
 
 					"<label>nls(Styler_Color_Scheme)</label>" +
-					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Color_Scheme_Info)</span></i>" +
 					"<div handle='colorScheme'></div>" +
 
 					"<label>nls(Legend_Opacity)</label>" +
