@@ -413,6 +413,8 @@
 	height:24px;
 	border:solid thin black;
 	border-radius:2px;
+	/* display: list-item;
+	list-style-type: none; */
 }
 
 .gexp .styler .break-line .break-to-container:not(.editing) .editor {
@@ -451,6 +453,24 @@
 /* Styler / Legend Widget */
 .gexp .styler .break-line:not(:first-child) {
 	border-top : solid thin silver;
+}
+
+.gexp .styler .t {
+	display: table;
+}
+
+/* for ul tag */
+.gexp .styler .row {
+	display: table-row;
+}
+
+/* for li tag */
+.gexp .styler .column {
+	display: table-cell;
+}
+
+.gexp .styler .color {
+	list-style-type: none;
 }
 
 .gexp .styler .opacity-container {
@@ -753,10 +773,7 @@
     stroke: #fff;
 }
 
-/* End Chart CSS */
-
 /* foreignObject for pieChart */
-
 .svg foreignObject {
     overflow-y: scroll;
 	position: fixed;
@@ -767,7 +784,6 @@
     margin-top:5px; 
     margin-left:5px;
 }
-
 
 /* Styler */
 .gexp .collapsible {
@@ -816,7 +832,7 @@
 	display: inline-block;
 }
 
-/* Scales */
+/* Color Schemes and Color Scheme tooltips */
 .gexp .palette {
 	cursor: pointer;
 	display: inline-block;
@@ -839,7 +855,7 @@
 	cursor: pointer;
 }
 
-.gexp .fa.fa-info-circle .tooltiptext {
+.gexp .fa.fa-info-circle .tooltipText {
 	padding: 6px;
 	visibility: hidden;
 	position: absolute;
@@ -857,7 +873,7 @@
     color:#545963 !important;
 }
 
-.gexp .fa.fa-info-circle .tooltiptext::after {
+.gexp .fa.fa-info-circle .tooltipText::after {
 	content: "";
 	position: absolute;
 	bottom: 100%;
@@ -868,7 +884,7 @@
 	border-color: transparent transparent #555 transparent;
 }
 
-.gexp .fa.fa-info-circle:hover .tooltiptext {
+.gexp .fa.fa-info-circle:hover .tooltipText {
 	visibility: visible;
 	opacity: 1;
 }

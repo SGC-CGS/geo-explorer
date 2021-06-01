@@ -144,20 +144,20 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	 * @returns {string} HTML for breaks
 	 */		
 	Template() {
-		return "<tr handle='container' class='break-line'>" +
-				 "<td class='break-color-container'>" +
+		return "<ul handle='container' class='break-line row'>" +
+				 "<li class='break-color-container color'>" +
 					"<div handle='color' class='break-color'></div>" +
-				 "</td>" +
-				 "<td handle='lFrom'></td>" +
-				 "<td>nls(Styler_Item_Join)</td>" +
-				 "<td handle='eContainer' class='break-to-container'>" +
+				 "</li>" +
+				 "<li class='column' handle='lFrom'></li>" +
+				 "<li class='column'>nls(Styler_Item_Join)</li>" +
+				 "<li handle='eContainer' class='break-to-container column'>" +
 					"<button handle='bTo' class='to'></button>" +	
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +
 						"<button handle='eCancel' class='cancel button-icon small-icon'></button>" +
 					"</div>" +
-				 "</td>" +
-			   "</tr>";
+				 "</li>" +
+			   "</ul>";
 	}
 })

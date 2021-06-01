@@ -52,11 +52,11 @@ export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak e
 	 * @returns {string} HTML for legend breaks
 	 */	
 	Template() {
-		return "<tr handle='container' class='break-line'>" +
-				 "<td class='break-color-container'>" + 
+		return "<ul handle='container' class='break-line row'>" +
+				 "<li class='break-color-container color'>" + 
 					"<div handle='color' class='break-color'></div>" +
-				 "</td>" + 
-				 "<td handle='label'>nls(Legend_Unavailable)</td>" +
-			   "</tr>";
+				 "</li>" + 
+				 "<li class='column' handle='label'>nls(Legend_Unavailable)</li>" +
+			   "</ul>";
 	}
 })

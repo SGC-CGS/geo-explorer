@@ -352,14 +352,15 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
-		// REVIEW: Not 100% sure but, I think tables will be an accessibility problem. We should use something else, maybe ul and li?
-		return	"<table handle='breaks' class='breaks-container' style='border-collapse: separate; margin-top: 15px;'>" +
+		return	"<ul handle='breaks' class='breaks-container t' style='padding: 0px;'>" +
 					// Class breaks go here, dynamically created
-				"</table>" +
+				"</ul>" +
 
-				"<table handle='otherBreaks' class='breaks-container' style='border-collapse: separate; margin-bottom: 15px;'>" +
+				// for li set css list-style-type: none;
+
+				"<ul handle='otherBreaks' class='breaks-container t' style='padding: 0px; '>" +
 					// Other class breaks go here, manually created
-				"</table>" +
+				"</ul>" +
 
 				"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
 					"<i handle='dropdownBtn' class='collapsedDropdown'></i>" +
@@ -367,27 +368,25 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 				"</h2>" +
 
 				"<div handle='content' class='content'>" +
-					// REVIEW: For sMethod and iBreaks, the input should be inline with their label.
-					// REVIEW: Put sMethod and iBreaks side by side? Remove div tags for that.
-					"<label>nls(Styler_Method)" +
-						"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
-						"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
+					"<label style='display: inline;'>nls(Styler_Method)" +
+						"<i class='fa fa-info-circle' style='display: inline;'><span class='tooltipText tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
+						"<div handle='sMethod' widget='Basic.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
 					"</label>" +
 					
-					"<div></div>"+
+					"<div style='margin-bottom: 15px;'></div>"+
 
-					"<label>nls(Styler_Breaks)" +
-						"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Styler_Breaks_Info)</span></i>" +
-						"<input handle='iBreaks' type='number' min='3' max='8' />" +
+					"<label style='display: inline;'>nls(Styler_Breaks)" +
+						"<i class='fa fa-info-circle' style='display: inline;'><span class='tooltipText tooltip-bottom'>nls(Styler_Breaks_Info)</span></i>" +
+						"<input handle='iBreaks' type='number' min='3' max='8' style='display: inline; margin-left: 40px;'/>" +
 					"</label>" +
 
-					"<div></div>"+
+					"<div style='margin-bottom: 10px;'></div>"+
 
 					"<label>nls(Styler_Color_Scheme)</label>" +
 					"<div handle='colorScheme'></div>" +
 
 					"<label>nls(Legend_Opacity)</label>" +
-					"<i class='fa fa-info-circle'><span class='tooltiptext tooltip-bottom'>nls(Legend_Opacity_Info)</span></i>" +
+					"<i class='fa fa-info-circle'><span class='tooltipText tooltip-bottom'>nls(Legend_Opacity_Info)</span></i>" +
 					"<div class='opacity-container'>" +
 						"<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
 						"<div class='opacity-labels-container'>" +
