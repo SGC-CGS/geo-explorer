@@ -352,13 +352,13 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @returns {string} HTML for styler widget
 	 */	
 	Template() {
-		return	"<ul handle='breaks' class='breaks-container t' style='padding: 0px;'>" +
+		return	"<ul handle='breaks' class='breaks-container breaks-table' style='padding: 0px;'>" +
 					// Class breaks go here, dynamically created
 				"</ul>" +
 
 				// for li set css list-style-type: none;
 
-				"<ul handle='otherBreaks' class='breaks-container t' style='padding: 0px; '>" +
+				"<ul handle='otherBreaks' class='breaks-container breaks-table' style='padding: 0px;'>" +
 					// Other class breaks go here, manually created
 				"</ul>" +
 

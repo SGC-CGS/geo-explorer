@@ -455,16 +455,15 @@
 	border-top : solid thin silver;
 }
 
-.gexp .styler .t {
+/* For the breaks-container table */
+.gexp .styler .breaks-table {
 	display: table;
 }
 
-/* for ul tag */
 .gexp .styler .row {
 	display: table-row;
 }
 
-/* for li tag */
 .gexp .styler .column {
 	display: table-cell;
 }
