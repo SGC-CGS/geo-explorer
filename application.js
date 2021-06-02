@@ -152,7 +152,6 @@ export default class Application extends Templated {
 
     LoadTable(data) {
         this.Elem("table").Clear();
-        this.Elem("table").headers = this.config.TableHeaders;
         this.Elem("table").Populate(this.metadata.geoMembers, data, this.codesets);
     }
 	
