@@ -82,7 +82,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Elem('sCategory').disabled = true;
 		this.Elem('sValue').disabled = true;
 		this.Elem('sGeography').disabled = true;
-		this.Elem('bApply').disabled = true;
 	}
 	
 	/**
@@ -119,7 +118,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @returns {void}
 	 */
 	LoadDropDown(select, items) {
-		select.Empty();
+		select.Reset();
 
 		select.store = items;
 		
@@ -156,8 +155,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 
 			select.placeholder = this.Nls("Selector_Filter_Placeholder");
 
-			select.value = d.values[0];
-
 			select.On("Change", this.OnFilterChange.bind(this));
 			
 			return select;
@@ -172,9 +169,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	Disable(elements) {
 		elements.forEach(e => this.Elem(e).disabled = true);
 
-		if (elements.indexOf('sValue') == -1) return;
-
-		this.ResetFilter();
+		if (elements.indexOf('sCategory') != -1) this.ResetFilter();
 	}
 	
 	/**
@@ -192,7 +187,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
 
-			this.Elem("sTheme").Select(i => i.value == i.value);
+			this.Elem("sTheme").ResetLabel();
 
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -212,7 +207,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
 
-			this.Elem("sCategory").Select(i => i.value == i.value);
+			this.Elem("sCategory").ResetLabel();
 			
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -223,7 +218,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @returns {void}
 	 */
 	OnCategory_Change(ev) {
-		this.Disable(['sGeography', 'bApply']);
+		this.Disable(['sValue', 'sGeography', 'bApply']);
 		
 		this.Emit("Busy");
 
@@ -233,14 +228,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			this.ResetFilter();
 		
 			this.LoadFilters(this.context.Lookup("filters"));
-
-			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
-
-			this.filters.forEach((f, i) => {
-				f.Select(j => j.value == this.filters[i].value.value);
-			});
-
-			this.Elem("sValue").Select(i => i.value == i.value);
 
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -255,7 +242,22 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 
 		this.filters[index].value = ev.item;
 
-		this.OnValueAndFilterChange();
+		let filterSelectComplete  = this.filters.some(f => {
+			return f.value == null
+		})
+
+		if (!this.Elem('sValue').disabled && filterSelectComplete == false) {
+			
+			this.OnValueAndFilterChange();
+
+		} else if (filterSelectComplete == false) {
+			
+			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
+
+			this.Elem("sValue").ResetLabel();
+			
+			this.Elem('sValue').disabled = false;
+		}
 	}
 	
 	/**
@@ -275,8 +277,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @returns {void}
 	 */
 	OnValueAndFilterChange() {
-		this.Disable(['sGeography', 'bApply']);
-
 		var value = this.Elem("sValue").value.value;
 
 		var filters = this.filters.map((f, i)=> {
@@ -290,7 +290,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 					
 			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
 
-			this.Elem("sGeography").Select(i => i.value == i.value);
+			this.Elem("sGeography").ResetLabel();
 
 		}, error => this.OnRequests_Error(error));
 	}
