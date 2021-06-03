@@ -68,7 +68,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	}
 	
 	get disabled() {
-		return this.Elem('input').disabled = value;;
+		return this.Elem('input').disabled;
 	}
 
 	/**
@@ -194,6 +194,10 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		var value = this.current ? this.current.data.label : "";
 		
 		this.Elem("input").value = value;
+	}
+
+	ResetLabel() {
+		this.Elem("input").value = "";
 	}
 	
 	/**
@@ -330,6 +334,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	Template() {        
 		return "<div handle='root' class='typeahead collapsed'>" +
 				 "<input handle='input' type='text' class='input' placeholder='nls(Search_Typeahead_Placeholder)' title='nls(Search_Typeahead_Title)'>" + 
+				 "<i class='input-icon'></i>" +
 			     "<ul handle='list' class='list'></ul>" +
 			   "</div>";
 	}
