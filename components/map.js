@@ -68,6 +68,12 @@ export default class Map extends Evented {
 		});
 
 		this._view.ui.add(fullscreen, "top-left");
+
+		var home = new ESRI.widgets.Home({ 
+			view: this._view
+		});
+
+		this._view.ui.add(home, "top-left");
 	}
 	
 	/**
