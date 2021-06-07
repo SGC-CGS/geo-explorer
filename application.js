@@ -41,6 +41,10 @@ export default class Application extends Templated {
 		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
 		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
 		nls.Add("Search_Icon_Alt", "fr", "Loupe");
+		nls.Add("Fullscreen_Title", "en", "Fullscreen");
+		nls.Add("Fullscreen_Title", "fr", "Plein écran");		
+		nls.Add("Home_Title", "en", "Default map view");
+		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
 	}
 
 	constructor(node, config) {		
@@ -101,7 +105,14 @@ export default class Application extends Templated {
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
 			this.map.Behavior("pointselect").Activate();
+			
+			//TODO - work around to allow nls use on button title, update after ESRI JS API upgrade?
+			//discuss extending Home widget. 
+			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
+			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 
+
 		}, error => this.OnApplication_Error(error));
+
 	}
 	
 	AddOverlay(menu, id, title, widget, position) {
@@ -150,6 +161,7 @@ export default class Application extends Templated {
 		var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
 		
 		this.map.popup.open({ location:mapPoint, title:title, content:content });
+
 	}
 	
 	// Add event handler
