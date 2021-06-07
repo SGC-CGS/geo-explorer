@@ -243,7 +243,8 @@
 }
 
 .gexp .map-container .esri-ui .button-icon,
-.gexp .map-container .esri-ui .esri-fullscreen {
+.gexp .map-container .esri-ui .esri-fullscreen,
+.gexp .map-container .esri-ui .esri-home {
 	margin-bottom:0px;
 	border-bottom:solid 1px rgba(110,110,110,0.3);
 }

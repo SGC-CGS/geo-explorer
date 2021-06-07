@@ -31,6 +31,10 @@ export default class Application extends Templated {
         nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
         nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the information table section.");
         nls.Add("SkipTheMapLink", "fr", "Ignorez la carte visuelle interactive et accédez directement à la section du tableau d'informations.");
+		nls.Add("Fullscreen_Title", "en", "Fullscreen");
+		nls.Add("Fullscreen_Title", "fr", "Plein écran");		
+		nls.Add("Home_Title", "en", "Default map view");
+		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");		
 	}
 
 	constructor(node, config) {		
@@ -55,6 +59,17 @@ export default class Application extends Templated {
 		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
 			
         this.LoadCodrData(this.config.product);
+
+		this.map.view.when(d => {	
+			
+			// Work around to allow nls use on button title. 
+			// TODO: Revisit this after ESRI JS API upgrade to >= 4.19 and make a customized widget 
+			// if no new title properties are available.
+			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
+			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
+
+		}, error => this.OnApplication_Error(error));
+
 	}
 	
 	AddPointIdentify() {

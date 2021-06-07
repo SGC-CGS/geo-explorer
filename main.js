@@ -70,7 +70,8 @@ function LoadEsri() {
 				 "esri/views/draw/Draw",
 				 "esri/widgets/BasemapGallery", 
 				 "esri/widgets/Bookmarks", 
-				 "esri/widgets/Fullscreen"], 
+				 "esri/widgets/Fullscreen",
+				 "esri/widgets/Home"], 
 				 
 				 function(jsonUtils, 
 						  Renderer, 
@@ -91,7 +92,8 @@ function LoadEsri() {
 						  Draw, 
 						  BasemapGallery, 
 						  Bookmarks, 
-						  Fullscreen) {
+						  Fullscreen,
+						  Home) {
 			
 			window.ESRI = {
 				core : { 
@@ -130,7 +132,8 @@ function LoadEsri() {
 				widgets : {
 					Fullscreen : Fullscreen,
 					BasemapGallery : BasemapGallery,
-					Bookmarks : Bookmarks
+					Bookmarks : Bookmarks,
+					Home : Home
 				}
 			}
 
