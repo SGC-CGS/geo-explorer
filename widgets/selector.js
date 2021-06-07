@@ -82,6 +82,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Elem('sCategory').disabled = true;
 		this.Elem('sValue').disabled = true;
 		this.Elem('sGeography').disabled = true;
+		this.Elem('bApply').disabled = true;
 	}
 	
 	/**
@@ -187,7 +188,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
 
-			this.Elem("sTheme").ResetLabel();
+			this.Elem("sTheme").ResetInputLabel();
 
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -207,7 +208,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
 
-			this.Elem("sCategory").ResetLabel();
+			this.Elem("sCategory").ResetInputLabel();
 			
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -233,7 +234,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	}
 	
 	/**
-	 * Update filter select element and call OnValueAndFilterChange()
+	 * Update filter select element and call OnValueAndFilterChange() if sValue not disabled
 	 * @param {*} ev - Event object
 	 * @returns {void}
 	 */
@@ -254,7 +255,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			
 			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
 
-			this.Elem("sValue").ResetLabel();
+			this.Elem("sValue").ResetInputLabel();
 			
 			this.Elem('sValue').disabled = false;
 		}
@@ -290,7 +291,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 					
 			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
 
-			this.Elem("sGeography").ResetLabel();
+			this.Elem("sGeography").ResetInputLabel();
 
 		}, error => this.OnRequests_Error(error));
 	}
