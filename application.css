@@ -456,20 +456,13 @@
 }
 
 /* For the breaks-container table */
-.gexp .styler .breaks-table {
-	display: table;
-}
-
-.gexp .styler .row {
+.gexp .styler .breaks-row {
 	display: table-row;
 }
 
-.gexp .styler .column {
+.gexp .styler .breaks-column {
 	display: table-cell;
-}
-
-.gexp .styler .color {
-	list-style-type: none;
+	vertical-align: middle;
 }
 
 .gexp .styler .opacity-container {
