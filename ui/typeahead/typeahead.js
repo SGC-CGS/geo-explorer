@@ -97,7 +97,6 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		
 		this._store = null;
 		this._items = null;
-		this._filt = null;
 		this._curr = null;
 		this._temp = null;
 		
@@ -196,7 +195,15 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		this.Elem("input").value = value;
 	}
 
-	ResetLabel() {
+	/**
+	 * Band-aid fix for showing the placeholder to the user
+	 * @returns {void}
+	 */
+	ResetInputLabel() {
+		this.Reset();
+
+		this.UpdateCss();
+
 		this.Elem("input").value = "";
 	}
 	
@@ -287,7 +294,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 */
 	OnInputBlur_Handler(ev) {			
 		this.Reset();
-		
+
 		this.UpdateCss();
 	}
 	
@@ -299,7 +306,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 */
 	onLiClick_Handler(item, ev) {
 		//ev.stopPropagation();
-		ev.preventDefault();
+		if(ev != undefined) ev.preventDefault();
 		
 		this.current = item;
 		
@@ -316,7 +323,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * @returns {void}
 	 */
 	ScrollTo(item) {				
-		// create rectangules to know the position of the elements
+		// create rectangles to know the position of the elements
 		var ul = this.Elem("list");
 		var liBx = item.node.getBoundingClientRect();
 		var ulBx = ul.getBoundingClientRect();
