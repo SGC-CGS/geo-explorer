@@ -181,12 +181,31 @@ export default class Application extends Templated {
 	 * @returns {void}
 	 */
 	ShowInfoPopup(mapPoint, f) {
-		var p = this.config.popup
-		var att = f.attributes
+		var p = this.config.popup;
+
+		var att = f.attributes;
+
 		var symbol = (att[p.symbol] && att[p.value] != "F") ? att[p.symbol] : ''; /* prevents F from displaying twice */
+
 		var symbol_foot = att[p.symbol] || ''; 
+
 		var symbol_desc = att[p.nulldesc] || '';
-		var content = `<b>${att[p.uom]}</b>: ${att[p.value]} <sup>${symbol}</sup><br><br>${att[p.indicator]}<br><sup>${symbol_foot}</sup> ${symbol_desc}`;
+
+		let indicators = `<ul>`;
+
+		this.context.IndicatorItems().forEach(f => {
+			indicators += `<li>${f.label}</li>`;
+		});
+
+		indicators += `</ul>`;
+
+		let url = (this.context.category.toString().length == 8) ? 
+			`<a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=${this.context.category}01">Statistics Canada Table ${this.context.category}</a>` : 
+			`<a href="https://www.statcan.gc.ca/">Statistics Canada</a>`;
+
+		let indicatorsAndTableSource = `<div><b>Indicators</b>:${indicators}<b>Source</b>:${url}</div>`;
+
+		var content = `<b>${att[p.uom]}</b>: ${att[p.value]}<sup>${symbol}</sup><br><br>${indicatorsAndTableSource}<br><sup>${symbol_foot}</sup> ${symbol_desc}`;
 		
 		this.map.popup.open({ location:mapPoint, title:att[p.title], content:content });
 	}
