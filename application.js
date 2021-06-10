@@ -209,10 +209,9 @@ export default class Application extends Templated {
 		let	url = ``;
 
 		if (prod.length == 8) { // Table Viewer Link if available
-			prod = prod.substr(0, 2) + "-" + prod.substr(2, 2) + "-" + prod.substr(4) + "-01";
 			url = `
 				<b>${this.Nls("Table_Label_Popup1")}</b> ${this.Nls("Table_Label_Popup2")} 
-				<a href="${this.config.tableviewer.url}${this.context.category}01" target="_blank">${prod}</a>
+				<a href="${this.config.tableviewer.url}${this.context.category}01" target="_blank">${prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01")}</a>
 			`;
 		}
 		
