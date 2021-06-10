@@ -130,6 +130,13 @@ export default class Configuration {
 	}	
 	
 	/**
+	 *  Get tableviewer by locale from json
+	 */
+	get tableviewer() {
+		return { url : this._json.tableviewer.url[Core.locale] }
+	}
+
+	/**
 	 * Initialize configuration class from application json
 	 * @param {object} json - application json data
 	 * @returns {void}

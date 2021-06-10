@@ -60,6 +60,12 @@ export default class Application extends Templated {
 		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
 		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
 		nls.Add("Search_Icon_Alt", "fr", "Loupe");
+		nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
+		nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");		
+		nls.Add("Table_Label_Popup1", "en", "Statistics Canada.");
+		nls.Add("Table_Label_Popup1", "fr", "Statistique Canada.");				
+		nls.Add("Table_Label_Popup2", "en", "Table ");
+		nls.Add("Table_Label_Popup2", "fr", "Tableau");						
 	}
 
 	/**
@@ -199,11 +205,18 @@ export default class Application extends Templated {
 
 		indicators += `</ul>`;
 
-		let url = (this.context.category.toString().length == 8) ? 
-			`<a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=${this.context.category}01">Statistics Canada Table ${this.context.category}</a>` : 
-			`<a href="https://www.statcan.gc.ca/">Statistics Canada</a>`;
+		let prod = this.context.category.toString()
+		let	url = ``;
 
-		let indicatorsAndTableSource = `<div><b>Indicators</b>:${indicators}<b>Source</b>:${url}</div>`;
+		if (prod.length == 8) { // Table Viewer Link if available
+			prod = prod.substr(0, 2) + "-" + prod.substr(2, 2) + "-" + prod.substr(4) + "-01";
+			url = `
+				<b>${this.Nls("Table_Label_Popup1")}</b> ${this.Nls("Table_Label_Popup2")} 
+				<a href="${this.config.tableviewer.url}${this.context.category}01" target="_blank">${prod}</a>
+			`;
+		}
+		
+		let indicatorsAndTableSource = `<div><b>${this.Nls("Indicator_Title_Popup")}</b>:${indicators}${url}</div>`;
 
 		var content = `<b>${att[p.uom]}</b>: ${att[p.value]}<sup>${symbol}</sup><br><br>${indicatorsAndTableSource}<br><sup>${symbol_foot}</sup> ${symbol_desc}`;
 		

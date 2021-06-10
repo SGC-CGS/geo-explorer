@@ -281,5 +281,11 @@
             "en": "NullDescription_EN",
             "fr": "NullDescription_FR"
         }
-    }
+    },
+    "tableviewer": {
+        "url": {
+            "en": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=",
+            "fr": "https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid="
+        }
+    }    
 }
