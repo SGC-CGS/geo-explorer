@@ -1,21 +1,21 @@
 {
-  "layers": {
+  "layers_": {
     "PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
     "CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
     "CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
   },
-  "layers_new": {
+  "layers": {
     "PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
     "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
     "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
     "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3"
   },
-  "id": {
+  "id_": {
     "PR": "PRUID",
     "CD": "CDUID",
     "CSD": "CSDUID"
   },
-  "id_new": {
+  "id": {
     "PR": "PRCODE",
     "CD": "CD_UID",
     "CCS": "CCS_UID",
@@ -42,12 +42,12 @@
     }
   },
   "identify": {
-    "PR": {
+    "PR_": {
       "id": "PRUID",
       "nameEn": "PRENAME",
       "nameFr": "PRFNAME"
     },
-    "PR_new": {
+    "PR": {
       "id": "PRCODE",
       "nameEn": "ENG_LABEL",
       "nameFr": "FRE_LABEL"
@@ -62,15 +62,27 @@
       "nameEn": "OFFNAME",
       "nameFr": "OFFNAME"
     },
-    "CSD": {
+    "CSD_": {
       "id": "CSDUID",
       "nameEn": "CSDNAME",
       "nameFr": "CSDNAME"
     },
-    "CSD_new": {
+    "CSD": {
       "id": "CSD_UID",
       "nameEn": "ENGNAME",
       "nameFr": "FRENAME"
     }
+  },
+  "geoType": {
+    "PR": "A",
+    "CD": "A",
+    "CCS": "S",
+    "CSD": "A"
+  },
+  "geoSchema": {
+    "PR": "0002",
+    "CD": "0003",
+    "CCS": "0502",
+    "CSD": "0005"
   }
 }

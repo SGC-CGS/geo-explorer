@@ -95,7 +95,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 	 * Update the table content with the datapoints 
 	 * @param {object} datapoints - Selected locations from map
 	 */
-    Populate(datapoints, data, codesets) {
+    Populate(datapoints, data, codesets, type, schema) {
         this.CreateHeaders();
 
         this._tableData = [];
@@ -103,8 +103,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         datapoints.forEach(dp => {
             var tr = {};
 			
-			// REVIEW: Don't know if we need to show everything, we'll see what the group says.
-            tr.code = dp.code;
+			tr.code = dp.vintage + type + schema + dp.code;
             tr.id = dp.id;
             tr.name = Core.locale == "en" ? dp.nameEn : dp.nameFr;
             tr.type = dp.type;
