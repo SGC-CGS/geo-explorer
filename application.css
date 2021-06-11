@@ -284,6 +284,13 @@
     width: 270px;
 }
 
+.gexp .table-widget table tbody td:nth-child(4) {
+    text-align: right;
+}
+
+.gexp .table-widget table tbody tr:nth-child(1) td:nth-child(4) {
+    text-align: left;
+}
 .gexp .table-widget table tbody tr:nth-child(odd) {
     background: rgb(240,240,240);
 }

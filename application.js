@@ -177,12 +177,12 @@ export default class Application extends Templated {
 
         // Get the vintage / reference period
 		var member = this.metadata.geoMembers.find(dp => dp.code == fid);
-        var refPer = "";
+        var geoVintage = "";
         if (member) {
-			refPer = member.vintage;
+			geoVintage = member.vintage;
         }
 
-        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], refPer);
+        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], geoVintage);
 		
 		this.map.popup.open({ location:ev.mapPoint, title:title, content: content });
     }
