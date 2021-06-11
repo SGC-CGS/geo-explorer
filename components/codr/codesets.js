@@ -120,8 +120,8 @@ export default class CodeSets {
         nls.Add("FreqColumn", "en", "Frequency:");
         nls.Add("FreqColumn", "fr", "Fréquence:");
 
-        nls.Add("RefPerColumn", "en", "Reference Period:");
-        nls.Add("RefPerColumn", "fr", "Période de référence:");
+        nls.Add("GeoVintageColumn", "en", "Geo Vintage:");
+        nls.Add("GeoVintageColumn", "fr", "Vintage géo:");
 
         nls.Add("UomColumn", "en", "Unit of measure:");
         nls.Add("UomColumn", "fr", "Unité de mesure:");
@@ -135,9 +135,10 @@ export default class CodeSets {
      * @description
      * Format a Datapoint description in html format - for a specific locale, including symbol, uom, etc.
      * @param {String} dp - Datapoint object
+     * @param {String} geoVintage - Geography Vintage
      * @param {String} locale - locale, en/fr
      */
-    FormatDP_HTMLTable(dp, refPer, locale) {
+    FormatDP_HTMLTable(dp, geoVintage, locale) {
         var htmlTable = "<table class='popup-table'><tbody handle='body'>";
         
         var content = dp.Format(locale || Core.locale);
@@ -169,8 +170,8 @@ export default class CodeSets {
         if (!frequency) frequency = "";
         htmlTable += "<tr><td>" + this.Nls("FreqColumn") + "</td><td>" + frequency + "</td></tr>";
         
-        if (!refPer) refPer = "";
-        htmlTable += "<tr><td>" + this.Nls("RefPerColumn") + "</td><td>" + refPer + "</td></tr>";
+        if (!geoVintage) geoVintage = "";
+        htmlTable += "<tr><td>" + this.Nls("GeoVintageColumn") + "</td><td>" + geoVintage + "</td></tr>";
         
         if (!uom) uom = ""; 
         htmlTable += "<tr><td>" + this.Nls("UomColumn") + "</td><td>" + uom + "</td></tr>";

@@ -94,7 +94,7 @@ export default class Metadata {
      * @description
      * Get the product name 
      */
-	get productName() { return `${this.name} (${this.id})`;		 }
+	get productName() { return this.name + " (" + this.productLabel + ")"; }
 
     /**
      * @description
