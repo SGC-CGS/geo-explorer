@@ -61,13 +61,12 @@ export default class Application extends Templated {
         this.LoadCodrData(this.config.product);
 
 		this.map.view.when(d => {	
-			
+
 			// Work around to allow nls use on button title. 
-			// TODO: Revisit this after ESRI JS API upgrade to >= 4.19 and make a customized widget 
-			// if no new title properties are available.
+
+
 			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
 			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
-
 		}, error => this.OnApplication_Error(error));
 
 	}
