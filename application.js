@@ -151,6 +151,8 @@ export default class Application extends Templated {
     }
 
     LoadTable(data) {
+		// NOTE: Maybe this could be integrated with the CODR class directly instead of config.
+		// I think I'd also suggest modifying the geoMembers before calling the populate function.
         var geo = CODR.GeoLookup(this.metadata.geoLevel);
         var type = this.config.GeoType(geo);
         var schema = this.config.GeoSchema(geo);
@@ -181,6 +183,7 @@ export default class Application extends Templated {
             geoVintage = member.vintage;
         }
 
+		// NOTE: Similar to above, we can probably isolate this logic in a single place.
         // Derive the DGUID from the vintage, type, schema and geographic feature id
         var type = this.config.GeoType(geo);
         var schema = this.config.GeoSchema(geo);
