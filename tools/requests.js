@@ -221,6 +221,8 @@ export default class Requests {
 		
 		Requests.QueryTable(URLS.value, where).then(r => {
 			if (r.features.length > 1) d.Reject(new Error("Received more than one indicator Id."));
+
+			if (r.features.length == 0) d.Reject(new Error("No indicator Id received."));
 			
 			var metadata = this.MakeMetadata(r.features[0].attributes);
 			

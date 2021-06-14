@@ -50,25 +50,46 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	}
 	
 	/**
-	 * Get/set current selection in match list
+	 * Get/set select box value
 	 */
-	set current(value) {
-		this._curr = value;
+	get value() {
+		return this._curr;
 	}
 	
-	get current() {
-		return this._curr;
+	set value(value) {
+		this._curr = value;
 	}
 
 	/**
 	 * Get/set disabled value
 	 */
-	 set disabled(value) {
-		this.Elem("root").disabled = value;
+	set disabled(value) {
+		this.Elem('input').disabled = value;
 	}
 	
 	get disabled() {
-		return this.Elem("root").disabled;
+		return this.Elem('input').disabled;
+	}
+
+	/**
+	 * Get the value required to show possible matches.
+	 * In DynamicTypeahead since there are calls to a DB, you want to avoid
+	 * returning to many possible matches so wait until the user enters 3 characters. 
+	 * In a StaticTypeahead you should should possible matches whenever character are entered.
+	 */
+	// REVIEW: There are a couple of issues with this approach:
+	//    - What happens if we want to change the numbers by application? 
+    //      What happens if the name of the class changes?
+    //      There is an instanceof operator
+    //      This could be implemented through inheritance and overwriting
+    //      This should be a parameter that can be set externally but that has a default value.
+	 get showMatches() {
+		if(this.constructor.name == "DynamicTypeahead"){
+			return 3;
+		} 
+		else { 
+			return -1; 
+		}
 	}
 	
 	/**
@@ -82,7 +103,6 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		
 		this._store = null;
 		this._items = null;
-		this._filt = null;
 		this._curr = null;
 		this._temp = null;
 		
@@ -151,6 +171,21 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	}
 	
 	/**
+	 * Finds an item in the typeahead using a delegate function
+	 * @param {function} delegate  - Delegate function
+	 * @returns {void}
+	 */
+	Select(delegate) {		
+		for (var i = 0; i < this._items.length; i++) {
+			if (delegate(this._items[i].data, i)) break;
+		}
+		
+		this.value = this._items[i].data;
+		
+		this.Elem("input").value = this.value.label;
+	}
+		
+	/**
 	 * Empty match list and populate search box after user makes a selection
 	 * @returns {void}
 	 */
@@ -165,6 +200,21 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		
 		this.Elem("input").value = value;
 	}
+
+	/**
+	 * Band-aid fix for showing the placeholder to the user
+	 * @returns {void}
+	 */
+    // Review we should see if this can be achieved through the setter function for value. OTherwise, it's 
+    // a bit awkward to use. Developers have to know that they must call the function after clearing the 
+    // input. This complexity should be hidden from them.
+	ResetInputLabel() {
+		this.Reset();
+
+		this.UpdateCss();
+
+		this.Elem("input").value = "";
+	}
 	
 	/**
 	 * Refresh list of possible matches when use types a search term
@@ -175,7 +225,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 		var value = ev.target.value;
 		// var value = this.Elem("input").value;	// If can'T use ...args in debounce
 		
-		if (value.length < 3) return;
+		if (value.length < this.showMatches) return;
 		
 		this.Empty();
 		
@@ -192,7 +242,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * @returns {void}
 	 */
 	OnInputClick_Handler(ev) {			
-		if (ev.target.value.length < 3) return;
+		if (ev.target.value.length < this.showMatches) return;
 		
 		this.Refresh(ev.target.value).then(items => { 
 			this.Fill(items, ev.target.value);
@@ -253,7 +303,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 */
 	OnInputBlur_Handler(ev) {			
 		this.Reset();
-		
+
 		this.UpdateCss();
 	}
 	
@@ -265,7 +315,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 */
 	onLiClick_Handler(item, ev) {
 		//ev.stopPropagation();
-		// ev.preventDefault();
+		if(ev != undefined) ev.preventDefault();
 		
 		this.current = item;
 		
@@ -282,7 +332,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * @returns {void}
 	 */
 	ScrollTo(item) {				
-		// create rectangules to know the position of the elements
+		// create rectangles to know the position of the elements
 		var ul = this.Elem("list");
 		var liBx = item.node.getBoundingClientRect();
 		var ulBx = ul.getBoundingClientRect();
@@ -300,6 +350,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	Template() {        
 		return "<div handle='root' class='typeahead collapsed'>" +
 				 "<input handle='input' type='text' class='input' placeholder='nls(Search_Typeahead_Placeholder)' title='nls(Search_Typeahead_Title)'>" + 
+				 "<i class='input-icon'></i>" +
 			     "<ul handle='list' class='list'></ul>" +
 			   "</div>";
 	}

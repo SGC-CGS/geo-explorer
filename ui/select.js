@@ -84,6 +84,8 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 		this._items.push(item);
 	}
 	
+	// REVIEW: I don't understand the description, can we clarify?
+	// This function selects the first value in the component for which the delegate function returns true.
 	/**
 	 * Call from delegate to FindIndex
 	 * @param {function} delegate  - Delegate function
