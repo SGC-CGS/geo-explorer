@@ -85,7 +85,23 @@ export default class Configuration {
 			id: this.json.identify[geo].id,
 			name: this.json.identify[geo][fld]
 		}
-	}
+    }
+
+    /**
+     * Get the geo Type
+     * @param {any} geo
+     */
+    GeoType(geo) {
+        return this.json.geoType[geo];
+    }
+
+    /**
+     * Get the geo schema
+     * @param {any} geo
+     */
+    GeoSchema(geo) {
+        return this.json.geoSchema[geo];
+    }
 
     /**
      * @description

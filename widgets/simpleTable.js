@@ -23,18 +23,16 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("PagesLabel_Title", "fr", "Page {0} sur {1}");    
 
         // Column headers
-        nls.Add("ColHeader_code", "en", "Code");
-        nls.Add("ColHeader_code", "fr", "Code");
-        nls.Add("ColHeader_name", "en", "Name");
-        nls.Add("ColHeader_name", "fr", "Nom");
-        nls.Add("ColHeader_terminated", "en", "Terminated");
-        nls.Add("ColHeader_terminated", "fr", "Terminé");
-        nls.Add("ColHeader_vintage", "en", "Vintage");
-        nls.Add("ColHeader_vintage", "fr", "Vintage");
+        nls.Add("ColHeader_code", "en", "DGUID");
+        nls.Add("ColHeader_code", "fr", "IDUGD");
+        nls.Add("ColHeader_name", "en", "Geography Name");
+        nls.Add("ColHeader_name", "fr", "Nom de la géographie");
+        nls.Add("ColHeader_vintage", "en", "Geography Vintage");
+        nls.Add("ColHeader_vintage", "fr", "Vintage de la géographie");
         nls.Add("ColHeader_value", "en", "Value");
         nls.Add("ColHeader_value", "fr", "Valeur");
-        nls.Add("ColHeader_date", "en", "Date");
-        nls.Add("ColHeader_date", "fr", "Date");
+        nls.Add("ColHeader_date", "en", "Reference Period");
+        nls.Add("ColHeader_date", "fr", "Période de référence");
         nls.Add("ColHeader_frequency", "en", "Frequency");
         nls.Add("ColHeader_frequency", "fr", "Fréquence");
         nls.Add("ColHeader_scalar", "en", "Scalar factor");
@@ -44,9 +42,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("ColHeader_status", "en", "Status");
         nls.Add("ColHeader_status", "fr", "Statut");
         nls.Add("ColHeader_symbol", "en", "Symbol");
-        nls.Add("ColHeader_symbol", "fr", "Symbole");
-        nls.Add("ColHeader_uom", "en", "Unit of measure");
-        nls.Add("ColHeader_uom", "fr", "Unité de mesure");        
+        nls.Add("ColHeader_symbol", "fr", "Symbole");        
     }
 
 	/**
@@ -80,8 +76,8 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
      */
     CreateHeaders() {
 
-        this._headers = ["code", "name", "terminated", "vintage", "value", "date",
-            "frequency", "scalar", "security", "status", "symbol", "uom"];
+        this._headers = ["code", "name", "vintage", "value", "date",
+            "frequency", "scalar", "security", "status", "symbol"];
         
         // It will be the first row in the table body
         // to avoid formatting problems and alighning columns between table header and body
@@ -99,7 +95,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 	 * Update the table content with the datapoints 
 	 * @param {object} datapoints - Selected locations from map
 	 */
-    Populate(datapoints, data, codesets) {
+    Populate(datapoints, data, codesets, type, schema) {
         this.CreateHeaders();
 
         this._tableData = [];
@@ -107,11 +103,9 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         datapoints.forEach(dp => {
             var tr = {};
 			
-			// REVIEW: Don't know if we need to show everything, we'll see what the group says.
-            tr.code = dp.code;
+			tr.code = dp.vintage + type + schema + dp.code;
             tr.id = dp.id;
             tr.name = Core.locale == "en" ? dp.nameEn : dp.nameFr;
-            tr.terminated = dp.terminated;
             tr.type = dp.type;
             tr.vintage = dp.vintage;
 
@@ -124,23 +118,23 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             tr.status = "";
             tr.symbol = "";
             tr.value = "";
-            tr.uom = "";
-
+            
             var dataobj = data[dp.code];
 
             if (dataobj && dataobj.value) {
                 tr.date = dataobj.date;
                 tr.decimals = dataobj.decimals;
-                tr.value = dataobj.value;
                 tr.release = dataobj.release;
 
+                // Localization for value
+                tr.value = dataobj.Format(Core.locale);
+                
                 // Decode the values using codesets
 				tr.frequency = codesets.frequency(dataobj.frequency) || "";
                 tr.scalar = codesets.scalar(dataobj.scalar) || "";
                 tr.security = codesets.security(dataobj.security) || "";
                 tr.status = codesets.status(dataobj.status) || "";
-                tr.symbol = codesets.symbol(dataobj.symbol) || "";
-                tr.uom = codesets.uom(dataobj.uom) || "";
+                tr.symbol = codesets.symbol(dataobj.symbol) || "";                
             }
                 
             this._tableData.push(tr);

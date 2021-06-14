@@ -165,8 +165,14 @@ export default class Application extends Templated {
     }
 
     LoadTable(data) {
+		// NOTE: Maybe this could be integrated with the CODR class directly instead of config.
+		// I think I'd also suggest modifying the geoMembers before calling the populate function.
+        var geo = CODR.GeoLookup(this.metadata.geoLevel);
+        var type = this.config.GeoType(geo);
+        var schema = this.config.GeoSchema(geo);
+
         this.Elem("table").Clear();
-        this.Elem("table").Populate(this.metadata.geoMembers, data, this.codesets);
+        this.Elem("table").Populate(this.metadata.geoMembers, data, this.codesets, type, schema);
     }
 	
 	WaitForLayer(layer) {
@@ -184,19 +190,23 @@ export default class Application extends Templated {
         var geo = CODR.GeoLookup(this.metadata.geoLevel);
         var identify = this.config.Identify(geo);
         var fid = ev.feature.attributes[identify.id];
-	
-        // Get the value corresponding to the datapoint, properly formatted for French and English 
-        // Ex: French: 35 024, 56   -   English 35, 204.56        
-        var title = ev.feature.attributes[identify.name] + " (" + fid + ")";
+        var member = this.metadata.geoMembers.find(dp => dp.code == fid);
 
-        // Get the vintage / reference period
-		var member = this.metadata.geoMembers.find(dp => dp.code == fid);
-        var refPer = "";
+        var geoVintage = "";
         if (member) {
-			refPer = member.vintage;
+            geoVintage = member.vintage;
         }
 
-        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], refPer);
+		// NOTE: Similar to above, we can probably isolate this logic in a single place.
+        // Derive the DGUID from the vintage, type, schema and geographic feature id
+        var type = this.config.GeoType(geo);
+        var schema = this.config.GeoSchema(geo);
+        var dguid = geoVintage + type + schema + fid;
+        var title = ev.feature.attributes[identify.name] + " (" + dguid + ")";
+
+        // Get the value corresponding to the datapoint, properly formatted for French and English
+        // Ex: French: 35 024, 56   -   English 35, 204.56        
+        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], geoVintage);
 		
 		this.map.popup.open({ location:ev.mapPoint, title:title, content: content });
     }
