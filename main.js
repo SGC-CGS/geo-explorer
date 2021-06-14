@@ -60,7 +60,8 @@ function LoadEsri() {
 				 "esri/views/draw/Draw",
 				 "esri/widgets/BasemapGallery", 
 				 "esri/widgets/Bookmarks", 
-				 "esri/widgets/Fullscreen"], 
+				 "esri/widgets/Fullscreen", 
+				 "esri/widgets/Home"], 				 
 				 
 				 function(jsonUtils, 
 						  Renderer, 
@@ -77,8 +78,10 @@ function LoadEsri() {
 						  Draw, 
 						  BasemapGallery, 
 						  Bookmarks, 
-						  Fullscreen) {
+						  Fullscreen,
+						  Home) {							  
 			
+			// TODO: This needs to be moved to the API layer maybe
 			window.ESRI = {
 				core : { 
 					urlUtils : urlUtils,
@@ -110,7 +113,8 @@ function LoadEsri() {
 				widgets : {
 					Fullscreen : Fullscreen,
 					BasemapGallery : BasemapGallery,
-					Bookmarks : Bookmarks
+					Bookmarks : Bookmarks,
+					Home : Home
 				}
 			}
 
