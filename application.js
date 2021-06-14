@@ -18,14 +18,33 @@ import Search from './widgets/search.js';
 import Table from './widgets/table.js';
 import wChart from './widgets/wChart.js';
 
+/**
+ * Application module
+ * @module application
+ * @extends Templated
+ */
 export default class Application extends Templated { 
 
+	/**
+	 * Get configuration data
+	 */
 	get config() { return this._config; }
 	
+	/**
+	 * Get context from config
+	 */
 	get context() { return this._config.context; }
 
+	/**
+	 * Get current behavior
+	 */
 	get behavior() { return "pointselect"; }
 
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
 	static Nls(nls) {
 		nls.Add("Selector_Title", "en", "Select Data");
 		nls.Add("Selector_Title", "fr", "Sélectionner des données");
@@ -42,11 +61,25 @@ export default class Application extends Templated {
 		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
 		nls.Add("Search_Icon_Alt", "fr", "Loupe");
 		nls.Add("Fullscreen_Title", "en", "Fullscreen");
-		nls.Add("Fullscreen_Title", "fr", "Plein écran");		
+		nls.Add("Fullscreen_Title", "fr", "Plein écran");
 		nls.Add("Home_Title", "en", "Default map view");
 		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
+		nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
+		nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");
+		nls.Add("Table_Label_Popup1", "en", "Statistics Canada.");
+		nls.Add("Table_Label_Popup1", "fr", "Statistique Canada.");
+		nls.Add("Table_Label_Popup2", "en", "Table ");
+		nls.Add("Table_Label_Popup2", "fr", "Tableau");
+		nls.Add("Table_Label_Popup_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
+		nls.Add("Table_Label_Popup_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");						
 	}
 
+	/**
+	 * Call constructor of base class (Templated) and initialize application
+	 * @param {object} node - Application div
+	 * @param {object} config - Configuration data
+	 * @returns {void}
+	 */
 	constructor(node, config) {		
 		super(node);
 
@@ -116,6 +149,15 @@ export default class Application extends Templated {
 
 	}
 	
+	/**
+	 * Add map overlay.
+	 * @param {object} menu - Menu items
+	 * @param {string} id - Overlay Id (ex. "selector")
+	 * @param {string} title - Title to show at top of overlay
+	 * @param {object} widget - Widget to load in the overlay
+	 * @param {string} position - Position of overlay on map (ex. "top-right")
+	 * @returns {void}
+	 */
 	AddOverlay(menu, id, title, widget, position) {
 		var overlay = new Overlay(this.Elem("map-container"));
 		
@@ -130,6 +172,13 @@ export default class Application extends Templated {
 		this.map.Place([overlay.roots[0]], position);
 	}
 	
+	/**
+	 * Adds the behavior and handles the event for generating popup and table from map selection.
+	 * @param {object} map - Map object to which the behavior will be applied
+	 * @param {object} context - Context object for retrieving the sublayer
+	 * @param {object} config - Configuration data
+	 * @returns {void}
+	 */
 	AddIdentifyBehavior(map, context, config) {
 		var behavior = this.map.AddBehavior("pointselect", new IdentifyBehavior(map));
 
@@ -138,34 +187,57 @@ export default class Application extends Templated {
 		behavior.symbol = config.symbol("pointselect");
 
 		this.HandleEvents(behavior, ev => {
-			// REVIEW: Removed second HandleEvents because it adds double listeners  
-			// on busy and idle. They can be combined into one
-			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature);
+			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature); // popup
 			
 			this.Elem("table").data = ev.pointselect; 
 			this.Elem("chart").data = ev.pointselect;
 		});	
 	}
 	
+	/**
+	 * Show the popup for the selected map point.
+	 * @param {object} mapPoint - Object containing the coordinates of the selected map point
+	 * @param {object} f - Layer containing the attributes of the selected polygon
+	 * @returns {void}
+	 */
 	ShowInfoPopup(mapPoint, f) {
-		// REVIEW: all of the following field names should come from the config file. 
-		// REVIEW: the config file should handle the locale for fields.
-		var locale = Core.locale.toUpperCase();
+		// REVIEW: Tried to clean this up a bit, not sure if it worked.
+		var p = this.config.popup;
+		var uom = f.attributes[p.uom];
+		var value = f.attributes[p.value]
+		var symbol = f.attributes[p.symbol];
+		var indicators = this.context.IndicatorItems().map(f => `<li>${f.label}</li>`).join("");
+		var nulldesc = f.attributes[p.nulldesc] || '';
 		
-		var title = f.attributes[`DisplayNameShort_${locale}`];
-		var unit = f.attributes[`UOM_${locale}`];
-		var value = f.attributes[`FormattedValue_${locale}`];
-		var html = f.attributes[`IndicatorDisplay_${locale}`];
-		var value_symbol = (f.attributes[`Symbol`] && value != "F") ? f.attributes[`Symbol`] : ''; /* prevents F from displaying twice */
-		var value_symbol_foot = f.attributes[`Symbol`] || ''; 
-		var symbol_desc = f.attributes[`NullDescription_${locale}`] || '';
-		var content = `<b>${unit}</b>: ${value} <sup>${value_symbol}</sup><br><br>${html}<br><sup>${value_symbol_foot}</sup> ${symbol_desc}`;
+		// prevent F from displaying twice
+		symbol = symbol && value != "F" ? symbol : ''; 
 		
-		this.map.popup.open({ location:mapPoint, title:title, content:content });
-
+		var url, link = ``, prod = this.context.category.toString();
+		
+		if (prod.length == 8) {
+			url = this.config.tableviewer.url + this.context.category + "01";
+			prod = prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
+			link = this.Nls('Table_Label_Popup_Link', [url, prod]);
+		}
+		
+		var content = `<b>${uom}</b>: ${value}<sup>${symbol}</sup>` + 
+					  `<br><br>` + 
+					  `<div><b>${this.Nls("Indicator_Title_Popup")}</b>:` +
+						 `<ul>${indicators}</ul>` +
+						 `${link}` +
+					  `</div>` + 
+					  `<br>` +
+					  `<sup>${symbol}</sup> ${nulldesc}`;
+		
+		this.map.popup.open({ location:mapPoint, title:f.attributes[p.title], content:content });
 	}
 	
-	// Add event handler
+	/**
+	 * Handle events for the specified node..
+	 * @param {object} node - Node to which the event handler will be added (ex. Map)
+	 * @param {object} changeHandler - Change handler that will be added if specified
+	 * @returns {void}
+	 */
 	HandleEvents(node, changeHandler) {
 		if (changeHandler) node.On('Change', changeHandler);
 		
@@ -174,6 +246,11 @@ export default class Application extends Templated {
 		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
 
+	/**
+	 * Clear map and specified elements when user makes a selector change.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnSelector_Change(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
@@ -186,16 +263,31 @@ export default class Application extends Templated {
 		this.Elem("table").Update(this.context);
 	}
 	
+	/**
+	 * Update the renderer and legend when map style is changed.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnStyler_Change(ev) {	
 		this.context.sublayer.renderer = ev.renderer;
 		
 		this.Elem("legend").Update(this.context);
 	}
 	
+	/**
+	 * Update the layer opacity from the event.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnLegend_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
 	}
 
+	/**
+	 * Show or hide the legend
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnLegend_LayerVisibility(ev) {
 		var l = this.map.layer(ev.data.id);
 
@@ -204,38 +296,77 @@ export default class Application extends Templated {
 		l.visible = ev.checked;
 	}
 
+	/**
+	 * Show or hide the map labels.
+	 * @param {object} ev - Event object
+	 * @returns{void}
+	 */
 	onLegend_LabelName(ev) {
 		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 	
+	/**
+	 * Go to specified location when location search box value changes.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnSearch_Change(ev) {		
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
+	/**
+	 * Zoom to the selected location when a table row is clicked.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnTable_RowClick(ev) {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
+	/**
+	 * Remove item from table and map selection when delete button is clicked on a table row.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
 		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
 		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
 	}
 	
+	/**
+	 * Show waiting indicator while widget is performing a task.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */
 	OnWidget_Busy(ev) {
 		this.Elem("waiting").Show();
 	}
 	
+	/**
+	 * Hide waiting indicator when widget is idle.
+	 * @param {object} ev - Event object
+	 * @returns {void}
+	 */	
 	OnWidget_Idle(ev) {
 		this.Elem("waiting").Hide();
 	}
 	
+	/**
+	 * Show error message when application encounters a problem.
+	 * @param {object} error - Error object
+	 * @returns {void}
+	 */
 	OnApplication_Error(error) {
 		alert(error.message);
 		
 		console.error(error);
 	}
 
+	/**
+	 * Return application HTML.
+	 * @returns {string} HTML string
+	 */
 	Template() {
 		return	"<div class='top-container'>" +
 					"<img class='button-icon large-icon search' src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +

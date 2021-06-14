@@ -255,5 +255,37 @@
             "name": "Kingston",
             "extent": [[-76.904469, 44.095203], [-76.167373, 44.740694]]
         }
-    ]
+    ],
+    "popup": {
+        "title": {
+            "en": "DisplayNameShort_EN",
+            "fr": "DisplayNameShort_FR"
+        }, 
+        "uom": {
+            "en": "UOM_EN",
+            "fr": "UOM_FR"
+        },
+        "value": {
+            "en": "FormattedValue_EN",
+            "fr": "FormattedValue_FR"
+        },
+        "indicator": {
+            "en": "IndicatorDisplay_EN",
+            "fr": "IndicatorDisplay_FR"
+        },
+        "symbol": {
+            "en": "Symbol",
+            "fr": "Symbol"
+        }, 
+        "nulldesc": {
+            "en": "NullDescription_EN",
+            "fr": "NullDescription_FR"
+        }
+    },
+    "tableviewer": {
+        "url": {
+            "en": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=",
+            "fr": "https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid="
+        }
+    }    
 }

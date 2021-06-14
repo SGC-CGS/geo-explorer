@@ -5,26 +5,32 @@ import Context from './context.js';
  * Configuration module
  * @module components/configuration
  * @description Grab all the JSON content from application.json
- * and use get accessors to retrieve parts of the content.
- * You can see the accessors being used in application.js.
+ * and use get accessors to retrieve content for application.js.
  */
 export default class Configuration {
-	
+// REVIEW: We need to organize this by section. For example, a map section containing all the map config.
+// a table section with everything table related, etc.
+
 	/**
-	 * @description get the map object and all its contents
+	 * Get the map object from the json
 	 */
 	get map() { return this._json.map; }
 	
 	/**
-	 * @description get the MapServer url for the map
+	 * Get the MapServer url for the map from the json
 	 */
 	get mapUrl() { return this._json.map.url; }
 	
 	/**
-	 * @description get the opacity of the map
+	 *Get the opacity of the map from the json
 	 */
 	get mapOpacity() { return this._json.map.opacity; }
 	
+	/**
+	 * Get polygon symbology for specified behavior id
+	 * @param {string} id - Behavior id
+	 * @returns symbol - Symbol for the specified id
+	 */
 	symbol(id) {
 		var s = this._json.symbols[id];
 		
@@ -34,15 +40,13 @@ export default class Configuration {
 	}
 	
 	/**
-	 * @description get the context object and all its contents 
-	 * (subject, theme, category, etc.)
+	 * Get the context object (subject, theme, category, etc.)
 	 */
 	get context() { return this._context; }
 	
 
 	/**
-	 * @description get the chart configuration
-	 * (field)
+	 * Get the chart configuration (field)
 	 */
 	get chart() { 
 		return {
@@ -51,14 +55,12 @@ export default class Configuration {
 	}
 	
 	/**
-	 * @description get the table object and all its contents 
-	 * (headers)
+	 * Get the table object (headers)
 	 */
 	get table() { return this._json.table; }
 	
 	/**
-	 * @description Get the ids and labels for the table header.
-	 * @returns object containing ids and labels in the website's current language
+	 * Get the object with ids and labels for the table header.
 	 */
 	get tableHeaders() { 
 		return this._json.table.headers.map(h => {
@@ -69,13 +71,16 @@ export default class Configuration {
 		}); 
 	}
 
+	/**
+	 * Get a label from the json for locale
+	 */
+	// REVIEW: It seems like this isn't used anywhere. Double-check and delete.
 	get labelName() {
 		return this._json.name.label[Core.locale];
 	}
 
 	/**
-	 * @description Get the id, label, and url for the legend items
-	 * @returns object containing id, label and url of legend items
+	 * Get the object with id, label, and url for the legend items
 	 */
 	get legendItems(){
 		return this._json.legend.items.map(i => {
@@ -88,8 +93,7 @@ export default class Configuration {
 	}
 	
 	/**
-	 * @description Get the bookmarks in alphabetical order along 
-	 * with their extents
+	 * Get the alphabetized bookmarks and their extents
 	 */
 	get bookmarks() {
 		var bookmarks = this._json.bookmarks.sort((a,b) => {
@@ -112,7 +116,34 @@ export default class Configuration {
 			}
 		}); 
 	}
+
+	/**
+	 * Get fields by locale for popup from json 
+	 */
+	 get popup() {
+		var p = this._json.popup
+		return {
+			title : p.title[Core.locale],
+			uom : p.uom[Core.locale],
+			value : p.value[Core.locale],
+			indicator : p.indicator[Core.locale],
+			symbol : p.symbol[Core.locale],
+			nulldesc : p.nulldesc[Core.locale]
+		}; 
+	}	
 	
+	/**
+	 *  Get tableviewer by locale from json
+	 */
+	get tableviewer() {
+		return { url : this._json.tableviewer.url[Core.locale] }
+	}
+
+	/**
+	 * Initialize configuration class from application json
+	 * @param {object} json - application json data
+	 * @returns {void}
+	 */
 	constructor(json) {
 		this._json = json;
 		
