@@ -66,10 +66,6 @@ export default class Application extends Templated {
 		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
 		nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
 		nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");
-		nls.Add("Table_Label_Popup1", "en", "Statistics Canada.");
-		nls.Add("Table_Label_Popup1", "fr", "Statistique Canada.");
-		nls.Add("Table_Label_Popup2", "en", "Table ");
-		nls.Add("Table_Label_Popup2", "fr", "Tableau");
 		nls.Add("Table_Label_Popup_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
 		nls.Add("Table_Label_Popup_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");						
 	}
@@ -255,8 +251,7 @@ export default class Application extends Templated {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 
-		// Note: This assumes all behaviors have a target, this may change in the future.
-		this.map.behaviors.forEach(b => b.target = this.context.sublayer);
+		this.map.Behavior("pointselect").target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);

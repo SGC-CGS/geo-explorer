@@ -25,6 +25,20 @@
 	padding: 3px;
 }
 
+/* REVIEW: This style should be typeahead specific, not input-icon specific */
+.gexp .input-icon::before {
+    margin-left: -14px; 
+	font-family: "FontAwesome";
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+	font-weight: 900;
+	content: "\f0d7";
+	pointer-events: none;
+    color: gray;
+}
+
 .gexp button {
 	
 }
@@ -154,8 +168,7 @@
 }
 
 .prx .typeahead .input {
-	padding:3px 8px;
-	
+	padding:3px 16px 3px 8px;
     border-top-left-radius:2px;
     border-top-right-radius:2px;
 }
