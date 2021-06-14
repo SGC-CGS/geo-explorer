@@ -94,7 +94,7 @@ export default class Metadata {
      * @description
      * Get the product name 
      */
-	get productName() { return `${this.name} (${this.id})`;		 }
+	get productName() { return this.name + " (" + this.productLabel + ")"; }
 
     /**
      * @description
@@ -118,7 +118,21 @@ export default class Metadata {
      * @description
      * Get the frequency code 
      */
-	get frequency() { return this._json.frequencyCode; }
+    get frequency() { return this._json.frequencyCode; }
+
+    /**
+     * @description
+     * Get the product Label 
+     */
+    get productLabel() {
+        // Format the product ID according to CODR practices (DD-DD-DDDD)
+        var id = this.json.productId;
+		
+        if (id.length > 4) return id.substring(0, 2) + "-" + id.substring(2, 4) + "-" + id.substring(4);
+       
+		else return id;
+    }
+
 
 	constructor(json) {	
 		this.json = json;
