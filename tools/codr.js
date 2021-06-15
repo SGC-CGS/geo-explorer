@@ -8,9 +8,20 @@ import Vector from '../components/codr/vector.js';
 import CodeSets from '../components/codr/codesets.js';
 
 const URLS = {
-	metadata : "https://www150.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
+
+    metadata: "https://www150.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
     data: "https://www150.statcan.gc.ca/t1/wds/rest/getDataFromCubePidCoordAndLatestNPeriods",
     codesets: "https://www150.statcan.gc.ca/t1/wds/rest/getCodeSets"
+
+    /* old QA
+    metadata: "https://stc-ndm-qa-pc2.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
+    data: "https://stc-ndm-qa-pc2.statcan.gc.ca/t1/wds/rest/getDataFromCubePidCoordAndLatestNPeriods",
+    codesets: "https://stc-ndm-qa-pc2.statcan.gc.ca/t1/wds/rest/getCodeSets"*/
+    /* new QA
+    metadata: "https://stc-ndm-new-qa-pc2.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
+    data: "https://stc-ndm-new-qa-pc2.statcan.gc.ca/t1/wds/rest/getDataFromCubePidCoordAndLatestNPeriods",
+    codesets: "https://stc-ndm-new-qa-pc2.statcan.gc.ca/t1/wds/rest/getCodeSets"*/
+    
 }
 
 /**
@@ -44,7 +55,21 @@ export default class CODR {
 		"512": "DA",
 		"513": "DB",
 		"516": "ADA"
-	}
+    }
+
+    static geoType = {
+        "PR": "A",
+        "CD": "A",
+        "CCS": "S",
+        "CSD": "A"
+    }
+
+    static geoSchema = {
+        "PR": "0002",
+        "CD": "0003",
+        "CCS": "0502",
+        "CSD": "0005"
+    }
 	
 	static GeoNls() {
 		var nls = new Nls();
@@ -100,7 +125,7 @@ export default class CODR {
 	}
 	
 	static Post(url, data) {
-		var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
+        var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
 		var body = JSON.stringify(data);
 		var headers = { "Content-Type":"application/json" };
 		
@@ -108,7 +133,7 @@ export default class CODR {
     }
 
     static Get(url) {
-		var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
+        var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
         var headers = { "Content-Type": "application/json" };
 
         return Net.Get(proxy + url, headers, "json");
@@ -260,8 +285,22 @@ export default class CODR {
      */
 	static GeoLookup(code) {
 		return CODR.geoLookup[code];
-	}
+    }
 
+    /**
+     * Derive the DGUID from the vintage, type, schema and the feature ID
+     * @param {any} geoLevel
+     * @param {any} vintage
+     * @param {any} featureID
+     */
+    static GetDGUID(geoLevel, vintage, featureID) {
+        var geo = this.GeoLookup(geoLevel);
+        var DGUID = vintage + this.geoType[geo] + this.geoSchema[geo] + featureID;
+
+        return DGUID;
+    }
+
+   
     /**
      * @description
      * Get geo levels
