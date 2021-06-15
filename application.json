@@ -72,17 +72,5 @@
       "nameEn": "ENGNAME",
       "nameFr": "FRENAME"
     }
-  },
-  "geoType": {
-    "PR": "A",
-    "CD": "A",
-    "CCS": "S",
-    "CSD": "A"
-  },
-  "geoSchema": {
-    "PR": "0002",
-    "CD": "0003",
-    "CCS": "0502",
-    "CSD": "0005"
   }
 }

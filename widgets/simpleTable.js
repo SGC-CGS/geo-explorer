@@ -2,6 +2,7 @@
 import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import Net from "../../geo-explorer-api/tools/net.js";
+import CODR from '../../geo-explorer-api/tools/codr.js';
 
 /**
  * SimpleTable widget module
@@ -95,15 +96,16 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 	 * Update the table content with the datapoints 
 	 * @param {object} datapoints - Selected locations from map
 	 */
-    Populate(datapoints, data, codesets, type, schema) {
+    Populate(metadata, data, codesets) {
+        var datapoints = metadata.geoMembers;
+        
         this.CreateHeaders();
-
         this._tableData = [];
 
         datapoints.forEach(dp => {
             var tr = {};
 			
-			tr.code = dp.vintage + type + schema + dp.code;
+            tr.code = CODR.GetDGUID(metadata.geoLevel, dp.vintage, dp.code);
             tr.id = dp.id;
             tr.name = Core.locale == "en" ? dp.nameEn : dp.nameFr;
             tr.type = dp.type;

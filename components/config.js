@@ -88,22 +88,6 @@ export default class Configuration {
     }
 
     /**
-     * Get the geo Type
-     * @param {any} geo
-     */
-    GeoType(geo) {
-        return this.json.geoType[geo];
-    }
-
-    /**
-     * Get the geo schema
-     * @param {any} geo
-     */
-    GeoSchema(geo) {
-        return this.json.geoSchema[geo];
-    }
-
-    /**
      * @description
      * Get symbol by id
      * @param {String} id - id
