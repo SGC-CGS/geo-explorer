@@ -197,7 +197,6 @@ export default class Application extends Templated {
 	 * @returns {void}
 	 */
 	ShowInfoPopup(mapPoint, f) {
-		// REVIEW: Tried to clean this up a bit, not sure if it worked.
 		var p = this.config.popup;
 		var uom = f.attributes[p.uom];
 		var value = f.attributes[p.value]

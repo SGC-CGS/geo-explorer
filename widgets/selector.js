@@ -121,6 +121,10 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	LoadDropDown(select, items) {
 		select.Reset();
 
+		select.value = "";
+
+		select.numCharactersToShowMatches = 0;
+
 		select.store = items;
 		
 		select.disabled = false;
@@ -152,8 +156,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			
 			var select = new StaticTypeahead(div);
 
-			// REVIEW: This is where we would set the number of characters to type.
 			select.store = d.values;
+
+			select.numCharactersToShowMatches = 0;
 
 			select.placeholder = this.Nls("Selector_Filter_Placeholder");
 
@@ -189,10 +194,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
 
-			// REVIEW: This is the function call we want to avoid. Maybe it should be part of the 
-			// Loaddropdown function. Whenever no value is selected, show placeholder. 
-			this.Elem("sTheme").ResetInputLabel();
-
 		}, error => this.OnRequests_Error(error));		
 	}
 	
@@ -210,9 +211,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			this.Emit("Idle");
 		
 			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
-
-			// REVIEW: Same, see above
-			this.Elem("sCategory").ResetInputLabel();
 			
 		}, error => this.OnRequests_Error(error));		
 	}
@@ -238,44 +236,39 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	}
 	
 	/**
-	 * Update filter select element and call OnValueAndFilterChange() if sValue not disabled
+	 * Update filter select element. 
+	 * 
+	 * Also, enable sValue or call SendValueAndFilterToContext(). 
 	 * @param {*} ev - Event object
 	 * @returns {void}
 	 */
-	// REVIEW: I think I don't understand why we need to process the filters differently than the values as it was before.
-	// Was there a functional reason or is it for clarity?
 	OnFilterChange(ev) {
-		// REVIEW: Use ev.target instead of going through the index.
-		let index = this.filters.indexOf(ev.target);
+		// Update the selected filter TypeAhead value 
+		ev.target.value = ev.item
 
-		this.filters[index].value = ev.item;
+		let someFiltersWithNullValue  = this.filters.some(f => f.value == null);
 
-		let filterSelectComplete  = this.filters.some(f => f.value == null);
-
-		// REVIEW: There's a naming issue here, it's a bit confusing. filterSelectComplete == false means that 
-		// the selection is actually complete. The condition should be changed so that it's self-explanatory.
-		if (!this.Elem('sValue').disabled && filterSelectComplete == false) {
-			this.OnValueAndFilterChange();
+		// When sValue is enabled and all filters are not null valued
+		if (!this.Elem('sValue').disabled && someFiltersWithNullValue == false) {
+			this.SendValueAndFilterToContext();
 		} 
-		
-		else if (filterSelectComplete == false) {
+		// Enable sValue once all filters are not null valued
+		else if (someFiltersWithNullValue == false) {
 			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
-
-			this.Elem("sValue").ResetInputLabel();
 			
 			this.Elem('sValue').disabled = false;
 		}
 	}
 	
 	/**
-	 * Update value select element and call OnValueAndFilterChange()
+	 * Update value select element and call SendValueAndFilterToContext()
 	 * @param {*} ev - Event object
 	 * @returns {void}
 	 */
 	OnValue_Change(ev) {
 		this.Elem("sValue").value = ev.item;
 		
-		this.OnValueAndFilterChange();	
+		this.SendValueAndFilterToContext();	
 	}
 
 	/**
@@ -283,8 +276,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-	// REVIEW: This is named as an event handler but not used as an event handler
-	OnValueAndFilterChange() {
+	SendValueAndFilterToContext() {
 		var value = this.Elem("sValue").value.value;
 
 		var filters = this.filters.map((f, i)=> {
@@ -297,8 +289,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 			this.Emit("Idle");
 					
 			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
-
-			this.Elem("sGeography").ResetInputLabel();
 
 		}, error => this.OnRequests_Error(error));
 	}
