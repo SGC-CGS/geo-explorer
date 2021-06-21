@@ -56,7 +56,16 @@ export default class Map extends Evented {
 			center: options && options.center || [-100, 63], 
 			container: container, 
 			map: this._map,  
-			zoom: options && options.zoom || 4 
+			zoom: options && options.zoom || 4, 
+			constraints: options && options.constraints || {
+				geometry: {
+					type: "extent", 
+					xmin: -141, 
+					xmax: -53, 
+					ymin: 41, 
+					ymax: 83
+				} 
+			}
 		});
 		
 		this._view.popup.collapseEnabled = false;
