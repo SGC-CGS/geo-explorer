@@ -5,6 +5,7 @@ import Dom from '../geo-explorer-api/tools/dom.js';
 import Templated from '../geo-explorer-api/components/templated.js';
 import Map from '../geo-explorer-api/components/map.js';
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
+import HoverBehavior from '../geo-explorer-api/behaviors/point-hover.js';
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
 import Basemap from '../geo-explorer-api/widgets/basemap.js';
@@ -182,12 +183,83 @@ export default class Application extends Templated {
 		behavior.field = "GeographyReferenceId";
 		behavior.symbol = config.symbol("pointselect");
 
+		this.HighlightOnIdentifyHover(map, behavior);
+
 		this.HandleEvents(behavior, ev => {
 			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature); // popup
 			
 			this.Elem("table").data = ev.pointselect; 
 			this.Elem("chart").data = ev.pointselect;
 		});	
+	}
+
+	/**
+	 * 
+	 * {@link https://developers.arcgis.com/javascript/latest/sample-code/view-hittest/|ArcGIS API for JavaScript}
+	 * @param {*} map - Map object to which the behavior is applied
+	 * @param {*} behavior - Behavior on the map object
+	 */
+	HighlightOnIdentifyHover(map, behavior) {
+		// Set highlight color the same as the outline color
+		map.view.highlightOptions.color = behavior.symbol.outline.color;
+
+		// Only include graphics from pointhover for the hitTest
+		let options = { include: map.Layer("pointhover") };
+
+		let p = this.config.popup;
+
+		let highlight, currentTitle, currentChartElement;
+
+		map.view.when()
+			.then(() => { return behavior.layer.when(); })
+			.then(layer => { return map.view.whenLayerView(layer); })
+			.then(layerView => {
+				map.view.on("pointer-move", ev => {					
+					map.view.hitTest(ev, options).then(response => {
+						if (response.results.length) {
+							let graphic = response.results[0].graphic;
+							let title = graphic.attributes[p.title];
+	
+							if (highlight && currentTitle != title) {
+								highlight.remove();
+								highlight = null;
+								d3.select(currentChartElement).style("opacity", 1);
+								return;
+							}
+	
+							if (highlight) { return; }
+							
+							// Highlight the current feature being hovered over
+							layerView.queryGraphics().then(results => {
+								results.items.forEach(r => {
+									if(r.attributes[p.title] == title) {
+										highlight = layerView.highlight(r);
+										currentTitle = title;
+									}
+								})
+							});
+
+							// REVIEW: Not always gonna be a bar chart so `rect` should not be hardcoded
+							let chartData = this.Elem("chart").chart.g.selectAll('rect').data();
+
+							chartData.forEach((c, i) => {
+								if(c.label == title) {
+									currentChartElement = this.Elem("chart").chart.g.selectAll('rect').nodes()[i];
+									d3.select(currentChartElement).style("opacity", 0.5);
+								}
+							})
+
+						} else {
+							// remove the highlight if no features are returned from the hitTest
+							if (highlight) {
+								highlight.remove();
+								highlight = null;
+								d3.select(currentChartElement).style("opacity", 1);
+							}
+						}
+					});
+				});	
+			});
 	}
 	
 	/**
