@@ -332,7 +332,7 @@ export default class Requests {
 			query : (data)
 		});
 		
-		p.then(renderer => {
+		p.then(renderer => {			
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,
@@ -381,6 +381,16 @@ export default class Requests {
 					maxScale: 0
 				  }]
 			});
+			
+			sublayer.renderer.defaultSymbol = {
+				type: "simple-fill", 
+				color: [125,125,125, 1],
+				style: "solid",
+				outline: {  
+					color: [0, 0, 0, 1],
+					width: 1
+				}
+			}
 			
 			d.Resolve(sublayer);
 		}, error => { d.Reject(new Error(error.message)) });
