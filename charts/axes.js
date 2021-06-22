@@ -10,11 +10,10 @@
 export default class Axes { 
 
     /**
-     * @description
      * Create a new band scale for the x-axis with a domain composed of titles. 
-     * @param {Object} data - The entire dataset for the chart 
+     * @param {object[]} data - Array of objects containing data values and labels
      * @param {number} width - The extent to which the bands will be spread / mapped
-     * @returns A d3.scaleBand() function
+     * @returns {CreateBandXScale~inner} A d3.scaleBand() function
      */
     static CreateBandXScale(data, width){
         return d3.scaleBand()
@@ -26,13 +25,11 @@ export default class Axes {
     }
 
     /**
-     * @todo
-     * Update the domain later when a better dataset is available.
-     * @description
      * Create a new linear scale for the x-axis.
-     * @param {Object} data - The entire dataset for the chart 
+     * @param {object[]} data - Array of objects containing data values and labels
      * @param {number} width - The extent to which parts of the domain will be spread / mapped
-     * @returns A d3.scaleLinear() function
+     * @returns {CreateLinearXScale~inner} A d3.scaleLinear() function
+     * @todo Update the domain later when a better dataset is available.
      */
     static CreateLinearXScale(data, width){
         return d3.scaleLinear()
@@ -41,11 +38,10 @@ export default class Axes {
     }
 
     /**
-     * @description
      * Create a new linear scale for the y-axis with a domain composed of values.
-     * @param {Object} data - The entire dataset for the chart 
+     * @param {object[]} data - Array of objects containing data values and labels
      * @param {number} height - The extent to which the bands will be spread / mapped
-     * @returns A d3.scaleLinear() function
+     * @returns {CreateLinearYScale~inner} A d3.scaleLinear() function
      */
     static CreateLinearYScale(data, height){
         let max = (d3.max(data, d => d.value) == 0) ? 1 : d3.max(data, d => d.value);
@@ -63,13 +59,12 @@ export default class Axes {
     }
 
     /**
-     * @description
      * Create a function for the Left vertical axis on a chart. 
      * The function will be used to build the horizontal grid 
      * lines from the y-axis tick marks.
-     * @param {*} yScale - The linear scale for the vertical axis
-     * @param {*} width - The extent of the chart by width
-     * @returns A d3.axisLeft() function
+     * @param {function} yScale - The linear scale function for the vertical axis
+     * @param {number} width - The extent of the chart by width
+     * @returns {GridLineHorizontal~inner} A d3.axisLeft() function
      */
     static GridLineHorizontal(yScale, width) {
         return d3.axisLeft(yScale)
@@ -79,13 +74,12 @@ export default class Axes {
     }
     
     /**
-     * @description
      * Create a function for the bottom horizontal axis on a chart. 
      * The function will be used to build the vertical grid 
      * lines from the x-axis tick marks.
-     * @param {*} xScale - The linear scale for the horizontal axis
-     * @param {*} height - The extent of the chart by height
-     * @returns A d3.axisBottom() function
+     * @param {function} xScale - The linear scale function for the horizontal axis
+     * @param {number} height - The extent of the chart by height
+     * @returns {GridLineVertical~inner} A d3.axisBottom() function
      */
     static GridLineVertical(xScale, height) {
         return d3.axisBottom(xScale)

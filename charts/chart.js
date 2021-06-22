@@ -11,12 +11,23 @@ import Tooltip from "../../geo-explorer-api/ui/tooltip.js"
  */
 export default class Chart { 
 
+    /**
+     * Get / set data object for selected polygons
+     */
 	set data(value) { this._data = value; }
 	
 	get data() { return this._data; }
 
+    /**
+     * Get SVG object from chart
+     */
     get svg() { return this._svg; }
 
+    /** 
+     * Set up chart
+     * @param {object} options - Chart div object
+     * @returns {void}
+    */
     constructor(options) {
 		this.data = options.data;
         this.options = options;
@@ -37,13 +48,17 @@ export default class Chart {
         this.AddGroupToSVG();
     }
 
+    /**
+     * Get the scale colour scheme
+     * @returns {GetColor~inner} scaleOrdinal with categorical colour scheme
+     */
     GetColor() {
         return d3.scaleOrdinal(d3.schemeCategory20);
     }
 
     /**
-     * @description 
-     * Take the container element and append an SVG to it.
+     * Append an SVG element to the container
+     * @returns {void}
      */
     AppendSVGtoContainerElement() {
         return this.container.append("svg")
@@ -52,20 +67,18 @@ export default class Chart {
     }
 
     /**
-     * @description
-     * Dimensions are defined here for developing the chart. 
-     * Either a SME will define their own dimensions or use 
-     * default dimensions set by the programmer. 
+     * Use dimensions from options if specified, otherwise set up defaults.
+     * @returns {void}
      */
     BuildDimensions() {
-        this.dimensions = this.options.dimensions || null;
+        this.dimensions = this.options.dimensions || null; 
 
         if (!this.dimensions) this.SetDefaultDimensions(); 
     }
 
     /**
-     * @description
-     * Default dimensions set developing the chart. 
+     * Set the default dimensions of the chart
+     * @returns {void}
      */
     SetDefaultDimensions() {
         let margin = {top: 20, bottom: 70, right: 0, left: 55};
@@ -85,8 +98,8 @@ export default class Chart {
     }
 
     /**
-     * @description
-     * Put the group within the view of the SVG.
+     * Append the graphics group to the SVG and set matching dimensions.
+     * @returns {void}
      */
     AddGroupToSVG() {
         this.g = this.svg.append('g').attr(
@@ -96,9 +109,8 @@ export default class Chart {
     }
 
     /**
-     * @description
-     * Draw the bottom horizontal axis on the group element, and adjust the elements 
-     * at the tick marks to not exceed the extent of the SVG.
+     * Set the attributes of the bottom horizontal axis on the group element
+     * @returns {void}
      */
      SetBottomAxisAttributes () {
         let translateX = -10;
@@ -109,19 +121,19 @@ export default class Chart {
             .call(d3.axisBottom(this.xScale))
             .selectAll("text")
             .attr("transform", `translate(${translateX}, 0)rotate(${angle})`)
+            // adjust elements at tick marks to not exceed the extent of the SVG.
             .text((d) => {
-				return d.length > 15 ? d.substring(0, 13) + "..." : d;
+				return d.length > 15 ? d.substring(0, 13) + "..." : d; 
 			})
             .style("text-anchor", "end");
     }
 
     /**
-     * @description
-     * When you enter into a chart element (slice of a pie, dot on a scatter plot, etc.),
-     * the element will show a tooltip 
+     * Show tooltip and update opacity when mouse enters chart element (bar, pie slice, scatterplot dot, etc.)
      * @param {String} title - Current chart element title
      * @param {String} value - Current chart element value
-     * @param {Element} current - Current chart element (pie slice, dot on scatter plot, etc.)
+     * @param {Element} current - Current chart element (bar, pie slice, scatterplot dot, etc.)
+     * @returns {void}
      */
     OnMouseEnter(title, value, current) {
         d3.select(current).style("opacity", 0.5);
@@ -130,18 +142,17 @@ export default class Chart {
     }
 
     /**
-     * @description
-     * The tooltip will move with the new mouse position
-     * within the chart element
+     * When mouse moves, tooltip follows pointer within the chart element
+     * @returns {void}
      */
     OnMouseMove() {
         this.tooltip.Show(d3.event.pageX + 10, d3.event.pageY - 28)
     }
 
     /**
-     * @description
-     * Activates once the mouse leaves the chart element
+     * Hide tooltip and update opacity when mouse leaves the chart element
      * @param {Element} current - Current chart element (pie slice, dot on scatter plot, etc.)
+     * @returns {void}
      */
     OnMouseLeave(current) {
         d3.select(current).style("opacity", 1);

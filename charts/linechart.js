@@ -14,6 +14,12 @@ import Axes from "./axes.js";
  * more information on the D3 concepts presented in this code.
  */
 export default class LineChart extends Chart{ 
+
+    /**
+     * Set up line chart
+     * @param {object} options - Chart div object
+     * @returns {void}
+     */    
     constructor(options) {
         super(options)
 
@@ -41,37 +47,37 @@ export default class LineChart extends Chart{
     }
 
     /**
-     * @description
-     * First, the scales for the x and y axes are created.
-     * Next, grid lines are drawn vertically and horizontally. 
-     * Finally the axes are drawn and a line is drawn between data points.
+     * Draw line chart
+     * @returns {void}
      */
     Draw(){
+
+        // Create scales for the x and y axes 
         this.xScale = Axes.CreateLinearXScale(this.data, this.dimensions.innerWidth);
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
+        // Draw horitzontal and vertical gridlines
         this.g.selectAll("g.x.axis-grid")
             .call(Axes.GridLineVertical(this.xScale, this.dimensions.innerHeight));
 
         this.g.selectAll("g.y.axis-grid")
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
-
+        // Draw axes
         this.g
 			.selectAll("g.left.axis")
 			.call(d3.axisLeft(this.yScale).ticks())
 
         this.SetBottomAxisAttributes();
 
+        // Draw line between datapoints
         this.AppendLineToChart();
     }
 
     /**
-     * @description
-     * Generate a multi-connected line and append 
-     * it to the chart with transitions. The multi-connected
-     * line will need to be redrawn every time new data is added
-     * or removed.
+     * Generate a multi-connected line and append it to the chart with transitions. 
+     * Needs to be redrawn every time new data is updated.
+     * @returns {void}
      */
      AppendLineToChart() {
         // Create line generator

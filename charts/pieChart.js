@@ -9,6 +9,12 @@ import Chart from "./chart.js";
  * more information on the D3 concepts presented in this code.
  */
 export default class PieChart extends Chart { 
+
+    /**
+     * Set up pie chart
+     * @param {object} options - Chart div object
+     * @returns {void}
+     */
     constructor(options) {
         super(options);
 		
@@ -34,15 +40,12 @@ export default class PieChart extends Chart {
     }
 
     /**
-     * @description
-     * d3.pie() is used to set up the pieChart based on the data 
-     * and d3.arc() is used for getting the right shape and angles. 
-     * Pie slices and elements in the legend may be removed or 
-     * added depending on the case of the redraw function. 
+     * Draw the pie chart
+     * @returns {void}
      */
     Draw() {
-        // Set up pie chart based on data. Arc is used for getting
-        // the right shape and angles
+        // Set up pie chart based on data (d3.pie). 
+        // d3.arc() is used for getting the right shape and angles
         let pie = d3.pie().value((d) => d.value)(this.data);
         let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0);
 
@@ -70,13 +73,14 @@ export default class PieChart extends Chart {
             });
             this.circle.exit().remove();
         
+        // Pie slices and elements in the legend may be removed or 
+        // added depending on the case of the redraw function. 
         this.Legend();
     }
 
     /**
-     * @description
-     * Fill the foreignObject's div with html content relating 
-     * to the pieChart.
+     * Build the chart legend and add it to the div as a foreignObject
+     * @returns {void}
      */
     Legend() {
         let htmlContent = this.data

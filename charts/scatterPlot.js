@@ -10,6 +10,12 @@ import Axes from "./axes.js";
  * more information on the D3 concepts presented in this code.
  */
 export default class ScatterPlot extends Chart{ 
+
+    /**
+     * Set up Scatter plot chart
+     * @param {object} options - Chart div object
+     * @returns {void}
+     */       
     constructor(options) {
         super(options);
 
@@ -40,35 +46,37 @@ export default class ScatterPlot extends Chart{
     }
 
     /**
-     * @description
-     * First, the scales for the x and y axes are created.
-     * Next, grid lines are drawn vertically and horizontally. 
-     * Finally the axes and points are drawn.
+     * Draw the scatterplot
+     * @returns {void}
      */
     Draw(){
+        // Create x and y axes scales
         this.xScale = Axes.CreateLinearXScale(this.data, this.dimensions.innerWidth);
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
 
+        // Draw vertical and horizontal gridlines
         this.g.selectAll("g.x.axis-grid")
             .call(Axes.GridLineVertical(this.xScale, this.dimensions.innerHeight));
 
         this.g.selectAll("g.y.axis-grid")
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
+        // Draw axes
         this.g
 			.selectAll("g.left.axis")
 			.call(d3.axisLeft(this.yScale).ticks())
 
         this.SetBottomAxisAttributes();
 
+        // Append datapoints
         this.AppendPointsToChart();
     }
 
     /**
-     * @description
      * Add a point to each desired coordinate and transition
      * from left to right of the scatterPlot. Points may be
      * removed or added depending on the case of the redraw function. 
+     * @returns {void}
      */
     AppendPointsToChart() {
         let points = this.points.selectAll("circle").data(this.data);

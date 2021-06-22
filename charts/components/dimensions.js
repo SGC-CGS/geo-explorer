@@ -1,4 +1,6 @@
-
+/**
+ * Sample code not currently in use.
+ */
 export default class Dimensions { 
 
 	get height() { return this._height; }
