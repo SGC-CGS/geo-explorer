@@ -39,7 +39,9 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		nls.Add("Legend_Unavailable", "en", "unavailable");
 		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
 		nls.Add("Legend_Item", "en", "{0} to {1}");
-		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");		
+		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
+		nls.Add("No_Data", "en", "Value Not Available");	
+		nls.Add("No_Data", "fr", "Valeur Non-Disponible");
 	}
 	
 	/**
@@ -51,12 +53,21 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	constructor(container, info) {	
 		super(container, info);
 		
-		this.min = info.minValue;
-		this.max = info.maxValue;
+		if(info.minValue != null && info.maxValue != null) {
+
+			this.min = info.minValue;
+			this.max = info.maxValue;
 		
-		var lMin = Core.LocalizeNumber(this.min);
-		var lMax = Core.LocalizeNumber(this.max);
+			var lMin = Core.LocalizeNumber(this.min);
+			var lMax = Core.LocalizeNumber(this.max);
 		
-		this.label = this.Nls("Legend_Item", [lMin, lMax]);
+			this.label = this.Nls("Legend_Item", [lMin, lMax]);
+
+		} else {
+
+			this.label = this.Nls("No_Data");
+
+		}
+
 	}
 })

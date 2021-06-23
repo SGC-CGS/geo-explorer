@@ -62,7 +62,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 	}
 	
 	/**
-	 * Load indicators and class breaks and clear checked values on legend widget
+	 * Load indicators and class breaks and clear any checked values on legend widget
 	 * @param {object} context - Context object
 	 * @returns {void}
 	 */	
@@ -70,7 +70,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 		this.context = context;
 		
 		this.LoadIndicators(context.IndicatorItems());
-		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
+		this.LoadClassBreaks(context.sublayer.renderer); 
 
 		this.Elem("labelChk").checked = false;
 		this.Elem("labelChk").removeAttribute("checked");
@@ -91,18 +91,21 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 	}
 	
 	/**
-	 * Create legend break object from class break info
-	 * @param {object[]} classBreakInfos - Object describing class breaks
+	 * Create legend break objects from renderer class breaks and default symbol
+	 * @param {object} renderer - Renderer object describing class breaks and default symbol
 	 * @returns {void}
 	 */
-	LoadClassBreaks(classBreakInfos) {
+	LoadClassBreaks(renderer) {
 		Dom.Empty(this.Elem("breaks"));
 		
-		this.breaks = classBreakInfos.map((c, i) => {
-			return new LegendBreak(this.Elem('breaks'), c);
+		this.breaks = renderer.classBreakInfos.map((c, i) => { 
+			return new LegendBreak(this.Elem('breaks'), c); 
 		});
+
+		this.breaks.push(new LegendBreak(this.Elem('breaks'), {symbol: renderer.defaultSymbol})); 
+
 	}
-	
+
 	/**
 	 * Add context layer information to Dom
 	 * @param {string} label - Label for context layer
