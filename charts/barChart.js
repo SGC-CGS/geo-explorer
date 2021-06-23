@@ -18,6 +18,8 @@ export default class BarChart extends Chart{
     constructor(options) {
         super(options)
 
+        this.chartDataType = 'rect';
+
         this.color = this.GetColor();
 
         // Append the grid line group
@@ -63,11 +65,11 @@ export default class BarChart extends Chart{
      * removed or added depending on the case of the redraw function. 
      */
     AppendRectanglesToChart(){
-        let rectangles = this.g.selectAll("rect").data(this.data);
+        let rectangles = this.g.selectAll(this.chartDataType).data(this.data);
               
         rectangles
             .enter()
-            .append("rect")
+            .append(this.chartDataType)
             .merge(rectangles)
             .attr("x", (d) => this.xScale(d.label))
             .attr("y", this.yScale(0))
@@ -92,7 +94,7 @@ export default class BarChart extends Chart{
      * all the rectangles to the appropriate height.
      */
     TransitionOnTheVertical() {
-        this.g.selectAll("rect")   
+        this.g.selectAll(this.chartDataType)   
             .transition()
             .duration(700)
             .ease(d3.easeLinear)

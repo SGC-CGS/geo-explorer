@@ -5,7 +5,6 @@ import Dom from '../geo-explorer-api/tools/dom.js';
 import Templated from '../geo-explorer-api/components/templated.js';
 import Map from '../geo-explorer-api/components/map.js';
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
-import HoverBehavior from '../geo-explorer-api/behaviors/point-hover.js';
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
 import Basemap from '../geo-explorer-api/widgets/basemap.js';
@@ -135,6 +134,8 @@ export default class Application extends Templated {
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
 			this.map.Behavior("pointselect").Activate();
+
+			this.HighlightOnBehaviorHover(this.map, this.map.Behavior("pointselect"));
 			
 		}, error => this.OnApplication_Error(error));
 
@@ -183,8 +184,6 @@ export default class Application extends Templated {
 		behavior.field = "GeographyReferenceId";
 		behavior.symbol = config.symbol("pointselect");
 
-		this.HighlightOnIdentifyHover(map, behavior);
-
 		this.HandleEvents(behavior, ev => {
 			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature); // popup
 			
@@ -194,28 +193,26 @@ export default class Application extends Templated {
 	}
 
 	/**
-	 * 
+	 * Allows two-way sync between map and chart where when you hover over one, the other is highlighted
 	 * {@link https://developers.arcgis.com/javascript/latest/sample-code/view-hittest/|ArcGIS API for JavaScript}
 	 * @param {*} map - Map object to which the behavior is applied
 	 * @param {*} behavior - Behavior on the map object
 	 */
-	HighlightOnIdentifyHover(map, behavior) {
+	 HighlightOnBehaviorHover(map, behavior) {
 		// Set highlight color the same as the outline color
 		map.view.highlightOptions.color = behavior.symbol.outline.color;
-
-		// Only include graphics from pointhover for the hitTest
-		let options = { include: map.Layer("pointhover") };
 
 		let p = this.config.popup;
 
 		let highlight, currentTitle, currentChartElement;
 
+		// When hovering over the map
 		map.view.when()
 			.then(() => { return behavior.layer.when(); })
 			.then(layer => { return map.view.whenLayerView(layer); })
-			.then(layerView => {
-				map.view.on("pointer-move", ev => {					
-					map.view.hitTest(ev, options).then(response => {
+			.then(layerView => {			
+				map.view.on("pointer-move", ev => {				
+					map.view.hitTest(ev).then(response => {
 						if (response.results.length) {
 							let graphic = response.results[0].graphic;
 							let title = graphic.attributes[p.title];
@@ -239,18 +236,19 @@ export default class Application extends Templated {
 								})
 							});
 
-							// REVIEW: Not always gonna be a bar chart so `rect` should not be hardcoded
-							let chartData = this.Elem("chart").chart.g.selectAll('rect').data();
-
+							// REVIEW: Test for other chart types
+							let chartDataType = this.Elem("chart").chart.chartDataType;
+							let chartData = this.Elem("chart").chart.g.selectAll(chartDataType).data();
+							
 							chartData.forEach((c, i) => {
 								if(c.label == title) {
-									currentChartElement = this.Elem("chart").chart.g.selectAll('rect').nodes()[i];
+									currentChartElement = this.Elem("chart").chart.g.selectAll(chartDataType).nodes()[i];
 									d3.select(currentChartElement).style("opacity", 0.5);
 								}
-							})
+							});
 
 						} else {
-							// remove the highlight if no features are returned from the hitTest
+							// Remove the highlight if no features are returned from the hitTest
 							if (highlight) {
 								highlight.remove();
 								highlight = null;
@@ -259,7 +257,7 @@ export default class Application extends Templated {
 						}
 					});
 				});	
-			});
+			});	
 	}
 	
 	/**
