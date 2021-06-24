@@ -79,16 +79,11 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 
         this._headers = ["code", "name", "vintage", "value", "date",
             "frequency", "scalar", "security", "status", "symbol"];
-        
-        // It will be the first row in the table body
-        // to avoid formatting problems and alighning columns between table header and body
-        var headerRow = Dom.Create("tr", { className: "table-row", id: "TableHeader" }, this.Elem("body"));
 
         this._headers.forEach(h => {
-            var label = this.Nls("ColHeader_"+h);
-            Dom.Create("td", { innerHTML: label }, headerRow);
+            var label = this.Nls("ColHeader_" + h);
+            Dom.Create("th", { innerHTML: label }, this.Elem("header"));
         });
-
     }
     
 
@@ -98,8 +93,11 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 	 */
     Populate(metadata, data, codesets) {
         var datapoints = metadata.geoMembers;
-        
-        this.CreateHeaders();
+
+        if (this._headers == null) {
+            this.CreateHeaders();
+        }
+
         this._tableData = [];
 
         datapoints.forEach(dp => {
@@ -173,9 +171,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             this.UpdatePagingLabel();
             this.EnableDisablePagingButtons();
             
-            for (var i = 1; i <= this._rowsPerPage; i++) {
-                // Skip the first row which is the table header (id === "TableHeader")
-                // and show the next set of visible rows rows
+            for (var i = 0; i <= this._rowsPerPage; i++) {
                 Dom.ToggleCss(tableRows[i], 'hidden', false);
             }            
         }
@@ -232,9 +228,9 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 
     UpdatePagingRowVisibility(visible) {
         var tableRows = this.Elem("body").childNodes;
-        var startIndex = 1;
+        var startIndex = 0;
         if (this._currentPage != 1)
-            startIndex = (this._currentPage * this._rowsPerPage) + 1;
+            startIndex = (this._currentPage * this._rowsPerPage);
         for (var i = startIndex; i <= (startIndex + this._rowsPerPage) && i < tableRows.length; i++) {
             Dom.ToggleCss(tableRows[i], 'hidden', !visible);
         }
@@ -286,7 +282,10 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 	Template() {
 		return "<div class='table-widget'>" +
 				  "<div handle='table' class='table-container hidden'>" + 
-					 "<table>" +				        
+                     "<table>" +	
+                        "<thead>" +
+                        "<tr handle='header'></tr>" +
+                        "</thead>" +
                         "<tbody handle='body'></tbody>" +
                      "</table>" + 
                      "<div class='row mrgn-tp-sm'>" +

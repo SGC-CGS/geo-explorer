@@ -255,44 +255,65 @@
 
 .gexp .table-widget table {
     margin: 6px;
-    table-layout: auto;
-    width: 100%;
+    /*table-layout: fixed;*/
 }
 
 .gexp .table-widget table,
-.gexp .table-widget table tbody {
+.gexp .table-widget table tbody,
+.gexp .table-widget table thead {
     display: block;
 }
 
-.gexp .table-widget table tbody tr:nth-child(1) {
-    border-bottom: solid thin silver;
+.gexp .table-widget table thead {
+    border-top: solid thin silver;
+}
+
+.gexp .table-widget table th {
+    text-align: center;
+    position: sticky;
+}
+
+.gexp .table-widget table th,
+.gexp .table-widget table td {
+    border-left: solid thin silver;
+    border-right: solid thin silver;
 }
 
 .gexp .table-widget table tbody {
     max-height: 300px;
     overflow-y: auto;
+
     border-bottom: solid thin silver;
     border-top: solid thin silver;
 }
 
-.gexp .table-widget table tbody td {
+.gexp .table-widget table th,
+.gexp .table-widget table td {
     font-size: 1em;
-    width: 170px;
-    padding: 3px;
+    width: 120px;
+    padding: 5px;
 }
 
-.gexp .table-widget table tbody td:nth-child(2) {
-    width: 270px;
+.gexp .table-widget table th:nth-child(1),
+.gexp .table-widget table td:nth-child(1) {
+    width: 150px;
+}
+    
+.gexp .table-widget table th:nth-child(2),
+.gexp .table-widget table td:nth-child(2) {
+    width: 230px;
 }
 
-.gexp .table-widget table tbody td:nth-child(4) {
+.gexp .table-widget table th:nth-child(n+3),
+.gexp .table-widget table td:nth-child(n+3) {
+    width: 100px;
+}
+
+.gexp .table-widget table td:nth-child(4) {
     text-align: right;
 }
 
-.gexp .table-widget table tbody tr:nth-child(1) td:nth-child(4) {
-    text-align: left;
-}
-.gexp .table-widget table tbody tr:nth-child(odd) {
+.gexp .table-widget table tr:nth-child(odd) {
     background: rgb(240,240,240);
 }
 
