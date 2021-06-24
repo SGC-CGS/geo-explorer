@@ -104,14 +104,18 @@ export default class Configuration {
 			return 0;
 		})
 		
-		return bookmarks.map(b => {
+		return bookmarks.map(b => {
 			return {
 				name : b.name,
-				extent : {
-					xmin : b.extent[0][0],
-					xmax : b.extent[1][0],
-					ymin : b.extent[0][1],
-					ymax : b.extent[1][1],
+				viewpoint : {
+					targetGeometry: {
+						type: "extent",
+						xmin : b.extent[0][0],
+						xmax : b.extent[1][0],
+						ymin : b.extent[0][1],
+						ymax : b.extent[1][1],
+					}
+					
 				}
 			}
 		}); 

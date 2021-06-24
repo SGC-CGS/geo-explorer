@@ -11,6 +11,7 @@ import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
 import Legend from '../geo-explorer-api/widgets/legend/legend.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
+import Storage from '../geo-explorer-api/tools/storage.js';
 
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -86,6 +87,9 @@ export default class Application extends Templated {
 		this.menu = new Menu();
 		this.bMenu = new Menu();
 
+		Storage.webStorage = "localStorage";
+		Storage.Initialize("CSGE"); 
+
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
 		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
@@ -103,6 +107,7 @@ export default class Application extends Templated {
 		this.HandleEvents(this.context);
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
+		this.HandleEvents(this.Node('bookmarks'), this.OnBookmark_Change.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
@@ -127,6 +132,7 @@ export default class Application extends Templated {
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
 			this.Elem("legend").Update(this.context);
+			this.Elem("bookmarks").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
 			this.menu.SetOverlay(this.menu.Item("legend"));			
@@ -254,6 +260,7 @@ export default class Application extends Templated {
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
+		this.Elem("bookmarks").Update(this.context);
 		this.Elem("table").Update(this.context);
 	}
 	
@@ -266,6 +273,24 @@ export default class Application extends Templated {
 		this.context.sublayer.renderer = ev.renderer;
 		
 		this.Elem("legend").Update(this.context);
+	}
+
+	/**
+	 * Update the context
+	 * @param {*} ev 
+	 */
+	 OnBookmark_Change(ev) {
+		this.map.EmptyLayer('main');
+		this.map.AddSubLayer('main', ev.context.sublayer);
+
+		this.map.Behavior("pointselect").target = ev.context.sublayer;
+
+		this.Elem("selector").Update(ev.context);
+		this.Elem("styler").Update(ev.context);
+		this.Elem("legend").Update(ev.context);
+		this.Elem("table").Update(ev.context);
+
+		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
 	}
 	
 	/**

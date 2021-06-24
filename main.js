@@ -130,7 +130,7 @@ function LoadEsri() {
 		});
 	});
 	
-	esriJs.setAttribute('src','./reference/dojo.js');
+	esriJs.setAttribute('src','https://js.arcgis.com/4.17/dojo/dojo.js');
 	
 	document.head.appendChild(esriJs);
 	

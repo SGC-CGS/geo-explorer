@@ -98,6 +98,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.LoadDropDown(this.Elem("sCategory"), context.Lookup("categories"));
 		this.LoadDropDown(this.Elem('sValue'), context.Lookup("values"));
 		this.LoadDropDown(this.Elem("sGeography"), context.Lookup("geographies"));
+
+		this.ResetFilter();
 		
 		this.LoadFilters(context.Lookup("filters"));
 
