@@ -83,7 +83,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 
         this._headers.forEach(h => {
             var label = this.Nls("ColHeader_" + h);
-            Dom.Create("th", { innerHTML: label }, this.Elem("header"));
+            Dom.Create("th", { innerHTML: label, scope: "col" }, this.Elem("header"));
         });
     }
     
