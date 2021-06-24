@@ -292,13 +292,13 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
                         "</thead>" +
                         "<tbody handle='body'></tbody>" +
                      "</table>" + 
-                     "<div class='row mrgn-tp-sm'>" +
+                     /*"<div class='row mrgn-tp-sm'>" +
                         "<label handle='pagesLabel' property='name' class='mrgn-tp-sm hidden'></label>" +
-                        /*"<button handle='next' class='btn btn-primary mrgn-tp-sm mrgn-lft-sm col-md-2 pull-right hidden' title='nls(NextBtn_Title)'>" +
+                        "<button handle='next' class='btn btn-primary mrgn-tp-sm mrgn-lft-sm col-md-2 pull-right hidden' title='nls(NextBtn_Title)'>" +
                         "nls(NextBtn_Title)</button > " +
                         "<button handle='previous' class='btn btn-primary mrgn-tp-sm col-md-2 pull-right hidden' title='nls(PreviousBtn_Title)'>" +
-                        "nls(PreviousBtn_Title)</button > " +*/                        
-                     "</div>"
+                        "nls(PreviousBtn_Title)</button > " +                        
+                     "</div>"*/
 			      "</div>" + 
 			   "</div>"
 	}
