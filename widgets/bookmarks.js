@@ -14,7 +14,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	// REVIEW: Why do we have to keep setting the targetGeometry type?
 	
 	/** 
-	 * Set the bookmarks widget and load any bookmarks from local or session storage.
+	 * @description Set the bookmarks widget and load any bookmarks from local or session storage.
 	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Bookmarks.html|ArcGIS API for JavaScript}
 	 * @type {object} 
 	*/
@@ -45,8 +45,8 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 	
 	/** 
-	 * Set the bookmark values. These values are not
-	 * saved in local or session storage.
+	 * @description Set the bookmark values. These values are not
+	 * saved to local or session storage.
 	 * @param {Array} value 
 	*/	
 	set Bookmarks(value) {
@@ -56,7 +56,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 	
 	/**
-	 * Return bookmarks button title in both languages
+	 * @description Return bookmarks button title in both languages
 	 * @returns {object.<string, string>} Basemap titles for each language
 	 */	
 	static Nls(nls) {
@@ -65,7 +65,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 	
 	/**
-	 * Call constructor of base class (Templated) and initialize bookmarks
+	 * @description Call constructor of base class (Templated) and initialize bookmarks
 	 * @param {object} container - div.bookmarks and properties
 	 * @param {object} options - any additional options to assign to the widget (not typically used)
 	 * @returns {void}
@@ -77,19 +77,20 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 
 	/**
-	 * Load data
+	 * @description Load / update data regarding the current context
 	 * @param {*} context 
 	 */
 	Update(context) { 
 		this.circularContext = context;
 
+		// Required since bookmarks should not hold circular references in web storage
 		context = JSON.stringify(context, this.HandleCircularStructure());
 
 		this.context = JSON.parse(context);
 	}
 
 	/**
-	 * Handles circular references (if any)
+	 * @description Handles circular references (if any)
 	 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value|TypeError: cyclic object value}
 	 */
 	 HandleCircularStructure() {
@@ -105,8 +106,8 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 
 	/**
-	 * When a user changes something in the bookmark widget, look for 
-	 * the appropriate event (add or remove).
+	 * @description When a user adds or removes a bookmark, update the contents
+	 * of the web storage
 	 * @param {*} ev - Event
 	 */
 	onBookmarkChange(ev) {
@@ -137,8 +138,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 
 
 	/**
-	 * Check if the selected bookmark has context. Select also seems to 
-	 * fire when you click the edit button.
+	 * @description If a selected bookmark has context, change to it's context. 
 	 * @param {*} ev - Event
 	 */
 	onBookmarkSelect(ev) {
@@ -157,7 +157,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 
 	/**
-	 * Notify the application that the context has changed
+	 * @description Notify the application that the context has changed given a selected bookmark
 	 * @param {*} context 
 	 */
 	SwitchContextToSelectedBookmark(context) {
@@ -175,13 +175,26 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 
 	/**
-	 * When a bookmark is edited, see if it is in local storage and update 
+	 * @description When a bookmark name is edited, see if it is in web 
+	 * storage and update the name. Custom bookmarks should hold some context. 
 	 * @param {*} ev 
 	 */
 	onBookmarkEdit(ev) {
 		let edited =  JSON.parse(JSON.stringify(ev));
 
-		Storage.UpdateItem("CSGE", "bookmarks", this.selected.bookmark, edited.bookmark);
+		let bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;
+
+		for (let index = 0; index < bookmarks.length; index++) {
+			let bookmark = bookmarks[index];
+
+			if(bookmark.context != undefined && bookmark.name == this.selected.bookmark.name) {
+				let updatedBookmark = JSON.parse(JSON.stringify(bookmark));
+
+				updatedBookmark.name = edited.bookmark.name;
+
+				Storage.UpdateItem("CSGE", "bookmarks", bookmark, updatedBookmark);
+			}
+		}
 	}
 	
 	/**
