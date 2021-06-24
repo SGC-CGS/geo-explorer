@@ -56,8 +56,9 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 		
         Dom.AddCss(this.container, 'hidden');
 
-        this.Node("previous").On("click", this.OnPreviousButton_Click.bind(this));
-        this.Node("next").On("click", this.OnNextButton_Click.bind(this));
+        // Next and Previous buttons for paging
+        /*this.Node("previous").On("click", this.OnPreviousButton_Click.bind(this));
+        this.Node("next").On("click", this.OnNextButton_Click.bind(this));*/
 	}
 
 	/**
@@ -68,7 +69,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         Dom.RemoveCss(this.container, 'hidden');
 		
         this.UpdateTableVisibility();
-        this.UpdatePagingVisibility(false);
+        //this.UpdatePagingVisibility(false);
     }
 
     /**
@@ -141,8 +142,11 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         });
 
         this._tableData.forEach(r => {
-            var tr = Dom.Create("tr", { className:"table-row hidden" }, this.Elem("body"));
-			
+            // Hide for paging
+            //var tr = Dom.Create("tr", { className: "table-row hidden" }, this.Elem("body"));
+
+            var tr = Dom.Create("tr", { className: "table-row" }, this.Elem("body"));
+
             this._headers.forEach(f => {				
                 Dom.Create("td", { className: "table-cell", innerHTML: r[f] }, tr);
 			});
@@ -150,7 +154,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 
         this.UpdateTableVisibility();
 
-        this.SetupPaging(datapoints);
+        //this.SetupPaging(datapoints);
         
     }
 
@@ -290,10 +294,10 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
                      "</table>" + 
                      "<div class='row mrgn-tp-sm'>" +
                         "<label handle='pagesLabel' property='name' class='mrgn-tp-sm hidden'></label>" +
-                        "<button handle='next' class='btn btn-primary mrgn-tp-sm mrgn-lft-sm col-md-2 pull-right hidden' title='nls(NextBtn_Title)'>" +
+                        /*"<button handle='next' class='btn btn-primary mrgn-tp-sm mrgn-lft-sm col-md-2 pull-right hidden' title='nls(NextBtn_Title)'>" +
                         "nls(NextBtn_Title)</button > " +
                         "<button handle='previous' class='btn btn-primary mrgn-tp-sm col-md-2 pull-right hidden' title='nls(PreviousBtn_Title)'>" +
-                        "nls(PreviousBtn_Title)</button > " +                        
+                        "nls(PreviousBtn_Title)</button > " +*/                        
                      "</div>"
 			      "</div>" + 
 			   "</div>"
