@@ -130,7 +130,7 @@ export default class Requests {
 	 * @returns {object} Query results
 	 */
 	static QueryUrl(url, where, geometry, returnGeometry, outFields, distinct, orderBy) {		
-		var layer = ESRI.layers.FeatureLayer({ url:url });
+		var layer = new ESRI.layers.FeatureLayer({ url:url });
 		
 		return Requests.Query(layer, where, geometry, returnGeometry, outFields, distinct, orderBy);
 	}
@@ -345,7 +345,7 @@ export default class Requests {
 						type: "query-table",
 						workspaceId: "stcdv_dyn_service",
 						query: meta.query,
-						geometryType: "esriGeometryPolygon",
+						geometryType: "polygon",
 						oidFields: "GeographyReferenceId"
 					}
 				},
