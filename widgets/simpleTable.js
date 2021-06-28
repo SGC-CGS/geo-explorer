@@ -29,7 +29,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("ColHeader_name", "en", "Geography Name");
         nls.Add("ColHeader_name", "fr", "Nom de la géographie");
         nls.Add("ColHeader_vintage", "en", "Geography Vintage");
-        nls.Add("ColHeader_vintage", "fr", "Vintage de la géographie");
+        nls.Add("ColHeader_vintage", "fr", "Année de la géographie");
         nls.Add("ColHeader_value", "en", "Value");
         nls.Add("ColHeader_value", "fr", "Valeur");
         nls.Add("ColHeader_date", "en", "Reference Period");

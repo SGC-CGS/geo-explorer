@@ -215,7 +215,7 @@ export default class Application extends Templated {
                     "<h2 handle='loadingtitle' class='col-md-12 mrgn-tp-sm'>nls(LoadingData_Title)</h2>" +
 				"</div>" +
                 "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
-                "<div class='text-center'><a href='#simpletable' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
+                "<div class='text-center mrgn-tp-md'><a href='#simpletable' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
 				"<div class='map-container hidden' handle='mapcontainer'>" +

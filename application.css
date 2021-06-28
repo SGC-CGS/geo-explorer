@@ -260,17 +260,17 @@
     display: block;
     max-height: 300px;
     overflow: auto;
-}
-
-.gexp .table-widget table thead {
-    border-top: solid thin silver;
+    border-collapse: initial;
+    border-bottom: solid thin silver;
 }
 
 .gexp .table-widget table thead th {
     text-align: center;
     position: sticky;
     top: 0;
-    background: rgb(240,240,240);    
+    background: rgb(240,240,240);
+    border-top: solid thin silver;
+    border-bottom: solid thin silver;
 }
 
 .gexp .table-widget table tbody {
@@ -283,8 +283,8 @@
 .gexp .table-widget table td {
     font-size: 1em;
     padding: 5px;
-    border-left: solid thin silver;
-    border-right: solid thin silver;
+    border-left: solid thin lightgray;
+    border-right: solid thin lightgray;
 }
 
 .gexp .table-widget table th:nth-child(1),
