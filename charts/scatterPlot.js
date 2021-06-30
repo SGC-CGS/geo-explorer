@@ -19,6 +19,8 @@ export default class ScatterPlot extends Chart{
     constructor(options) {
         super(options);
 
+        this.typeOfChartElement = "circle";
+
         // Append the x grid line group
         this.g.append("g")
                 .classed("x axis-grid", true)
@@ -64,7 +66,7 @@ export default class ScatterPlot extends Chart{
         // Draw axes
         this.g
 			.selectAll("g.left.axis")
-			.call(d3.axisLeft(this.yScale).ticks())
+			.call(d3.axisLeft(this.yScale).ticks());
 
         this.SetBottomAxisAttributes();
 
@@ -79,15 +81,15 @@ export default class ScatterPlot extends Chart{
      * @returns {void}
      */
     AppendPointsToChart() {
-        let points = this.points.selectAll("circle").data(this.data);
+        let points = this.points.selectAll(this.typeOfChartElement).data(this.data);
         
         // Add the points
         points.enter()
-              .append("circle")
+              .append(this.typeOfChartElement)
               .merge(points)
-                .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.label, d.value, n[i]))
-                .on("mousemove", () => this.OnMouseMove())
-                .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
+              .on("mouseenter", (event, d) => {this.OnMouseEnter(d.label, d.value, event.target)})
+              .on("mousemove", (event) => this.OnMouseMove(event))
+              .on("mouseleave", (event) => this.OnMouseLeave(event.target))
                 .transition()
                 .delay((d, i) => (i * 3))
                 .duration(2000)

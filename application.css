@@ -800,3 +800,14 @@
 .gexp .popup-table td {
     padding: 2px;
 }
+
+.gexp .chart-overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.gexp .hover-line {
+  stroke: red;
+  stroke-width: 2px;
+  stroke-dasharray: 2,4;
+}

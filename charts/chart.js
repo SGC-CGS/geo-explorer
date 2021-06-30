@@ -1,5 +1,5 @@
-import Axes from "./axes.js"
 import Tooltip from "../../geo-explorer-api/ui/tooltip.js"
+import Dimensions from "./components/dimensions.js";
 
 /**
  * Chart module
@@ -53,7 +53,7 @@ export default class Chart {
      * @returns {GetColor~inner} scaleOrdinal with categorical colour scheme
      */
     GetColor() {
-        return d3.scaleOrdinal(d3.schemeCategory20);
+        return d3.scaleOrdinal(d3.schemeCategory10);
     }
 
     /**
@@ -71,30 +71,21 @@ export default class Chart {
      * @returns {void}
      */
     BuildDimensions() {
-        this.dimensions = this.options.dimensions || null; 
+        let doesHaveDimensions = this.options.dimensions || null; 
 
-        if (!this.dimensions) this.SetDefaultDimensions(); 
-    }
+        if (!doesHaveDimensions) {
+            let height = +this.svg.attr("height") - this.padding;
+            let width = +this.svg.attr("width") - this.padding;
+            let margin = {top: 20, bottom: 70, right: 0, left: 55};
 
-    /**
-     * Set the default dimensions of the chart
-     * @returns {void}
-     */
-    SetDefaultDimensions() {
-        let margin = {top: 20, bottom: 70, right: 0, left: 55};
-        let width = +this.svg.attr("width") - this.padding;
-        let height = +this.svg.attr("height") - this.padding;
-
-		// Note: Not a big fan of holding variables (margin, width and height) and derived values (both inners)
-		//		 What happens if width or height change? I wonder if it's worth it to build a "dimensions" object
-		// 		 that handles these issues. I built an example, see dimensions.js. May be overkill for now though.
-        this.dimensions = {
-			margin : margin,
-			width:  width,
-			height: height,
-			innerWidth: width - margin.left - margin.right,
-			innerHeight : height - margin.top - margin.bottom
-		}
+            this.dimensions = new Dimensions(height, width, margin);
+        } else {
+            let height = this.options.dimensions.height;
+            let width = this.options.dimensions.margin.width;
+            let margin = this.options.dimensions.margin;
+            
+            this.dimensions = new Dimensions(height, width, margin);
+        }
     }
 
     /**
@@ -145,8 +136,8 @@ export default class Chart {
      * When mouse moves, tooltip follows pointer within the chart element
      * @returns {void}
      */
-    OnMouseMove() {
-        this.tooltip.Show(d3.event.pageX + 10, d3.event.pageY - 28)
+    OnMouseMove(event) {
+        this.tooltip.Show(event.pageX + 10, event.pageY - 28);
     }
 
     /**
@@ -157,6 +148,6 @@ export default class Chart {
     OnMouseLeave(current) {
         d3.select(current).style("opacity", 1);
 		
-        this.tooltip.Hide()
+        this.tooltip.Hide();
     }
 }

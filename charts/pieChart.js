@@ -17,6 +17,8 @@ export default class PieChart extends Chart {
      */
     constructor(options) {
         super(options);
+
+        this.typeOfChartElement = "path";
 		
         this.color = this.GetColor();
 
@@ -34,9 +36,9 @@ export default class PieChart extends Chart {
 										   .style('y', this.dimensions.height / 1.4)
 										   .style('x', 0)
 										   .style('width', this.dimensions.width)
-										   .style('height', this.dimensions.height / 3)
+										   .style('height', this.dimensions.height / 3);
         
-        this.foreignObject.append("xhtml:div")
+        this.foreignObject.append("xhtml:div");
     }
 
     /**
@@ -49,17 +51,17 @@ export default class PieChart extends Chart {
         let pie = d3.pie().value((d) => d.value)(this.data);
         let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0);
 
-        this.circle = this.g.selectAll("path").data(pie);
+        this.circle = this.g.selectAll(this.typeOfChartElement).data(pie);
 
         this.circle
             .enter()
-            .append("path")
+            .append(this.typeOfChartElement)
             .merge(this.circle)
             .attr("d", arc)
             .style("fill", (d, i) => this.color(i))
-            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.data.label, d.data.value, n[i]))
-            .on("mousemove", () => this.OnMouseMove())
-            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
+            .on("mouseenter", (event, d) => {this.OnMouseEnter(d.data.label, d.data.value, event.target)})
+            .on("mousemove", (event) => this.OnMouseMove(event))
+            .on("mouseleave", (event) => this.OnMouseLeave(event.target))
             .transition()
             .duration(2000)
             .attrTween("d", (d) => {
@@ -99,7 +101,7 @@ export default class PieChart extends Chart {
 
         this.foreignObject
             .select("div")
-            .html(htmlContent)
+            .html(htmlContent);
     }
 
 }

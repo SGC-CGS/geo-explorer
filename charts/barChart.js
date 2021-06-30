@@ -21,7 +21,9 @@ export default class BarChart extends Chart{
      * @returns {void}
      */
     constructor(options) {
-        super(options)
+        super(options);
+
+        this.typeOfChartElement = 'rect';
 
         this.color = this.GetColor();
 
@@ -66,12 +68,12 @@ export default class BarChart extends Chart{
      * @returns {void}
      */
     AppendRectanglesToChart(){
-        let rectangles = this.g.selectAll("rect").data(this.data);
+        let rectangles = this.g.selectAll(this.typeOfChartElement).data(this.data);
         
         // Rectangles with initial height of 0 are added for each x-axis tick mark
         rectangles
             .enter()
-            .append("rect")
+            .append(this.typeOfChartElement)
             .merge(rectangles)
             .attr("x", (d) => this.xScale(d.label))
             .attr("y", this.yScale(0))
@@ -80,9 +82,9 @@ export default class BarChart extends Chart{
             // Compute height for each rectangle
             .attr("height", this.dimensions.innerHeight - this.yScale(0))
             .style("fill", (d) => this.color(d.value))
-            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.label, d.value, n[i]))
-            .on("mousemove", () => this.OnMouseMove())
-            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]));
+            .on("mouseenter", (event, d) => {this.OnMouseEnter(d.label, d.value, event.target)})
+            .on("mousemove", (event) => this.OnMouseMove(event))
+            .on("mouseleave", (event) => this.OnMouseLeave(event.target));
 
         // Remove surplus bars and previous dataset from chart
         rectangles.exit().remove();
@@ -95,7 +97,7 @@ export default class BarChart extends Chart{
      * @returns {void}
      */
     TransitionOnTheVertical() {
-        this.g.selectAll("rect")   
+        this.g.selectAll(this.typeOfChartElement)   
             .transition()
             .duration(700)
             .ease(d3.easeLinear)

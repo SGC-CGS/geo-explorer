@@ -21,7 +21,7 @@ export default class Axes {
             .domain(data.map(d => d.label))
             // Map values from start of data array to end of data array
             .range([0, width])
-            .padding(0.1)
+            .padding(0.1);
     }
 
     /**
@@ -34,7 +34,21 @@ export default class Axes {
     static CreateLinearXScale(data, width){
         return d3.scaleLinear()
             .domain([0, data.length - 1])
-            .range([0, width])
+            .range([0, width]);
+    }
+
+    /**
+     * Create a new time scale for the x-axis.
+     * @param {object[]} data - Array of objects containing data values and labels
+     * @param {number} width - The extent to which parts of the domain will be spread / mapped
+     * @returns {CreateTimeXScale~inner} A d3.scaleTime() function
+     */
+    static CreateTimeXScale(data, width, timeParser){
+        let extent = d3.extent(data, d => timeParser(d.label));
+
+        return d3.scaleTime()
+            .domain(extent)
+            .range([0, width]);
     }
 
     /**
@@ -55,7 +69,7 @@ export default class Axes {
             // max at top of y-axis
             .range([0, height])
             // .nice() rounds the domain to nice values
-            .nice()
+            .nice();
     }
 
     /**
@@ -70,7 +84,7 @@ export default class Axes {
         return d3.axisLeft(yScale)
         // left axis should have same number of ticks 
         .tickSize(-width).ticks()
-        .tickFormat("")
+        .tickFormat("");
     }
     
     /**
@@ -84,6 +98,6 @@ export default class Axes {
     static GridLineVertical(xScale, height) {
         return d3.axisBottom(xScale)
         .tickSize(-height)
-        .tickFormat("")
+        .tickFormat("");
     }
 }
