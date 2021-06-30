@@ -15,8 +15,15 @@ import Axes from "./axes.js";
  */
 export default class BarChart extends Chart{ 
 
+    /**
+     * Set up bar chart
+     * @param {object} options - Chart div object
+     * @returns {void}
+     */
     constructor(options) {
-        super(options)
+        super(options);
+
+        this.typeOfChartElement = 'rect';
 
         this.chartDataType = 'rect';
 
@@ -36,40 +43,39 @@ export default class BarChart extends Chart{
     }
 
     /**
-     * @description
-     * First, the scales for the x and y axes are created.
-     * Next, grid lines are drawn horizontally. 
-     * Finally the axes and bars are drawn.
+     * Create the bar chart
+     * @returns {void}
      */
     Draw(){
+        // create scales for the x and y axes.
         this.xScale = Axes.CreateBandXScale(this.data, this.dimensions.innerWidth);
-
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
         
+        // add horitzontal grid lines
         this.g.selectAll("g.y.axis-grid")
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
+        // add axes
         this.g
 			.selectAll("g.left.axis")
 			.call(d3.axisLeft(this.yScale).ticks())
 
         this.SetBottomAxisAttributes();
 
-        this.AppendRectanglesToChart();
+        this.AppendRectanglesToChart();  // add bars
     }
     
     /**
-     * @description
-     * For each tick mark on the x-axis, a rectangle is added. When
-     * the rectangles are first added, their heights are zero. Rectangles may be
-     * removed or added depending on the case of the redraw function. 
+     * Update rectangles on chart
+     * @returns {void}
      */
     AppendRectanglesToChart(){
-        let rectangles = this.g.selectAll(this.chartDataType).data(this.data);
-              
+        let rectangles = this.g.selectAll(this.typeOfChartElement).data(this.data);
+        
+        // Rectangles with initial height of 0 are added for each x-axis tick mark
         rectangles
             .enter()
-            .append(this.chartDataType)
+            .append(this.typeOfChartElement)
             .merge(rectangles)
             .attr("x", (d) => this.xScale(d.label))
             .attr("y", this.yScale(0))
@@ -78,23 +84,22 @@ export default class BarChart extends Chart{
             // Compute height for each rectangle
             .attr("height", this.dimensions.innerHeight - this.yScale(0))
             .style("fill", (d) => this.color(d.value))
-            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.label, d.value, n[i]))
-            .on("mousemove", () => this.OnMouseMove())
-            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]));
+            .on("mouseenter", (event, d) => {this.OnMouseEnter(d.label, d.value, event.target)})
+            .on("mousemove", (event) => this.OnMouseMove(event))
+            .on("mouseleave", (event) => this.OnMouseLeave(event.target));
 
-        // Remove surplus bars and previous dataset out of graph
+        // Remove surplus bars and previous dataset from chart
         rectangles.exit().remove();
         
         this.TransitionOnTheVertical();
     }
 
     /**
-     * @description
-     * The transition function is called to grow 
-     * all the rectangles to the appropriate height.
+     * Set bars/rectangles to correct height for each value
+     * @returns {void}
      */
     TransitionOnTheVertical() {
-        this.g.selectAll(this.chartDataType)   
+        this.g.selectAll(this.typeOfChartElement)   
             .transition()
             .duration(700)
             .ease(d3.easeLinear)

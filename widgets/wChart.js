@@ -15,10 +15,17 @@ import ScatterPlot from "../charts/scatterPlot.js";
  * @todo Handle product changes in Application.js?
  */
 export default Core.Templatable("App.Widgets.WChart", class WChart extends Templated {
+
+	/**
+	 * Get/set name of field to use for data label
+	 */
     set labelField(value) { this._title = value; }
 
     get labelField() { return this._title; }
 
+	/**
+	 * Set data label and value
+	 */
     set data(value) {
 		var data = value.items.map(item => {
 			let label = item["attributes"][this.labelField];
@@ -32,6 +39,11 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		this.DrawChart(data);
     }
 
+	/**
+	 * Add any required text to the Nls object
+	 * @param {object} nls - Object for holding nls strings
+	 * @returns {void}
+	 */
 	static Nls(nls) {
 		nls.Add("Chart_Title", "en", "View chart");
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");		
@@ -41,6 +53,12 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		nls.Add("Chart_Type_Placeholder", "fr", "Sélectionnez un Type de Graphique");	
 	}
 
+	/**
+	 * Set up chart widget
+	 * @param {object} container - Div chart container and properties
+	 * @param {object} options - Any additional options to assign to the widget
+	 * @returns {void}
+	 */
     constructor(container, options) {
 		super(container, options);
 
@@ -51,10 +69,9 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
     }
 
     /**
-     * @description
-     * Here the chart is created based on type selection.
-     * @todo 
-     * Chart type selection based on JSON.
+     * Create chart based on chart type selection.
+	 * @returns {void}
+     * @todo Chart type selection based on JSON.
      */
     BuildChart() {
 		// Chart container element
@@ -82,10 +99,10 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
     }
 
     /**
-     * @description
-     * Here the chart can be modified or cleared.
-     * @todo
-     * Change name of Redraw()?
+     * Update data on the chart, or hide the chart if there is no data.
+	 * @param {object[]} data - Array of objects containing data values and labels
+	 * @returns {void}
+     * @todo Change name of Redraw()?
      */
     DrawChart(data) {
 		if (data.length == 0) this.HideChart();
@@ -98,12 +115,20 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		}
     }
 
+	/**
+	 * Hide the svg elements in the chart container
+	 * @returns {void}
+	 */
     HideChart(){
 		d3.select(this.Node("ChartsContainer").elem)
 		  .selectAll("svg")
 		  .attr("visibility", "hidden");
     }
 
+	/**
+	 * Show the svg elements in the chart container
+	 * @returns {void}
+	 */	
     ShowChart(){
 		d3.select(this.Node("ChartsContainer").elem)
 		  .selectAll("svg")
@@ -111,9 +136,8 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
     }
 
     /**
-     * @description
-     * Removes the SVG from the charts container and destroy 
-     * the current chart when you want to create a new type of chart.
+     * Removes the SVG from the charts container and destroys current chart 
+	 * @returns {void}
      */
     ClearChart() {
 		var elem = d3.select(this.Node("ChartsContainer").elem);
@@ -123,6 +147,10 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		this.chart = null;
     }
 
+	/**
+	 * Create a div for this widget
+	 * @returns {string} HTML with custom div
+	 */	
     Template() {
       return "<div handle='ChartsContainer' width='430' height='400'></div>";
     }

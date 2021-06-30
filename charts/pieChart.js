@@ -9,8 +9,16 @@ import Chart from "./chart.js";
  * more information on the D3 concepts presented in this code.
  */
 export default class PieChart extends Chart { 
+
+    /**
+     * Set up pie chart
+     * @param {object} options - Chart div object
+     * @returns {void}
+     */
     constructor(options) {
         super(options);
+
+        this.typeOfChartElement = "path";
 		
         this.color = this.GetColor();
 
@@ -28,35 +36,32 @@ export default class PieChart extends Chart {
 										   .style('y', this.dimensions.height / 1.4)
 										   .style('x', 0)
 										   .style('width', this.dimensions.width)
-										   .style('height', this.dimensions.height / 3)
+										   .style('height', this.dimensions.height / 3);
         
-        this.foreignObject.append("xhtml:div")
+        this.foreignObject.append("xhtml:div");
     }
 
     /**
-     * @description
-     * d3.pie() is used to set up the pieChart based on the data 
-     * and d3.arc() is used for getting the right shape and angles. 
-     * Pie slices and elements in the legend may be removed or 
-     * added depending on the case of the redraw function. 
+     * Draw the pie chart
+     * @returns {void}
      */
     Draw() {
-        // Set up pie chart based on data. Arc is used for getting
-        // the right shape and angles
+        // Set up pie chart based on data (d3.pie). 
+        // d3.arc() is used for getting the right shape and angles
         let pie = d3.pie().value((d) => d.value)(this.data);
         let arc = d3.arc().outerRadius(this.dimensions.radius).innerRadius(0);
 
-        this.circle = this.g.selectAll("path").data(pie);
+        this.circle = this.g.selectAll(this.typeOfChartElement).data(pie);
 
         this.circle
             .enter()
-            .append("path")
+            .append(this.typeOfChartElement)
             .merge(this.circle)
             .attr("d", arc)
             .style("fill", (d, i) => this.color(i))
-            .on("mouseenter", (d, i, n) => this.OnMouseEnter(d.data.label, d.data.value, n[i]))
-            .on("mousemove", () => this.OnMouseMove())
-            .on("mouseleave", (d, i, n) => this.OnMouseLeave(n[i]))
+            .on("mouseenter", (event, d) => {this.OnMouseEnter(d.data.label, d.data.value, event.target)})
+            .on("mousemove", (event) => this.OnMouseMove(event))
+            .on("mouseleave", (event) => this.OnMouseLeave(event.target))
             .transition()
             .duration(2000)
             .attrTween("d", (d) => {
@@ -70,13 +75,14 @@ export default class PieChart extends Chart {
             });
             this.circle.exit().remove();
         
+        // Pie slices and elements in the legend may be removed or 
+        // added depending on the case of the redraw function. 
         this.Legend();
     }
 
     /**
-     * @description
-     * Fill the foreignObject's div with html content relating 
-     * to the pieChart.
+     * Build the chart legend and add it to the div as a foreignObject
+     * @returns {void}
      */
     Legend() {
         let htmlContent = this.data
@@ -95,7 +101,7 @@ export default class PieChart extends Chart {
 
         this.foreignObject
             .select("div")
-            .html(htmlContent)
+            .html(htmlContent);
     }
 
 }
