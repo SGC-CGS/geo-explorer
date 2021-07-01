@@ -51,7 +51,7 @@ export default class BarChart extends Chart{
         this.xScale = Axes.CreateBandXScale(this.data, this.dimensions.innerWidth);
         this.yScale = Axes.CreateLinearYScale(this.data, this.dimensions.innerHeight);
         
-        // add horitzontal grid lines
+        // add horizontal grid lines
         this.g.selectAll("g.y.axis-grid")
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 

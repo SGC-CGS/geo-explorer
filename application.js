@@ -2,6 +2,7 @@
 
 import Core from '../geo-explorer-api/tools/core.js';
 import Dom from '../geo-explorer-api/tools/dom.js';
+import PubSub from '../geo-explorer-api/tools/pubsub.js';
 import Templated from '../geo-explorer-api/components/templated.js';
 import Map from '../geo-explorer-api/components/map.js';
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
@@ -207,57 +208,82 @@ export default class Application extends Templated {
 		let highlight, currentTitle, currentChartElement;
 
 		// When hovering over the map
-		map.view.when()
-			.then(() => { return behavior.layer.when(); })
-			.then(layer => { return map.view.whenLayerView(layer); })
-			.then(layerView => {			
-				map.view.on("pointer-move", ev => {				
-					map.view.hitTest(ev).then(response => {
-						if (response.results.length) {
-							let graphic = response.results[0].graphic;
-							let title = graphic.attributes[p.title];
-	
-							if (highlight && currentTitle != title) {
-								highlight.remove();
-								highlight = null;
-								d3.select(currentChartElement).style("opacity", 1);
-								return;
-							}
-	
-							if (highlight) { return; }
-							
-							// Highlight the current feature being hovered over
-							layerView.queryGraphics().then(results => {
-								results.items.forEach(r => {
-									if(r.attributes[p.title] == title) {
-										highlight = layerView.highlight(r);
-										currentTitle = title;
-									}
-								})
-							});
+		map.view.whenLayerView(behavior.layer).then(layerView => {	
+			//this.HandleEvents(this.Node("chart"), (ev) => console.log("test"));
 
-							// REVIEW: Test for other chart types
-							let chartDataType = this.Elem("chart").chart.chartDataType;
-							let chartData = this.Elem("chart").chart.g.selectAll(chartDataType).data();
-							
-							chartData.forEach((c, i) => {
-								if(c.label == title) {
-									currentChartElement = this.Elem("chart").chart.g.selectAll(chartDataType).nodes()[i];
-									d3.select(currentChartElement).style("opacity", 0.5);
-								}
-							});
+			PubSub.Add("OnMouseEnter", (title) => {
+				if (highlight && currentTitle != title) {
+					highlight.remove();
+					highlight = null;
+					return;
+				}
 
-						} else {
-							// Remove the highlight if no features are returned from the hitTest
-							if (highlight) {
-								highlight.remove();
-								highlight = null;
-								d3.select(currentChartElement).style("opacity", 1);
-							}
+				if (highlight) { return; }
+
+				// Highlight a feature that matches the chart element being highlighted
+				layerView.queryGraphics().then(results => {
+					results.items.forEach(r => {
+						if(r.attributes[p.title] == title) {
+							highlight = layerView.highlight(r);
+							currentTitle = title;
 						}
-					});
-				});	
+					})
+				});
+			});
+
+			PubSub.Add("OnMouseLeave", () => {
+				if(highlight) {
+					highlight.remove();
+					highlight = null;
+				}
+			});
+
+			map.view.on("pointer-move", ev => {				
+				map.view.hitTest(ev).then(response => {
+					if (response.results.length) {
+						let graphic = response.results[0].graphic;
+						let title = graphic.attributes[p.title];
+
+						if (highlight && currentTitle != title) {
+							highlight.remove();
+							highlight = null;
+							d3.select(currentChartElement).style("opacity", 1);
+							return;
+						}
+
+						if (highlight) { return; }
+						
+						// Highlight a feature being hovered over
+						layerView.queryGraphics().then(results => {
+							results.items.forEach(r => {
+								if(r.attributes[p.title] == title) {
+									highlight = layerView.highlight(r);
+									currentTitle = title;
+								}
+							})
+						});
+
+						let chartDataType = this.Elem("chart").chart.chartDataType;
+						let chartData = this.Elem("chart").chart.g.selectAll(chartDataType).data();
+						
+						chartData.forEach((c, i) => {
+							if(c.label == title) {
+								currentChartElement = this.Elem("chart").chart.g.selectAll(chartDataType).nodes()[i];
+								d3.select(currentChartElement).style("opacity", 0.5);
+							}
+						});
+
+					} else {
+						// Remove the highlight if no features are returned from the hitTest
+						if (highlight) {
+							highlight.remove();
+							highlight = null;
+							d3.select(currentChartElement).style("opacity", 1);
+						}
+					}
+				});
 			});	
+		});	
 	}
 	
 	/**
