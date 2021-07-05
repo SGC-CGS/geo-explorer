@@ -52,7 +52,11 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	 */	
 	constructor(container, info) {	
 		super(container, info);
-		
+			
+		// REVIEW: This should be done like in the explorer-lite. In fact, we should try to have a common legend component.
+		// Basically, the legend widget creates a legend-break for each class, then optionally, adds a default-break
+		// It's a bit hard to explain it all, let me know if you're not sure and we'll look at it together.
+		// Start by looking at simpleLegend.js in geo-explorer-lite
 		if(info.minValue != null && info.maxValue != null) {
 
 			this.min = info.minValue;
