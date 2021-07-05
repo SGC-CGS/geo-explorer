@@ -211,6 +211,10 @@ export default class Application extends Templated {
 		map.view.whenLayerView(behavior.layer).then(layerView => {	
 			//this.HandleEvents(this.Node("chart"), (ev) => console.log("test"));
 
+			// REVIEW: I'm not convinced with this PubSub thing. I think it'll quickly devolve.
+			// I think we'd be better off having a selection object and widgets that watch it 
+			// and react to changes. A lot of the highlighting logic could be handled by the 
+			// selection object too.
 			PubSub.Add("OnMouseEnter", (title) => {
 				if (highlight && currentTitle != title) {
 					highlight.remove();
@@ -238,6 +242,8 @@ export default class Application extends Templated {
 				}
 			});
 
+			// REVIEW: Too many indented statements. 
+			// REVIEW: This could be encapsulated in a behavior class, not necessarily the highlight.
 			map.view.on("pointer-move", ev => {				
 				map.view.hitTest(ev).then(response => {
 					if (response.results.length) {
