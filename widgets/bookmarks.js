@@ -23,9 +23,12 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 
 		let bookmarks = [];
 		
+		// REVIEW: Do this in the storage class, once.
 		if(Storage.StorageAvailable(Storage.webStorageType)) {
 			bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;
 
+			// REVIEW: This is strange. Is it necessary? 
+			// REVIEW: Investigate whether we should be using points and scale rather than extent.
 			bookmarks.forEach(s => s.viewpoint.targetGeometry.type = "extent");
 		} 
 		
@@ -38,9 +41,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
         });
 
 		this.bookmarksWidget.bookmarks.on("change", this.onBookmarkChange.bind(this));
-
 		this.bookmarksWidget.on("bookmark-select", this.onBookmarkSelect.bind(this));
-
 		this.bookmarksWidget.on("bookmark-edit", this.onBookmarkEdit.bind(this));
 	}
 	
@@ -83,6 +84,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	Update(context) { 
 		this.circularContext = context;
 
+		// REVIEW: I think we can just have a ToJson function on the context object. 
 		// Required since bookmarks should not hold circular references in web storage
 		context = JSON.stringify(context, this.HandleCircularStructure());
 
@@ -93,6 +95,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @description Handles circular references (if any)
 	 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value|TypeError: cyclic object value}
 	 */
+	 // REVIEW: Shouldn't be necessary
 	 HandleCircularStructure() {
 		let seen = new WeakSet();
 		return (key, value) => {
@@ -110,7 +113,11 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * of the web storage
 	 * @param {*} ev - Event
 	 */
+	 // REVIEW: Naming, OnBookmark_Change
 	onBookmarkChange(ev) {
+		// REVIEW: Use SetSection instead of AddItem RemoveItem. The internal, ESRI bookmarks widget
+		// should be able to give you all the current bookmarks. You may have to keep an association
+		// of contexts.
 		// Add item to local storage
 		if (ev.added.length == 1) {
 			let added = JSON.parse(JSON.stringify(ev.added[0]));
@@ -141,7 +148,9 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @description If a selected bookmark has context, change to it's context. 
 	 * @param {*} ev - Event
 	 */
+	 // REVIEW: Naming, OnBookmark_Select
 	onBookmarkSelect(ev) {
+		// REVIEW : Any reason for cloning like this?
 		this.selected = JSON.parse(JSON.stringify(ev));
 
 		// Load context information if any
@@ -160,11 +169,14 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @description Notify the application that the context has changed given a selected bookmark
 	 * @param {*} context 
 	 */
+	 // REVIEW: Naming, too long
 	SwitchContextToSelectedBookmark(context) {
 		Object.assign(this.circularContext, context); 
 
 		this.Emit("Busy");
 
+		// REVIEW: This should not be done here, it should be in application.js
+		// Bookmarks should only notify that something has been selected.
 		this.circularContext.UpdateRenderer().then(c => {
 			this.Emit("Idle");
 		
@@ -179,7 +191,9 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * storage and update the name. Custom bookmarks should hold some context. 
 	 * @param {*} ev 
 	 */
+	 // REVIEW: Naming, OnBookmark_Edit
 	onBookmarkEdit(ev) {
+		// REVIEW: We can probably simplify all this json conversion once everything else is fixed
 		let edited =  JSON.parse(JSON.stringify(ev));
 
 		let bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;

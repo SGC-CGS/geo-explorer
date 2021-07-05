@@ -77,6 +77,7 @@ export default Core.Templatable("Basic.Components.Typeahead", class Typeahead ex
 	 * returning to many possible matches so wait until the user enters 3 characters. 
 	 * In a StaticTypeahead you should should possible matches whenever character are entered.
 	 */
+	 // REVIEW: This name is too long but nothing comes to mind at the moment
 	 get numCharactersToShowMatches() {
 		return this._matches;
 	}

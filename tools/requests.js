@@ -332,7 +332,7 @@ export default class Requests {
 			query : (data)
 		});
 		
-		p.then(renderer => {			
+		p.then(renderer => {
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,
