@@ -51,7 +51,7 @@ export default class Map extends Evented {
 		
 		this._map = new ESRI.Map({ basemap: "streets" });
 		
-		// TODO: Map constraints should be specified in the options of the constructor so that the application
+		// REVIEW: Map constraints should be specified in the options of the constructor so that the application
 		// can specify which extent to use.
 		this._view = new ESRI.views.MapView({
 			animation : options && options.animation || false,
