@@ -275,6 +275,10 @@ export default class Application extends Templated {
 		this.Elem("legend").Update(this.context);
 	}
 
+	// REVIEW: This code is very similar to OnSelector_Change, they should be merged into a common function
+    // something like ChangeContext or whatever.
+    // REVIEW: OnBookmark_Change may not be the right name since it fires only when there's a new context. 
+	// Maybe something like OnBookmark_NewContext 
 	/**
 	 * Update the context
 	 * @param {*} ev 
@@ -290,6 +294,8 @@ export default class Application extends Templated {
 		this.Elem("legend").Update(ev.context);
 		this.Elem("table").Update(ev.context);
 
+		// REVIEW: Why do we refresh chart data with selected graphics here but not in OnSelector_Change?
+		// Is this necessary? Seems like a selection clear would do the trick too.
 		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
 	}
 	
