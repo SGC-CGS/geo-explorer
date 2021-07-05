@@ -5,6 +5,7 @@ let events = [];
  * @module tools/pubsub
  * @description to facilitate communication between modules
  */
+ // REVIEW: This could've been done using the evented object.
 export default class PubSub {
     /**
      * Add an event that has a name and function
