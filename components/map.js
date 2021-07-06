@@ -51,23 +51,13 @@ export default class Map extends Evented {
 		
 		this._map = new ESRI.Map({ basemap: "streets" });
 		
-		// REVIEW: Map constraints should be specified in the options of the constructor so that the application
-		// can specify which extent to use.
 		this._view = new ESRI.views.MapView({
 			animation : options && options.animation || false,
 			center: options && options.center || [-100, 63], 
 			container: container, 
 			map: this._map,  
 			zoom: options && options.zoom || 4, 
-			constraints: options && options.constraints || {
-				geometry: {
-					type: "extent", 
-					xmin: -141, 
-					xmax: -53, 
-					ymin: 41, 
-					ymax: 83
-				} 
-			}
+			constraints: options && options.constraints || { }
 		});
 		
 		this._view.popup.collapseEnabled = false;
