@@ -1,25 +1,19 @@
 {
-  "layers_": {
-    "PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
-    "CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
-    "CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
-  },
   "layers": {
     "PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
-    "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
-    "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
-    "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3"
-  },
-  "id_": {
-    "PR": "PRUID",
-    "CD": "CDUID",
-    "CSD": "CSDUID"
+    "GRC": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
+    "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
+    "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3",
+    "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
+    "DA": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/5"
   },
   "id": {
     "PR": "PRCODE",
+    "GRC": "GRC_UID",
     "CD": "CD_UID",
     "CCS": "CCS_UID",
-    "CSD": "CSD_UID"
+    "CSD": "CSD_UID",
+    "DA": "DA_UID"
   },
   "ramps": {
     "1": [[158,202,225,0.65]],
@@ -42,13 +36,13 @@
     }
   },
   "identify": {
-    "PR_": {
-      "id": "PRUID",
-      "nameEn": "PRENAME",
-      "nameFr": "PRFNAME"
-    },
     "PR": {
       "id": "PRCODE",
+      "nameEn": "ENG_LABEL",
+      "nameFr": "FRE_LABEL"
+    },
+    "GRC": {
+      "id": "GRC_UID",
       "nameEn": "ENG_LABEL",
       "nameFr": "FRE_LABEL"
     },
@@ -61,11 +55,6 @@
       "id": "CCS_UID",
       "nameEn": "OFFNAME",
       "nameFr": "OFFNAME"
-    },
-    "CSD_": {
-      "id": "CSDUID",
-      "nameEn": "CSDNAME",
-      "nameFr": "CSDNAME"
     },
     "CSD": {
       "id": "CSD_UID",

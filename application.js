@@ -154,14 +154,19 @@ export default class Application extends Templated {
 		
         if (renderer) {
             var layer = this.map.AddFeatureLayer("geo", url, exp, this.config.Id(decodedGeo), renderer, 0);
-            
-			this.WaitForLayer(layer);
-			
-			this.behavior.Clear();
-			this.behavior.target = layer;
 
-            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);			    
-		}
+            this.WaitForLayer(layer);
+
+            this.behavior.Clear();
+            this.behavior.target = layer;
+
+            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
+        }
+        else {
+            // Remove the waiting symbol
+            this.Elem("waiting").Hide();
+            this.Elem("legend").EmptyClassBreaks();
+        }
     }
 
     LoadTable(data) {
@@ -174,7 +179,7 @@ export default class Application extends Templated {
 			// listen until the layerView is loaded
 			layerView.when(() => {
 				this.menu.SetOverlay(this.menu.Item("legend"));
-				this.Elem("waiting").Hide()
+                this.Elem("waiting").Hide();
 			}, this.OnApplication_Error.bind(this));
 		}, this.OnApplication_Error.bind(this))
 	}

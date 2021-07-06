@@ -28,8 +28,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("ColHeader_code", "fr", "IDUGD");
         nls.Add("ColHeader_name", "en", "Geography Name");
         nls.Add("ColHeader_name", "fr", "Nom de la géographie");
-        nls.Add("ColHeader_vintage", "en", "Geography Vintage");
-        nls.Add("ColHeader_vintage", "fr", "Année de la géographie");
         nls.Add("ColHeader_value", "en", "Value");
         nls.Add("ColHeader_value", "fr", "Valeur");
         nls.Add("ColHeader_date", "en", "Reference Period");
@@ -37,13 +35,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("ColHeader_frequency", "en", "Frequency");
         nls.Add("ColHeader_frequency", "fr", "Fréquence");
         nls.Add("ColHeader_scalar", "en", "Scalar factor");
-        nls.Add("ColHeader_scalar", "fr", "Facteur scalaire");
-        nls.Add("ColHeader_security", "en", "Security level");
-        nls.Add("ColHeader_security", "fr", "Niveau de sécurité");
-        nls.Add("ColHeader_status", "en", "Status");
-        nls.Add("ColHeader_status", "fr", "Statut");
-        nls.Add("ColHeader_symbol", "en", "Symbol");
-        nls.Add("ColHeader_symbol", "fr", "Symbole");        
+        nls.Add("ColHeader_scalar", "fr", "Facteur scalaire");       
     }
 
 	/**
@@ -78,8 +70,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
      */
     CreateHeaders() {
 
-        this._headers = ["code", "name", "vintage", "value", "date",
-            "frequency", "scalar", "security", "status", "symbol"];
+        this._headers = ["code", "name", "value", "frequency", "scalar", "date"];
 
         this._headers.forEach(h => {
             var label = this.Nls("ColHeader_" + h);
@@ -108,34 +99,24 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             tr.id = dp.id;
             tr.name = Core.locale == "en" ? dp.nameEn : dp.nameFr;
             tr.type = dp.type;
-            tr.vintage = dp.vintage;
-
+            
             tr.date = "";
             tr.decimals = "";
             tr.frequency = "";
             tr.release = "";
             tr.scalar = "";
-            tr.security = "";
-            tr.status = "";
-            tr.symbol = "";
             tr.value = "";
             
             var dataobj = data[dp.code];
-
-            if (dataobj && dataobj.value) {
+            if (dataobj) {
                 tr.date = dataobj.date;
                 tr.decimals = dataobj.decimals;
                 tr.release = dataobj.release;
 
                 // Localization for value
-                tr.value = dataobj.Format(Core.locale);
-                
-                // Decode the values using codesets
+                tr.value = codesets.FormatDP(dataobj, Core.locale); // This includes security, status and symbol
 				tr.frequency = codesets.frequency(dataobj.frequency) || "";
                 tr.scalar = codesets.scalar(dataobj.scalar) || "";
-                tr.security = codesets.security(dataobj.security) || "";
-                tr.status = codesets.status(dataobj.status) || "";
-                tr.symbol = codesets.symbol(dataobj.symbol) || "";                
             }
                 
             this._tableData.push(tr);

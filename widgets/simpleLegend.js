@@ -44,6 +44,10 @@ export default Core.Templatable("App.Widgets.SimpleLegend", class Legend extends
 		
 		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol:renderer.defaultSymbol }));
     }
+
+    EmptyClassBreaks() {
+        Dom.Empty(this.Elem("breaks"));
+    }
 	        
     Template() {
         return "<table handle='breaks' class='breaks-container'></table>";
