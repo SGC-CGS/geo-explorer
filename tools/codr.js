@@ -59,6 +59,7 @@ export default class CODR {
 
     static geoType = {
         "PR": "A",
+        "GRC": "A",
         "CD": "A",
         "CCS": "S",
         "CSD": "A"
@@ -66,6 +67,7 @@ export default class CODR {
 
     static geoSchema = {
         "PR": "0002",
+        "GRC": "0001",
         "CD": "0003",
         "CCS": "0502",
         "CSD": "0005"
@@ -313,8 +315,8 @@ export default class CODR {
 		metadata.geoDimension.members.forEach(d => {			
 			if (d.geoLevel == null) return;
 
-			// Temporary for dev purposes only
-			if (d.geoLevel != "2" && d.geoLevel != "5") return;
+            var allowedGeoLevels = [1, 2, 3, 5, 502];
+            if (allowedGeoLevels.indexOf(d.geoLevel) < 0) return;
 			
             if (levels.findIndex(l => l.id == d.geoLevel) != -1) return;
 			
