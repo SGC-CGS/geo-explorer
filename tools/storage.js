@@ -33,10 +33,13 @@ export default class Storage {
     constructor(key, options) {
         this.key = key;
 
-        // REVIEW: May be best to see if storage is available in application.js?
-        // Session storage for incognito users in some browsers, otherwise local storage
-        // In Safari, the application may break application if the Storage API is not enabled client side
-        if (window.localStorage == void(0)) {
+        // Set storage mechanism
+        if(window.localStorage == void(0) || window.sessionStorage == void(0)) {
+            console.warn("No storage mechanism available. Storing and modifying CSGE data in a storage mechanism will not be possible.");
+            this.storedContent = null;
+            return;
+        }
+        else if (window.localStorage == void(0)) {
             this.myStorage = window.sessionStorage;
         } else {
             this.myStorage = window.localStorage;
@@ -44,14 +47,19 @@ export default class Storage {
 
         // If there are no options, only set a default empty array of bookmarks and contexts.
         if (options == null) {
-            options = { bookmarks: [], contexts: [] };
+            options = {
+                // REVIEW: Maybe add these options in bookmark.js?
+                bookmarks: [], 
+                bookmarkContexts: [],
+            };
         }
 
-        // If the key does not yet exist in local storage
+        // If the key does not yet exist in local storage, add it with options
         if (this.myStorage.getItem(this.key) == null) {
             this.myStorage.setItem(this.key, JSON.stringify(options));
         }
 
+        // Readily accessible object with JSON content
         this.storedContent = JSON.parse(this.myStorage.getItem(this.key));
     }
 
@@ -61,6 +69,8 @@ export default class Storage {
      * @param {*} section - The item you wish to update to the target collection
      */
     SetSection(name, section) {
+        if (this.storedContent == null) return;
+        
         this.storedContent[name] = section;
 
         this.myStorage.setItem(this.key, JSON.stringify(this.storedContent));
@@ -71,6 +81,8 @@ export default class Storage {
      * @param {*} name - The collection you wish to remove from the JSON content object
      */
     RemoveSection(name) {
+        if (this.storedContent == null) return;
+
         delete this.storedContent[name];
 
         this.myStorage.setItem(this.key, JSON.stringify(this.storedContent));
@@ -79,5 +91,9 @@ export default class Storage {
     /**
      * @description Clear all keys saved in the storage object 
      */
-    Empty() { this.myStorage.clear(); }
+    Empty() { 
+        if (this.storedContent == null) return;
+
+        this.myStorage.clear(); 
+    }
 }

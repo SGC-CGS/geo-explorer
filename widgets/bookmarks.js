@@ -8,14 +8,21 @@ import Core from '../tools/core.js';
  */
 export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends Templated {
 	/** 
-	 * Get / set the storage 
+	 * Get / set the bookmarks from the config
+	*/	
+	set Bookmarks(value) { this._bookmarks = value; }
+
+	get Bookmarks() { return this._bookmarks; }
+
+	/** 
+	 * Get / set the storage
 	*/	
 	set Storage(value) { this._storage = value; }
 
 	get Storage() { return this._storage; }
 	
 	/** 
-	 * @description Set the bookmarks widget and load any bookmarks from local or session storage.
+	 * @description Set the bookmarks widget and load any bookmarks from the config and / or storage.
 	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Bookmarks.html|ArcGIS API for JavaScript}
 	 * @type {object} 
 	*/
@@ -31,28 +38,35 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 			bookmarkCreationOptions: {
 				takeScreenshot: false,
 				captureViewpoint: true,
-			  }
+			}
         });
 
-		// REVIEW: Stored bookmarks should be at the top because they are priority and only their order should be preserved
-		// REVIEW: We cannot preserve order of the bookmarks from config and I do not think we should
-		if(this.Storage != undefined) {
-			this.storedBookmarks = JSON.parse(this.Storage.myStorage.getItem(this.Storage.key)).bookmarks;
-
-			this.bookmarksWidget.bookmarks = this.storedBookmarks;
-
-			this.bookmarksWidget.bookmarks.on("change", this.OnBookmark_Change.bind(this));
-			this.bookmarksWidget.on("bookmark-select", this.OnBookmark_Select.bind(this));
-			this.bookmarksWidget.on("bookmark-edit", this.OnBookmark_Edit.bind(this));
+		// If no storage mechanism set, only use the bookmarks from the config and disable editing
+		if(this.Storage == undefined || this.Storage.storedContent == null) {
+			this.bookmarksWidget.bookmarks = this.Bookmarks;
+			this.bookmarksWidget.editingEnabled = false;
+			return;
 		}
-	}
-	
-	/** 
-	 * @description Set the bookmark values. These values are not saved to local storage.
-	 * @param {Array} value 
-	*/	
-	set Bookmarks(value) {
-		value.forEach(v => { this.bookmarksWidget.bookmarks.push(v); });
+
+		// Get stored bookmarks and any bookmark contexts from storage
+		let storedBookmarks = JSON.parse(this.Storage.myStorage.getItem(this.Storage.key)).bookmarks;
+
+		this.bookmarkContexts = JSON.parse(this.Storage.myStorage.getItem(this.Storage.key)).bookmarkContexts;
+
+		// Save config to storage the first time the user loads the application
+		if(storedBookmarks.length == 0) { 
+			storedBookmarks = this.Bookmarks; 
+
+			this.Storage.SetSection("bookmarks", storedBookmarks);
+		}
+
+		// Save the stored bookmarks to the widget
+		this.bookmarksWidget.bookmarks = storedBookmarks;
+
+		// Enable bookmark events
+		this.bookmarksWidget.bookmarks.on("change", this.OnBookmark_Change.bind(this));
+		this.bookmarksWidget.on("bookmark-select", this.OnBookmark_Select.bind(this));
+		this.bookmarksWidget.on("bookmark-edit", this.OnBookmark_Edit.bind(this));
 	}
 	
 	/**
@@ -74,8 +88,6 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 		super(container, options);
 		
 		this.bookmarksWidget = null;
-
-		this.storedBookmarks = null;
 	}
 
 	/**
@@ -86,13 +98,79 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 		this.circularContext = context;
 
 		// REVIEW: I think we can just have a ToJson function on the context object. 
-		// We can't
 
 		// Required since bookmarks should not hold circular references in web storage
 		// Serializer function required
 		context = JSON.stringify(context, this.HandleCircularStructure());
 
 		this.context = JSON.parse(context);
+	}
+
+	/**
+	 * @description When a user adds, moves, or removes a bookmark, update the contents of the storage
+	 * @param {*} ev - Event
+	 */
+	OnBookmark_Change(ev) {
+		// Save the current context of the added bookmark to storage
+		if (ev.added.length == 1) {
+			this.bookmarkContexts.push({name: ev.added[0].name, context: this.context});
+
+			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
+		}
+
+		// Filter out the removed bookmark from the context in storage
+		if (ev.removed.length == 1) {
+			this.bookmarkContexts = this.bookmarkContexts.filter(b => b.name != ev.removed[0].name)
+
+			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
+		}
+
+		let bookmarks = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items)
+			
+		this.Storage.SetSection("bookmarks", bookmarks);
+	}
+
+	/**
+	 * @description If a selected bookmark has context, change to it's context.
+	 * @param {*} ev - Event
+	 */
+	OnBookmark_Select(ev) {
+		this.selectedBookmarkContext = this.bookmarkContexts.map(e => e.name).indexOf(ev.bookmark.name);
+
+		if(this.selectedBookmarkContext != -1) {
+			this.ChangeContext(this.bookmarkContexts[this.selectedBookmarkContext].context); 
+		}
+	}
+
+	/**
+	 * @description When a bookmark name is edited, update the bookmark and context collection
+	 * in the storage
+	 * @param {*} ev 
+	 */
+	OnBookmark_Edit(ev) {
+		let bookmarks = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items)
+			
+		this.Storage.SetSection("bookmarks", bookmarks);
+
+		if(this.selectedBookmarkContext != -1) {
+			this.bookmarkContexts[this.selectedBookmarkContext].name = ev.bookmark.name;
+
+			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
+		}
+	}
+
+	WorkAroundBookmarkToJSON(bookmarks) {
+		let bookmarksToJSON = []; 
+
+		bookmarks.forEach(bookmark => {
+			let b = bookmark.toJSON();
+
+			b.viewpoint.targetGeometry.type = "extent";
+
+			bookmarksToJSON.push(b);
+		});
+
+		return bookmarksToJSON;
 	}
 
 	/**
@@ -113,65 +191,6 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 
 	/**
-	 * @description When a user adds or removes a bookmark, update the contents
-	 * of the web storage
-	 * @param {*} ev - Event
-	 */
-	OnBookmark_Change(ev) {
-		// REVIEW: Use SetSection instead of AddItem RemoveItem. The internal, ESRI bookmarks widget
-		// should be able to give you all the current bookmarks. You may have to keep an association
-		// of contexts.
-
-		// REVIEW: Why is cloning objects necessary? To be in a format accepted for storage objects (serialization)
-
-		if(ev.moved.length != 0) {
-			// New order of some of the bookmarks impacted
-		}
-
-		// Add item to local storage
-		if (ev.added.length == 1) {
-			let added = ev.added[0].toJSON();
-
-			added.context = this.context;
-
-			// REVIEW: Why do we have to keep setting the targetGeometry type?
-			// REVIEW: Look into scale or point
-			added.viewpoint.targetGeometry.type = "extent";
-
-			this.storedBookmarks.push(added);
-
-			this.Storage.SetSection("bookmarks", this.storedBookmarks);
-		}
-
-		// Remove item from local storage
-		if(ev.removed.length == 1) {
-			let removed = ev.removed[0].toJSON();
-
-			this.storedBookmarks = this.storedBookmarks.filter(bookmark => bookmark.name != removed.name);
-
-			this.Storage.SetSection("bookmarks", this.storedBookmarks);
-		}
-	}
-
-
-	/**
-	 * @description If a selected bookmark has context, change to it's context. 
-	 * @param {*} ev - Event
-	 */
-	OnBookmark_Select(ev) {
-		this.selected = ev;
-
-		// Load context information if any
-		for (let index = 0; index < this.storedBookmarks.length; index++) {
-			let bookmark = this.storedBookmarks[index];
-
-			if(bookmark.context != undefined && bookmark.name == this.selected.bookmark.name) {
-				this.ChangeContext(bookmark.context);
-			}
-		}
-	}
-
-	/**
 	 * @description Notify the application that the context has changed given a selected bookmark
 	 * @param {*} context 
 	 */
@@ -182,6 +201,8 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 
 		// REVIEW: This should not be done here, it should be in application.js
 		// Bookmarks should only notify that something has been selected.
+
+		// Saw this in selector.js
 		this.circularContext.UpdateRenderer().then(c => {
 			this.Emit("Idle");
 		
@@ -191,29 +212,6 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 		});
 	}
 
-	/**
-	 * @description When a bookmark name is edited, see if it is in web 
-	 * storage and update the name. Custom bookmarks should hold some context. 
-	 * @param {*} ev 
-	 */
-	OnBookmark_Edit(ev) {
-		// REVIEW: We can probably simplify all this json conversion once everything else is fixed
-
-		for (let index = 0; index < this.storedBookmarks.length; index++) {
-			let bookmark = this.storedBookmarks[index];
-
-			if(bookmark.context != undefined && bookmark.name == this.selected.bookmark.name) {
-				let updatedBookmark = JSON.parse(JSON.stringify(bookmark));
-
-				updatedBookmark.name = ev.bookmark.name;
-
-				this.storedBookmarks[index] = updatedBookmark;
-
-				this.Storage.SetSection("bookmarks", this.storedBookmarks);
-			}
-		}
-	}
-	
 	/**
 	 * Create a div for this widget
 	 * @returns {string} HTML with custom div
