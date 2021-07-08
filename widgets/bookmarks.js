@@ -1,7 +1,5 @@
 import Templated from '../components/templated.js';
 import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
-import Storage from '../tools/storage.js';
 
 /**
  * Bookmarks widget module
@@ -9,9 +7,12 @@ import Storage from '../tools/storage.js';
  * @extends Templated
  */
 export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends Templated {
-	// REVIEW: Move away from the hardcoded "CSGE"?
-	// REVIEW: Why is cloning objects necessary?
-	// REVIEW: Why do we have to keep setting the targetGeometry type?
+	/** 
+	 * Get / set the storage 
+	*/	
+	set Storage(value) { this._storage = value; }
+
+	get Storage() { return this._storage; }
 	
 	/** 
 	 * @description Set the bookmarks widget and load any bookmarks from local or session storage.
@@ -20,40 +21,38 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	*/
 	set Map(value) { 
 		this.map = value; 
-
-		let bookmarks = [];
-		
-		// REVIEW: Do this in the storage class, once.
-		if(Storage.StorageAvailable(Storage.webStorageType)) {
-			bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;
-
-			// REVIEW: This is strange. Is it necessary? 
-			// REVIEW: Investigate whether we should be using points and scale rather than extent.
-			bookmarks.forEach(s => s.viewpoint.targetGeometry.type = "extent");
-		} 
-		
+				
         this.bookmarksWidget = new ESRI.widgets.Bookmarks({
+			// Allows bookmarks to be added, edited, or removed
+			editingEnabled: true,
 			view: this.map.view,
 			container: this.Elem("content"),
-			bookmarks: bookmarks,
-			// allows bookmarks to be added, edited, or removed
-			editingEnabled: true
+			bookmarks: [],
+			bookmarkCreationOptions: {
+				takeScreenshot: false,
+				captureViewpoint: true,
+			  }
         });
 
-		this.bookmarksWidget.bookmarks.on("change", this.onBookmarkChange.bind(this));
-		this.bookmarksWidget.on("bookmark-select", this.onBookmarkSelect.bind(this));
-		this.bookmarksWidget.on("bookmark-edit", this.onBookmarkEdit.bind(this));
+		// REVIEW: Stored bookmarks should be at the top because they are priority and only their order should be preserved
+		// REVIEW: We cannot preserve order of the bookmarks from config and I do not think we should
+		if(this.Storage != undefined) {
+			this.storedBookmarks = JSON.parse(this.Storage.myStorage.getItem(this.Storage.key)).bookmarks;
+
+			this.bookmarksWidget.bookmarks = this.storedBookmarks;
+
+			this.bookmarksWidget.bookmarks.on("change", this.OnBookmark_Change.bind(this));
+			this.bookmarksWidget.on("bookmark-select", this.OnBookmark_Select.bind(this));
+			this.bookmarksWidget.on("bookmark-edit", this.OnBookmark_Edit.bind(this));
+		}
 	}
 	
 	/** 
-	 * @description Set the bookmark values. These values are not
-	 * saved to local or session storage.
+	 * @description Set the bookmark values. These values are not saved to local storage.
 	 * @param {Array} value 
 	*/	
 	set Bookmarks(value) {
-		value.forEach(v => {
-			this.bookmarksWidget.bookmarks.push(v);
-		});
+		value.forEach(v => { this.bookmarksWidget.bookmarks.push(v); });
 	}
 	
 	/**
@@ -75,6 +74,8 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 		super(container, options);
 		
 		this.bookmarksWidget = null;
+
+		this.storedBookmarks = null;
 	}
 
 	/**
@@ -85,7 +86,10 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 		this.circularContext = context;
 
 		// REVIEW: I think we can just have a ToJson function on the context object. 
+		// We can't
+
 		// Required since bookmarks should not hold circular references in web storage
+		// Serializer function required
 		context = JSON.stringify(context, this.HandleCircularStructure());
 
 		this.context = JSON.parse(context);
@@ -113,33 +117,39 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * of the web storage
 	 * @param {*} ev - Event
 	 */
-	 // REVIEW: Naming, OnBookmark_Change
-	onBookmarkChange(ev) {
+	OnBookmark_Change(ev) {
 		// REVIEW: Use SetSection instead of AddItem RemoveItem. The internal, ESRI bookmarks widget
 		// should be able to give you all the current bookmarks. You may have to keep an association
 		// of contexts.
+
+		// REVIEW: Why is cloning objects necessary? To be in a format accepted for storage objects (serialization)
+
+		if(ev.moved.length != 0) {
+			// New order of some of the bookmarks impacted
+		}
+
 		// Add item to local storage
 		if (ev.added.length == 1) {
-			let added = JSON.parse(JSON.stringify(ev.added[0]));
+			let added = ev.added[0].toJSON();
 
 			added.context = this.context;
 
-			Storage.AddItem("CSGE", "bookmarks", added);
+			// REVIEW: Why do we have to keep setting the targetGeometry type?
+			// REVIEW: Look into scale or point
+			added.viewpoint.targetGeometry.type = "extent";
+
+			this.storedBookmarks.push(added);
+
+			this.Storage.SetSection("bookmarks", this.storedBookmarks);
 		}
 
 		// Remove item from local storage
 		if(ev.removed.length == 1) {
-			let removed = JSON.parse(JSON.stringify(ev.removed[0]));
+			let removed = ev.removed[0].toJSON();
 
-			let bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;
+			this.storedBookmarks = this.storedBookmarks.filter(bookmark => bookmark.name != removed.name);
 
-			for (let index = 0; index < bookmarks.length; index++) {
-				let bookmark = bookmarks[index];
-
-				if(bookmark.name == removed.name) {
-					Storage.RemoveItem("CSGE", "bookmarks", bookmark);
-				}
-			}
+			this.Storage.SetSection("bookmarks", this.storedBookmarks);
 		}
 	}
 
@@ -148,19 +158,15 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @description If a selected bookmark has context, change to it's context. 
 	 * @param {*} ev - Event
 	 */
-	 // REVIEW: Naming, OnBookmark_Select
-	onBookmarkSelect(ev) {
-		// REVIEW : Any reason for cloning like this?
-		this.selected = JSON.parse(JSON.stringify(ev));
+	OnBookmark_Select(ev) {
+		this.selected = ev;
 
 		// Load context information if any
-		let bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;
-
-		for (let index = 0; index < bookmarks.length; index++) {
-			let bookmark = bookmarks[index];
+		for (let index = 0; index < this.storedBookmarks.length; index++) {
+			let bookmark = this.storedBookmarks[index];
 
 			if(bookmark.context != undefined && bookmark.name == this.selected.bookmark.name) {
-				this.SwitchContextToSelectedBookmark(bookmark.context);
+				this.ChangeContext(bookmark.context);
 			}
 		}
 	}
@@ -169,8 +175,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @description Notify the application that the context has changed given a selected bookmark
 	 * @param {*} context 
 	 */
-	 // REVIEW: Naming, too long
-	SwitchContextToSelectedBookmark(context) {
+	 ChangeContext(context) {
 		Object.assign(this.circularContext, context); 
 
 		this.Emit("Busy");
@@ -191,22 +196,20 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * storage and update the name. Custom bookmarks should hold some context. 
 	 * @param {*} ev 
 	 */
-	 // REVIEW: Naming, OnBookmark_Edit
-	onBookmarkEdit(ev) {
+	OnBookmark_Edit(ev) {
 		// REVIEW: We can probably simplify all this json conversion once everything else is fixed
-		let edited =  JSON.parse(JSON.stringify(ev));
 
-		let bookmarks = JSON.parse(Storage.webStorage.getItem("CSGE")).bookmarks;
-
-		for (let index = 0; index < bookmarks.length; index++) {
-			let bookmark = bookmarks[index];
+		for (let index = 0; index < this.storedBookmarks.length; index++) {
+			let bookmark = this.storedBookmarks[index];
 
 			if(bookmark.context != undefined && bookmark.name == this.selected.bookmark.name) {
 				let updatedBookmark = JSON.parse(JSON.stringify(bookmark));
 
-				updatedBookmark.name = edited.bookmark.name;
+				updatedBookmark.name = ev.bookmark.name;
 
-				Storage.UpdateItem("CSGE", "bookmarks", bookmark, updatedBookmark);
+				this.storedBookmarks[index] = updatedBookmark;
+
+				this.Storage.SetSection("bookmarks", this.storedBookmarks);
 			}
 		}
 	}
