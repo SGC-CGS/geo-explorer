@@ -130,8 +130,7 @@ function LoadEsri() {
 		});
 	});
 	
-	// REVIEW: Use local copy of 4.17 reference.
-	esriJs.setAttribute('src','https://js.arcgis.com/4.17/dojo/dojo.js');
+	esriJs.setAttribute('src','./reference/dojo.js');
 	
 	document.head.appendChild(esriJs);
 	

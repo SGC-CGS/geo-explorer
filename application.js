@@ -86,9 +86,7 @@ export default class Application extends Templated {
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu();
 		this.bMenu = new Menu();
-
-		Storage.webStorage = "localStorage";
-		Storage.Initialize("CSGE"); 
+		this.storage = new Storage("CSGE");
 
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
@@ -123,6 +121,7 @@ export default class Application extends Templated {
 		this.Elem("table").headers = this.config.tableHeaders;
 		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
+		this.Elem('bookmarks').Storage = this.storage;
 		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
 
@@ -279,6 +278,8 @@ export default class Application extends Templated {
     // something like ChangeContext or whatever.
     // REVIEW: OnBookmark_Change may not be the right name since it fires only when there's a new context. 
 	// Maybe something like OnBookmark_NewContext 
+
+	// Issues with this.context and ev.context when trying to use ChangeContext
 	/**
 	 * Update the context
 	 * @param {*} ev 
