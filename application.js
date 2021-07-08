@@ -122,9 +122,9 @@ export default class Application extends Templated {
 		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
 		this.Elem('bookmarks').Storage = this.storage;
-		this.Elem('bookmarks').Map = this.map;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-
+		this.Elem('bookmarks').Map = this.map;
+		
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
@@ -279,7 +279,7 @@ export default class Application extends Templated {
     // REVIEW: OnBookmark_Change may not be the right name since it fires only when there's a new context. 
 	// Maybe something like OnBookmark_NewContext 
 
-	// Issues with this.context and ev.context when trying to use ChangeContext
+	// COMMENT: Issues with this.context and ev.context when trying to use ChangeContext
 	/**
 	 * Update the context
 	 * @param {*} ev 
