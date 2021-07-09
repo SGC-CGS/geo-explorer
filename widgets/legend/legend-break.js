@@ -40,8 +40,6 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
 		nls.Add("Legend_Item", "en", "{0} to {1}");
 		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
-		nls.Add("No_Data", "en", "Value Not Available");	
-		nls.Add("No_Data", "fr", "Valeur Non-Disponible");
 	}
 	
 	/**
@@ -53,25 +51,12 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	constructor(container, info) {	
 		super(container, info);
 			
-		// REVIEW: This should be done like in the explorer-lite. In fact, we should try to have a common legend component.
-		// Basically, the legend widget creates a legend-break for each class, then optionally, adds a default-break
-		// It's a bit hard to explain it all, let me know if you're not sure and we'll look at it together.
-		// Start by looking at simpleLegend.js in geo-explorer-lite
-		if(info.minValue != null && info.maxValue != null) {
-
-			this.min = info.minValue;
-			this.max = info.maxValue;
+		this.min = info.minValue;
+		this.max = info.maxValue;
 		
-			var lMin = Core.LocalizeNumber(this.min);
-			var lMax = Core.LocalizeNumber(this.max);
+		var lMin = Core.LocalizeNumber(this.min);
+		var lMax = Core.LocalizeNumber(this.max);
 		
-			this.label = this.Nls("Legend_Item", [lMin, lMax]);
-
-		} else {
-
-			this.label = this.Nls("No_Data");
-
-		}
-
+		this.label = this.Nls("Legend_Item", [lMin, lMax]);
 	}
 })

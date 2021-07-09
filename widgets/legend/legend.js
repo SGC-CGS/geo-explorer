@@ -3,6 +3,7 @@ import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
 import LegendBreak from './legend-break.js';
+import DefaultBreak from './default-break.js';
 
 /**
  * Legend widget module
@@ -68,9 +69,9 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 	 */	
 	Update(context) {	
 		this.context = context;
-		
+
 		this.LoadIndicators(context.IndicatorItems());
-		this.LoadClassBreaks(context.sublayer.renderer); 
+		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
 
 		this.Elem("labelChk").checked = false;
 		this.Elem("labelChk").removeAttribute("checked");
@@ -91,20 +92,26 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends Templ
 	}
 	
 	/**
-	 * Create legend break objects from renderer class breaks and default symbol
-	 * @param {object} renderer - Renderer object describing class breaks and default symbol
+	 * Create legend break object from class break info
+	 * @param {object[]} classBreakInfos - Object describing class breaks
 	 * @returns {void}
 	 */
-	LoadClassBreaks(renderer) {
+	 LoadClassBreaks(classBreakInfos) {
 		Dom.Empty(this.Elem("breaks"));
+
+		//creates legend breaks
+		this.breaks = classBreakInfos.map((c, i) => {
+            if (c.maxValue == null) c.maxValue = "";
+            if (c.minValue == null) c.minValue = "0";
+            
+            return new LegendBreak(this.Elem('breaks'), c);
+        });
 		
-		this.breaks = renderer.classBreakInfos.map((c, i) => { 
-			return new LegendBreak(this.Elem('breaks'), c); 
-		});
+		// creates default break
+		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol: this.context.sublayer.renderer.defaultSymbol }));
 
-		this.breaks.push(new LegendBreak(this.Elem('breaks'), {symbol: renderer.defaultSymbol})); 
 
-	}
+	 }
 
 	/**
 	 * Add context layer information to Dom
