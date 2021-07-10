@@ -105,7 +105,7 @@ export default class Application extends Templated {
 		this.HandleEvents(this.context);
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
-		this.HandleEvents(this.Node('bookmarks'), this.OnBookmark_Change.bind(this));
+		this.HandleEvents(this.Node('bookmarks'), this.OnBookmark_NewContext.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
@@ -125,7 +125,7 @@ export default class Application extends Templated {
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
 		this.Elem('bookmarks').Map = this.map;
 		
-		this.context.Initialize(config.context).then(d => {	
+		this.context.Initialize().then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
 			this.Elem("selector").Update(this.context);
@@ -252,15 +252,36 @@ export default class Application extends Templated {
 	 * @returns {void}
 	 */
 	OnSelector_Change(ev) {
-		this.map.EmptyLayer('main');
-		this.map.AddSubLayer('main', this.context.sublayer);
+		this.ChangeContext(this.context);
+	}
 
-		this.map.Behavior("pointselect").target = this.context.sublayer;
-		
-		this.Elem("styler").Update(this.context);
-		this.Elem("legend").Update(this.context);
-		this.Elem("bookmarks").Update(this.context);
-		this.Elem("table").Update(this.context);
+	/**
+	 * Update the context
+	 * @todo Do not let new bookmark selections to occur while updating
+	 * @param {*} ev 
+	 */
+	 OnBookmark_NewContext(ev) {
+		this.ChangeContext(this.context);
+
+		this.Elem("selector").Update(this.context);
+	}
+
+	/**
+	 * @param {*} context 
+	 */
+	ChangeContext(context) {
+		this.map.EmptyLayer('main');
+		this.map.AddSubLayer('main', context.sublayer);
+
+		this.map.Behavior("pointselect").target = context.sublayer;
+
+		this.Elem("styler").Update(context);
+		this.Elem("legend").Update(context);
+		this.Elem("table").Update(context);
+		this.Elem("bookmarks").Update(context);
+
+		// REVIEW: Is this necessary? Seems like a selection clear would do the trick too.
+		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
 	}
 	
 	/**
@@ -272,32 +293,6 @@ export default class Application extends Templated {
 		this.context.sublayer.renderer = ev.renderer;
 		
 		this.Elem("legend").Update(this.context);
-	}
-
-	// REVIEW: This code is very similar to OnSelector_Change, they should be merged into a common function
-    // something like ChangeContext or whatever.
-    // REVIEW: OnBookmark_Change may not be the right name since it fires only when there's a new context. 
-	// Maybe something like OnBookmark_NewContext 
-
-	// COMMENT: Issues with this.context and ev.context when trying to use ChangeContext
-	/**
-	 * Update the context
-	 * @param {*} ev 
-	 */
-	 OnBookmark_Change(ev) {
-		this.map.EmptyLayer('main');
-		this.map.AddSubLayer('main', ev.context.sublayer);
-
-		this.map.Behavior("pointselect").target = ev.context.sublayer;
-
-		this.Elem("selector").Update(ev.context);
-		this.Elem("styler").Update(ev.context);
-		this.Elem("legend").Update(ev.context);
-		this.Elem("table").Update(ev.context);
-
-		// REVIEW: Why do we refresh chart data with selected graphics here but not in OnSelector_Change?
-		// Is this necessary? Seems like a selection clear would do the trick too.
-		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
 	}
 	
 	/**
