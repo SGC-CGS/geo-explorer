@@ -17,7 +17,17 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	/** 
 	 * Get / set the storage
 	*/	
-	set Storage(value) { this._storage = value; }
+	set Storage(value) { 
+		let options = JSON.parse(value.myStorage.getItem(value.key)) 
+
+		// For storing bookmarks and context of bookmarks 
+		if(options.bookmarks == undefined) {
+			value.SetSection("bookmarks", [])
+			value.SetSection("bookmarkContexts", [])
+		}
+
+		this._storage = value; 
+	}
 
 	get Storage() { return this._storage; }
 	
@@ -95,15 +105,9 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @param {*} context 
 	 */
 	Update(context) { 
-		this.circularContext = context;
+		this.classedContext = context;
 
-		// REVIEW: I think we can just have a ToJson function on the context object. 
-
-		// Required since bookmarks should not hold circular references in web storage
-		// Serializer function required
-		context = JSON.stringify(context, this.HandleCircularStructure());
-
-		this.context = JSON.parse(context);
+		this.context = context.toJSON();
 	}
 
 	/**
@@ -135,10 +139,10 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @param {*} ev - Event
 	 */
 	OnBookmark_Select(ev) {
-		this.selectedBookmarkContext = this.bookmarkContexts.map(e => e.name).indexOf(ev.bookmark.name);
+		this.selectedBookmarkContext = this.bookmarkContexts.find(e => e.name == ev.bookmark.name);
 
-		if(this.selectedBookmarkContext != -1) {
-			this.ChangeContext(this.bookmarkContexts[this.selectedBookmarkContext].context); 
+		if(this.selectedBookmarkContext != null) {
+			this.ChangeContext(this.selectedBookmarkContext.context); 
 		}
 	}
 
@@ -152,13 +156,19 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 			
 		this.Storage.SetSection("bookmarks", bookmarks);
 
-		if(this.selectedBookmarkContext != -1) {
-			this.bookmarkContexts[this.selectedBookmarkContext].name = ev.bookmark.name;
+		if(this.selectedBookmarkContext != null) {
+			this.selectedBookmarkContext.name = ev.bookmark.name;
 
 			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
 		}
 	}
 
+	/**
+	 * @description Bookmarks seems to strip the targetGeometry type after using toJSON, 
+	 * so this is the work around. May be an issue in the ArcGIS JS API. 
+	 * @param {*} bookmarks 
+	 * @returns 
+	 */
 	WorkAroundBookmarkToJSON(bookmarks) {
 		let bookmarksToJSON = []; 
 
@@ -174,42 +184,29 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 
 	/**
-	 * @description Handles circular references (if any)
-	 * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value|TypeError: cyclic object value}
-	 */
-	 // REVIEW: Shouldn't be necessary
-	 HandleCircularStructure() {
-		let seen = new WeakSet();
-		return (key, value) => {
-			if (typeof value === "object" && value !== null) {
-				if (seen.has(value)) return;
-
-				seen.add(value);
-			}
-			return value;
-		};
-	}
-
-	/**
 	 * @description Notify the application that the context has changed given a selected bookmark
 	 * @param {*} context 
 	 */
 	 ChangeContext(context) {
-		Object.assign(this.circularContext, context); 
+		this.classedContext.category = context.category;
+		this.classedContext.filters = context.filters;
+		this.classedContext.geography = context.geography;
+		this.classedContext.subject = context.subject;
+		this.classedContext.theme = context.theme;
+		this.classedContext.value = context.value;
 
 		this.Emit("Busy");
 
-		// REVIEW: This should not be done here, it should be in application.js
-		// Bookmarks should only notify that something has been selected.
-
-		// Saw this in selector.js
-		this.circularContext.UpdateRenderer().then(c => {
-			this.Emit("Idle");
-		
-			this.circularContext.Commit();
+		// REVIEW: Should be in application.js? Use an observer?		
+		this.classedContext.Initialize().then(response => {
+			this.classedContext.UpdateRenderer().then(c => {
+				this.Emit("Idle");
 			
-			this.Emit("Change", { context: this.circularContext });
-		});
+				this.classedContext.Commit();
+				
+				this.Emit("Change");
+			});
+		})
 	}
 
 	/**
