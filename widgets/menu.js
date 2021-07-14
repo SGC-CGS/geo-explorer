@@ -63,6 +63,14 @@ export default class Menu {
 	Widget(id) {
 		return this.Item[id].overlay.widget;
 	}
+
+	/**
+	 * Get an overlay's title
+	 * @param {*} id - Item object for Id
+	 */
+	Title(id) {
+		return this.Item(id).overlay._nodes.title;
+	}
 	
 	/**
 	 * Add specified item to menu
@@ -89,6 +97,30 @@ export default class Menu {
 		
 		this.AddItem(id, item);
 	}
+
+	/**
+	 * Disable an overlay widget button and update properties
+	 * @param {*} button - An overlay widget button
+	 * @param {*} title - The message to show for the disabled button
+	 */
+		 DisableButton(button, title) {
+			button.disabled = true;
+			button.title = title;
+			button.style.cursor = "not-allowed";
+			button.style.opacity = "0.3";
+		}
+	
+		/**
+		 * Enable an overlay widget button and update properties
+		 * @param {*} button - An overlay widget button
+		 * @param {*} title - The message to show for the enabled button
+		 */
+		EnableButton(button, title) {
+			button.disabled = false;
+			button.title = title;
+			button.style.cursor = "pointer";
+			button.style.opacity = "1";
+		}
 	
 	/**
 	 * Overlay widget buttons
