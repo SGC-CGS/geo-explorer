@@ -110,17 +110,17 @@ export default class Menu {
 			button.style.opacity = "0.3";
 		}
 	
-		/**
-		 * Enable an overlay widget button and update properties
-		 * @param {*} button - An overlay widget button
-		 * @param {*} title - The message to show for the enabled button
-		 */
-		EnableButton(button, title) {
-			button.disabled = false;
-			button.title = title;
-			button.style.cursor = "pointer";
-			button.style.opacity = "1";
-		}
+	/**
+	 * Enable an overlay widget button and update properties
+	 * @param {*} button - An overlay widget button
+	 * @param {*} title - The message to show for the enabled button
+	 */
+	EnableButton(button, title) {
+		button.disabled = false;
+		button.title = title;
+		button.style.cursor = "pointer";
+		button.style.opacity = "1";
+	}
 	
 	/**
 	 * Overlay widget buttons
