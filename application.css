@@ -646,6 +646,7 @@
 	max-width: 300px;
     padding: 4px;
 	transition: opacity 125ms ease-in-out;
+    user-select: none;
 }
 
 .gexp.tooltip ul {

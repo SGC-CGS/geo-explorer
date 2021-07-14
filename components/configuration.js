@@ -44,16 +44,6 @@ export default class Configuration {
 	 */
 	get context() { return this._context; }
 	
-
-	/**
-	 * Get the chart configuration (field)
-	 */
-	get chart() { 
-		return {
-			field : this._json.chart.field[Core.locale]
-		}
-	}
-	
 	/**
 	 * Get the table object (headers)
 	 */

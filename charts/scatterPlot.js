@@ -64,10 +64,7 @@ export default class ScatterPlot extends Chart{
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
         // Draw axes
-        this.g
-			.selectAll("g.left.axis")
-			.call(d3.axisLeft(this.yScale).ticks());
-
+        this.SetLeftAxisAttributes();
         this.SetBottomAxisAttributes();
 
         // Append datapoints

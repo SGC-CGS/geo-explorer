@@ -53,6 +53,10 @@ export default class Application extends Templated {
 		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
 		nls.Add("Chart_Title", "en", "View chart");
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");
+		nls.Add("Chart_Title_Disabled", "en", "No chart to view until data selected");
+		nls.Add("Chart_Title_Disabled", "fr", "Aucun graphique à afficher tant que les données n'ont pas été sélectionnées");
+		nls.Add("Table_Label_Chart_Link", "en", "Selected data from table <a href='{0}' target='_blank'>{1}</a>");
+		nls.Add("Table_Label_Chart_Link", "fr", "Données sélectionnées du tableau <a href='{0}' target='_blank'>{1}</a>");
 		nls.Add("Legend_Title", "en", "Map legend");
 		nls.Add("Legend_Title", "fr", "Légende de la carte");
 		nls.Add("Bookmarks_Title", "en", "Bookmarks");
@@ -115,7 +119,9 @@ export default class Application extends Templated {
 		
 		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 
-		this.Elem("chart").labelField = this.config.chart.field;
+		this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
+
+		this.Elem("chart").config = this.config.popup;
 		this.Elem("table").headers = this.config.tableHeaders;
 		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
@@ -186,10 +192,25 @@ export default class Application extends Templated {
 		behavior.symbol = config.symbol("pointselect");
 
 		this.HandleEvents(behavior, ev => {
+			// REVIEW: This should only be called once on hover (enter, over, exit)
+			// REVIEW: A display / information class for chart and popup
 			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature); // popup
 			
 			this.Elem("table").data = ev.pointselect; 
 			this.Elem("chart").data = ev.pointselect;
+
+			if (this.Elem("chart").data.length == 0) {
+				this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
+				this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
+
+				this.Elem("chart").description = "";
+
+			} else if (this.menu.Button("chart").disabled == true) {
+				this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
+				this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.url, this.prod]);
+
+				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
+			}
 		});	
 	}
 
@@ -291,7 +312,7 @@ export default class Application extends Templated {
 			});	
 		});	
 	}
-	
+		
 	/**
 	 * Show the popup for the selected map point.
 	 * @param {object} mapPoint - Object containing the coordinates of the selected map point
@@ -309,19 +330,19 @@ export default class Application extends Templated {
 		// prevent F from displaying twice
 		symbol = symbol && value != "F" ? symbol : ''; 
 		
-		var url, link = ``, prod = this.context.category.toString();
+		this.url, this.link = ``, this.prod = this.context.category.toString();
 		
-		if (prod.length == 8) {
-			url = this.config.tableviewer.url + this.context.category + "01";
-			prod = prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
-			link = this.Nls('Table_Label_Popup_Link', [url, prod]);
+		if (this.prod.length == 8) {
+			this.url = this.config.tableviewer.url + this.context.category + "01";
+			this.prod = this.prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
+			this.link = this.Nls('Table_Label_Popup_Link', [this.url, this.prod]);
 		}
 		
 		var content = `<b>${uom}</b>: ${value}<sup>${symbol}</sup>` + 
 					  `<br><br>` + 
 					  `<div><b>${this.Nls("Indicator_Title_Popup")}</b>:` +
 						 `<ul>${indicators}</ul>` +
-						 `${link}` +
+						 `${this.link}` +
 					  `</div>` + 
 					  `<br>` +
 					  `<sup>${symbol}</sup> ${nulldesc}`;
@@ -428,6 +449,12 @@ export default class Application extends Templated {
 		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
 		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
 		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
+
+		if(this.Elem("chart").data.length == 0) {
+			this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
+			this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
+			this.Elem("chart").description = "";
+		}
 	}
 	
 	/**

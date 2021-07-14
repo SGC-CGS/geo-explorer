@@ -11,10 +11,12 @@ import Net from "../../geo-explorer-api/tools/net.js";
 export default Core.Templatable("App.Widgets.Table", class Table extends Templated {
 	
 	/**
-	 * Set table title
+	 * Get / set table title
 	 */
+	get title() { return this.Elem("title").innerHTML }
+
 	set title(value) { this.Elem("title").innerHTML = value; }
-	
+
 	/**
 	 * Get/set table headers
 	 */

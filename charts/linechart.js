@@ -106,7 +106,6 @@ export default class LineChart extends Chart{
      * @returns {void}
      */
     Draw(){
-
         // Sample data for testing
         this.data = [
             {label: "26-03-12", value: 406.98}, {label: "27-04-12", value: 614.48},
@@ -128,9 +127,7 @@ export default class LineChart extends Chart{
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
 
         // Draw axes
-        this.g
-			.selectAll("g.left.axis")
-			.call(d3.axisLeft(this.yScale).ticks());
+        this.SetLeftAxisAttributes();
 
         this.g
             .selectAll("g.bottom.axis")

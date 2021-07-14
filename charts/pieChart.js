@@ -26,7 +26,7 @@ export default class PieChart extends Chart {
         this.dimensions.radius = (Math.min(this.dimensions.width, this.dimensions.height) / 3);
         this.dimensions.width += this.padding;
         
-		var transform = `translate(${this.dimensions.width / 2}, ${this.dimensions.radius})`;
+		var transform = `translate(${this.dimensions.width / 2}, ${this.dimensions.radius + (this.padding / 2)})`;
 		
 		this.g.attr('transform', transform);
 

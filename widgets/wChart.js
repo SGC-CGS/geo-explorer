@@ -17,27 +17,52 @@ import ScatterPlot from "../charts/scatterPlot.js";
 export default Core.Templatable("App.Widgets.WChart", class WChart extends Templated {
 
 	/**
-	 * Get/set name of field to use for data label
+	 * Get / set data label, value, and uom
 	 */
-    set labelField(value) { this._title = value; }
+	get data() { return this._data; }
 
-    get labelField() { return this._title; }
-
-	/**
-	 * Set data label and value
-	 */
     set data(value) {
-		var data = value.items.map(item => {
-			let label = item["attributes"][this.labelField];
+		this._data = value.items.map(item => {
+			let label = item["attributes"][this.config.title];
 			let value = item["attributes"]["Value"] == null ? 0 : item["attributes"]["Value"];
+			let uom = item["attributes"][this.config.uom];
 			return {
 				label: label,
 				value: value,
+				uom: uom
 			}
 		});
-
-		this.DrawChart(data);
+		this.DrawChart();
     }
+
+	/**
+	 * Get / set the configuration of the chart
+	 */
+	get config() { return this._config; }
+
+	set config(value) { this._config = value; }
+
+	/**
+	 * Get / set the description of the chart 
+	 */
+	get description() { return this._description; }
+
+	set description(value) { 
+		this.Elem("ChartDescription").innerText = value;
+
+		this._description = value; 
+	}
+
+	/**
+	 * Get / set the chart type
+	 */
+	get chartType() { return this._chartType; }
+
+	set chartType(value) {
+		this.BuildChart(value);
+
+		this._chartType = value;
+	}
 
 	/**
 	 * Add any required text to the Nls object
@@ -63,55 +88,49 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		super(container, options);
 
 		this.chart = null;
-		this.chartType = "BarChart";	// default is bar chart
 
-		this.BuildChart();
+		this.chartType = "BarChart";	// default is bar chart
     }
 
-    /**
-     * Create chart based on chart type selection.
+	/**
+	 * Create chart based on chart type selection.
+	 * @param {*} type - Type of chart to be built
 	 * @returns {void}
-     * @todo Chart type selection based on JSON.
-     */
-    BuildChart() {
-		// Chart container element
-		let element = this.Node("ChartsContainer").elem;
+	 */
+    BuildChart(type) {
+		let element = this.Elem("ChartsContainer");
 
-		// Bar Chart by default
-		if (this.chartType == "BarChart") {
-			this.chart = new BarChart({ element:element });
-		} 
-		
-		else if (this.chartType == "PieChart") {
-		  this.chart = new PieChart({ element:element });
-		} 
-		
-		else if (this.chartType == "LineChart") {
-		  this.chart = new LineChart({ element:element });
-		} 
-		
-		else if (this.chartType == "ScatterPlot") {
-		  this.chart = new ScatterPlot({ element:element });
+		if (type == "PieChart") {
+			this.chart = new PieChart({ element: element });
 		}
-		
-		// No data is in the chart yet so hide the SVG
+
+		else if (type == "LineChart") {
+			this.chart = new LineChart({ element: element });
+		}
+
+		else if (type == "ScatterPlot") {
+			this.chart = new ScatterPlot({ element: element });
+		}
+
+		else {
+			this.chart = new BarChart({ element: element });
+		}
+
 		this.HideChart();
     }
 
     /**
-     * Update data on the chart, or hide the chart if there is no data.
-	 * @param {object[]} data - Array of objects containing data values and labels
+     * Update data on the chart, or hide the chart widget if there is no data.
+	 * @param {object[]} data - Array of objects containing data values, labels, and uom
 	 * @returns {void}
-     * @todo Change name of Redraw()?
      */
-    DrawChart(data) {
-		if (data.length == 0) this.HideChart();
+    DrawChart() {
+		if (this.data.length == 0) this.HideChart();
 
 		else {
-			this.ShowChart();
-			this.chart.data = data;
-			// Updated
+			this.chart.data = this.data;
 			this.chart.Draw();
+			this.ShowChart();
 		}
     }
 
@@ -120,7 +139,7 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 	 * @returns {void}
 	 */
     HideChart(){
-		d3.select(this.Node("ChartsContainer").elem)
+		d3.select(this.Elem("ChartsContainer"))
 		  .selectAll("svg")
 		  .attr("visibility", "hidden");
     }
@@ -130,17 +149,17 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 	 * @returns {void}
 	 */	
     ShowChart(){
-		d3.select(this.Node("ChartsContainer").elem)
+		d3.select(this.Elem("ChartsContainer"))
 		  .selectAll("svg")
 		  .attr("visibility", "visible");
     }
 
     /**
-     * Removes the SVG from the charts container and destroys current chart 
+     * Removes the SVG from the charts container and destroys the current chart 
 	 * @returns {void}
      */
     ClearChart() {
-		var elem = d3.select(this.Node("ChartsContainer").elem);
+		var elem = d3.select(this.Elem("ChartsContainer"));
 		
 		elem.selectAll("svg").remove();
 		
@@ -152,7 +171,8 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 	 * @returns {string} HTML with custom div
 	 */	
     Template() {
-      return "<div handle='ChartsContainer' width='430' height='400'></div>";
+      return 	"<div handle='ChartDescription'></div>" +
+				"<div handle='ChartsContainer' width='430' height='400'></div>";
     }
   }
 );

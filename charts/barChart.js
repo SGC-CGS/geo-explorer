@@ -54,12 +54,9 @@ export default class BarChart extends Chart{
         // add horizontal grid lines
         this.g.selectAll("g.y.axis-grid")
             .call(Axes.GridLineHorizontal(this.yScale, this.dimensions.innerWidth));
-
-        // add axes
-        this.g
-			.selectAll("g.left.axis")
-			.call(d3.axisLeft(this.yScale).ticks())
-
+        
+        // set axis attributes
+        this.SetLeftAxisAttributes();
         this.SetBottomAxisAttributes();
 
         this.AppendRectanglesToChart();  // add bars
