@@ -130,7 +130,14 @@ export default class Chart extends Evented{
             .selectAll("g.left.axis")
             .call(d3.axisLeft(this.yScale).ticks())
             .selectAll("text")
-            .text(function(d) { return this.AbbreviateNumber(d, 0); }.bind(this))
+            .text(function(d) { 
+                let decimals = d.toString().split(".")[1];
+                if(decimals != undefined && decimals.length >= 2) {
+                    return this.AbbreviateNumber(d, 2); 
+                } else {
+                    return this.AbbreviateNumber(d, 0); 
+                }
+            }.bind(this))
             .style("text-anchor", "end");
     }
 

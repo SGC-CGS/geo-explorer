@@ -812,3 +812,7 @@
   stroke-width: 2px;
   stroke-dasharray: 2,4;
 }
+
+.esri-popup__footer {
+    display: none;
+}
