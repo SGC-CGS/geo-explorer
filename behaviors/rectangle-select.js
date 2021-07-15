@@ -48,6 +48,14 @@ export default class RectangleSelectBehavior extends Behavior {
 	set symbol(value) { this._options.symbol = value; }
 
 	/**
+	 * Get / set whether the draw query is complete. This is for knowing whether 
+	 * the cursor is no longer being updated.
+	 */
+	get drawComplete() { return this._drawComplete; }
+
+	set drawComplete(value) { this._drawComplete = value; }
+
+	/**
 	 * Call constructor of base class (Behavior) and initialize rectangle-select class 
 	 * Adds drawing, selection graphics layer, and handlers.
 	 * @param {object} map - Map object
@@ -123,6 +131,8 @@ export default class RectangleSelectBehavior extends Behavior {
 	OnDraw_CursorUpdate(ev) {
 		if (ev.vertices.length < 2) return;
 
+		this.drawComplete = false;
+
 		this._map.view.graphics.removeAll();
 		
 		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
@@ -138,6 +148,8 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	OnDraw_Complete(ev) {
+		this.drawComplete = true;
+
 		this.Emit("Busy");
 		
 		this._map.view.graphics.removeAll();
@@ -157,7 +169,7 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @param {object} results - Spatial object with query results
 	 * @returns {void}
 	 */
-	OnDraw_QueryComplete(results) {		
+	OnDraw_QueryComplete(results) {
 		results.features.forEach(f => {
 			var exists = this.layer.graphics.find(g => g.attributes[this.field] == f.attributes[this.field]);
 			

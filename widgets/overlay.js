@@ -124,7 +124,7 @@ export default class Overlay extends Templated {
 	 * @returns {string} HTML with custom div
 	 */
 	Template() {
-		return	  "<div class='overlay esri-component'>" +
+		return	  "<div handle=esri-component class='overlay esri-component'>" +
 					  "<div class='overlay-header'>" +
 						  "<h2 class='overlay-title' handle='title'></h2>" +
 						  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
