@@ -190,6 +190,7 @@ export default class CodeSets {
      * @param {String} dp - Datapoint object
      * @param {String} locale - locale, en/fr
      */
+	 // REVIEW: Is this used anywhere? Why doesn't it use the scalar factor?
 	FormatDP(dp, locale) {
         var content = dp.Format(locale || Core.locale);
         
