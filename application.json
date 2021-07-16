@@ -10,7 +10,8 @@
 				    "xmax": -53, 
 				    "ymin": 41, 
 				    "ymax": 83
-                }
+                },
+				"minZoom" : 3
 			},
             "zoom": 4,
             "center": [-100, 63],
