@@ -16,13 +16,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
      * Add the needed language texts
      */
     static Nls(nls) {
-        nls.Add("PreviousBtn_Title", "en", "Previous");
-        nls.Add("PreviousBtn_Title", "fr", "Précédente");
-        nls.Add("NextBtn_Title", "en", "Next");
-        nls.Add("NextBtn_Title", "fr", "Suivante");    
-        nls.Add("PagesLabel_Title", "en", "Page {0} of {1}");
-        nls.Add("PagesLabel_Title", "fr", "Page {0} sur {1}");    
-
         // Column headers
         nls.Add("ColHeader_code", "en", "DGUID");
         nls.Add("ColHeader_code", "fr", "IDUGD");
@@ -47,10 +40,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 		super(container);
 		
         Dom.AddCss(this.container, 'hidden');
-
-        // Next and Previous buttons for paging
-        /*this.Node("previous").On("click", this.OnPreviousButton_Click.bind(this));
-        this.Node("next").On("click", this.OnNextButton_Click.bind(this));*/
 	}
 
 	/**
@@ -61,7 +50,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         Dom.RemoveCss(this.container, 'hidden');
 		
         this.UpdateTableVisibility();
-        //this.UpdatePagingVisibility(false);
     }
 
     /**
@@ -69,7 +57,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
      * @param {any} value
      */
     CreateHeaders() {
-
         this._headers = ["code", "name", "value", "frequency", "scalar", "date"];
 
         this._headers.forEach(h => {
@@ -77,7 +64,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             Dom.Create("th", { innerHTML: label, scope: "col" }, this.Elem("header"));
         });
     }
-    
 
 	/**
 	 * Update the table content with the datapoints 
@@ -86,9 +72,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
     Populate(metadata, data, codesets) {
         var datapoints = metadata.geoMembers;
 
-        if (this._headers == null) {
-            this.CreateHeaders();
-        }
+        if (this._headers == null) this.CreateHeaders();
 
         this._tableData = [];
 
@@ -108,6 +92,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             tr.value = "";
             
             var dataobj = data[dp.code];
+			
             if (dataobj) {
                 tr.date = dataobj.date;
                 tr.decimals = dataobj.decimals;
@@ -123,9 +108,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         });
 
         this._tableData.forEach(r => {
-            // Hide for paging
-            //var tr = Dom.Create("tr", { className: "table-row hidden" }, this.Elem("body"));
-
             var tr = Dom.Create("tr", { className: "table-row" }, this.Elem("body"));
 
             this._headers.forEach(f => {				
@@ -134,109 +116,6 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         });
 
         this.UpdateTableVisibility();
-
-        //this.SetupPaging(datapoints);
-        
-    }
-
-    SetupPaging(datapoints) {
-
-        var tableRows = this.Elem("body").childNodes;
-
-        this._rowsPerPage = 5;
-        this._numOfPages = 1;
-        this._currentPage = 1;
-
-        if (datapoints.length > this._rowsPerPage) {
-            // Display the data in pages
-            this.UpdatePagingVisibility(true);
-
-            this._numOfPages = Math.ceil(datapoints.length / this._rowsPerPage);
-
-            this.UpdatePagingLabel();
-            this.EnableDisablePagingButtons();
-            
-            for (var i = 0; i <= this._rowsPerPage; i++) {
-                Dom.ToggleCss(tableRows[i], 'hidden', false);
-            }            
-        }
-        else {
-            this.UpdatePagingVisibility(false);
-
-            tableRows.forEach(r => {
-                Dom.ToggleCss(r, 'hidden', false);
-            });
-        }
-
-        
-    }
-
-    /**
-     * Handler for clicking on the previous page button
-     * @param {any} ev
-     */
-    OnPreviousButton_Click(ev) {       
-        if (this._numOfPages == 1 || this._currentPage == 1) return; // Should never happen
-
-        // Hide visible rows
-        this.UpdatePagingRowVisibility(false);
-
-        this._currentPage--;
-
-        this.UpdatePagingLabel();
-
-        // Show the previous/new set of rows
-        this.UpdatePagingRowVisibility(true);
-                
-        this.EnableDisablePagingButtons();
-    }
-
-    /**
-     * Handler for clicking on the next page button
-     * @param {any} ev
-     */
-    OnNextButton_Click(ev) {
-        if (this._numOfPages == 1 || this._currentPage == this._numOfPages) return; // Should never happen
-
-        // Hide visible rows
-        this.UpdatePagingRowVisibility(false);
-
-        this._currentPage++;
-
-        this.UpdatePagingLabel();
-
-        // Show the next/new set of rows
-        this.UpdatePagingRowVisibility(true);
-
-        this.EnableDisablePagingButtons();
-    }
-
-    UpdatePagingRowVisibility(visible) {
-        var tableRows = this.Elem("body").childNodes;
-        var startIndex = 0;
-        if (this._currentPage != 1)
-            startIndex = (this._currentPage * this._rowsPerPage);
-        for (var i = startIndex; i <= (startIndex + this._rowsPerPage) && i < tableRows.length; i++) {
-            Dom.ToggleCss(tableRows[i], 'hidden', !visible);
-        }
-    }
-
-    EnableDisablePagingButtons() {
-        if (this._currentPage == 1) 
-            Dom.ToggleCss(this.Elem("previous"), 'disabled', true);
-        else 
-            Dom.ToggleCss(this.Elem("previous"), 'disabled', false);
-        
-        if (this._currentPage == this._numOfPages) 
-            Dom.ToggleCss(this.Elem("next"), 'disabled', true);
-        else 
-            Dom.ToggleCss(this.Elem("next"), 'disabled', false);
-        
-    }
-
-    UpdatePagingLabel() {
-        var subs = [this._currentPage.toString(), this._numOfPages.toString()];
-        this.Elem("pagesLabel").innerHTML = this.Nls("PagesLabel_Title", subs);
     }
 
 	/**
@@ -248,39 +127,17 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         
         Dom.ToggleCss(this.Elem("table"), 'hidden', !isVisible);                
     }
-
-    /**
-     * Show/Hide Paging controls
-     * @param {any} isVisible
-     */
-    UpdatePagingVisibility(isVisible) {
-        Dom.ToggleCss(this.Elem("pagesLabel"), 'hidden', !isVisible);
-        Dom.ToggleCss(this.Elem("previous"), 'hidden', !isVisible);
-        Dom.ToggleCss(this.Elem("next"), 'hidden', !isVisible);        
-    }
-        
 	
 	/**
 	 * Create HTML for this widget
 	 * @returns {string} HTML for table widget
 	 */
 	Template() {
-		return "<div class='table-widget'>" +
-				  "<div handle='table' class='table-container hidden'>" + 
-                     "<table>" +	
-                        "<thead>" +
-                        "<tr handle='header'></tr>" +
-                        "</thead>" +
-                        "<tbody handle='body'></tbody>" +
-                     "</table>" + 
-                     /*"<div class='row mrgn-tp-sm'>" +
-                        "<label handle='pagesLabel' property='name' class='mrgn-tp-sm hidden'></label>" +
-                        "<button handle='next' class='btn btn-primary mrgn-tp-sm mrgn-lft-sm col-md-2 pull-right hidden' title='nls(NextBtn_Title)'>" +
-                        "nls(NextBtn_Title)</button > " +
-                        "<button handle='previous' class='btn btn-primary mrgn-tp-sm col-md-2 pull-right hidden' title='nls(PreviousBtn_Title)'>" +
-                        "nls(PreviousBtn_Title)</button > " +                        
-                     "</div>"*/
-			      "</div>" + 
-			   "</div>"
+		return "<table handle='table' class='table-widget'>" +	
+				  "<thead>" +
+					  "<tr handle='header'></tr>" +
+				  "</thead>" +
+				  "<tbody handle='body'></tbody>" +
+			   "</table>";
 	}
 })
