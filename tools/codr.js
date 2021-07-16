@@ -8,20 +8,9 @@ import Vector from '../components/codr/vector.js';
 import CodeSets from '../components/codr/codesets.js';
 
 const URLS = {
-
     metadata: "https://www150.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
     data: "https://www150.statcan.gc.ca/t1/wds/rest/getDataFromCubePidCoordAndLatestNPeriods",
     codesets: "https://www150.statcan.gc.ca/t1/wds/rest/getCodeSets"
-
-    /* old QA
-    metadata: "https://stc-ndm-qa-pc2.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
-    data: "https://stc-ndm-qa-pc2.statcan.gc.ca/t1/wds/rest/getDataFromCubePidCoordAndLatestNPeriods",
-    codesets: "https://stc-ndm-qa-pc2.statcan.gc.ca/t1/wds/rest/getCodeSets"*/
-    /* new QA
-    metadata: "https://stc-ndm-new-qa-pc2.statcan.gc.ca/t1/wds/rest/getCubeMetadata",
-    data: "https://stc-ndm-new-qa-pc2.statcan.gc.ca/t1/wds/rest/getDataFromCubePidCoordAndLatestNPeriods",
-    codesets: "https://stc-ndm-new-qa-pc2.statcan.gc.ca/t1/wds/rest/getCodeSets"*/
-    
 }
 
 /**
