@@ -1,24 +1,18 @@
 {
   "layers": {
-	"PR" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
-	"CD" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
-	"CSD" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0",
-    "_PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
+    "PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
     "GRC": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
-    "_CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
+    "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
     "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3",
-    "_CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
+    "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
     "DA": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/5"
   },
   "id": {
-	"PR" : "PRUID",
-	"CD" : "CDUID",
-	"CSD" : "CSDUID",
-    "_PR": "PRCODE",
+    "PR": "PRCODE",
     "GRC": "GRC_UID",
-    "_CD": "CD_UID",
+    "CD": "CD_UID",
     "CCS": "CCS_UID",
-    "_CSD": "CSD_UID",
+    "CSD": "CSD_UID",
     "DA": "DA_UID"
   },
   "ramps": {
@@ -42,13 +36,8 @@
     }
   },
   "identify": {
-    "_PR": {
-      "id": "PRCODE",
-      "nameEn": "ENG_LABEL",
-      "nameFr": "FRE_LABEL"
-    },
     "PR": {
-      "id": "PRUID",
+      "id": "PRCODE",
       "nameEn": "ENG_LABEL",
       "nameFr": "FRE_LABEL"
     },
@@ -57,13 +46,8 @@
       "nameEn": "ENG_LABEL",
       "nameFr": "FRE_LABEL"
     },
-    "_CD": {
-      "id": "CD_UID",
-      "nameEn": "ENGNAME",
-      "nameFr": "FRENAME"
-    },
     "CD": {
-      "id": "CDUID",
+      "id": "CD_UID",
       "nameEn": "ENGNAME",
       "nameFr": "FRENAME"
     },
@@ -73,11 +57,6 @@
       "nameFr": "OFFNAME"
     },
     "CSD": {
-      "id": "CSDUID",
-      "nameEn": "ENGNAME",
-      "nameFr": "FRENAME"
-    },
-    "_CSD": {
       "id": "CSD_UID",
       "nameEn": "ENGNAME",
       "nameFr": "FRENAME"
