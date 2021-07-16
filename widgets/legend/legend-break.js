@@ -39,7 +39,7 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		nls.Add("Legend_Unavailable", "en", "unavailable");
 		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
 		nls.Add("Legend_Item", "en", "{0} to {1}");
-		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");		
+		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
 	}
 	
 	/**
@@ -50,7 +50,7 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	 */	
 	constructor(container, info) {	
 		super(container, info);
-		
+			
 		this.min = info.minValue;
 		this.max = info.maxValue;
 		
