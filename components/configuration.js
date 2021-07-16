@@ -8,45 +8,26 @@ import Context from './context.js';
  * and use get accessors to retrieve content for application.js.
  */
 export default class Configuration {
-// REVIEW: We need to organize this by section. For example, a map section containing all the map config.
-// a table section with everything table related, etc.
 
 	/**
-	 * Get the map object from the json
+	 * Get the context object (for subject, theme, category, etc.)
+	 */
+	 get context() { return this._context; }
+
+	/**
+	 * Get the map config from the json
 	 */
 	get map() { return this._json.map; }
-	
-	/**
-	 * Get the MapServer url for the map from the json
-	 */
-	get mapUrl() { return this._json.map.url; }
-	
-	/**
-	 *Get the opacity of the map from the json
-	 */
+
+	get mapOptions() { return this._json.map.options; }	
+
 	get mapOpacity() { return this._json.map.opacity; }
-	
-	/**
-	 * Get polygon symbology for specified behavior id
-	 * @param {string} id - Behavior id
-	 * @returns symbol - Symbol for the specified id
-	 */
-	symbol(id) {
-		var s = this._json.symbols[id];
-		
-		if (!s) throw new Error(`Symbol ${0} does not exist is the configuration file.`);
-		
-		return s;
-	}
-	
-	/**
-	 * Get the context object (subject, theme, category, etc.)
-	 */
-	get context() { return this._context; }
+
+	get mapUrl() { return this._json.map.url; }
 	
 
 	/**
-	 * Get the chart configuration (field)
+	 * Get the chart config from the json
 	 */
 	get chart() { 
 		return {
@@ -55,13 +36,10 @@ export default class Configuration {
 	}
 	
 	/**
-	 * Get the table object (headers)
+	 * Get the table config from the json
 	 */
 	get table() { return this._json.table; }
-	
-	/**
-	 * Get the object with ids and labels for the table header.
-	 */
+
 	get tableHeaders() { 
 		return this._json.table.headers.map(h => {
 			return {
@@ -72,15 +50,7 @@ export default class Configuration {
 	}
 
 	/**
-	 * Get a label from the json for locale
-	 */
-	// REVIEW: It seems like this isn't used anywhere. Double-check and delete.
-	get labelName() {
-		return this._json.name.label[Core.locale];
-	}
-
-	/**
-	 * Get the object with id, label, and url for the legend items
+	 * Get the legend config from the json
 	 */
 	get legendItems(){
 		return this._json.legend.items.map(i => {
@@ -93,7 +63,7 @@ export default class Configuration {
 	}
 	
 	/**
-	 * Get the alphabetized bookmarks and their extents
+	 * Get the alphabetized bookmarks and extents from the json
 	 */
 	get bookmarks() {
 		var bookmarks = this._json.bookmarks.sort((a,b) => {
@@ -118,7 +88,7 @@ export default class Configuration {
 	}
 
 	/**
-	 * Get fields by locale for popup from json 
+	 * Get popup information and tableviewer link from the json
 	 */
 	 get popup() {
 		var p = this._json.popup
@@ -132,11 +102,21 @@ export default class Configuration {
 		}; 
 	}	
 	
-	/**
-	 *  Get tableviewer by locale from json
-	 */
 	get tableviewer() {
 		return { url : this._json.tableviewer.url[Core.locale] }
+	}
+
+	/**
+	 * Get polygon symbology for specified behavior id from the json
+	 * @param {string} id - Behavior id
+	 * @returns symbol - Symbol for the specified id
+	 */
+	 symbol(id) {
+		var s = this._json.symbols[id];
+		
+		if (!s) throw new Error(`Symbol ${0} does not exist is the configuration file.`);
+		
+		return s;
 	}
 
 	/**

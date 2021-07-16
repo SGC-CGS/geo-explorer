@@ -1,7 +1,21 @@
 {
     "map": {
         "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
-        "opacity": 0.75
+        "opacity": 0.75,
+        "options": {
+            "constraints": {
+                "geometry": {
+			        "type": "extent", 
+				    "xmin": -141, 
+				    "xmax": -53, 
+				    "ymin": 41, 
+				    "ymax": 83
+                }
+			},
+            "zoom": 4,
+            "center": [-100, 63],
+            "animation": false 
+		}
     },
     "layers": {
 		"PR" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",

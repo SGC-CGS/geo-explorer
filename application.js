@@ -82,7 +82,7 @@ export default class Application extends Templated {
 		this._config = config;
 
 		// Build map, menus, widgets and other UI components
-		this.map = new Map(this.Elem('map'));
+		this.map = new Map(this.Elem('map'), this._config.mapOptions);
 		this.menu = new Menu();
 		this.bMenu = new Menu();
 
