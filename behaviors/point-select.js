@@ -126,6 +126,9 @@ export default class PointIdentifyBehavior extends Behavior {
 				
 				else {
 					this.layer.add(r.feature);
+					// REVIEW: pointselect as a property name is a bit awkward. I say we should replace by selected.
+					// Every behavior that selects on the map should use the same data structure (this is a reason why 
+					// a selection object can be useful)
 					this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature, pointselect:this.graphics }); // for popup + table
 				}
 			}
