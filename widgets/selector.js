@@ -246,14 +246,13 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		// Update the selected filter TypeAhead value 
 		ev.target.value = ev.item
 
-		let someFiltersWithNullValue  = this.filters.some(f => f.value == null);
+		if (this.filters.some(f => f.value == null)) return;
 
 		// When sValue is enabled and all filters are not null valued
-		if (!this.Elem('sValue').disabled && someFiltersWithNullValue == false) {
-			this.SendValueAndFilterToContext();
-		} 
+		if (!this.Elem('sValue').disabled) this.ChangeContext();
+
 		// Enable sValue once all filters are not null valued
-		else if (someFiltersWithNullValue == false) {
+		else {
 			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
 			
 			this.Elem('sValue').disabled = false;
@@ -261,14 +260,14 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	}
 	
 	/**
-	 * Update value select element and call SendValueAndFilterToContext()
+	 * Update value select element and call ChangeContext()
 	 * @param {*} ev - Event object
 	 * @returns {void}
 	 */
 	OnValue_Change(ev) {
 		this.Elem("sValue").value = ev.item;
 		
-		this.SendValueAndFilterToContext();	
+		this.ChangeContext();	
 	}
 
 	/**
@@ -276,20 +275,17 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-	SendValueAndFilterToContext() {
+	ChangeContext() {
 		var value = this.Elem("sValue").value.value;
 
-		var filters = this.filters.map((f, i)=> {
-			return f.value.value
-		});
+		var filters = this.filters.map((f, i)=> f.value.value);
 
 		this.Emit("Busy");
 
 		this.context.ChangeIndicators(filters, value).then(c => {	
 			this.Emit("Idle");
-					
+			
 			this.LoadDropDown(this.Elem("sGeography"), this.context.Lookup("geographies"));
-
 		}, error => this.OnRequests_Error(error));
 	}
 	
