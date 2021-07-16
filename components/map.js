@@ -56,7 +56,8 @@ export default class Map extends Evented {
 			center: options && options.center || [-100, 63], 
 			container: container, 
 			map: this._map,  
-			zoom: options && options.zoom || 4 
+			zoom: options && options.zoom || 4, 
+			constraints: options && options.constraints || { }
 		});
 		
 		this._view.popup.collapseEnabled = false;
