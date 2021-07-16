@@ -186,7 +186,7 @@ export default class CodeSets {
 
     /**
      * @description
-     * Format a Datapoint description for a specific locale, including symbol, uom, etc.
+     * Format a Datapoint description for a specific locale, including security, symbol and status
      * @param {String} dp - Datapoint object
      * @param {String} locale - locale, en/fr
      */
@@ -196,9 +196,6 @@ export default class CodeSets {
 		var security = this.security(dp.security);
 		var status = this.status(dp.status);
 		var symbol = this.symbol(dp.symbol);
-		var scalar = this.scalar(dp.scalar);
-		var frequency = this.frequency(dp.frequency);
-		var uom = this.uom(dp.uom);
 		
         // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
         if (security) return security;
@@ -211,13 +208,6 @@ export default class CodeSets {
         
         // Any standard table symbol associated to the value as supercript        
 		if (symbol) content += symbol.sup();
-		
-        // Units of measure associated to the value        
-		if (uom) content = content + " " + uom;
-		
-		if (scalar && scalar != "units") content = content + " " + scalar;
-        
-		if (frequency) content = content + " - " + frequency;
 		
 		return content;
 	}
