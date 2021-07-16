@@ -800,3 +800,13 @@
 .gexp .popup-table td {
     padding: 2px;
 }
+
+/* Bookmark */
+
+.esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
+    display: none;
+}
+
+.esri-bookmarks__authoring-actions .esri-button {
+    cursor: pointer;
+}

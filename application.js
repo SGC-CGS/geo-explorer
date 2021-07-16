@@ -11,6 +11,7 @@ import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
 import Legend from '../geo-explorer-api/widgets/legend/legend.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
+import Storage from '../geo-explorer-api/tools/storage.js';
 
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -85,6 +86,7 @@ export default class Application extends Templated {
 		this.map = new Map(this.Elem('map'), this._config.mapOptions);
 		this.menu = new Menu();
 		this.bMenu = new Menu();
+		this.storage = new Storage("CSGE");
 
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
@@ -103,6 +105,7 @@ export default class Application extends Templated {
 		this.HandleEvents(this.context);
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
+		this.HandleEvents(this.Node('bookmarks'), this.OnBookmark_NewContext.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
@@ -118,15 +121,17 @@ export default class Application extends Templated {
 		this.Elem("table").headers = this.config.tableHeaders;
 		this.Elem('legend').Opacity = this.config.mapOpacity;
 		this.Elem('basemap').Map = this.map;
-		this.Elem('bookmarks').Map = this.map;
+		this.Elem('bookmarks').Storage = this.storage;
 		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-
-		this.context.Initialize(config.context).then(d => {	
+		this.Elem('bookmarks').Map = this.map;
+		
+		this.context.Initialize().then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
 			this.Elem("legend").Update(this.context);
+			this.Elem("bookmarks").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
 			this.menu.SetOverlay(this.menu.Item("legend"));			
@@ -247,14 +252,36 @@ export default class Application extends Templated {
 	 * @returns {void}
 	 */
 	OnSelector_Change(ev) {
-		this.map.EmptyLayer('main');
-		this.map.AddSubLayer('main', this.context.sublayer);
+		this.ChangeContext(this.context);
+	}
 
-		this.map.Behavior("pointselect").target = this.context.sublayer;
-		
-		this.Elem("styler").Update(this.context);
-		this.Elem("legend").Update(this.context);
-		this.Elem("table").Update(this.context);
+	/**
+	 * Update the context
+	 * @todo Do not let new bookmark selections to occur while updating
+	 * @param {*} ev 
+	 */
+	 OnBookmark_NewContext(ev) {
+		this.ChangeContext(this.context);
+
+		this.Elem("selector").Update(this.context);
+	}
+
+	/**
+	 * @param {*} context 
+	 */
+	ChangeContext(context) {
+		this.map.EmptyLayer('main');
+		this.map.AddSubLayer('main', context.sublayer);
+
+		this.map.Behavior("pointselect").target = context.sublayer;
+
+		this.Elem("styler").Update(context);
+		this.Elem("legend").Update(context);
+		this.Elem("table").Update(context);
+		this.Elem("bookmarks").Update(context);
+
+		// REVIEW: Is this necessary? Seems like a selection clear would do the trick too.
+		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
 	}
 	
 	/**
