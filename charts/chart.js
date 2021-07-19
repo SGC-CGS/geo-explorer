@@ -1,6 +1,5 @@
 import Tooltip from "../../geo-explorer-api/ui/tooltip.js"
 import Dimensions from "./components/dimensions.js";
-import PubSub from '../../geo-explorer-api/tools/pubsub.js';
 import Evented from "../../geo-explorer-api/components/evented.js";
 
 /**
@@ -11,7 +10,7 @@ import Evented from "../../geo-explorer-api/components/evented.js";
  * more information on the overall workflow and overview of 
  * the D3 concepts. 
  */
-export default class Chart extends Evented{ 
+export default class Chart extends Evented { 
 
     /**
      * Get / set data object for selected polygons
@@ -171,9 +170,7 @@ export default class Chart extends Evented{
 
         this.tooltip.content = `${title}` + "<br/>" + `Value: ` + `${value}`;
 
-        PubSub.Emit("OnMouseEnter", title);
-
-        //this.Emit("change", {highlighted: title})
+        this.Emit("Change", {hovered: title});
     }
 
     /**
@@ -194,6 +191,6 @@ export default class Chart extends Evented{
 		
         this.tooltip.Hide();
 
-        PubSub.Emit("OnMouseLeave");
+        this.Emit("Change", {hovered: ""});
     }
 }

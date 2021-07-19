@@ -2,16 +2,15 @@
 
 import Core from '../geo-explorer-api/tools/core.js';
 import Dom from '../geo-explorer-api/tools/dom.js';
-import PubSub from '../geo-explorer-api/tools/pubsub.js';
 import Templated from '../geo-explorer-api/components/templated.js';
 import Map from '../geo-explorer-api/components/map.js';
-import SelectBehavior from '../geo-explorer-api/behaviors/rectangle-select.js';
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
 import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
 import Legend from '../geo-explorer-api/widgets/legend/legend.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
+import Selection from './components/selection.js';
 
 import Selector from './widgets/selector.js';
 import Styler from './widgets/styler/styler.js';
@@ -69,10 +68,6 @@ export default class Application extends Templated {
 		nls.Add("Fullscreen_Title", "fr", "Plein écran");
 		nls.Add("Home_Title", "en", "Default map view");
 		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
-		nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
-		nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");
-		nls.Add("Table_Label_Popup_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
-		nls.Add("Table_Label_Popup_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");						
 	}
 
 	/**
@@ -114,7 +109,6 @@ export default class Application extends Templated {
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
 		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
-		
 		this.Node('legend').On('LabelName', this.onLegend_LabelName.bind(this));
 		
 		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
@@ -136,11 +130,13 @@ export default class Application extends Templated {
 			this.Elem("legend").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
-			this.menu.SetOverlay(this.menu.Item("legend"));			
+			this.menu.SetOverlay(this.menu.Item("legend"));
+			
+			this.selection = new Selection(this.map, this.context, this.config);
 
-			this.AddSelectBehavior(this.map, this.context, this.config);
+			this.OnSelectBehavior();
 
-			this.map.Behavior("selection").Activate();
+			this.selection.behavior.Activate();
 			
 		}, error => this.OnApplication_Error(error));
 
@@ -175,181 +171,35 @@ export default class Application extends Templated {
 	}
 
 	/**
-	 * Adds the behavior and handles the event for generating popup and table from map selection.
-	 * @param {object} map - Map object to which the behavior will be applied
-	 * @param {object} context - Context object for retrieving the sublayer
-	 * @param {object} config - Configuration data
+	 * Handles the event for generating the table and chart from map selection.
+	 * Also handles disabling / enabling the "view chart" button. 
 	 * @returns {void}
 	 */
-	 AddSelectBehavior(map, context, config) {
-		 // No way to `esc` from rectangle select 
-		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map));
+	 OnSelectBehavior() {
+		this.selection.table = this.Elem("table");
+		this.selection.chart = this.Elem("chart");
 
-		behavior.target = context.sublayer;
-		behavior.field = "GeographyReferenceId";
-		behavior.symbol = config.symbol("selection");
+		this.HandleEvents(this.selection.behavior, ev => {
+			this.selection.table.data = ev.selection; 
+			this.selection.chart.data = ev.selection;
 
-		// This should not work when drawing the rectangle
-		this.HighlightOnBehaviorHover(this.map, this.map.Behavior("selection"));
-
-		this.HandleEvents(behavior, ev => {
-			// REVIEW: This should only be called once on hover (enter, over, exit)
-			// REVIEW: A display / information class for chart and popup
-
-			// ev.feature and ev.mapPoint do not exist here
-			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature); // popup
-
-			this.Elem("table").data = ev.selection; 
-			this.Elem("chart").data = ev.selection;
-
-			if (this.Elem("chart").data.length == 0) {
+			if (this.selection.chart.data.length == 0) {
 				this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
 				this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
-
-				this.Elem("chart").description = "";
+				this.selection.chart.description = "";
 
 			} else if (this.menu.Button("chart").disabled == true) {
 				this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
-				this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.url, this.prod]);
-
-				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
+				this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.selection.url, this.selection.prod]);
+				this.selection.chart.description = this.selection.table.title + " (" + this.selection.chart.data[0].uom + ")";
 			}
 		});	
-	}
 
-	/**
-	 * Allows two-way sync between map and chart where when you hover over one, the other is highlighted
-	 * {@link https://developers.arcgis.com/javascript/latest/sample-code/view-hittest/|ArcGIS API for JavaScript}
-	 * @param {*} map - Map object to which the behavior is applied
-	 * @param {*} behavior - Behavior on the map object
-	 */
-	 HighlightOnBehaviorHover(map, behavior) {
-		// Set highlight color the same as the outline color
-		map.view.highlightOptions.color = behavior.symbol.outline.color;
-
-		let p = this.config.popup;
-
-		let highlight, currentTitle, currentChartElement;
-
-		// When hovering over the map
-		map.view.whenLayerView(behavior.layer).then(layerView => {	
-			//this.HandleEvents(this.Node("chart"), (ev) => console.log("test"));
-
-			// REVIEW: I'm not convinced with this PubSub thing. I think it'll quickly devolve.
-			// I think we'd be better off having a selection object and widgets that watch it 
-			// and react to changes. A lot of the highlighting logic could be handled by the 
-			// selection object too.
-
-			// For chart
-			PubSub.Add("OnMouseEnter", (title) => {
-				if (highlight && currentTitle != title) {
-					highlight.remove();
-					highlight = null;
-					return;
-				}
-
-				if (highlight) { return; }
-
-				// Highlight a feature that matches the chart element being highlighted
-				layerView.queryGraphics().then(results => {
-					results.items.forEach(r => {
-						if(r.attributes[p.title] == title) {
-							highlight = layerView.highlight(r);
-							currentTitle = title;
-						}
-					})
-				});
-			});
-
-			PubSub.Add("OnMouseLeave", () => {
-				if(highlight) {
-					highlight.remove();
-					highlight = null;
-				}
-			});
-
-			// REVIEW: Too many indented statements. 
-			// REVIEW: This could be encapsulated in a behavior class, not necessarily the highlight.
-			map.view.on("pointer-move", ev => {				
-				map.view.hitTest(ev).then((response, ev) => {
-					if (response.results.length && this.map.Behavior("selection").drawComplete == true) {
-						let graphic = response.results[0].graphic;
-						let title = graphic.attributes[p.title];
-
-						this.ShowInfoPopup(this.map.view.toMap(response.screenPoint), graphic);
-
-						if (highlight && currentTitle != title) {
-							highlight.remove();
-							highlight = null;
-							d3.select(currentChartElement).style("opacity", 1);
-							this.map.popup.close()
-							return;
-						}
-
-						if (highlight) { return; }
-
-						highlight = layerView.highlight(graphic);
-						currentTitle = title;
-
-						let chartDataType = this.Elem("chart").chart.chartDataType;
-						let chartData = this.Elem("chart").chart.g.selectAll(chartDataType).data();
-
-						chartData.forEach((c, i) => {
-							if(c.label == title) {
-								currentChartElement = this.Elem("chart").chart.g.selectAll(chartDataType).nodes()[i];
-								d3.select(currentChartElement).style("opacity", 0.5);
-							}
-						});
-
-					} else {
-						// Remove the highlight if no features are returned from the hitTest
-						if (highlight) {
-							highlight.remove();
-							highlight = null;
-							d3.select(currentChartElement).style("opacity", 1);
-							this.map.popup.close()
-						}
-					}
-				});
-			});	
-		});	
-	}
-		
-	/**
-	 * Show the popup for the selected map point.
-	 * @param {object} mapPoint - Object containing the coordinates of the selected map point
-	 * @param {object} f - Layer containing the attributes of the selected polygon
-	 * @returns {void}
-	 */
-	ShowInfoPopup(mapPoint, f) {
-		var p = this.config.popup;
-		var uom = f.attributes[p.uom];
-		var value = f.attributes[p.value]
-		var symbol = f.attributes[p.symbol];
-		var indicators = this.context.IndicatorItems().map(f => `<li>${f.label}</li>`).join("");
-		var nulldesc = f.attributes[p.nulldesc] || '';
-		
-		// prevent F from displaying twice
-		symbol = symbol && value != "F" ? symbol : ''; 
-		
-		this.url, this.link = ``, this.prod = this.context.category.toString();
-		
-		if (this.prod.length == 8) {
-			this.url = this.config.tableviewer.url + this.context.category + "01";
-			this.prod = this.prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
-			this.link = this.Nls('Table_Label_Popup_Link', [this.url, this.prod]);
-		}
-		
-		var content = `<b>${uom}</b>: ${value}<sup>${symbol}</sup>` + 
-					  `<br><br>` + 
-					  `<div><b>${this.Nls("Indicator_Title_Popup")}</b>:` +
-						 `<ul>${indicators}</ul>` +
-						 `${this.link}` +
-					  `</div>` + 
-					  `<br>` +
-					  `<sup>${symbol}</sup> ${nulldesc}`;
-
-		this.map.popup.open({ location:mapPoint, title:f.attributes[p.title], content:content });
+		// REVIEW: Something better than chart.chart
+		this.HandleEvents(this.selection.chart.chart, (ev) => {
+			this.selection.hovered = ev.hovered;
+			this.selection.OnChartElementSelection();
+		});
 	}
 	
 	/**
@@ -375,7 +225,7 @@ export default class Application extends Templated {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 
-		this.map.Behavior("selection").target = this.context.sublayer;
+		this.selection.behavior.target = this.context.sublayer;
 		
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
@@ -448,14 +298,14 @@ export default class Application extends Templated {
 	 * @returns {void}
 	 */
 	OnTable_RowButtonClick(ev) {
-		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
-		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
+		this.selection.behavior.layer.remove(ev.graphic);
+		this.selection.table.data = this.selection.behavior.graphics;
+		this.selection.chart.data = this.selection.behavior.graphics;
 
-		if(this.Elem("chart").data.length == 0) {
+		if(this.selection.chart.data.length == 0) {
 			this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
 			this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
-			this.Elem("chart").description = "";
+			this.selection.chart.description = "";
 		}
 	}
 	
