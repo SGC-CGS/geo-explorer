@@ -80,6 +80,7 @@ export default class BarChart extends Chart{
             .attr("width", this.xScale.bandwidth())
             // Compute height for each rectangle
             .attr("height", this.dimensions.innerHeight - this.yScale(0))
+            .attr("id", (d) =>  d.label)
             .style("fill", (d) => this.color(d.value))
             .on("mouseenter", (event, d) => {this.OnMouseEnter(d.label, d.value, event.target)})
             .on("mousemove", (event) => this.OnMouseMove(event))

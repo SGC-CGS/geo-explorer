@@ -10,6 +10,7 @@ import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
 import Legend from '../geo-explorer-api/widgets/legend/legend.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
+import SelectBehavior from '../geo-explorer-api/behaviors/rectangle-select.js';
 import Selection from './components/selection.js';
 
 import Selector from './widgets/selector.js';
@@ -68,6 +69,10 @@ export default class Application extends Templated {
 		nls.Add("Fullscreen_Title", "fr", "Plein écran");
 		nls.Add("Home_Title", "en", "Default map view");
 		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
+		nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
+		nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");
+		nls.Add("Table_Label_Popup_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
+		nls.Add("Table_Label_Popup_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");
 	}
 
 	/**
@@ -85,6 +90,7 @@ export default class Application extends Templated {
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu();
 		this.bMenu = new Menu();
+		this.selection = new Selection();
 
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
@@ -131,12 +137,10 @@ export default class Application extends Templated {
 			this.Elem("table").Update(this.context);
 			
 			this.menu.SetOverlay(this.menu.Item("legend"));
-			
-			this.selection = new Selection(this.map, this.context, this.config);
 
-			this.OnSelectBehavior();
+			this.AddSelectBehavior(this.map, this.context, this.config);
 
-			this.selection.behavior.Activate();
+			this.map.Behavior("selection").Activate();
 			
 		}, error => this.OnApplication_Error(error));
 
@@ -171,36 +175,172 @@ export default class Application extends Templated {
 	}
 
 	/**
+	 * Adds the behavior and handles the event for generating popup and table from map selection.
+	 * @param {object} map - Map object to which the behavior will be applied
+	 * @param {object} context - Context object for retrieving the sublayer
+	 * @param {object} config - Configuration data
+	 * @returns {void}
+	 */
+	 AddSelectBehavior(map, context, config) {
+		// REVIEW: No way to `esc` from rectangle select
+	   var behavior = this.map.AddBehavior("selection", new SelectBehavior(map));
+
+	   behavior.target = context.sublayer;
+	   behavior.field = "GeographyReferenceId";
+	   behavior.symbol = config.symbol("selection");
+
+	   this.HandleEvents(behavior, ev => {
+		   this.Elem("table").data = ev.selection; 
+		   this.Elem("chart").data = ev.selection;
+
+		   if (this.Elem("chart").data.length == 0) {
+			   this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
+			   this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
+
+			   this.Elem("chart").description = "";
+
+		   } else if (this.menu.Button("chart").disabled == true) {
+			   this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
+			   this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.url, this.prod]);
+
+			   this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
+		   }
+	   });	
+	   
+	   	map.EnableHitTest(behavior);
+
+		this.map.view.highlightOptions.color = [255,255,0, 1];
+
+		this.highlighted = null;
+
+		this.map.view.on("layerViewCreated", ev => {
+			this.layerView = ev.layerView;
+		})
+
+		// Handle enter, exit and move?
+		this.map.view.on("hover", ev => {
+			this.graphic = ev.graphic
+			this.layerView = ev.layerView;
+
+			// REVIEW: Do not call popup again if the graphic has not changed (use selection class)
+			this.ShowInfoPopup(this.map.view.toMap(ev.response.screenPoint), ev.graphic);
+
+			// TODO: Add ID to all chart elements
+
+			// Why do both rectangles stay highlighted instead of one?
+			let type = this.Elem("chart").chart.chartDataType;
+			let rect = document.querySelector(`${type}[id="${ev.graphic.attributes[this.config.popup.title]}"]`);
+
+			if (this.highlight) {
+				this.highlight.remove();
+				this.highlight = null;
+				d3.select(rect).style("opacity", 1);
+				this.map.popup.close();
+				return;
+			}
+
+			this.highlight = this.layerView.highlight(ev.graphic);
+			d3.select(rect).style("opacity", 0.5);
+		});
+
+		this.HandleEvents(this.Elem("chart").chart, this.ChartSelected.bind(this));
+   }
+
+   	/**
+	* 
+	* @param {*} ev 
+	* @returns {void}
+	*/
+	ChartSelected(ev) {
+		let hovered = ev.hovered;
+
+		if (this.highlight && ev.hovered == null) {
+			this.highlight.remove();
+			this.highlight = null;
+			return;
+		} else if (this.highlight) {
+			this.highlight.remove();
+			this.highlight = null;
+			return;
+		}
+
+		// Highlight a feature that matches the chart element being hovered
+		this.layerView.queryGraphics().then(graphics => {
+			graphics.items.forEach(graphic => {
+				if (graphic.attributes[this.config.popup.title] == hovered) {
+					this.highlight = this.layerView.highlight(graphic);
+				}
+			})
+		});
+	}
+
+	/**
 	 * Handles the event for generating the table and chart from map selection.
 	 * Also handles disabling / enabling the "view chart" button. 
 	 * @returns {void}
 	 */
 	 OnSelectBehavior() {
-		this.selection.table = this.Elem("table");
-		this.selection.chart = this.Elem("chart");
-
 		this.HandleEvents(this.selection.behavior, ev => {
-			this.selection.table.data = ev.selection; 
-			this.selection.chart.data = ev.selection;
+			this.Elem("table").data = ev.selection; 
+			this.Elem("chart").data = ev.selection;
 
-			if (this.selection.chart.data.length == 0) {
+			if (this.Elem("chart").data.length == 0) {
 				this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
 				this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
-				this.selection.chart.description = "";
+				this.Elem("chart").description = "";
 
 			} else if (this.menu.Button("chart").disabled == true) {
 				this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
 				this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.selection.url, this.selection.prod]);
-				this.selection.chart.description = this.selection.table.title + " (" + this.selection.chart.data[0].uom + ")";
+				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
 			}
 		});	
 
 		// REVIEW: Something better than chart.chart
-		this.HandleEvents(this.selection.chart.chart, (ev) => {
+		this.HandleEvents(this.Elem("chart").chart, (ev) => {
 			this.selection.hovered = ev.hovered;
 			this.selection.OnChartElementSelection();
 		});
 	}
+
+	/**
+	 * Show the popup for the selected map point.
+	 * @param {object} mapPoint - Object containing the coordinates of the selected map point
+	 * @param {object} f - Layer containing the attributes of the selected polygon
+	 * @returns {void}
+	 */
+	 ShowInfoPopup(mapPoint, f) {
+        var p = this.config.popup;
+		var uom = f.attributes[p.uom];
+		var value = f.attributes[p.value]
+		var symbol = f.attributes[p.symbol];
+		var indicators = this.context.IndicatorItems().map(f => `<li>${f.label}</li>`).join("");
+		var nulldesc = f.attributes[p.nulldesc] || '';
+		
+		// prevent F from displaying twice
+		symbol = symbol && value != "F" ? symbol : ''; 
+        
+        // Getting the url can be done once per table
+
+		this.url, this.link = ``, this.prod = this.context.category.toString();
+		
+		if (this.prod.length == 8) {
+			this.url = this.config.tableviewer.url + this.context.category + "01";
+			this.prod = this.prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
+			this.link = this.Nls('Table_Label_Popup_Link', [this.url, this.prod]);
+		}
+		
+		var content = `<b>${uom}</b>: ${value}<sup>${symbol}</sup>` + 
+					  `<br><br>` + 
+					  `<div><b>${this.Nls("Indicator_Title_Popup")}</b>:` +
+						 `<ul>${indicators}</ul>` +
+						 `${this.link}` +
+					  `</div>` + 
+					  `<br>` +
+					  `<sup>${symbol}</sup> ${nulldesc}`;
+
+		this.map.popup.open({ location:mapPoint, title:f.attributes[p.title], content:content });
+    }
 	
 	/**
 	 * Handle events for the specified node..
@@ -299,13 +439,13 @@ export default class Application extends Templated {
 	 */
 	OnTable_RowButtonClick(ev) {
 		this.selection.behavior.layer.remove(ev.graphic);
-		this.selection.table.data = this.selection.behavior.graphics;
-		this.selection.chart.data = this.selection.behavior.graphics;
+		this.Elem("table").data = this.selection.behavior.graphics;
+		this.Elem("chart").data = this.selection.behavior.graphics;
 
-		if(this.selection.chart.data.length == 0) {
+		if(this.Elem("chart").data.length == 0) {
 			this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
 			this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
-			this.selection.chart.description = "";
+			this.Elem("chart").description = "";
 		}
 	}
 	

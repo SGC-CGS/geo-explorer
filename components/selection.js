@@ -1,6 +1,5 @@
 // No way to `esc` from rectangle select 
 import SelectBehavior from '../../geo-explorer-api/behaviors/rectangle-select.js';
-import Nls from '../../geo-explorer-api/components/nls.js';
 
 /**
  * Selection module
@@ -33,53 +32,20 @@ export default class Selection {
     get hovered() { return this._hovered; }
 
     /**
-	 * Add specified language strings to the nls object
-	 * @param {object} nls - Existing nls object
-	 * @returns {void}
-	 */
-	Nls(nls) { 
-        this.nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
-		this.nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");
-		this.nls.Add("Table_Label_Popup_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
-		this.nls.Add("Table_Label_Popup_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");						
-    }
-
-    /**
      * 
      * @param {*} map - Map object to which the behavior will be applied
      * @param {*} context - Context object for retrieving the sublayer
      * @param {*} config - Configuration data
      */
-    constructor(map, context, config) {
-        map.view.highlightOptions.color = [255,255,0, 1];
+    constructor() {
+        // map.view.highlightOptions.color = [255,255,0, 1];
+        console.log("selection")
 
-        this._map = map;
-        this._context = context;
-        this._config = config;
-        
-        this.AddSelectBehavior(); 
-        
-        // REVIEW: How to use this without templated?
-        this.nls = new Nls();
-    }
-
-    /**
-     * 
-     */
-    AddSelectBehavior() {
-        this.behavior = this.map.AddBehavior("selection", new SelectBehavior(this.map));
-        this.behavior.target = this.context.sublayer;
-		this.behavior.field = "GeographyReferenceId";
-		this.behavior.symbol = this.config.symbol("selection");
-
-        // Maybe have this in its own behaviour class?
-        this.EnableHitTest();
     }
 
     /**
 	 * Allows two-way sync between map and chart where when you hover over one, the other is highlighted
 	 * {@link https://developers.arcgis.com/javascript/latest/sample-code/view-hittest/|ArcGIS API for JavaScript}
-	 * @param {*} map - Map object to which the behavior is applied
 	 * @param {*} behavior - Behavior on the map object
 	 */
      EnableHitTest() {
@@ -93,16 +59,17 @@ export default class Selection {
             this.map.view.on("pointer-move", ev => {				
 				this.map.view.hitTest(ev).then((response, ev) => {
                     if (response.results.length && this.behavior.drawComplete == true){ 
-                        this.OnFeatureSelection(response);
+                        let graphic = response.results[0].graphic;
+                        //this.OnFeatureSelection(response);
                         return;
                     } 
                     // Remove the highlight if no features are returned from the hitTest
-                    else if (this.highlight) {
-                        this.highlight.remove();
-                        this.highlight = null;
-                        d3.select(this.currentChartElement).style("opacity", 1);
-                        this.map.popup.close();
-                    }
+                    // else if (this.highlight) {
+                    //     this.highlight.remove();
+                    //     this.highlight = null;
+                    //     d3.select(this.currentChartElement).style("opacity", 1);
+                    //     this.map.popup.close();
+                    // }
                 })
             })
         })

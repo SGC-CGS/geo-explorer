@@ -191,6 +191,6 @@ export default class Chart extends Evented {
 		
         this.tooltip.Hide();
 
-        this.Emit("Change", {hovered: ""});
+        this.Emit("Change", {hovered: null});
     }
 }
