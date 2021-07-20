@@ -249,4 +249,29 @@ export default class Map extends Evented {
 	OnMapView_Error(error) {		
 		this.Emit("Error", { error:error });
 	}
+
+	/**
+	 * @description
+	 * Given a behavior, identify, and emit the graphic being hovered on by using a simple hit test
+	 * {@link https://developers.arcgis.com/javascript/latest/sample-code/view-hittest/|ArcGIS API for JavaScript}
+	 * @param {*} behavior - Behavior on the map object
+	 */
+	EnableHitTest(behavior) {
+		this.view.whenLayerView(behavior.layer).then(layerView => {
+			this.view.emit("layerViewCreated", { layerView: layerView });
+
+			this.view.on("pointer-move", ev => {
+				this.view.hitTest(ev).then((response, ev) => {
+					if (response.results.length && behavior.drawComplete == true) {
+						this.view.emit("hover", {
+							layerView: layerView,
+							response: response,
+							graphic: response.results[0].graphic 
+						});
+					} 
+					// Else only send the current screenPoint for the popup
+				})
+			})
+		})
+	}
 }
