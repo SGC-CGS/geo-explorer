@@ -58,6 +58,7 @@ export default class PieChart extends Chart {
             .append(this.typeOfChartElement)
             .merge(this.circle)
             .attr("d", arc)
+            .attr("id", (d) =>  d.data.label)
             .style("fill", (d, i) => this.color(i))
             .on("mouseenter", (event, d) => {this.OnMouseEnter(d.data.label, d.data.value, event.target)})
             .on("mousemove", (event) => this.OnMouseMove(event))

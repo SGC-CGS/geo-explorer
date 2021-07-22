@@ -25,8 +25,6 @@ export default class BarChart extends Chart{
 
         this.typeOfChartElement = 'rect';
 
-        this.chartDataType = 'rect';
-
         this.color = this.GetColor();
 
         // Append the grid line group

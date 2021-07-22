@@ -84,6 +84,7 @@ export default class ScatterPlot extends Chart{
         points.enter()
               .append(this.typeOfChartElement)
               .merge(points)
+              .attr("id", (d) =>  d.label)
               .on("mouseenter", (event, d) => {this.OnMouseEnter(d.label, d.value, event.target)})
               .on("mousemove", (event) => this.OnMouseMove(event))
               .on("mouseleave", (event) => this.OnMouseLeave(event.target))
