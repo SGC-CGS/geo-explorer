@@ -56,7 +56,12 @@ export default class Map extends Evented {
 			center: options && options.center || [-100, 63], 
 			container: container, 
 			map: this._map,  
-			zoom: options && options.zoom || 4 
+			zoom: options && options.zoom || 4, 
+			highlightOptions: {
+				color: [255, 255, 0, 1],
+				haloOpacity: 0.0,
+				fillOpacity: 0.4
+			  }
 		});
 		
 		this._view.popup.collapseEnabled = false;
@@ -262,15 +267,22 @@ export default class Map extends Evented {
 
 			this.view.on("pointer-move", ev => {
 				this.view.hitTest(ev).then((response, ev) => {
+					// For when you enter a graphic in the collection of graphics
 					if (response.results.length && behavior.drawComplete == true) {
-						this.view.emit("hover", {
+						this.view.emit("PointerMove", {
 							layerView: layerView,
 							response: response,
 							graphic: response.results[0].graphic 
 						});
-					} 
-					// Else only send the current screenPoint for the popup
+					}
+					// For when you have left the graphic 
+					else { this.view.emit("PointerLeave"); }
 				})
+			})
+
+			// For when you have left the view
+			this.view.on("pointer-leave", ev => {
+				this.view.emit("PointerLeave");
 			})
 		})
 	}
