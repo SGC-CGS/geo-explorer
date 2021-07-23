@@ -48,17 +48,44 @@ export default class Map extends Evented {
 		
 		this._layers = {};
 		this._behaviors = {};
+
+        if (options.basemap) {
+            let basemap = new ESRI.Basemap({
+                baseLayers: [
+                    new ESRI.layers.MapImageLayer({
+                        url: options.basemap,
+                        title: "Basemap"
+                    })
+                ],
+                title: "basemap",
+                id: "basemap"
+            });
+
+            this._map = new ESRI.Map({ basemap: basemap });
+            this._view = new ESRI.views.MapView({
+                animation: options && options.animation || false,
+                center: options && options.center || [-100, 63],
+                container: container,
+                map: this._map,
+                zoom: options && options.zoom || 4,
+                constraints: {
+                    lods: ESRI.layers.support.TileInfo.create().lods
+                }
+            });
+                        
+        }
+        else {
+            this._map = new ESRI.Map({ basemap: "streets" });
+            this._view = new ESRI.views.MapView({
+                animation: options && options.animation || false,
+                center: options && options.center || [-100, 63],
+                container: container,
+                map: this._map,
+                zoom: options && options.zoom || 4,
+                constraints: options && options.constraints || {}
+            });
+        }			
 		
-		this._map = new ESRI.Map({ basemap: "streets" });
-		
-		this._view = new ESRI.views.MapView({
-			animation : options && options.animation || false,
-			center: options && options.center || [-100, 63], 
-			container: container, 
-			map: this._map,  
-			zoom: options && options.zoom || 4, 
-			constraints: options && options.constraints || { }
-		});
 		
 		this._view.popup.collapseEnabled = false;
 
