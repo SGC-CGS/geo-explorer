@@ -6,7 +6,6 @@ import Dom from '../geo-explorer-api/tools/dom.js';
 import Templated from '../geo-explorer-api/components/templated.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
-import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
 import SimpleLegend from './widgets/SimpleLegend.js';
@@ -19,8 +18,6 @@ import Map from './map.js';
 export default class Application extends Templated { 
 
 	static Nls(nls) {		
-		nls.Add("Basemap_Title", "en", "Change basemap");
-		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
 		nls.Add("Legend_Title", "en", "Legend");
 		nls.Add("Legend_Title", "fr", "Légende");
 		nls.Add("LoadingData_Title", "en", "Loading Data...");
@@ -42,20 +39,21 @@ export default class Application extends Templated {
 
 		this.config = Configuration.FromJson(config);
 
-		// Build map, menu, widgets and other UI components
-		this.map = new Map(this.Elem('map'), { center:[-100, 60], zoom:4 });
+        // Build map, menu, widgets and other UI components
+        this.map = new Map(this.Elem('map'), {
+            center: [-100, 60],
+            zoom: 5,
+            basemap: this.config.Basemap
+        });
 		this.menu = new Menu();
 		
 		this.AddPointIdentify();
-		this.AddOverlay(this.menu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "top-right");
 		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
         
 		// Move all widgets inside the map div, required for fullscreen
 		this.map.Place(this.menu.buttons, "top-left");
         this.map.Place([this.Elem("waiting").container], "manual");
 		
-		this.Elem('basemap').Map = this.map;
-
 		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
 			
         this.LoadCodrData(this.config.product);
@@ -121,8 +119,11 @@ export default class Application extends Templated {
         }, error => this.OnApplication_Error(error));
     }
 
-	OnSelector_Change(ev) {
-		this.Elem("indicator").innerHTML = this.metadata.IndicatorLabel(ev.coordinates);
+    OnSelector_Change(ev) {
+        var selectedGeo = this.Elem("selector").GetSelectedGeoLevelName();
+        var indicatorTitle = selectedGeo + ", " + this.metadata.IndicatorLabel(ev.coordinates);
+
+        this.Elem("indicator").innerHTML = indicatorTitle;
 		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
 		this.Elem("waiting").Show();
 
@@ -226,7 +227,6 @@ export default class Application extends Templated {
 				"<div class='map-container hidden' handle='mapcontainer'>" +
                     "<div handle='map'></div>" +
                     "<div handle='legend' class='legend' widget='App.Widgets.SimpleLegend'></div>" +
-                    "<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
                     "<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
 				"</div>" +
 				"<div class='pull-right'>" + 

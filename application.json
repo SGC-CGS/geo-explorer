@@ -7,6 +7,10 @@
     "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
     "DA": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/5"
   },
+  "basemap": {
+    "en": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_Labels_EN_L013/MapServer",
+    "fr": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_2006_Labels_FR_L013/MapServer"
+  },
   "id": {
     "PR": "PRCODE",
     "GRC": "GRC_UID",

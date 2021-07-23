@@ -51,6 +51,8 @@ export default class Configuration {
         });
     }
 
+    get Basemap() { return this.json.basemap[Core.locale]; }
+
     constructor(json) {		
 		this.json = json;
 	}
@@ -59,6 +61,7 @@ export default class Configuration {
 		return new Configuration(json);
     }
 
+    
     /**
      * @description
      * Get the layer by geo

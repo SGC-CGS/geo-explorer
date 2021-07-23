@@ -43,8 +43,13 @@
 	margin-right:0px;
 }
 
+.gexp .selector .selectorDropdown {
+    float: right;
+    width: 50%;
+}
+
 .gexp hr {
-	margin:10px 0px;
+    margin: 10px 0px;
 }
 
 .gexp .indicator {
@@ -201,22 +206,8 @@
     color:#2e2e2e;
 }
 
-/* Basemap widget */
-.gexp .map-container .esri-ui .button-icon.basemap {
-	background-image:url(./assets/streets-16.png);
-}
 
-.gexp .basemap { 
-    width: 300px;
-}
-
-.gexp .basemap .overlay-body {
-    max-height: 350px;
-	overflow-y: auto;
-}
-
-.gexp .overlay .esri-widget,
-.gexp .overlay .esri-basemap-gallery {
+.gexp .overlay .esri-widget {
     background: none;
 }
 

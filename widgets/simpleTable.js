@@ -27,7 +27,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("ColHeader_date", "fr", "Période de référence");
         nls.Add("ColHeader_frequency", "en", "Frequency");
         nls.Add("ColHeader_frequency", "fr", "Fréquence");
-        nls.Add("ColHeader_scalar", "en", "Scalar factor");
+        nls.Add("ColHeader_scalar", "en", "Scalar Factor");
         nls.Add("ColHeader_scalar", "fr", "Facteur scalaire");       
     }
 
