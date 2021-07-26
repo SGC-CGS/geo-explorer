@@ -90,6 +90,7 @@ export default class Application extends Templated {
 		this.map = new Map(this.Elem('map'));
 		this.menu = new Menu();
 		this.bMenu = new Menu();
+		this.selection = new Selection();
 
 		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
 		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
@@ -172,6 +173,7 @@ export default class Application extends Templated {
 
 	/**
 	 * Adds the behavior and handles the event for generating popup and table from map selection.
+	 * Also handles disabling / enabling the "view chart" button.
 	 * @param {object} map - Map object to which the behavior will be applied
 	 * @param {object} context - Context object for retrieving the sublayer
 	 * @param {object} config - Configuration data
@@ -189,6 +191,8 @@ export default class Application extends Templated {
 
 	   map.EnableHitTest(behavior);
 
+	   this.MapViewEventsHandler();
+
 	   this.HandleEvents(behavior, ev => {
 		   this.Elem("table").data = ev.selection; 
 		   this.Elem("chart").data = ev.selection;
@@ -200,7 +204,7 @@ export default class Application extends Templated {
 			   this.Elem("chart").description = "";
 
 		   } else if (this.menu.Button("chart").disabled == true) {
-			   this.GetTableLink()
+			   this.GetTableLink();
 			   this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
 			   this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.url, this.prod]);
 
@@ -208,109 +212,58 @@ export default class Application extends Templated {
 		   }
 	   });	
 
-	   this.HandleEvents(this.Elem("chart").chart, this.ChartSelected.bind(this));
-	   
-	   this.MapViewEventsHandler();
+	   this.HandleEvents(this.Elem("chart").chart, ev => {
+			if (this.highlight || ev.hovered == null) {
+				this.selection.ClearGraphicHighlight();
+				return;
+			} 
+
+			this.selection.HighlightTargetGraphic(ev.hovered, this.config.popup.title);
+	   });
    }
    
-   // Needs this.Elem("chart"), map, and layerView 
    MapViewEventsHandler() {
-		let selectedChartElement, selectedGraphic, type;
-
 		this.map.view.on("layerViewCreated", (ev) => {
-			this.layerView = ev.layerView;
+			this.selection.layerView = ev.layerView;
 		});
 
+		// When exiting the map view, remove all highlights and close the popup 
 		this.map.view.on("PointerLeave", (ev) => {
-			if (selectedGraphic && this.highlight) {
-				this.highlight.remove();
-				this.highlight = null;
-				this.map.popup.close();
-				selectedChartElement.style.opacity = 1;
-			}
+			this.selection.ClearAll(this.map.popup);
 		});
 
 		this.map.view.on("PointerMove", (ev) => {
-			this.layerView = ev.layerView;
+			// All the below code in the selection class
+			this.selection.layerView = ev.layerView;
 
 			// The selected graphic has changed and there is a highlight on the previous graphic
-			if (selectedGraphic != ev.graphic && this.highlight) {
-				this.highlight.remove();
-				this.highlight = null;
-				this.map.popup.close();
-				selectedChartElement.style.opacity = 1;
+			if (this.selection.graphic != ev.graphic && this.selection.highlight) {
+				this.selection.ClearGraphicHighlight();
+				this.selection.ClearChartElementHighlight();
 				return;
 			}
 
 			// The selected graphic has changed
-			else if (selectedGraphic != ev.graphic) {
-				selectedGraphic = ev.graphic;
+			else if (this.selection.graphic != ev.graphic) {
+				this.selection.graphic = ev.graphic;
+				this.selection.HighlightGraphic(this.selection.graphic);
+				this.selection.HighlightChartElement(this.Elem("chart").chart, this.config.popup.title);
+
+				this.ShowInfoPopup(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
 			}
 
-			// Update the popup position if the current graphic is already highlighted
-			else if (this.highlight) {
+			// Update the popup position if the current graphic is highlighted
+			else if (this.selection.highlight) {
 				this.map.view.popup.location = this.map.view.toMap(ev.response.screenPoint);
-				return;
+			} 
+
+			// The current graphic is not highlighted
+			else if (!this.selection.highlight) {
+				this.selection.HighlightGraphic(this.selection.graphic);
+				this.selection.HighlightChartElement(this.Elem("chart").chart, this.config.popup.title);
+
+				this.ShowInfoPopup(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
 			}
-
-			this.ShowInfoPopup(this.map.view.toMap(ev.response.screenPoint), selectedGraphic);
-
-			this.highlight = this.layerView.highlight(selectedGraphic);
-
-			type = this.Elem("chart").chart.typeOfChartElement;
-			
-			// This will only work if the chart you are using has IDs assigned to the chart elements
-			selectedChartElement = document.querySelector(
-					`${type}[id="${ev.graphic.attributes[this.config.popup.title]}"]`
-			);
-
-			selectedChartElement.style.opacity = 0.5;
-		});
-	}
-
-	// Needs the most current layerView 
-	ChartSelected(ev) {
-		let hovered = ev.hovered;
-
-		if (this.highlight || ev.hovered == null) {
-			this.highlight.remove();
-			this.highlight = null;
-			return;
-		} 
-
-		// Highlight a feature that matches the chart element being hovered
-		this.layerView.graphicsView.graphics.items.forEach(graphic => {
-			if (graphic.attributes[this.config.popup.title] == hovered) {
-				this.highlight = this.layerView.highlight(graphic);
-			}
-		})
-	}
-
-	/**
-	 * Handles the event for generating the table and chart from map selection.
-	 * Also handles disabling / enabling the "view chart" button. 
-	 * @returns {void}
-	 */
-	 OnSelectBehavior() {
-		this.HandleEvents(this.selection.behavior, ev => {
-			this.Elem("table").data = ev.selection; 
-			this.Elem("chart").data = ev.selection;
-
-			if (this.Elem("chart").data.length == 0) {
-				this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
-				this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
-				this.Elem("chart").description = "";
-
-			} else if (this.menu.Button("chart").disabled == true) {
-				this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
-				this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.selection.url, this.selection.prod]);
-				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
-			}
-		});	
-
-		this.HandleEvents(this.Elem("chart").chart, (ev) => {
-			this.selection.hovered = ev.hovered;
-			this.selection.OnChartElementSelection();
 		});
 	}
 
@@ -345,6 +298,7 @@ export default class Application extends Templated {
 		this.map.popup.open({ location:mapPoint, title:f.attributes[p.title], content:content });
     }
 
+	// REVIEW: Get from context.js or configuration.js
 	GetTableLink() {
 		this.url, this.link = ``, this.prod = this.context.category.toString();
 		
