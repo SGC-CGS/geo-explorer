@@ -100,7 +100,12 @@ export default class Metadata {
      * @description
      * Get the TV Link 
      */
-	get tvLink() { return `https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=${this.id}01`; }
+    get tvLink() {
+        if (Core.locale == "en")
+            return `https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=${this.id}01`;
+        else 
+            return `https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid=${this.id}01`;
+    }
 
     /**
      * @description
