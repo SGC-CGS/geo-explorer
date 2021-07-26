@@ -31,7 +31,9 @@ export default class Application extends Templated {
 		nls.Add("Fullscreen_Title", "en", "Fullscreen");
 		nls.Add("Fullscreen_Title", "fr", "Plein écran");		
 		nls.Add("Home_Title", "en", "Default map view");
-		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");		
+        nls.Add("Home_Title", "fr", "Vue cartographique par défaut");		
+        nls.Add("Table_Header", "en", "Data Table for ");
+        nls.Add("Table_Header", "fr", "Tableau de données pour ");
 	}
 
 	constructor(node, config) {		
@@ -100,7 +102,8 @@ export default class Application extends Templated {
 
 			// Format the product ID according to CODR practices (DD-DD-DDDD)
             var formattedId = metadata.productLabel;
-            this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [formattedId]); 
+            this.tableLinkText = this.Nls("TableViewer_Label", [formattedId]);
+            this.Elem("link").innerHTML = this.tableLinkText + " - " + this.metadata.name; 
 			this.Elem("link").href = metadata.tvLink; 
 			
             // Create the drop down lists from the dimensions and memebers
@@ -121,9 +124,10 @@ export default class Application extends Templated {
 
     OnSelector_Change(ev) {
         var selectedGeo = this.Elem("selector").GetSelectedGeoLevelName();
-        var indicatorTitle = selectedGeo + ", " + this.metadata.IndicatorLabel(ev.coordinates);
+        this.indicatorTitle = selectedGeo + ", " + this.metadata.IndicatorLabel(ev.coordinates);
 
-        this.Elem("indicator").innerHTML = indicatorTitle;
+        this.Elem("indicator").innerHTML = this.indicatorTitle;
+        this.Elem("tableHeader").innerHTML = this.Nls("Table_Header") + this.indicatorTitle + ":";
 		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
 		this.Elem("waiting").Show();
 
@@ -232,6 +236,7 @@ export default class Application extends Templated {
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
                 "</div>" +
+                "<label handle='tableHeader' property='name' class='tableHeader mrgn-tp-lg'></label>" +
                 "<div id='simpletable' handle='table' class='table' widget='App.Widgets.SimpleTable'></div>";
 	}
 }
