@@ -197,17 +197,15 @@ export default class Application extends Templated {
 		   this.Elem("table").data = ev.selection; 
 		   this.Elem("chart").data = ev.selection;
 
+		   this.GetTableLink();
+
+		   this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.url, this.prod]);
+
 		   if (this.Elem("chart").data.length == 0) {
 			   this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
-			   this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
-
-			   this.Elem("chart").description = "";
-
+			   this.Elem("chart").description = this.Nls("Chart_Title_Disabled");
 		   } else if (this.menu.Button("chart").disabled == true) {
-			   this.GetTableLink();
 			   this.menu.EnableButton(this.menu.Button("chart"), this.Nls("Chart_Title"));
-			   this.menu.Title("chart").innerHTML = this.Nls('Table_Label_Chart_Link', [this.url, this.prod]);
-
 			   this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
 		   }
 	   });	
