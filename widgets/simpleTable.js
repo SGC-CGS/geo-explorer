@@ -90,6 +90,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
             tr.release = "";
             tr.scalar = "";
             tr.value = "";
+            tr.valueDesc = "";
             
             var dataobj = data[dp.code];
 			
@@ -100,6 +101,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 
                 // Localization for value
                 tr.value = codesets.FormatDP(dataobj, Core.locale); // This includes security, status and symbol
+                tr.valueDesc = codesets.FormatDPDesc(dataobj, Core.locale);
 				tr.frequency = codesets.frequency(dataobj.frequency) || "";
                 tr.scalar = codesets.scalar(dataobj.scalar) || "";
             }
@@ -110,9 +112,15 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         this._tableData.forEach(r => {
             var tr = Dom.Create("tr", { className: "table-row" }, this.Elem("body"));
 
-            this._headers.forEach(f => {				
-                Dom.Create("td", { className: "table-cell", innerHTML: r[f] }, tr);
-			});
+            this._headers.forEach(f => {
+                if (r.valueDesc != "" && f == "value") {
+                    Dom.Create("td", { className: "table-cell", innerHTML: r[f], abbr: r.valueDesc }, tr);
+                }
+                else {
+                    Dom.Create("td", { className: "table-cell", innerHTML: r[f] }, tr);
+                }                
+            });           
+            
         });
 
         this.UpdateTableVisibility();
