@@ -17,9 +17,9 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
      */
     static Nls(nls) {
         // Column headers
-        nls.Add("ColHeader_code", "en", "DGUID");
-        nls.Add("ColHeader_code", "fr", "IDUGD");
-        nls.Add("ColHeader_name", "en", "Geography Name");
+        nls.Add("ColHeader_code", "en", "<abbr title='Dissemination Geography Unique Identifier'>DGUID</abbr>");
+        nls.Add("ColHeader_code", "fr", "<abbr title='Identificateur unique des géographies de diffusion'>IDUGD</abbr>");
+        nls.Add("ColHeader_name", "en", "Geography name");
         nls.Add("ColHeader_name", "fr", "Nom de la géographie");
         nls.Add("ColHeader_value", "en", "Value");
         nls.Add("ColHeader_value", "fr", "Valeur");

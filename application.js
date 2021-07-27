@@ -32,7 +32,7 @@ export default class Application extends Templated {
 		nls.Add("Fullscreen_Title", "fr", "Plein écran");		
 		nls.Add("Home_Title", "en", "Default map view");
         nls.Add("Home_Title", "fr", "Vue cartographique par défaut");		
-        nls.Add("Table_Header", "en", "Data Table for ");
+        nls.Add("Table_Header", "en", "Data table for ");
         nls.Add("Table_Header", "fr", "Tableau de données pour ");
 	}
 
@@ -123,24 +123,31 @@ export default class Application extends Templated {
     }
 
     OnSelector_Change(ev) {
-        var selectedGeo = this.Elem("selector").GetSelectedGeoLevelName();
-        this.indicatorTitle = selectedGeo + ", " + this.metadata.IndicatorLabel(ev.coordinates);
+        var geo = this.Elem("selector").GetSelectedGeoLevelName();
+        var indicator = this.metadata.IndicatorLabel(ev.coordinates);
 
-        this.Elem("indicator").innerHTML = this.indicatorTitle;
-        this.Elem("tableHeader").innerHTML = this.Nls("Table_Header") + this.indicatorTitle + ":";
+        this.Elem("indicator").innerHTML = geo + ", " + indicator;
+        this.Elem("tableHeader").innerHTML = this.Nls("Table_Header") + geo.toLowerCase() + ", " + indicator;
 		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
 		this.Elem("waiting").Show();
 
         CODR.GetCoordinateData(this.metadata, ev.coordinates).then(data => {
 			this.data = data;			
+			var uoms = [];
 			
-            this.LoadLayer(ev.geo, data);
+			for (var id in data) {
+				var uom = this.codesets.uom(data[id].uom);
+		
+				if (uoms.indexOf(uom) == -1) uoms.push(uom);
+			}
+			
+			this.LoadLayer(ev.geo, data, uoms[0]);
 
             this.LoadTable(data);        
 		}, error => this.OnApplication_Error(error));
 	}
 	
-    LoadLayer(geo, data) {		
+    LoadLayer(geo, data, uom) {		
 		var decodedGeo = CODR.GeoLookup(geo);
         var url = this.config.Layer(decodedGeo);
 		
@@ -148,7 +155,7 @@ export default class Application extends Templated {
             this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."));			
 			return;
 		}
-				
+		
         var ids = this.metadata.geoMembers.map(m => `'${m.code}'`).join(",");
         var exp = `${this.config.Id(decodedGeo)} IN (${ids})`;
 		
@@ -165,7 +172,7 @@ export default class Application extends Templated {
             this.behavior.Clear();
             this.behavior.target = layer;
 
-            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
+            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer, uom);
         }
         else {
             // Remove the waiting symbol
@@ -183,7 +190,7 @@ export default class Application extends Templated {
 		this.map.view.whenLayerView(layer).then(layerView => {				
 			// listen until the layerView is loaded
 			layerView.when(() => {
-				this.menu.SetOverlay(this.menu.Item("legend"));
+				this.menu.ShowOverlay(this.menu.Item("legend"));
                 this.Elem("waiting").Hide();
 			}, this.OnApplication_Error.bind(this));
 		}, this.OnApplication_Error.bind(this))

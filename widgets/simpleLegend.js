@@ -32,14 +32,16 @@ export default Core.Templatable("App.Widgets.SimpleLegend", class Legend extends
      * Load the class breaks from renderer settings
      * @param {String} renderer - renderer object
      */
-    LoadClassBreaks(renderer) {
+    LoadClassBreaks(renderer, uom) {
+		this.Elem("uom").innerHTML = uom;
+		
         Dom.Empty(this.Elem("breaks"));
 
         this.breaks = renderer.classBreakInfos.map((c, i) => {
             if (c.maxValue == null) c.maxValue = "";
             if (c.minValue == null) c.minValue = "0";
             
-            return new LegendBreak(this.Elem('breaks'), c);
+            return new LegendBreak(this.Elem('breaks'), c, uom);
         });
 		
 		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol:renderer.defaultSymbol }));
@@ -48,8 +50,9 @@ export default Core.Templatable("App.Widgets.SimpleLegend", class Legend extends
     EmptyClassBreaks() {
         Dom.Empty(this.Elem("breaks"));
     }
-	        
+	
     Template() {
-        return "<table handle='breaks' class='breaks-container'></table>";
+        return "<div handle='uom'></div>" + 
+			   "<table handle='breaks' class='breaks-container'></table>";
     }
 })
