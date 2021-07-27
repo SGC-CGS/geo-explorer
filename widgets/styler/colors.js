@@ -1,4 +1,5 @@
 // Source: https://d3js.org/colorbrewer.v1.min.js
+// Visual source: https://observablehq.com/@d3/color-schemes
 export default class Colors {
   static ColorSchemes() {
     return {
@@ -157,6 +158,30 @@ export default class Colors {
             6: ["#d73027", "#fc8d59", "#fee08b", "#d9ef8b", "#91cf60", "#1a9850"],
             7: ["#d73027", "#fc8d59", "#fee08b", "#ffffbf", "#d9ef8b", "#91cf60", "#1a9850"],
             8: ["#d73027", "#f46d43", "#fdae61", "#fee08b", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850"]
+        },
+        Viridis: {
+            "label": {
+                "en": "Viridis",
+                "fr": "Viridis",
+            },
+            3: ["#440154","#21918c","#fde725"],
+            4: ["#440154","#31688e","#35b779","#fde725"],
+            5: ["#440154","#3b528b","#21918c","#5ec962","#fde725"],
+            6: ["#440154","#414487","#2a788e","#22a884","#7ad151","#fde725"],
+            7: ["#440154","#443983","#31688e","#21918c","#35b779","#90d743","#fde725"],
+            8: ["#440154","#46327e","#365c8d","#277f8e","#1fa187","#4ac16d","#a0da39","#fde725"]
+        },
+        Cool: {
+            "label": {
+                "en": "Cool",
+                "fr": "Cool",
+            },
+            3: ["#6e40aa","#1ac7c2","#aff05b"],
+            4: ["#6e40aa","#2f96e0","#28ea8d","#aff05b"],
+            5: ["#6e40aa","#417de0","#1ac7c2","#40f373","#aff05b"],
+            6: ["#6e40aa","#4c6edb","#23abd8","#1ddfa3","#52f667","#aff05b"],
+            7: ["#6e40aa","#5465d6","#2f96e0","#1ac7c2","#28ea8d","#60f760","#aff05b"],
+            8: ["#6e40aa","#585fd2","#3988e1","#1fb3d3","#1bd9ac","#34f07e","#6bf75c","#aff05b"]
         }
     };
   }

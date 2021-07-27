@@ -796,6 +796,11 @@
 	display: block;
 }
 
+.gexp .colorSchemeContainer {
+	overflow-x: scroll;
+	white-space: nowrap;
+}
+
 .gexp .collapsedDropdown::before {
 	margin-left: 10px; 
 	cursor: pointer;
@@ -828,7 +833,7 @@
 .gexp .palette {
 	cursor: pointer;
 	display: inline-block;
-	margin: 4px 0 4px 6px;
+	margin: 4px 0 4px 6.5px;
 	padding: 4px;
 	background: #fff;
 	border: solid 1px #aaa;

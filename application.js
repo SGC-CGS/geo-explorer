@@ -70,9 +70,11 @@ export default class Application extends Templated {
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('styler').On('Opacity', this.OnStyler_Opacity.bind(this));
-		
-		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 
+		this.Node('styler').On('LabelName', this.onLegend_LabelName.bind(this));
+
+		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
+		
 		this.Elem("chart").labelField = this.config.chart.field;
 		this.Elem("table").headers = this.config.tableHeaders;
 		this.Elem('styler').opacity = this.config.mapOpacity;
@@ -93,6 +95,8 @@ export default class Application extends Templated {
 
 			this.map.Behavior("pointselect").Activate();
 		}, error => this.OnApplication_Error(error));
+
+		
 	}
 	
 	AddOverlay(menu, id, title, widget, position) {
@@ -197,6 +201,15 @@ export default class Application extends Templated {
 		alert(error.message);
 		
 		console.error(error);
+	}
+
+	/**
+	 * Show or hide the map labels.
+	 * @param {object} ev - Event object
+	 * @returns{void}
+	 */
+	 onLegend_LabelName(ev) {
+		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 
 	Template() {

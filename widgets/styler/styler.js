@@ -72,6 +72,12 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		nls.Add("Styler_Button_Apply", "fr", "Appliquer");		
 		nls.Add("Styler_Button_Close", "en", "Cancel");
 		nls.Add("Styler_Button_Close", "fr", "Annuler");
+		nls.Add("Legend_Label_Name", "en", "Map labels");
+		nls.Add("Legend_Label_Name", "fr", "Étiquettes sur la carte");	
+		nls.Add("Legend_Show_label", "en", " Show label");
+		nls.Add("Legend_Show_label", "fr", " Afficher les étiquettes");	
+		nls.Add("Legend_label_Info", "en", " Show labels over the features in the map");
+		nls.Add("Legend_label_Info", "fr", " Afficher des étiquettes sur les entités de la carte");	
 	}
 
 	/**
@@ -111,6 +117,10 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 			else { ev.target.className = "collapsedDropdown"; }
 
 		}.bind(this));
+
+		this.Node('labelChk').On("click", ev => {
+			this.Emit("LabelName", { checked: this.Elem('labelChk').checked });
+		})
 	}
 
 	/**
@@ -383,7 +393,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 					"<div style='margin-bottom: 10px;'></div>"+
 
 					"<label>nls(Styler_Color_Scheme)</label>" +
-					"<div handle='colorScheme'></div>" +
+					"<div handle='colorScheme' class='colorSchemeContainer'></div>" +
 
 					"<label>nls(Legend_Opacity)</label>" +
 					"<i class='fa fa-info-circle'><span class='tooltipText tooltip-bottom'>nls(Legend_Opacity_Info)</span></i>" +
@@ -394,6 +404,15 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 							"<label>nls(Legend_Opacity_More)</label>" +
 						"</div>" +
 					"</div>" +
+
+					"<label>nls(Legend_Label_Name)</label>" +
+					"<i class='fa fa-info-circle'><span class='tooltipText tooltip-bottom'>nls(Legend_label_Info)</span></i>" +
+					"<ul class='label-name-container'>" +
+						"<li class='labelName'>" +
+							"<input handle='labelChk' type=checkbox class='labelName-checkbox'>" + 
+							"<label class='labelName-label'>nls(Legend_Show_label)</label>" + 
+						"</li>" +
+					"</ul>" +
 
 				"</div>"+
 
