@@ -24,13 +24,23 @@ export default class CodeSets {
      * @param {String} code - security code to be decoded
      */
     security(code) {
-        var security = this.json.securityLevel.find(m => m.securityLevelCode == code);
-        
+        var security = this.json.securityLevel.find(m => m.securityLevelCode == code);        
 		if (!security) return null;
         
 		var fld = Core.locale == "en" ? "securityLevelRepresentationEn" : "securityLevelRepresentationFr";
-		
 		return security[fld];
+    }
+
+    /**
+     * Get the description associated with the security code
+     * @param {any} code
+     */
+    securityDesc(code) {
+        var security = this.json.securityLevel.find(m => m.securityLevelCode == code);
+        if (!security) return null;
+
+        var fld = Core.locale == "en" ? "securityLevelDescEn" : "securityLevelDescFr";
+        return security[fld];        
     }
 
     /**
@@ -41,12 +51,22 @@ export default class CodeSets {
      */
     status(code) {
         var status = this.json.status.find(m => m.statusCode == code);
-		
 		if (!status) return null;
 
 		var fld = Core.locale == "en" ? "statusRepresentationEn" : "statusRepresentationFr";
+        return status[fld];
+    }
 
-		return status[fld];
+    /**
+     * Get the description associated with the status code
+     * @param {any} code
+     */
+    statusDesc(code) {
+        var status = this.json.status.find(m => m.statusCode == code);
+        if (!status) return null;
+
+        var fld = Core.locale == "en" ? "statusDescEn" : "statusDescFr";
+        return status[fld];
     }
 
     /**
@@ -56,13 +76,23 @@ export default class CodeSets {
      * @param {String} code - symbol code to be decoded
      */
     symbol(code) {
-        var symbol = this.json.symbol.find(m => m.symbolCode == code);
-		
+        var symbol = this.json.symbol.find(m => m.symbolCode == code);		
 		if (!symbol) return null;
 
 		var fld = Core.locale == "en" ? "symbolRepresentationEn" : "symbolRepresentationFr";
-
 		return symbol[fld];
+    }
+
+    /**
+     * Get the description associated with the symbol
+     * @param {any} code
+     */
+    symbolDesc(code) {
+        var symbol = this.json.symbol.find(m => m.symbolCode == code);
+        if (!symbol) return null;
+
+        var fld = Core.locale == "en" ? "symbolDescEn" : "symbolDescEn";
+        return symbol[fld];
     }
 
     /**
@@ -72,15 +102,13 @@ export default class CodeSets {
      * @param {String} code - scalar code to be decoded
      */
     scalar(code) {
-        var scalar = this.json.scalar.find(m => m.scalarFactorCode == code);
-		
+        var scalar = this.json.scalar.find(m => m.scalarFactorCode == code);		
 		if (!scalar) return null;
 
 		var fld = Core.locale == "en" ? "scalarFactorDescEn" : "scalarFactorDescFr";
-
 		return scalar[fld];
     }
-
+    
     /**
      * @description
      * Get the decoded value of a frequency code, depending on the locale.
@@ -88,15 +116,13 @@ export default class CodeSets {
      * @param {String} code - frequency code to be decoded
      */
     frequency(code) {
-        var frequency = this.json.frequency.find(m => m.frequencyCode == code);
-		
+        var frequency = this.json.frequency.find(m => m.frequencyCode == code);		
 		if (!frequency) return null;
 
 		var fld = Core.locale == "en" ? "frequencyDescEn" : "frequencyDescFr";
-
 		return frequency[fld];
     }
-
+    
     /**
      * @description
      * Get the decoded value of a unit of measure (uom) code, depending on the locale.
@@ -104,12 +130,10 @@ export default class CodeSets {
      * @param {String} code - unit of measure code to be decoded
      */
     uom(code) {
-        var uom = this.json.uom.find(m => m.memberUomCode == code);
-		
+        var uom = this.json.uom.find(m => m.memberUomCode == code);		
 		if (!uom) return null;
 
 		var fld = Core.locale == "en" ? "memberUomEn" : "memberUomFr";
-
 		return uom[fld];
     }
 
@@ -152,20 +176,33 @@ export default class CodeSets {
 
         // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
         if (security) {
-            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + security + "</td></tr></tbody></table>";
+            var securityDesc = this.securityDesc(dp.security);
+            if (!securityDesc) securityDesc = "";
+            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td abbr title=\"" + securityDesc +
+                "\">" + security + "</td></tr></tbody></table>";
             return htmlTable;
         }
 
+        var statusSymbolDesc = "";
         if (status) {
             var letters = ["A", "B", "C", "D", "E", "F"];
-
             content = letters.indexOf(status) > -1 ? content + status.sup() : status;
+
+            statusSymbolDesc = this.statusDesc(dp.status);            
         }
 
         // Any standard table symbol associated to the value as supercript        
-        if (symbol) content += symbol.sup();
-        
-        htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + content + "</td></tr>";
+        if (symbol) {
+            content += symbol.sup();
+            if (statusSymbolDesc == "") statusSymbolDesc = this.symbolDesc(dp.symbol);
+            else statusSymbolDesc = statusSymbolDesc + " - " + this.symbolDesc(dp.symbol);
+        }
+
+        if (statusSymbolDesc == "")
+            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + content + "</td></tr>";
+        else 
+            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td abbr title=\"" + statusSymbolDesc +
+                "\">" + content + "</td></tr>";
 
         if (!frequency) frequency = "";
         htmlTable += "<tr><td>" + this.Nls("FreqColumn") + "</td><td>" + frequency + "</td></tr>";
@@ -199,8 +236,9 @@ export default class CodeSets {
 		var symbol = this.symbol(dp.symbol);
 		
         // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
-        if (security) return security;
-        
+        if (security) {
+            return security;
+        }
 		if (status) {
             var letters = ["A", "B", "C", "D", "E", "F"];
 			
@@ -211,7 +249,34 @@ export default class CodeSets {
 		if (symbol) content += symbol.sup();
 		
 		return content;
-	}
+    }
+
+    /**
+     * Get the description of security, status and symbol values, if any, for the datapoint 
+     * @param {any} dp
+     * @param {any} locale
+     */
+    FormatDPDesc(dp, locale) {
+        var security = this.security(dp.security);
+        var status = this.status(dp.status);
+        var symbol = this.symbol(dp.symbol);
+
+        // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
+        if (security) {
+            return this.securityDesc(dp.security);
+        }
+        var statusSymbolDesc = "";
+        if (status) {
+            statusSymbolDesc = this.statusDesc(dp.status);
+        }
+
+        // Any standard table symbol associated to the value as supercript        
+        if (symbol) {
+            if (statusSymbolDesc == "") statusSymbolDesc = this.symbolDesc(dp.symbol);
+            else statusSymbolDesc = statusSymbolDesc + " - " + this.symbolDesc(dp.symbol);   
+        }
+        return statusSymbolDesc;
+    }
 
     constructor(json) {
         this.json = json;        
