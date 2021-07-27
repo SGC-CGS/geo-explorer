@@ -164,7 +164,7 @@ export default class Metadata {
 			if (member) names.push(member.name);
 		}
 
-		return `${names.join(", ")}`;
+		return `${names.join(", ").toLowerCase()}`;
 	}
 
     /**

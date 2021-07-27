@@ -116,7 +116,7 @@ export default class CODR {
 	}
 	
 	static Post(url, data) {
-        var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
+        var proxy = `${location.origin}/geo-explorer-proxy/proxy.ashx?`;
 		var body = JSON.stringify(data);
 		var headers = { "Content-Type":"application/json" };
 		
@@ -124,7 +124,7 @@ export default class CODR {
     }
 
     static Get(url) {
-        var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
+        var proxy = `${location.origin}/geo-explorer-proxy/proxy.ashx?`;
         var headers = { "Content-Type": "application/json" };
 
         return Net.Get(proxy + url, headers, "json");
