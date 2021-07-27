@@ -114,7 +114,8 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 
             this._headers.forEach(f => {
                 if (r.valueDesc != "" && f == "value") {
-                    Dom.Create("td", { className: "table-cell", innerHTML: r[f], abbr: r.valueDesc }, tr);
+                    var content = "<abbr title='" + r.valueDesc + "'>" + r[f] + "</abbr>";
+                    Dom.Create("td", { className: "table-cell", innerHTML: content }, tr);
                 }
                 else {
                     Dom.Create("td", { className: "table-cell", innerHTML: r[f] }, tr);
