@@ -1,5 +1,5 @@
-import Templated from '../components/templated.js';
-import Core from "../tools/core.js";
+import Templated from '../../geo-explorer-api/components/templated.js';
+import Core from "../../geo-explorer-api/tools/core.js";
 import BarChart from "../charts/barChart.js";
 import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";

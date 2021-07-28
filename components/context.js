@@ -1,8 +1,8 @@
 'use strict';
 
-import Core from '../tools/core.js';
-import Evented from './evented.js';
-import Requests from '../tools/requests.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Evented from '../../geo-explorer-api/components/evented.js';
+import Requests from '../../geo-explorer-api/tools/requests.js';
 
 /**
  * Context module

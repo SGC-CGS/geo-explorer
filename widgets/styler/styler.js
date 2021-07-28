@@ -1,10 +1,10 @@
-import Templated from '../../components/templated.js';
-import Core from '../../tools/core.js';
-import Dom from '../../tools/dom.js';
-import Requests from '../../tools/requests.js';
+import Templated from '../../../geo-explorer-api/components/templated.js';
+import Core from '../../../geo-explorer-api/tools/core.js';
+import Dom from '../../../geo-explorer-api/tools/dom.js';
+import Requests from '../../../geo-explorer-api/tools/requests.js';
 import StylerBreak from './styler-break.js';
 import DefaultBreak from './default-break.js';
-import Tooltip from "../../ui/tooltip.js"
+import Tooltip from "../../../geo-explorer-api/ui/tooltip.js";
 import Colors from './colors.js';
 
 /**

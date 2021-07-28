@@ -1,8 +1,9 @@
-import Templated from '../components/templated.js';
-import Core from '../tools/core.js';
-import Dom from '../tools/dom.js';
-import Requests from '../tools/requests.js';
-import Select from '../ui/select.js';
+import Templated from '../../geo-explorer-api/components/templated.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Dom from '../../geo-explorer-api/tools/dom.js';
+import Requests from '../../geo-explorer-api/tools/requests.js';
+import StaticTypeahead from "../../geo-explorer-api/ui/typeahead/static.js";
+import Select from '../../geo-explorer-api/ui/select.js';
 
 /**
  * Selector widget module
