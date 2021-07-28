@@ -74,7 +74,32 @@ export default class Menu {
 		if (this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} already exists in menu.`);
 		
 		this.items[id] = item;
-	}
+    }
+
+    /**
+     * Disable a menu item
+     * @param {any} id
+     */
+    DisableMenuButton(id) {
+        if (!this.items.hasOwnProperty(id))
+            throw new Error(`Item with id ${id} does not exist in menu.`);
+
+        var button = this.items[id].button;
+        button.disabled = true;
+        Dom.AddCss(button, "checked");       // to make it grey 
+    }
+
+    /**
+     * Enable a menu item
+     * @param {any} id
+     */
+    EnableMenuButton(id) {
+        if (!this.items.hasOwnProperty(id))
+            throw new Error(`Item with id ${id} does not exist in menu.`);
+
+        var button = this.items[id].button;
+        button.disabled = false;        
+    }
 
 	/**
 	 * Add button to Dom
