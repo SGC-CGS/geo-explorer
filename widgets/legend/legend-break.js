@@ -39,7 +39,9 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		nls.Add("Legend_Unavailable", "en", "unavailable");
 		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
 		nls.Add("Legend_Item", "en", "{0} to {1}");
-		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
+        nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
+        nls.Add("Color_Arialabel", "en", "Colored square ({0}), {1} to {2} {3}");
+        nls.Add("Color_Arialabel", "fr", "Carré de couleur ({0}), {1} jusqu'à {2} {3}");
 	}
 	
 	/**
@@ -54,9 +56,13 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		this.min = info.minValue;
 		this.max = info.maxValue;
 		
-		var lMin = Core.LocalizeNumber(this.min);
-		var lMax = Core.LocalizeNumber(this.max);
+		this.lMin = Core.LocalizeNumber(this.min);
+        this.lMax = Core.LocalizeNumber(this.max);
 		
-		this.label = this.Nls("Legend_Item", [lMin, lMax]);
-	}
+        this.label = this.Nls("Legend_Item", [this.lMin, this.lMax]);        
+    }
+
+    setColorAriaLabel(uom) {
+       this.Elem("color").attributes["aria-label"].value = this.Nls("Color_Arialabel", [this.color.toHex(), this.lMin, this.lMax, uom]);
+    }
 })

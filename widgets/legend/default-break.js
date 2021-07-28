@@ -53,7 +53,7 @@ export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak e
 	Template() {
 		return "<tr handle='container' class='break-line'>" +
 				 "<td class='break-color-container'>" + 
-					"<div handle='color' class='break-color'></div>" +
+					"<div handle='color' class='break-color' aria-label='color'></div>" +
 				 "</td>" + 
 				 "<td handle='label'>nls(Legend_Unavailable)</td>" +
 			   "</tr>";
