@@ -41,7 +41,9 @@ export default Core.Templatable("App.Widgets.SimpleLegend", class Legend extends
             if (c.maxValue == null) c.maxValue = "";
             if (c.minValue == null) c.minValue = "0";
             
-            return new LegendBreak(this.Elem('breaks'), c, uom);
+            var lb = new LegendBreak(this.Elem('breaks'), c);
+            lb.setColorAriaLabel(uom);
+            return lb;
         });
 		
 		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol:renderer.defaultSymbol }));
