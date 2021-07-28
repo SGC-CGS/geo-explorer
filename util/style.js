@@ -182,29 +182,29 @@ export default class Style {
 			aData.push(data[id].value);
         }
 
-        var renderer = null;
-		
+        var classBreaks = [];
+
         if (aData.length > 0) {
             var classes = Style.Classes(aData, n);
             var symbols = colors.map(c => Style.Symbol(c));
-            var classBreaks = Style.ClassBreaks(classes, symbols);
+            classBreaks = Style.ClassBreaks(classes, symbols);            
+        }
 
-			// TODO: Review this, the expression is shady. Possibly better to render features one by one.
-            var expression = `
+        // TODO: Review this, the expression is shady. Possibly better to render features one by one.
+        var expression = `
 				var data = ${JSON.stringify(data)};
 				var id = $feature.${field};
 				
 				return data[id];
 			`;
 
-            var renderer = {
-                type: "class-breaks",
-                valueExpression: expression,
-                classBreakInfos: classBreaks,
-				defaultSymbol: Style.Symbol(defColor)
-            };
-        }
-
+        var renderer = {
+            type: "class-breaks",
+            valueExpression: expression,
+            classBreakInfos: classBreaks,
+            defaultSymbol: Style.Symbol(defColor)
+        };
+        
 		return renderer;
 	}
 }

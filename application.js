@@ -50,7 +50,8 @@ export default class Application extends Templated {
 		this.menu = new Menu();
 		
 		this.AddPointIdentify();
-		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+        this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+        this.menu.DisableMenuButton("legend"); // until data is available on the map
         
 		// Move all widgets inside the map div, required for fullscreen
 		this.map.Place(this.menu.buttons, "top-left");
@@ -89,7 +90,7 @@ export default class Application extends Templated {
 		var options = { title:title, widget:widget, css:id };
 		var overlay = new Overlay(this.Elem("map-container"), options);
 		
-		menu.AddOverlay(id, title, overlay);
+        menu.AddOverlay(id, title, overlay);        
 		
 		this.map.Place([overlay.roots[0]], position);
 	}
@@ -173,11 +174,13 @@ export default class Application extends Templated {
             this.behavior.target = layer;
 
             this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer, uom);
+            this.menu.EnableMenuButton("legend");
         }
         else {
             // Remove the waiting symbol
             this.Elem("waiting").Hide();
             this.Elem("legend").EmptyClassBreaks();
+            this.menu.DisableMenuButton("legend"); // until data is available on the map
         }
     }
 
