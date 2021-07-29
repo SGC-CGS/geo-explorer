@@ -44,8 +44,8 @@ export default class Overlay extends Templated {
 	 * @returns {object.<string, string>} Button text for each language
 	 */
 	static Nls(nls) {
-		nls.Add("Overlay_Close", "en", "Cancel");
-		nls.Add("Overlay_Close", "fr", "Annuler");		
+		nls.Add("Overlay_Close", "en", "Close");
+		nls.Add("Overlay_Close", "fr", "Fermer");		
 	}
 	
 	/**

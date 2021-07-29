@@ -47,7 +47,12 @@ export default class Map extends Evented {
 		super();
 		
 		this._layers = {};
-		this._behaviors = {};
+        this._behaviors = {};
+
+        if (options.locale && options.locale == "fr" && ESRI.intl.setLocale) {
+            // starting from ArcGIS API for JavaScript 4.16
+            ESRI.intl.setLocale("fr");
+        }
 
         if (options.basemap) {
             let basemap = new ESRI.Basemap({
