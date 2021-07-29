@@ -73,7 +73,8 @@ function LoadEsri() {
                  "esri/widgets/BasemapGallery", 
 				 "esri/widgets/Bookmarks", 
 				 "esri/widgets/Fullscreen",
-				 "esri/widgets/Home"], 
+				 "esri/widgets/Home",
+                 "esri/intl"], 
 				 
 				 function(jsonUtils, 
 						  Renderer, 
@@ -97,9 +98,11 @@ function LoadEsri() {
                           BasemapGallery, 
 						  Bookmarks, 
 						  Fullscreen,
-						  Home) {
+                          Home,
+                          intl) {
 			
 			window.ESRI = {
+                intl : intl,
 				core : { 
 					urlUtils : urlUtils,
 					watchUtils : watchUtils

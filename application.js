@@ -45,7 +45,8 @@ export default class Application extends Templated {
         this.map = new Map(this.Elem('map'), {
             center: [-100, 60],
             zoom: 5,
-            basemap: this.config.Basemap
+            basemap: this.config.Basemap,
+            locale: Core.locale
         });
 		this.menu = new Menu();
 		
@@ -62,9 +63,8 @@ export default class Application extends Templated {
         this.LoadCodrData(this.config.product);
 
 		this.map.view.when(d => {	
-
-			// Work around to allow nls use on button title. 
-
+            // Remove ESRI attribution
+            this.map.view.ui._removeComponents(["attribution"]);
 
 			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
 			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
