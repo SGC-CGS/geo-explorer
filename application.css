@@ -231,7 +231,7 @@
 	background-image:url(./assets/indicator-24.png);
 }
 
-.gexp .map-container .esri-ui .button-icon.legend {
+.gexp .map-container .esri-ui .button-icon.layers {
 	background-image:url(./assets/layers-24.png);
 }
 
@@ -450,7 +450,7 @@
 .gexp .styler .break-line .break-to-container button.remove {
     background-image: url(./assets/trashcan-16.png);
 }
-/* Styler / Legend Widget */
+/* Styler Widget */
 .gexp .styler .break-line:not(:first-child) {
 	border-top : solid thin silver;
 }

@@ -11,9 +11,9 @@ import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
 import Storage from '../geo-explorer-api/tools/storage.js';
+import Styler from '../geo-explorer-api/widgets/styler/styler.js';
 
 import Selector from './widgets/selector.js';
-import Styler from './widgets/styler/styler.js';
 import Search from './widgets/search.js';
 import Table from './widgets/table.js';
 import wChart from './widgets/wChart.js';
@@ -72,8 +72,7 @@ export default class Application extends Templated {
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node('styler').On('Opacity', this.OnStyler_Opacity.bind(this));
-
-		this.Node('styler').On('LabelName', this.onLegend_LabelName.bind(this));
+		this.Node('styler').On('LabelName', this.onStyler_LabelName.bind(this));
 
 		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
 		
@@ -210,7 +209,7 @@ export default class Application extends Templated {
 	 * @param {object} ev - Event object
 	 * @returns{void}
 	 */
-	 onLegend_LabelName(ev) {
+	 onStyler_LabelName(ev) {
 		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 
