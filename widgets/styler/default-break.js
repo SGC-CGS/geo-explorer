@@ -1,3 +1,4 @@
+  
 import TemplatedTable from '../../components/templated-table.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
@@ -43,7 +44,7 @@ export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak e
 		
 		this._color = info.symbol.color;
 		
-		this.Elem("color").style.backgroundColor = this.color.toHex();
+		this.Elem("color").style.backgroundColor = Core.RgbToHex(this.color) //this.color.toHex();
 	}
 	
 	/**
@@ -51,11 +52,11 @@ export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak e
 	 * @returns {string} HTML for legend breaks
 	 */	
 	Template() {
-		return "<tr handle='container' class='break-line'>" +
-				 "<td class='break-color-container'>" + 
+		return "<ul handle='container' class='break-line breaks-row'>" +
+				 "<li class='break-color-container breaks-column'>" + 
 					"<div handle='color' class='break-color'></div>" +
-				 "</td>" + 
-				 "<td handle='label'>nls(Legend_Unavailable)</td>" +
-			   "</tr>";
+				 "</li>" + 
+				 "<li class='breaks-column' handle='label'>nls(Legend_Unavailable)</li>" +
+			   "</ul>";
 	}
 })

@@ -15,13 +15,13 @@ export default class Map extends Evented {
 
 	/**
 	 * @description get the popup and view content from the feature's attributes
-	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Popup.html|ArcGIS API for JavaScript}
+	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Popup.html| ArcGIS API for JavaScript}
 	 */
 	get popup() { return this._view.popup; }
 
 	/**
 	 * @description get the view
-	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-views-View.html#ui|ArcGIS API for JavaScript}
+	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-views-View.html#ui| ArcGIS API for JavaScript}
 	 */
 	get view() { return this._view; }
 	
@@ -43,6 +43,9 @@ export default class Map extends Evented {
 	 */
 	get behaviors() { return this._behaviors; }
 
+	/**
+	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Widget.html| ArcGIS API for JavaScript}
+	 */
 	constructor(container, options) {
 		super();
 		
