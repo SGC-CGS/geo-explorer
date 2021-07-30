@@ -816,3 +816,6 @@
 .esri-popup__footer {
     display: none;
 }
+.esri-popup__content { 
+    margin: 4px 15px 12px;
+}

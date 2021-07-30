@@ -335,6 +335,8 @@ export default class Application extends Templated {
 		this.Elem("styler").Update(this.context);
 		this.Elem("legend").Update(this.context);
 		this.Elem("table").Update(this.context);
+
+		this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
 	}
 	
 	/**
@@ -411,7 +413,7 @@ export default class Application extends Templated {
 			this.menu.DisableButton(this.menu.Button("chart"), this.Nls("Chart_Title_Disabled"));
 			this.menu.Title("chart").innerHTML = this.Nls("Chart_Title_Disabled");
 			this.Elem("chart").description = "";
-		}
+		} 
 	}
 	
 	/**
