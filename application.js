@@ -1,23 +1,16 @@
 'use strict';
 
-import Core from '../geo-explorer-api/tools/core.js';
-import Dom from '../geo-explorer-api/tools/dom.js';
-
 import Widget from '../geo-explorer-api/components/base/widget.js';
 import Map from '../geo-explorer-api/components/map.js';
-import Menu from '../geo-explorer-api/components/menu.js';
 import Storage from '../geo-explorer-api/components/storage.js';
-
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
-
-import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
-import Context from './components/context.js';
-
+import Navbar from '../geo-explorer-api/widgets/navbar.js';
 import Table from './widgets/table.js';
 import Search from './widgets/search.js';
 import InfoPopup from './widgets/infopopup.js';
 import Toolbar from './widgets/wToolbar.js';
+import Context from './components/context.js';
 
 /**
  * Application module
@@ -59,6 +52,9 @@ export default class Application extends Widget {
 
 		this.toolbar = new Toolbar();
 		this.toolbar.Configure(this.config, this.map, this.storage);
+
+		this.navbar = new Navbar();
+		this.navbar.Configure(this.map);
 		
 		for (var id in this.toolbar.widgets) this.AddElem(id, this.toolbar.widgets[id]);
 		
@@ -93,32 +89,14 @@ export default class Application extends Widget {
 			this.Elem("bookmarks").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
-			this.menu.SetOverlay(this.menu.Item("selector"));			
+			this.toolbar.ShowWidget("selector");			
 
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
 			this.map.Behavior("pointselect").Activate();
 		}, error => this.OnApplication_Error(error));
-
-		this.map.view.when(d => {	
-			// Workaround to allow nls use on button title.
-			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
-			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
-		}, error => this.OnApplication_Error(error));
 	}
 	
-	/**
-	 * Add specified language strings to the nls object
-	 * @param {object} nls - Existing nls object
-	 * @returns {void}
-	 */
-	Localize(nls) {
-		nls.Add("Fullscreen_Title", "en", "Fullscreen");
-		nls.Add("Fullscreen_Title", "fr", "Plein écran");
-		nls.Add("Home_Title", "en", "Default map view");
-		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");					
-	}
-		
 	/**
 	 * Adds the behavior and handles the event for generating popup and table from map selection.
 	 * @param {object} map - Map object to which the behavior will be applied

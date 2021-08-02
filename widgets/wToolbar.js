@@ -80,8 +80,8 @@ export default Core.Templatable("App.Widgets.Toolbar", class wToolbar extends Wi
 	}
 	
 	/**
-	 * Add map overlay.
-	 * @param {string} id - Overlay Id (ex. "selector")
+	 * Add widget in map overlay.
+	 * @param {string} id - Widget Id (ex. "selector")
 	 * @param {string} title - Title to show at top of overlay
 	 * @param {object} widget - Widget to load in the overlay
 	 * @returns {void}
@@ -97,10 +97,21 @@ export default Core.Templatable("App.Widgets.Toolbar", class wToolbar extends Wi
 	}
 	
 	/**
+	 * Show widget in map overlay.
+	 * @param {string} id - Widget Id (ex. "selector")
+	 * @returns {void}
+	 */
+	ShowWidget(id) {
+		var item = this.menu.Item(id);
+		
+		this.menu.SetOverlay(item);
+	}
+	
+	/**
 	 * Create a div for this widget
 	 * @returns {string} HTML with custom div
 	 */
 	HTML() {        
-		return "<div handle='menu'></div>";
+		return "<div handle='menu' class='menu'></div>";
 	}
 })

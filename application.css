@@ -136,11 +136,15 @@
 }
 
 .gexp .search img {
-    width: 22px;
+    padding: 2px;
 }
 
-.gexp .search {
+.gexp .search, .gexp .menu {
 	box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px 0px;
+}
+
+.gexp .menu > *, .gexp .search > * {
+    vertical-align: middle;
 }
 
 .gexp .typeahead {
