@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 import Core from '../../tools/core.js';
-import Nls from '../nls.js';
+import Nls from '../base/nls.js';
 
 /**
  * CodeSets module

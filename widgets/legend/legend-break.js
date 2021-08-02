@@ -7,7 +7,7 @@ import Dom from '../../tools/dom.js';
  * @module widgets/legend/legend-break
  * @extends TemplatedTable
  */
-export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak extends DefaultBreak {
+export default Core.Templatable("Api.Widgets.LegendBreak", class LegendBreak extends DefaultBreak {
 	
 	/**
 	 * Get/set min value for breaks
@@ -30,27 +30,15 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 	set max(value) {
 		this._max = value;
 	}
-
-	/**
-	 * Return text for legend breaks in both languages
-	 * @returns {object.<string, string>} Legend break text for each language
-	 */	
-	static Nls(nls) {
-		nls.Add("Legend_Unavailable", "en", "unavailable");
-		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
-		nls.Add("Legend_Item", "en", "{0} to {1}");
-		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
-	}
 	
 	/**
-	 * Call constructor of base class (TemplatedTable) and initialize legend breaks
+	 * Call constructor of base class and initialize legend breaks
 	 * @param {object} container - table breaks container and properties
-	 * @param {object} options - additional info on breaks (min, max, colors)
 	 * @returns {void}
 	 */	
 	constructor(container, info) {	
 		super(container, info);
-			
+		
 		this.min = info.minValue;
 		this.max = info.maxValue;
 		
@@ -58,5 +46,17 @@ export default Core.Templatable("App.Widgets.LegendBreak", class LegendBreak ext
 		var lMax = Core.LocalizeNumber(this.max);
 		
 		this.label = this.Nls("Legend_Item", [lMin, lMax]);
+	}
+
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Legend_Unavailable", "en", "unavailable");
+		nls.Add("Legend_Unavailable", "fr", "non-disponible");	
+		nls.Add("Legend_Item", "en", "{0} to {1}");
+		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
 	}
 })

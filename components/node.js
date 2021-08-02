@@ -6,12 +6,7 @@ import Dom from '../tools/dom.js';
 /**
  * Node module
  * @module components/node
- * @description A given element is entered through the constructor
- * and .On() function is used to add event listeners.
- * The constructor is called in templated.js.
- * You can see the list of event listeners for the given 
- * element by using getEventListeners(this._elem) in the
- * console. 
+ * @description A node is wrapper around a DOM Element that provides added functionality.
  */
 export default class _Node { 
 
@@ -68,7 +63,7 @@ export default class _Node {
 	 * @returns - NodeList
 	 */
 	Node(selector) {
-		var elem = this._elem.querySelector(selector);
+		var elem = this.Elem(selector);
 		
 		return (!elem) ? null : new Node(elem);
 	}
@@ -79,12 +74,7 @@ export default class _Node {
 	 * @param {*} selector - A DOMString 
 	 * @returns - NodeList
 	 */
-	Nodes(selector) {
-		var elems = this._elem.querySelectorAll(selector);
-		var out = [];
-		
-		elems.forEach(e => out.push(new Node(e)));
-		
-		return out;
+	Nodes(selector) {		
+		return this.Elems(selector).map(e => elem ? new Node(elem) : null);
 	}
 }

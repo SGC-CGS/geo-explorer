@@ -1,5 +1,6 @@
  'use strict';
 
+import Component from './base/component.js';
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
@@ -7,7 +8,7 @@ import Dom from '../tools/dom.js';
  * Menu widget module
  * @module widgets/menu
  */
-export default class Menu { 
+export default class Menu extends Component{ 
 
 	/**
 	 * gets list of buttons
@@ -23,7 +24,9 @@ export default class Menu {
 	/**
 	 * Initialize class variables
 	 */
-	constructor() {				
+	constructor() {
+		super();
+		
 		this.current = null;
 		this.items = {};
 	}
@@ -97,13 +100,13 @@ export default class Menu {
 	 * @param {object} overlay - Overlay object with all properties
 	 * @returns {void}
 	 */
-	AddOverlay(id, title, overlay) {
+	AddOverlay(overlay) {
 		var item = {
-			button : Dom.Create("button", { title:title, className:`button-icon large-icon ${id}` }),
+			button : Dom.Create("button", { title:overlay.title, className:`button-icon large-icon ${overlay.id}` }),
 			overlay : overlay
 		}
 		
-		this.AddItem(id, item);
+		this.AddItem(overlay.id, item);
 		
 		item.button.addEventListener("click", this.OnMenuButton_Click.bind(this, item));
 		

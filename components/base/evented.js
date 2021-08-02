@@ -1,6 +1,6 @@
 'use strict';
 
-import Core from '../tools/core.js';
+import Core from '../../tools/core.js';
 
 /**
  * Evented module

@@ -1,13 +1,13 @@
 import Dom from '../tools/dom.js';
 import Core from '../tools/core.js';
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 
 /**
  * Popup module
  * @module ui/popup
- * @extends Templated
+ * @extends Widget
  */
-export default class Popup extends Templated { 
+export default class Popup extends Widget { 
 	
 	set Title(value) {
 		this.Elem("title").innerHTML = value;
@@ -25,7 +25,7 @@ export default class Popup extends Templated {
 	
 	constructor(container) {	
 		super(container || document.body);
-				
+		
 		this.onBody_KeyUp_Bound = this.onBody_KeyUp.bind(this);
 		
 		this._h = null;
@@ -79,7 +79,7 @@ export default class Popup extends Templated {
 		this.Hide();
 	}
 	
-	Template() {
+	HTML() {
 		return "<div handle='popup' class='popup'>" +
 				  "<div class='popup-header'>" +
 					  "<h2 class='popup-title' handle='title'></h2>" +

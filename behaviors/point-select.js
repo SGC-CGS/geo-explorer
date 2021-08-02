@@ -2,7 +2,7 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from '../components/evented.js';
+import Evented from '../components/base/evented.js';
 import Behavior from './behavior.js';
 
 /**
@@ -48,7 +48,7 @@ export default class PointIdentifyBehavior extends Behavior {
 	set symbol(value) { this._options.symbol = value; }
 
 	/**
-	 * Call constructor of base class (Behavior) and initialize point-select class 
+	 * Call constructor of base class and initialize point-select class 
 	 * Adds point-select graphics layer and click handler.
 	 * @param {object} map - Map object
 	 * @param {object} options - Map options (not generally used)

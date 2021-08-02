@@ -2,7 +2,7 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from '../components/evented.js';
+import Evented from '../components/base/evented.js';
 
 /**
  * Parent class of the other behaviors 
@@ -12,7 +12,7 @@ import Evented from '../components/evented.js';
 export default class Behavior extends Evented { 
 
 	/**
-	 * Calls constructor of parent class (Evented)
+	 * Calls constructor of parent class
 	 * @param {object} map - Map object (if present)
 	 * @param {object} options - Map options 
 	 * @returns {void}

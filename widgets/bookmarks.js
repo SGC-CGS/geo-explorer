@@ -1,48 +1,80 @@
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 import Core from '../tools/core.js';
 
 /**
  * Bookmarks widget module
  * @module widgets/bookmarks
- * @extends Templated
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends Templated {
+export default Core.Templatable("Api.Widgets.Bookmarks", class Bookmarks extends Widget {
+
 	/** 
-	 * Get / set the bookmarks from the config
+	 * Get / set the widget's title
 	*/	
-	set Bookmarks(value) { this._bookmarks = value; }
-
-	get Bookmarks() { return this._bookmarks; }
-
+	get title() { return this.Nls("Bookmarks_Title") }
+	
 	/** 
 	 * Get / set the storage
 	*/	
-	set Storage(value) { 
-		let options = JSON.parse(value.myStorage.getItem(value.key)) 
+	set storage(value) { this._storage = value; }
 
-		// For storing bookmarks and context of bookmarks 
-		if(options.bookmarks == undefined) {
-			value.SetSection("bookmarks", [])
-			value.SetSection("bookmarkContexts", [])
-		}
-
-		this._storage = value; 
-	}
-
-	get Storage() { return this._storage; }
+	get storage() { return this._storage; }
 	
 	/** 
-	 * @description Set the bookmarks widget and load any bookmarks from the config and / or storage.
-	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Bookmarks.html|ArcGIS API for JavaScript}
-	 * @type {object} 
-	*/
-	set Map(value) { 
-		this.map = value; 
-				
+	 * Get / set the bookmarks
+	*/	
+	set bookmarks(value) { this._bookmarks = value; }
+
+	get bookmarks() { return this._bookmarks; }
+		
+	/**
+	 * @description Call constructor of base class and initialize bookmarks
+	 * @param {object} container - div.bookmarks and properties
+	 * @returns {void}
+	 */	
+	constructor(container) {	
+		super(container);
+		
+		this.bookmarksWidget = null;
+	}
+	
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Bookmarks_Title", "en", "Bookmarks");
+		nls.Add("Bookmarks_Title", "fr", "Géosignets");
+	}
+	
+	/**
+	 * Configures the widget from a json object
+	 * @param {object} config - Configuration parameters of the widget as a json object
+	 * @returns {void}
+	 */
+	Configure(config, map, storage) {
+		this.storage = storage;
+		
+		this.config.items = config.items.map(b => {
+			return {
+				name : b.name,
+				viewpoint : {
+					targetGeometry: {
+						type: "extent",
+						xmin : b.extent[0][0],
+						xmax : b.extent[1][0],
+						ymin : b.extent[0][1],
+						ymax : b.extent[1][1],
+					}
+				}
+			}
+		}); 
+		
         this.bookmarksWidget = new ESRI.widgets.Bookmarks({
 			// Allows bookmarks to be added, edited, or removed
 			editingEnabled: true,
-			view: this.map.view,
+			view: map.view,
 			container: this.Elem("content"),
 			bookmarks: [],
 			bookmarkCreationOptions: {
@@ -51,27 +83,21 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 			}
         });
 
-		// If no storage mechanism set, only use the bookmarks from the config and disable editing
-		if(this.Storage == undefined || this.Storage.storedContent == null) {
-			this.bookmarksWidget.bookmarks = this.Bookmarks;
-			this.bookmarksWidget.editingEnabled = false;
-			return;
+		// If no storage mechanism set, only use the bookmarks from the config
+		// Note: removed the disable editing part. Editing needs to be on am individual 
+		// bookmark basis which  ESRI does not support. We'll have to figure out something.
+		var section = this.storage.GetSection("bookmarks")
+		
+		this.bookmarks = {
+			items : section && section.items || this.config.items,
+			contexts : section && section.contexts || []
 		}
-
-		// Get stored bookmarks and any bookmark contexts from storage
-		let storedBookmarks = JSON.parse(this.Storage.myStorage.getItem(this.Storage.key)).bookmarks;
-
-		this.bookmarkContexts = JSON.parse(this.Storage.myStorage.getItem(this.Storage.key)).bookmarkContexts;
 
 		// Save config to storage the first time the user loads the application
-		if(storedBookmarks.length == 0) { 
-			storedBookmarks = this.Bookmarks; 
-
-			this.Storage.SetSection("bookmarks", storedBookmarks);
-		}
+		if (!section) this.storage.SetSection("bookmarks", this.bookmarks);
 
 		// Save the stored bookmarks to the widget
-		this.bookmarksWidget.bookmarks = storedBookmarks;
+		this.bookmarksWidget.bookmarks = this.bookmarks.items;
 
 		// Enable bookmark events
 		this.bookmarksWidget.bookmarks.on("change", this.OnBookmark_Change.bind(this));
@@ -80,34 +106,11 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	}
 	
 	/**
-	 * @description Return bookmarks button title in both languages
-	 * @returns {object.<string, string>} Basemap titles for each language
-	 */	
-	static Nls(nls) {
-		nls.Add("Bookmarks_Title", "en", "Bookmarks");
-		nls.Add("Bookmarks_Title", "fr", "Géosignets");
-	}
-	
-	/**
-	 * @description Call constructor of base class (Templated) and initialize bookmarks
-	 * @param {object} container - div.bookmarks and properties
-	 * @param {object} options - any additional options to assign to the widget (not typically used)
-	 * @returns {void}
-	 */	
-	constructor(container, options) {	
-		super(container, options);
-		
-		this.bookmarksWidget = null;
-	}
-
-	/**
 	 * @description Load / update data regarding the current context
 	 * @param {*} context 
 	 */
 	Update(context) { 
-		this.classedContext = context;
-
-		this.context = context.toJSON();
+		this.context = context;
 	}
 
 	/**
@@ -117,21 +120,17 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	OnBookmark_Change(ev) {
 		// Save the current context of the added bookmark to storage
 		if (ev.added.length == 1) {
-			this.bookmarkContexts.push({name: ev.added[0].name, context: this.context});
-
-			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
+			this.bookmarks.contexts.push({name: ev.added[0].name, context: this.context.toJSON() });
 		}
 
 		// Filter out the removed bookmark from the context in storage
 		if (ev.removed.length == 1) {
-			this.bookmarkContexts = this.bookmarkContexts.filter(b => b.name != ev.removed[0].name)
-
-			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
+			this.bookmarks.contexts = this.bookmarks.contexts.filter(b => b.name != ev.removed[0].name)
 		}
-
-		let bookmarks = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items)
-			
-		this.Storage.SetSection("bookmarks", bookmarks);
+		
+		this.bookmarks.items = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items);
+		
+		this.storage.SetSection("bookmarks", this.bookmarks);
 	}
 
 	/**
@@ -139,11 +138,9 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @param {*} ev - Event
 	 */
 	OnBookmark_Select(ev) {
-		this.selectedBookmarkContext = this.bookmarkContexts.find(e => e.name == ev.bookmark.name);
+		this.selected = this.bookmarks.contexts.find(e => e.name == ev.bookmark.name);
 
-		if(this.selectedBookmarkContext != null) {
-			this.ChangeContext(this.selectedBookmarkContext.context); 
-		}
+		if (!!this.selected) this.ChangeContext(this.selected.context); 
 	}
 
 	/**
@@ -152,15 +149,11 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @param {*} ev 
 	 */
 	OnBookmark_Edit(ev) {
-		let bookmarks = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items)
-			
-		this.Storage.SetSection("bookmarks", bookmarks);
+		this.bookmarks.items = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items);
 
-		if(this.selectedBookmarkContext != null) {
-			this.selectedBookmarkContext.name = ev.bookmark.name;
-
-			this.Storage.SetSection("bookmarkContexts", this.bookmarkContexts);
-		}
+		if (this.selected != null) this.selected.name = ev.bookmark.name;
+		
+		this.storage.SetSection("bookmarks", this.bookmarks);
 	}
 
 	/**
@@ -188,21 +181,21 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * @param {*} context 
 	 */
 	 ChangeContext(context) {
-		this.classedContext.category = context.category;
-		this.classedContext.filters = context.filters;
-		this.classedContext.geography = context.geography;
-		this.classedContext.subject = context.subject;
-		this.classedContext.theme = context.theme;
-		this.classedContext.value = context.value;
+		this.context.category = context.category;
+		this.context.filters = context.filters;
+		this.context.geography = context.geography;
+		this.context.subject = context.subject;
+		this.context.theme = context.theme;
+		this.context.value = context.value;
 
 		this.Emit("Busy");
 
 		// REVIEW: Should be in application.js? Use an observer?		
-		this.classedContext.Initialize().then(response => {
-			this.classedContext.UpdateRenderer().then(c => {
+		this.context.Initialize().then(response => {
+			this.context.UpdateRenderer().then(c => {
 				this.Emit("Idle");
 			
-				this.classedContext.Commit();
+				this.context.Commit();
 				
 				this.Emit("Change");
 			});
@@ -213,7 +206,7 @@ export default Core.Templatable("App.Widgets.Bookmarks", class Bookmarks extends
 	 * Create a div for this widget
 	 * @returns {string} HTML with custom div
 	 */	
-	Template() {
+	HTML() {
 		return "<div handle='content'></div>";
 	}
 })

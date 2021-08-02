@@ -4,7 +4,7 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Net from '../tools/net.js';
 import Requests from '../tools/requests.js';
-import Evented from './evented.js';
+import Evented from './base/evented.js';
 
 /**
  * Map module

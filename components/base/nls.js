@@ -1,6 +1,6 @@
 'use strict';
 
-import Core from '../tools/core.js';
+import Core from '../../tools/core.js';
 
 /**
  * Nls module
@@ -36,7 +36,7 @@ export default class Nls {
 	
 	Add(id, locale, string) {
 		if (!this.strings[id]) this.strings[id] = {};
-				
+		
 		this.strings[id][locale] = string;
 	}
 	

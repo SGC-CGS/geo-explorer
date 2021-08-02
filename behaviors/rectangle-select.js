@@ -2,7 +2,7 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from '../components/evented.js';
+import Evented from '../components/base/evented.js';
 import Behavior from './behavior.js';
 
 /**
@@ -48,7 +48,7 @@ export default class RectangleSelectBehavior extends Behavior {
 	set symbol(value) { this._options.symbol = value; }
 
 	/**
-	 * Call constructor of base class (Behavior) and initialize rectangle-select class 
+	 * Call constructor of base class and initialize rectangle-select class 
 	 * Adds drawing, selection graphics layer, and handlers.
 	 * @param {object} map - Map object
 	 * @param {object} options - Map options 

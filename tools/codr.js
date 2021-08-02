@@ -1,7 +1,7 @@
 import Core from './core.js';
 import Net from './net.js';
 
-import Nls from '../components/nls.js';
+import Nls from '../components/base/nls.js';
 import Metadata from '../components/codr/metadata.js';
 import Datapoint from '../components/codr/datapoint.js';
 import Vector from '../components/codr/vector.js';

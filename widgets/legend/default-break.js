@@ -1,13 +1,13 @@
-import TemplatedTable from '../../components/templated-table.js';
+import Widget from '../../components/base/widget.js';
 import Core from '../../tools/core.js';
 import Dom from '../../tools/dom.js';
 
 /**
  * Legend break widget module
  * @module widgets/legend/legend-break
- * @extends TemplatedTable
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak extends TemplatedTable {
+export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak extends Widget {
 	
 	/**
 	 * Get color for default breaks
@@ -24,18 +24,8 @@ export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak e
 	}
 
 	/**
-	 * Return text for default breaks in both languages
-	 * @returns {object.<string, string>} Legend break text for each language
-	 */	
-	static Nls(nls) {
-		nls.Add("Legend_Unavailable", "en", "Data unavailable");
-		nls.Add("Legend_Unavailable", "fr", "Donnée non-disponible");		
-	}
-
-	/**
-	 * Call constructor of base class (TemplatedTable) and initialize legend breaks
+	 * Call constructor of base class and initialize legend breaks
 	 * @param {object} container - table breaks container and properties
-	 * @param {object} options - additional info on breaks (min, max, colors)
 	 * @returns {void}
 	 */	
 	constructor(container, info) {	
@@ -45,17 +35,27 @@ export default Core.Templatable("App.Widgets.DefaultBreak", class DefaultBreak e
 		
 		this.Elem("color").style.backgroundColor = this.color.toHex();
 	}
+
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Legend_Unavailable", "en", "Data unavailable");
+		nls.Add("Legend_Unavailable", "fr", "Donnée non-disponible");		
+	}
 	
 	/**
 	 * Create HTML for legend breaks
 	 * @returns {string} HTML for legend breaks
 	 */	
-	Template() {
-		return "<tr handle='container' class='break-line'>" +
-				 "<td class='break-color-container'>" + 
+	HTML() {
+		return "<div handle='container' class='break-line'>" +
+				 "<div class='break-color-container'>" + 
 					"<div handle='color' class='break-color'></div>" +
-				 "</td>" + 
-				 "<td handle='label'>nls(Legend_Unavailable)</td>" +
-			   "</tr>";
+				 "</div>" + 
+				 "<div handle='label'>nls(Legend_Unavailable)</div>" +
+			   "</div>";
 	}
 })
