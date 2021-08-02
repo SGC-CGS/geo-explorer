@@ -33,7 +33,7 @@ export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widge
      * @param {String} renderer - renderer object
      */
     LoadClassBreaks(renderer, uom) {
-		this.Elem("uom").innerHTML = uom;
+		if (uom) this.Elem("uom").innerHTML = uom;
 		
         Dom.Empty(this.Elem("breaks"));
 
