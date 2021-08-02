@@ -1,16 +1,39 @@
 {
-    "layers": {
-        "PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
-        "CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
-        "CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
-    },
-    "layers_internal": {
-        "PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
-        "GRC": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
-        "CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
-        "CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3",
-        "CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
-        "DA": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/5"
+    "map": {
+		"layers": {
+			"PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
+			"CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
+			"CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
+		},
+		"layers_internal": {
+			"PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
+			"GRC": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
+			"CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
+			"CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3",
+			"CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
+			"DA": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/5"
+		},
+		"basemap": {
+			"en": "https://geoprod.statcan.gc.ca/arcgis/rest/services/NDM_BaseMap_Labels_EN_L013/MapServer",
+			"fr": "https://geoprod.statcan.gc.ca/arcgis/rest/services/NDM_BaseMap_Labels_FR_L013/MapServer"
+		},	
+		"basemap_internal": {
+			"en": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_Labels_EN_L013/MapServer",
+			"fr": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_2006_Labels_FR_L013/MapServer"
+		},
+		"constraints": {
+			"geometry": {
+				"type": "extent",
+				"xmin": -141,
+				"xmax": -53,
+				"ymin": 41,
+				"ymax": 83
+			},
+			"minZoom": 3
+		},
+		"zoom": 5,
+		"center": [-120, 60],
+		"animation": false
     },
     "ramps": {
         "1": [[158, 202, 225, 0.65]],

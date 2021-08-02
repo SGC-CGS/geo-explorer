@@ -37,6 +37,19 @@ export default class Configuration {
 
 	set json(value) { this._json = value; }
 
+    get Map() { 
+		return {
+			basemap: this.json.map.basemap[Core.locale],
+			zoom: this.json.map.zoom,
+			center: this.json.map.center,
+			animation: this.json.map.animation,
+			constraints: {
+				lods: ESRI.layers.support.TileInfo.create().lods 
+			},
+			layers: this.json.map.layers
+		}
+	}
+
     constructor(json) {		
 		this.json = json;
 	}
@@ -44,13 +57,13 @@ export default class Configuration {
 	static FromJson(json) {
 		return new Configuration(json);
     }
-
+    
     /**
      * @description
      * Get the layer by geo
      * @param {String} geo - geo
      */
-    Layer (geo) { return this.json.layers[geo]; }
+    Layer (geo) { return this.json.map.layers[geo]; }
 
     /**
      * @description

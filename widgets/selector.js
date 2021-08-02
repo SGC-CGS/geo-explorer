@@ -51,9 +51,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 		nls.Add("Dropdowns_Title", "en", "Select indicator to display on the map:");
 		nls.Add("Dropdowns_Title", "fr", "Sélectionnez l'indicateur à afficher sur la carte:");		
 		nls.Add("UpdateMapBtn_Title", "en", "Update Map");
-        nls.Add("UpdateMapBtn_Title", "fr", "Recharger la Carte");	
-        nls.Add("AppDescription", "en", "This map will display a thematic map according to the indicator selected. Use the dropdown lists below to select dimension members for each dimensions of the current CODR product. Then, click on the 'update map' button to display the thematic map. A data table at the bottom contains the data shown on the map.");
-        nls.Add("AppDescription", "fr", "Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'mettre à jour la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte.");
+        nls.Add("UpdateMapBtn_Title", "fr", "Recharger la carte");	
+        //nls.Add("AppDescription", "en", "This map will display a thematic map according to the indicator selected. Use the dropdown lists below to select dimension members for each dimensions of the current CODR product. Then, click on the 'Update Map' button to display the thematic map. A data table at the bottom contains the data shown on the map.");
+        //nls.Add("AppDescription", "fr", "Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'Recharger la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte.");
         nls.Add("Options_Title", "en", "Choose an option for ");
         nls.Add("Options_Title", "fr", "Choisissez une option pour ");
 	}
@@ -119,7 +119,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 			var label = Dom.Create("label", { innerHTML:dimension.name, htmlFor:dimension.position, className:"col-md-6 mrgn-tp-xs" }, row);
             var select = Dom.Create("select", {
                 id: dimension.position,
-                className: "col-md-6 mrgn-tp-xs",
+                className: "col-md-6 mrgn-tp-xs selectorDropdown",
                 title: this.Nls("Options_Title") + dimension.name.toLowerCase()	
             }, row);
             
@@ -130,7 +130,18 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 			
 			return select;
 		});
-	}
+    }
+
+    /**
+     * @description
+     * Return the name of the selected Geography level
+     */
+    GetSelectedGeoLevelName() {
+        if (this.geoSelect && this.geoSelect.selectedOptions.length > 0) {
+            return this.geoSelect.selectedOptions[0].label;
+        }
+        return "";
+    }
 
     /**
      * @description
@@ -160,8 +171,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
         
     HTML() {
         return 	"<h2 handle='dropdowntitle' class='col-md-12 mrgn-tp-sm hidden'>nls(Dropdowns_Title)</h2>" +
-                "<div class='text-center'><a href='#' class='wb-inv wb-show-onfocus wb-sl'>nls(AppDescription)</a></div>" +            
-				"<div handle='dimensions' class='dimensions'></div>" +
+                "<div handle='dimensions' class='dimensions'></div>" +
 				"<div class='row mrgn-tp-sm'>" +
                 "<button handle='submit' type='submit' class='btn btn-primary col-md-2 pull-right hidden' title='nls(UpdateMapBtn_Title)'>" +
                 "nls(UpdateMapBtn_Title)</button > " +

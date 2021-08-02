@@ -29,9 +29,9 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 	 */
     Localize(nls) {
         // Column headers
-        nls.Add("ColHeader_code", "en", "DGUID");
-        nls.Add("ColHeader_code", "fr", "IDUGD");
-        nls.Add("ColHeader_name", "en", "Geography Name");
+        nls.Add("ColHeader_code", "en", "<abbr title='Dissemination Geography Unique Identifier'>DGUID</abbr>");
+        nls.Add("ColHeader_code", "fr", "<abbr title='Identificateur unique des géographies de diffusion'>IDUGD</abbr>");
+        nls.Add("ColHeader_name", "en", "Geography name");
         nls.Add("ColHeader_name", "fr", "Nom de la géographie");
         nls.Add("ColHeader_value", "en", "Value");
         nls.Add("ColHeader_value", "fr", "Valeur");
@@ -39,7 +39,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
         nls.Add("ColHeader_date", "fr", "Période de référence");
         nls.Add("ColHeader_frequency", "en", "Frequency");
         nls.Add("ColHeader_frequency", "fr", "Fréquence");
-        nls.Add("ColHeader_scalar", "en", "Scalar factor");
+        nls.Add("ColHeader_scalar", "en", "Scalar Factor");
         nls.Add("ColHeader_scalar", "fr", "Facteur scalaire");       
     }
 	
@@ -75,45 +75,37 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 
         if (this._headers == null) this.CreateHeaders();
 
-        this._tableData = [];
-
-        datapoints.forEach(dp => {
-            var tr = {};
-			
-            tr.code = CODR.GetDGUID(metadata.geoLevel, dp.vintage, dp.code);
-            tr.id = dp.id;
-            tr.name = Core.locale == "en" ? dp.nameEn : dp.nameFr;
-            tr.type = dp.type;
+        this._tableData = datapoints.map(dp => {
+            var d = data[dp.code];
             
-            tr.date = "";
-            tr.decimals = "";
-            tr.frequency = "";
-            tr.release = "";
-            tr.scalar = "";
-            tr.value = "";
-            
-            var dataobj = data[dp.code];
-			
-            if (dataobj) {
-                tr.date = dataobj.date;
-                tr.decimals = dataobj.decimals;
-                tr.release = dataobj.release;
-
-                // Localization for value
-                tr.value = codesets.FormatDP(dataobj, Core.locale); // This includes security, status and symbol
-				tr.frequency = codesets.frequency(dataobj.frequency) || "";
-                tr.scalar = codesets.scalar(dataobj.scalar) || "";
-            }
-                
-            this._tableData.push(tr);
+            return {
+				code : CODR.GetDGUID(metadata.geoLevel, dp.vintage, dp.code),
+				id : dp.id,
+				name : Core.locale == "en" ? dp.nameEn : dp.nameFr,
+				type : dp.type,
+				date : d ? d.date : "",
+				decimals : d ? d.decimals : "",
+				release : d ? d.release : "",
+				value : d ? codesets.FormatDP(d, Core.locale) : "",
+				valueDesc : d ? codesets.FormatDPDesc(d, Core.locale) : "",
+				frequency : d ? codesets.frequency(d.frequency) || "" : "",
+				calar : d ? codesets.scalar(d.scalar) || "" : ""
+			}
         });
 
         this._tableData.forEach(r => {
             var tr = Dom.Create("tr", { className: "table-row" }, this.Elem("body"));
 
-            this._headers.forEach(f => {				
-                Dom.Create("td", { className: "table-cell", innerHTML: r[f] }, tr);
-			});
+            this._headers.forEach(f => {
+                if (r.valueDesc != "" && f == "value") {
+					var content = "<abbr title='" + r.valueDesc + "'>" + r[f] + "</abbr>";
+				}
+				
+				else var content = r[f];
+				
+				Dom.Create("td", { className: "table-cell", innerHTML: content }, tr);             
+            });           
+            
         });
 
         this.UpdateTableVisibility();

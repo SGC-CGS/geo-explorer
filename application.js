@@ -7,7 +7,6 @@ import Widget from '../geo-explorer-api/components/base/widget.js';
 import Menu from '../geo-explorer-api/components/menu.js';
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
-import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Navbar from '../geo-explorer-api/widgets/navbar.js';
 import Legend from '../geo-explorer-api/widgets/legend/legend.js';
@@ -19,38 +18,32 @@ import Map from './components/map.js';
 
 export default class Application extends Widget { 
 
+	
 	constructor(container, config) {		
 		super(container);
 
 		this.config = Configuration.FromJson(config);
 
-		// Build map, menu, widgets and other UI components
-		this.map = new Map(this.Elem('map'), { center:[-100, 60], zoom:4 });
+        // Build map, menu, widgets and other UI components
+        this.map = new Map(this.Elem('map'), this.config.Map);
+		
 		this.menu = new Menu();
 		
 		this.navbar = new Navbar();
 		this.navbar.Configure(this.map);
 		
 		this.AddPointIdentify();
-		this.AddOverlay(this.menu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "top-right");
-		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+        this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+        this.menu.DisableMenuButton("legend"); // until data is available on the map
         
 		// Move all widgets inside the map div, required for fullscreen
 		this.map.Place(this.menu.buttons, "top-left");
         this.map.Place([this.Elem("waiting").container], "manual");
 		
-		this.Elem('basemap').Map = this.map;
-
 		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
 		
         this.LoadCodrData(this.config.product);
 
-		this.map.view.when(d => {	
-			// Work around to allow nls use on button title. 
-			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
-			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
-		}, error => this.OnApplication_Error(error));
-		
 		/* 
 		// NOTE: This should work but for some reason, it only works on every other click.
 		// Listen for SceneView click events
@@ -76,9 +69,7 @@ export default class Application extends Widget {
 	 * @param {object} nls - Existing nls object
 	 * @returns {void}
 	 */
-	Localize(nls) {		
-		nls.Add("Basemap_Title", "en", "Change basemap");
-		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
+	Localize(nls) {
 		nls.Add("Legend_Title", "en", "Legend");
 		nls.Add("Legend_Title", "fr", "Légende");
 		nls.Add("LoadingData_Title", "en", "Loading Data...");
@@ -89,10 +80,10 @@ export default class Application extends Widget {
         nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
         nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the information table section.");
         nls.Add("SkipTheMapLink", "fr", "Ignorez la carte visuelle interactive et accédez directement à la section du tableau d'informations.");
-		nls.Add("Fullscreen_Title", "en", "Fullscreen");
-		nls.Add("Fullscreen_Title", "fr", "Plein écran");		
-		nls.Add("Home_Title", "en", "Default map view");
-		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");		
+        nls.Add("Map_Header", "en", "Thematic map for ");
+        nls.Add("Map_Header", "fr", "Carte thématique pour ");
+        nls.Add("Table_Header", "en", "Data table for ");
+        nls.Add("Table_Header", "fr", "Tableau de données pour ");
 	}
 	
 	AddPointIdentify() {
@@ -127,7 +118,8 @@ export default class Application extends Widget {
 
 			// Format the product ID according to CODR practices (DD-DD-DDDD)
             var formattedId = metadata.productLabel;
-            this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [formattedId]); 
+            this.tableLinkText = this.Nls("TableViewer_Label", [formattedId]);
+            this.Elem("link").innerHTML = this.tableLinkText + " - " + this.metadata.name; 
 			this.Elem("link").href = metadata.tvLink; 
 			
             // Create the drop down lists from the dimensions and memebers
@@ -146,20 +138,31 @@ export default class Application extends Widget {
         }, error => this.OnApplication_Error(error));
     }
 
-	OnSelector_Change(ev) {
-		this.Elem("indicator").innerHTML = this.metadata.IndicatorLabel(ev.coordinates);
+    OnSelector_Change(ev) {
+        var geo = this.Elem("selector").GetSelectedGeoLevelName().toLowerCase();
+        var indicator = geo + ", " + this.metadata.IndicatorLabel(ev.coordinates);
+
+        this.Elem("indicator").innerHTML = this.Nls("Map_Header") + indicator;
+        this.Elem("tableHeader").innerHTML = this.Nls("Table_Header") + indicator;
 		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
 		this.Elem("waiting").Show();
 
         CODR.GetCoordinateData(this.metadata, ev.coordinates).then(data => {
 			this.data = data;			
+			var uoms = [];
 			
-            this.LoadLayer(ev.geo, data);
+			for (var id in data) {
+				var uom = this.codesets.uom(data[id].uom);
+		
+				if (uoms.indexOf(uom) == -1) uoms.push(uom);
+			}
+			
+			this.LoadLayer(ev.geo, data, uoms[0]);
             this.LoadTable(data);        
 		}, error => this.OnApplication_Error(error));
 	}
 	
-    LoadLayer(geo, data) {		
+    LoadLayer(geo, data, uom) {		
 		var decodedGeo = CODR.GeoLookup(geo);
         var url = this.config.Layer(decodedGeo);
 		
@@ -185,12 +188,14 @@ export default class Application extends Widget {
             this.behavior.Clear();
             this.behavior.target = layer;
 
-            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer);
+            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer, uom);
+            this.menu.EnableMenuButton("legend");
         }
         else {
             // Remove the waiting symbol
             this.Elem("waiting").Hide();
             this.Elem("legend").EmptyClassBreaks();
+            this.menu.DisableMenuButton("legend"); // until data is available on the map
         }
     }
 
@@ -201,7 +206,6 @@ export default class Application extends Widget {
 	
 	WaitForLayer(layer) {
 		this.map.view.whenLayerView(layer).then(layerView => {				
-			// listen until the layerView is loaded
 			layerView.when(() => {
 				this.menu.SetOverlay(this.menu.Item("legend"));
                 this.Elem("waiting").Hide();
@@ -255,12 +259,12 @@ export default class Application extends Widget {
 				"<div class='map-container hidden' handle='mapcontainer'>" +
                     "<div handle='map'></div>" +
                     "<div handle='legend' class='legend' widget='Api.Widgets.Legend'></div>" +
-                    "<div handle='basemap' class='basemap' widget='Api.Widgets.Basemap'></div>" +
                     "<div handle='waiting' class='waiting' widget='Api.Widgets.Waiting'></div>" +
 				"</div>" +
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
                 "</div>" +
+				"<h2 handle='tableHeader' property='name' class='tableHeader mrgn-tp-lg'></h2>" +
                 "<div id='table' handle='table' class='table' widget='App.Widgets.Table'></div>";
 	}
 }

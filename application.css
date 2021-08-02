@@ -16,16 +16,20 @@
 }
 
 
-.gexp h2.indicator {
+.gexp h2 {
 	font-weight:bold;
-	margin-top:0px;
 	margin-bottom:0px;
 }
 
+.gexp label.tableHeader {
+    font-weight: bold;
+    line-height: 20px;
+}
+
 .gexp select, .gexp button {
-	cursor:pointer;
-	padding:3px;
-	height:30px;
+    cursor: pointer;
+    padding: 3px;
+    height: 30px;
 }
 
 .gexp label {
@@ -43,8 +47,13 @@
 	margin-right:0px;
 }
 
+.gexp .selector .selectorDropdown {
+    float: right;
+    width: 50%;
+}
+
 .gexp hr {
-	margin:10px 0px;
+    margin: 10px 0px;
 }
 
 .gexp .indicator {
@@ -102,7 +111,7 @@
     position:absolute;
     right:2px;
     top:2px;
-
+    line-height: 1;
     background:none;
     border:none;
     font-size:22px;
@@ -194,27 +203,18 @@
 }
 
 .gexp .map-container .esri-ui .button-icon:hover,
-.gexp .map-container .esri-ui .button-icon.checked {
+.gexp .map-container .esri-ui .button-icon.checked,
+.gexp .map-container .esri-ui .button-icon:disabled {
     background-color:#f0f0f0;
     color:#2e2e2e;
 }
 
-/* Basemap widget */
-.gexp .map-container .esri-ui .button-icon.basemap {
-	background-image:url(./assets/streets-16.png);
+.gexp .map-container .esri-ui .button-icon:disabled {
+   cursor:not-allowed;
 }
 
-.gexp .basemap { 
-    width: 300px;
-}
 
-.gexp .basemap .overlay-body {
-    max-height: 350px;
-	overflow-y: auto;
-}
-
-.gexp .overlay .esri-widget,
-.gexp .overlay .esri-basemap-gallery {
+.gexp .overlay .esri-widget {
     background: none;
 }
 
@@ -252,15 +252,15 @@
 }
 
 .gexp table.table-widget {
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .gexp table.table-widget {
     table-layout: fixed;
     width: 100%;
-    display: block;
     max-height: 300px;
-    overflow: auto;
+    display: block;
+    overflow-y: scroll;
     border-collapse: initial;
     border: solid thin silver;
 }
@@ -283,6 +283,10 @@
 .gexp table.table-widget td {
     font-size: 1em;
     padding: 5px;
+}
+
+.gexp table.table-widget th,
+.gexp table.table-widget td {
     border-right: solid thin lightgray;
 }
 

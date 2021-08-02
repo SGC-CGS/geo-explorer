@@ -64,14 +64,17 @@ function LoadEsri() {
 				 "esri/layers/support/Sublayer", 
 				 "esri/core/urlUtils", 
 				 "esri/core/watchUtils", 
-				 "esri/Map", 
+                 "esri/Map", 
+                 "esri/Basemap",
+                 "esri/layers/support/TileInfo",
 				 "esri/Graphic", 
 				 "esri/views/MapView", 
-				 "esri/views/draw/Draw",
-				 "esri/widgets/BasemapGallery", 
+                 "esri/views/draw/Draw",
+                 "esri/widgets/BasemapGallery", 
 				 "esri/widgets/Bookmarks", 
 				 "esri/widgets/Fullscreen",
-				 "esri/widgets/Home"], 
+				 "esri/widgets/Home",
+                 "esri/intl"], 
 				 
 				 function(jsonUtils, 
 						  Renderer, 
@@ -86,22 +89,27 @@ function LoadEsri() {
 						  Sublayer, 
 						  urlUtils, 
 						  watchUtils, 
-						  Map, 
+                          Map, 
+                          Basemap,
+                          TileInfo,
 						  Graphic, 
 						  MapView, 
-						  Draw, 
-						  BasemapGallery, 
+                          Draw, 
+                          BasemapGallery, 
 						  Bookmarks, 
 						  Fullscreen,
-						  Home) {
+                          Home,
+                          intl) {
 			
 			window.ESRI = {
+                intl : intl,
 				core : { 
 					urlUtils : urlUtils,
 					watchUtils : watchUtils
 				},
 				request : request,
 				Map : Map,
+                Basemap : Basemap,
 				Graphic : Graphic,
 				views : {
 					MapView : MapView,
@@ -126,12 +134,13 @@ function LoadEsri() {
 					FeatureLayer : FeatureLayer,
 					GraphicsLayer : GraphicsLayer,
 					support : {
-						Sublayer : Sublayer
+						Sublayer : Sublayer,
+                        TileInfo : TileInfo
 					}
 				},
 				widgets : {
-					Fullscreen : Fullscreen,
-					BasemapGallery : BasemapGallery,
+                    Fullscreen : Fullscreen,
+                    BasemapGallery : BasemapGallery,
 					Bookmarks : Bookmarks,
 					Home : Home
 				}
