@@ -54,8 +54,8 @@
                 "minZoom": 3
             },
             "zoom": 4,
-            "center": [-100, 63],
-            "animation": false
+            "center": [-99, 62],
+            "animation": false 
         }
     },
     "legend": {
