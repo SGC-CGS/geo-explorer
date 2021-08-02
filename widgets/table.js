@@ -1,21 +1,33 @@
-﻿import Templated from '../../geo-explorer-api/components/templated.js';
+﻿import Widget from '../../geo-explorer-api/components/base/widget.js';
 import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import Net from "../../geo-explorer-api/tools/net.js";
 import CODR from '../../geo-explorer-api/tools/codr.js';
 
 /**
- * SimpleTable widget module
- * @module widgets/SimpleTable
- * @extends Templated
+ * Table widget module
+ * @module widgets/Table
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.SimpleTable", class Table extends Templated {
+export default Core.Templatable("App.Widgets.Table", class Table extends Widget {
 	
 	/**
-     * @description
-     * Add the needed language texts
-     */
-    static Nls(nls) {
+	 * Call constructor of base class (Templated) and initialize table widget
+	 * @param {object} container - div table container and properties
+	 * @returns {void}
+	 */
+	constructor(container) {	
+		super(container);
+		
+        Dom.AddCss(this.container, 'hidden');
+	}
+
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+    Localize(nls) {
         // Column headers
         nls.Add("ColHeader_code", "en", "DGUID");
         nls.Add("ColHeader_code", "fr", "IDUGD");
@@ -30,18 +42,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
         nls.Add("ColHeader_scalar", "en", "Scalar factor");
         nls.Add("ColHeader_scalar", "fr", "Facteur scalaire");       
     }
-
-	/**
-	 * Call constructor of base class (Templated) and initialize table widget
-	 * @param {object} container - div table container and properties
-	 * @returns {void}
-	 */
-	constructor(container) {	
-		super(container);
-		
-        Dom.AddCss(this.container, 'hidden');
-	}
-
+	
 	/**
 	 * Clears and hides table element
 	 */
@@ -132,7 +133,7 @@ export default Core.Templatable("App.Widgets.SimpleTable", class Table extends T
 	 * Create HTML for this widget
 	 * @returns {string} HTML for table widget
 	 */
-	Template() {
+	HTML() {
 		return "<table handle='table' class='table-widget'>" +	
 				  "<thead>" +
 					  "<tr handle='header'></tr>" +

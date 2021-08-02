@@ -3,22 +3,80 @@
 import Core from '../geo-explorer-api/tools/core.js';
 import CODR from '../geo-explorer-api/tools/codr.js';
 import Dom from '../geo-explorer-api/tools/dom.js';
-import Templated from '../geo-explorer-api/components/templated.js';
-import Menu from '../geo-explorer-api/widgets/menu.js';
+import Widget from '../geo-explorer-api/components/base/widget.js';
+import Menu from '../geo-explorer-api/components/menu.js';
+import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
 import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
-import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
-import SimpleLegend from './widgets/SimpleLegend.js';
+import Navbar from '../geo-explorer-api/widgets/navbar.js';
+import Legend from '../geo-explorer-api/widgets/legend/legend.js';
 import Selector from './widgets/selector.js';
-import Table from './widgets/SimpleTable.js';
+import Table from './widgets/table.js';
 import Configuration from './components/config.js';
 import Style from './util/style.js';
-import Map from './map.js';
+import Map from './components/map.js';
 
-export default class Application extends Templated { 
+export default class Application extends Widget { 
 
-	static Nls(nls) {		
+	constructor(container, config) {		
+		super(container);
+
+		this.config = Configuration.FromJson(config);
+
+		// Build map, menu, widgets and other UI components
+		this.map = new Map(this.Elem('map'), { center:[-100, 60], zoom:4 });
+		this.menu = new Menu();
+		
+		this.navbar = new Navbar();
+		this.navbar.Configure(this.map);
+		
+		this.AddPointIdentify();
+		this.AddOverlay(this.menu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "top-right");
+		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
+        
+		// Move all widgets inside the map div, required for fullscreen
+		this.map.Place(this.menu.buttons, "top-left");
+        this.map.Place([this.Elem("waiting").container], "manual");
+		
+		this.Elem('basemap').Map = this.map;
+
+		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
+		
+        this.LoadCodrData(this.config.product);
+
+		this.map.view.when(d => {	
+			// Work around to allow nls use on button title. 
+			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
+			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
+		}, error => this.OnApplication_Error(error));
+		
+		/* 
+		// NOTE: This should work but for some reason, it only works on every other click.
+		// Listen for SceneView click events
+		this.map.view.on("click", ev => {  
+			// Search for symbols on click's position
+			this.map.view.hitTest(ev.screenPoint).then(response => {
+				// Retrieve the first symbol
+				var result = response.results[0];
+				
+				if (!result) return;
+
+				this.ShowInfoPopup(result.mapPoint, result.graphic);
+
+				// We now have access to its attributes
+				console.log(result.graphic.attributes);
+			});
+		}); 
+		*/
+	}
+
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {		
 		nls.Add("Basemap_Title", "en", "Change basemap");
 		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
 		nls.Add("Legend_Title", "en", "Legend");
@@ -36,40 +94,6 @@ export default class Application extends Templated {
 		nls.Add("Home_Title", "en", "Default map view");
 		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");		
 	}
-
-	constructor(node, config) {		
-		super(node);
-
-		this.config = Configuration.FromJson(config);
-
-		// Build map, menu, widgets and other UI components
-		this.map = new Map(this.Elem('map'), { center:[-100, 60], zoom:4 });
-		this.menu = new Menu();
-		
-		this.AddPointIdentify();
-		this.AddOverlay(this.menu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "top-right");
-		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
-        
-		// Move all widgets inside the map div, required for fullscreen
-		this.map.Place(this.menu.buttons, "top-left");
-        this.map.Place([this.Elem("waiting").container], "manual");
-		
-		this.Elem('basemap').Map = this.map;
-
-		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
-			
-        this.LoadCodrData(this.config.product);
-
-		this.map.view.when(d => {	
-
-			// Work around to allow nls use on button title. 
-
-
-			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
-			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
-		}, error => this.OnApplication_Error(error));
-
-	}
 	
 	AddPointIdentify() {
 		// point identify click behavior
@@ -86,10 +110,11 @@ export default class Application extends Templated {
 	}
 	
 	AddOverlay(menu, id, title, widget, position) {
-		var options = { title:title, widget:widget, css:id };
-		var overlay = new Overlay(this.Elem("map-container"), options);
+		var overlay = new Overlay();
 		
-		menu.AddOverlay(id, title, overlay);
+		overlay.Configure({ id:id, widget:widget, title:title, css:id });
+		
+		menu.AddOverlay(overlay);
 		
 		this.map.Place([overlay.roots[0]], position);
 	}
@@ -130,7 +155,6 @@ export default class Application extends Templated {
 			this.data = data;			
 			
             this.LoadLayer(ev.geo, data);
-
             this.LoadTable(data);        
 		}, error => this.OnApplication_Error(error));
 	}
@@ -143,7 +167,7 @@ export default class Application extends Templated {
             this.OnApplication_Error(new Error("Geographic Level (geoLevel) requested is not supported."));			
 			return;
 		}
-				
+		
         var ids = this.metadata.geoMembers.map(m => `'${m.code}'`).join(",");
         var exp = `${this.config.Id(decodedGeo)} IN (${ids})`;
 		
@@ -153,7 +177,8 @@ export default class Application extends Templated {
         var renderer = Style.Renderer(data, this.config.Id(decodedGeo), this.config.ramps, this.config.defColor);
 		
         if (renderer) {
-            var layer = this.map.AddFeatureLayer("geo", url, exp, this.config.Id(decodedGeo), renderer, 0);
+			var identify = this.config.Identify(decodedGeo)
+            var layer = this.map.AddFeatureLayer("geo", url, exp, identify.id, renderer, 0);
 
             this.WaitForLayer(layer);
 
@@ -185,10 +210,14 @@ export default class Application extends Templated {
 	}
 	
     OnIdentify_Change(ev) {
+		this.ShowInfoPopup(ev.mapPoint, ev.feature);
+    }
+	
+	ShowInfoPopup(mapPoint, feature) {
         // Get the polygon name and id as the bubble title. For example: Ottawa(350421)
         var geo = CODR.GeoLookup(this.metadata.geoLevel);
         var identify = this.config.Identify(geo);
-        var fid = ev.feature.attributes[identify.id];
+        var fid = feature.attributes[identify.id];
         var member = this.metadata.geoMembers.find(dp => dp.code == fid);
 
         var geoVintage = "";
@@ -198,15 +227,15 @@ export default class Application extends Templated {
 
         // Derive the DGUID from the vintage, type, schema and geographic feature id
         var dguid = CODR.GetDGUID(this.metadata.geoLevel, geoVintage, fid);
-        var title = ev.feature.attributes[identify.name] + " (" + dguid + ")";
+        var title = feature.attributes[identify.name] + " (" + dguid + ")";
 
         // Get the value corresponding to the datapoint, properly formatted for French and English
         // Ex: French: 35 024, 56   -   English 35, 204.56        
         var content = this.codesets.FormatDP_HTMLTable(this.data[fid], geoVintage);
 		
-		this.map.popup.open({ location:ev.mapPoint, title:title, content: content });
-    }
-		
+		this.map.popup.open({ location:mapPoint, title:title, content: content });
+	}
+	
 	OnApplication_Error(error) {
 		this.Elem("waiting").Hide();
 		
@@ -215,23 +244,23 @@ export default class Application extends Templated {
 		console.error(error);
 	}
 
-	Template() {		
+	HTML() {		
         return  "<div class='row'>" +
                     "<h2 handle='loadingtitle' class='col-md-12 mrgn-tp-sm'>nls(LoadingData_Title)</h2>" +
 				"</div>" +
                 "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
-                "<div class='text-center mrgn-tp-md'><a href='#simpletable' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
+                "<div class='text-center mrgn-tp-md'><a href='#table' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
 				"<div class='map-container hidden' handle='mapcontainer'>" +
                     "<div handle='map'></div>" +
-                    "<div handle='legend' class='legend' widget='App.Widgets.SimpleLegend'></div>" +
-                    "<div handle='basemap' class='basemap' widget='App.Widgets.Basemap'></div>" +
-                    "<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
+                    "<div handle='legend' class='legend' widget='Api.Widgets.Legend'></div>" +
+                    "<div handle='basemap' class='basemap' widget='Api.Widgets.Basemap'></div>" +
+                    "<div handle='waiting' class='waiting' widget='Api.Widgets.Waiting'></div>" +
 				"</div>" +
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
                 "</div>" +
-                "<div id='simpletable' handle='table' class='table' widget='App.Widgets.SimpleTable'></div>";
+                "<div id='table' handle='table' class='table' widget='App.Widgets.Table'></div>";
 	}
 }

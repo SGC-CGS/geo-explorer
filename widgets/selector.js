@@ -1,4 +1,4 @@
-import Templated from '../../geo-explorer-api/components/templated.js';
+import Widget from '../../geo-explorer-api/components/base/widget.js';
 import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import CODR from '../../geo-explorer-api/tools/codr.js';
@@ -6,10 +6,10 @@ import CODR from '../../geo-explorer-api/tools/codr.js';
 /**
  * Selector widget module
  * @module widgets/selector
- * @extends Templated
+ * @extends Widget
  * @description This class creates indicator selectors to choose the data to be loaded on the map.
  */
-export default Core.Templatable("App.Widgets.Selector", class Selector extends Templated {
+export default Core.Templatable("App.Widgets.Selector", class Selector extends Widget {
 
     /**
      * @description
@@ -37,12 +37,17 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
      * @param {String} value - value
      */
 	set geoLevel(value) { this.geoSelect.value = value; }
+	
+    constructor(container) {
+        super(container);
+    }
 
-    /**
-     * @description
-     * Add the needed language texts
-     */
-	static Nls(nls) {
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
 		nls.Add("Dropdowns_Title", "en", "Select indicator to display on the map:");
 		nls.Add("Dropdowns_Title", "fr", "Sélectionnez l'indicateur à afficher sur la carte:");		
 		nls.Add("UpdateMapBtn_Title", "en", "Update Map");
@@ -52,10 +57,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
         nls.Add("Options_Title", "en", "Choose an option for ");
         nls.Add("Options_Title", "fr", "Choisissez une option pour ");
 	}
-	
-    constructor(container, options) {
-        super(container, options);
-    }
 
     /**
      * @description
@@ -157,7 +158,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		this.Emit("Change", { coordinates:this.coordinates, geo:this.geoLevel });
 	}
         
-    Template() {
+    HTML() {
         return 	"<h2 handle='dropdowntitle' class='col-md-12 mrgn-tp-sm hidden'>nls(Dropdowns_Title)</h2>" +
                 "<div class='text-center'><a href='#' class='wb-inv wb-show-onfocus wb-sl'>nls(AppDescription)</a></div>" +            
 				"<div handle='dimensions' class='dimensions'></div>" +

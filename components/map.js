@@ -1,7 +1,7 @@
 'use strict';
 
-import Core from '../geo-explorer-api/tools/core.js';
-import Map from '../geo-explorer-api/components/map.js';
+import Core from '../../geo-explorer-api/tools/core.js';
+import Map from '../../geo-explorer-api/components/map.js';
 
 export default class MapExt extends Map { 
 
@@ -24,8 +24,7 @@ export default class MapExt extends Map {
     }
 
     RemoveFeatureLayer(id) {
-        if (!this.layers[id])
-            return;
+        if (!this.layers[id]) return;
 
         this.map.remove(this.layers[id]);
 

@@ -37,20 +37,6 @@ export default class Configuration {
 
 	set json(value) { this._json = value; }
 
-    /**
-     * @description
-     * Get the legend items 
-     */
-    get LegendItems() {
-        return this.json.legend.items.map(i => {
-            return {
-                id: i.id,
-                label: i.label[Core.locale],
-                url: i.url
-            }
-        });
-    }
-
     constructor(json) {		
 		this.json = json;
 	}
@@ -71,8 +57,8 @@ export default class Configuration {
      * Get the id by geo
      * @param {String} geo - geo
      */
-    Id(geo) { return this.json.id[geo]; }
-
+    Id(geo) { return this.json.identify[geo].id; }
+	
     /**
      * @description
      * Get identify configs by geo

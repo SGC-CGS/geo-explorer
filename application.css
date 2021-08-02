@@ -122,7 +122,7 @@
 
 /* legend widget */
 .gexp .legend {
-	/* width:350px; */
+	width:250px;
 }
 
 .gexp .legend label {
@@ -140,6 +140,8 @@
 .gexp .styler .break-line > * {
     padding:5px 7px;
 	white-space: nowrap;
+    vertical-align: middle;
+	display:inline-block;
 }
 
 .gexp .styler button.color,
@@ -151,10 +153,6 @@
 	border-radius:2px;
 }
 /* Legend Widget */
-.gexp .legend .break-line:not(:first-child) {
-	border-top : solid thin silver;
-}
-
 .gexp .legend .label-name-container ul {
     list-style-type:none;
 }
