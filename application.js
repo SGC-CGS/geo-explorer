@@ -2,39 +2,36 @@
 
 import Core from '../geo-explorer-api/tools/core.js';
 import Dom from '../geo-explorer-api/tools/dom.js';
-import Templated from '../geo-explorer-api/components/templated.js';
+
+import Widget from '../geo-explorer-api/components/base/widget.js';
 import Map from '../geo-explorer-api/components/map.js';
+import Menu from '../geo-explorer-api/components/menu.js';
+import Storage from '../geo-explorer-api/components/storage.js';
+
 import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
+
 import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
-import Basemap from '../geo-explorer-api/widgets/basemap.js';
-import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
-import Legend from '../geo-explorer-api/widgets/legend/legend.js';
-import Menu from '../geo-explorer-api/widgets/menu.js';
-import Storage from '../geo-explorer-api/tools/storage.js';
+import Context from './components/context.js';
 
-import Selector from './widgets/selector.js';
-import Styler from './widgets/styler/styler.js';
-import Search from './widgets/search.js';
 import Table from './widgets/table.js';
-import wChart from './widgets/wChart.js';
+import Search from './widgets/search.js';
+import InfoPopup from './widgets/infopopup.js';
+import Toolbar from './widgets/wToolbar.js';
 
 /**
  * Application module
  * @module application
- * @extends Templated
+ * @extends Widget
  */
-export default class Application extends Templated { 
-
-	/**
-	 * Get configuration data
-	 */
-	get config() { return this._config; }
+export default class Application extends Widget { 
 	
 	/**
-	 * Get context from config
+	 * Get/set context from config
 	 */
-	get context() { return this._config.context; }
+	get context() { return this._context; }
+	
+	set context(value) { this._context = value; }
 
 	/**
 	 * Get current behavior
@@ -42,62 +39,32 @@ export default class Application extends Templated {
 	get behavior() { return "pointselect"; }
 
 	/**
-	 * Add specified language strings to the nls object
-	 * @param {object} nls - Existing nls object
-	 * @returns {void}
-	 */
-	static Nls(nls) {
-		nls.Add("Selector_Title", "en", "Select Data");
-		nls.Add("Selector_Title", "fr", "Sélectionner des données");
-		nls.Add("Styler_Title", "en", "Change map style");
-		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
-		nls.Add("Chart_Title", "en", "View chart");
-		nls.Add("Chart_Title", "fr", "Type de Diagramme");
-		nls.Add("Legend_Title", "en", "Map legend");
-		nls.Add("Legend_Title", "fr", "Légende de la carte");
-		nls.Add("Bookmarks_Title", "en", "Bookmarks");
-		nls.Add("Bookmarks_Title", "fr", "Géosignets");
-		nls.Add("Basemap_Title", "en", "Change basemap");
-		nls.Add("Basemap_Title", "fr", "Changer de fond de carte");
-		nls.Add("Search_Icon_Alt", "en", "Magnifying glass");
-		nls.Add("Search_Icon_Alt", "fr", "Loupe");
-		nls.Add("Fullscreen_Title", "en", "Fullscreen");
-		nls.Add("Fullscreen_Title", "fr", "Plein écran");
-		nls.Add("Home_Title", "en", "Default map view");
-		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
-		nls.Add("Indicator_Title_Popup", "en", "Selected indicators");
-		nls.Add("Indicator_Title_Popup", "fr", "Indicateurs sélectionnés");
-		nls.Add("Table_Label_Popup_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
-		nls.Add("Table_Label_Popup_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");						
-	}
-
-	/**
 	 * Call constructor of base class (Templated) and initialize application
 	 * @param {object} node - Application div
 	 * @param {object} config - Configuration data
 	 * @returns {void}
 	 */
-	constructor(node, config) {		
-		super(node);
+	constructor(container, config) {		
+		super(container, null, null);
 
-		this._config = config;
-
-		// Build map, menus, widgets and other UI components
-		this.map = new Map(this.Elem('map'), this._config.mapOptions);
-		this.menu = new Menu();
-		this.bMenu = new Menu();
+		this.config = config;
+		this.context = new Context(config.context);
 		this.storage = new Storage("CSGE");
 
-		this.AddOverlay(this.menu, "selector", this.Nls("Selector_Title"), this.Elem("selector"), "top-right");
-		this.AddOverlay(this.menu, "styler", this.Nls("Styler_Title"), this.Elem("styler"), "top-right");
-		this.AddOverlay(this.menu, "chart", this.Nls("Chart_Title"), this.Elem("chart"), "top-right");
-		this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
-		this.AddOverlay(this.menu, "bookmarks", this.Nls("Bookmarks_Title"), this.Elem("bookmarks"), "top-right");
-		this.AddOverlay(this.bMenu, "basemap", this.Nls("Basemap_Title"), this.Elem("basemap"), "bottom-left");
+		// Build map, menus, widgets and other UI components
+		this.map = new Map(this.Elem('map'), this.config.map.options);	
 
-		// Move all widgets inside the map div, required for fullscreen
-		this.map.Place(this.bMenu.buttons, "bottom-left");
-		this.map.Place(this.menu.buttons, "top-left");
+		this.infoPopup = new InfoPopup();
+		this.infoPopup.Configure(this.config.infopopup, this.map, this.context);
+
+		this.toolbar = new Toolbar();
+		this.toolbar.Configure(this.config, this.map, this.storage);
+		
+		for (var id in this.toolbar.widgets) this.AddElem(id, this.toolbar.widgets[id]);
+		
+		this.Elem("table").Configure(this.config.table);
+		
+		this.map.Place([this.Elem("search").container], "manual");
 		this.map.Place([this.Elem("waiting").container], "manual");
 		
 		// Hookup events to UI
@@ -115,15 +82,7 @@ export default class Application extends Templated {
 		
 		this.Node('legend').On('LabelName', this.onLegend_LabelName.bind(this));
 		
-		this.map.AddMapImageLayer('main', this.config.mapUrl, this.config.mapOpacity);
-
-		this.Elem("chart").labelField = this.config.chart.field;
-		this.Elem("table").headers = this.config.tableHeaders;
-		this.Elem('legend').Opacity = this.config.mapOpacity;
-		this.Elem('basemap').Map = this.map;
-		this.Elem('bookmarks').Storage = this.storage;
-		this.Elem('bookmarks').Bookmarks = this.config.bookmarks;
-		this.Elem('bookmarks').Map = this.map;
+		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
 		
 		this.context.Initialize().then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
@@ -134,12 +93,11 @@ export default class Application extends Templated {
 			this.Elem("bookmarks").Update(this.context);
 			this.Elem("table").Update(this.context);
 			
-			this.menu.SetOverlay(this.menu.Item("legend"));			
+			this.menu.SetOverlay(this.menu.Item("selector"));			
 
 			this.AddIdentifyBehavior(this.map, this.context, this.config);
 
 			this.map.Behavior("pointselect").Activate();
-			
 		}, error => this.OnApplication_Error(error));
 
 		this.map.view.when(d => {	
@@ -147,32 +105,20 @@ export default class Application extends Templated {
 			this.map.view.container.querySelector(".esri-fullscreen").title = this.Nls("Fullscreen_Title"); 
 			this.map.view.container.querySelector(".esri-home").title = this.Nls("Home_Title"); 	
 		}, error => this.OnApplication_Error(error));
-
 	}
 	
 	/**
-	 * Add map overlay.
-	 * @param {object} menu - Menu items
-	 * @param {string} id - Overlay Id (ex. "selector")
-	 * @param {string} title - Title to show at top of overlay
-	 * @param {object} widget - Widget to load in the overlay
-	 * @param {string} position - Position of overlay on map (ex. "top-right")
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
 	 * @returns {void}
 	 */
-	AddOverlay(menu, id, title, widget, position) {
-		var overlay = new Overlay(this.Elem("map-container"));
-		
-		// TODO: roots[0] is awkward
-		Dom.AddCss(overlay.roots[0], id);
-		
-		overlay.widget = widget;
-		overlay.title = title;
-		
-		menu.AddOverlay(id, title, overlay);
-		
-		this.map.Place([overlay.roots[0]], position);
+	Localize(nls) {
+		nls.Add("Fullscreen_Title", "en", "Fullscreen");
+		nls.Add("Fullscreen_Title", "fr", "Plein écran");
+		nls.Add("Home_Title", "en", "Default map view");
+		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");					
 	}
-	
+		
 	/**
 	 * Adds the behavior and handles the event for generating popup and table from map selection.
 	 * @param {object} map - Map object to which the behavior will be applied
@@ -185,51 +131,14 @@ export default class Application extends Templated {
 
 		behavior.target = context.sublayer;
 		behavior.field = "GeographyReferenceId";
-		behavior.symbol = config.symbol("pointselect");
+		behavior.symbol = config.symbols["pointselect"];
 
 		this.HandleEvents(behavior, ev => {
-			if (ev.feature) this.ShowInfoPopup(ev.mapPoint, ev.feature); // popup
+			if (ev.feature) this.infoPopup.Show(ev.mapPoint, ev.feature);
 			
 			this.Elem("table").data = ev.pointselect; 
 			this.Elem("chart").data = ev.pointselect;
 		});	
-	}
-	
-	/**
-	 * Show the popup for the selected map point.
-	 * @param {object} mapPoint - Object containing the coordinates of the selected map point
-	 * @param {object} f - Layer containing the attributes of the selected polygon
-	 * @returns {void}
-	 */
-	ShowInfoPopup(mapPoint, f) {
-		var p = this.config.popup;
-		var uom = f.attributes[p.uom];
-		var value = f.attributes[p.value]
-		var symbol = f.attributes[p.symbol];
-		var indicators = this.context.IndicatorItems().map(f => `<li>${f.label}</li>`).join("");
-		var nulldesc = f.attributes[p.nulldesc] || '';
-		
-		// prevent F from displaying twice
-		symbol = symbol && value != "F" ? symbol : ''; 
-		
-		var url, link = ``, prod = this.context.category.toString();
-		
-		if (prod.length == 8) {
-			url = this.config.tableviewer.url + this.context.category + "01";
-			prod = prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
-			link = this.Nls('Table_Label_Popup_Link', [url, prod]);
-		}
-		
-		var content = `<b>${uom}</b>: ${value}<sup>${symbol}</sup>` + 
-					  `<br><br>` + 
-					  `<div><b>${this.Nls("Indicator_Title_Popup")}</b>:` +
-						 `<ul>${indicators}</ul>` +
-						 `${link}` +
-					  `</div>` + 
-					  `<br>` +
-					  `<sup>${symbol}</sup> ${nulldesc}`;
-		
-		this.map.popup.open({ location:mapPoint, title:f.attributes[p.title], content:content });
 	}
 	
 	/**
@@ -275,10 +184,10 @@ export default class Application extends Templated {
 
 		this.map.Behavior("pointselect").target = context.sublayer;
 
+		this.Elem("bookmarks").Update(context);
 		this.Elem("styler").Update(context);
 		this.Elem("legend").Update(context);
 		this.Elem("table").Update(context);
-		this.Elem("bookmarks").Update(context);
 
 		// REVIEW: Is this necessary? Seems like a selection clear would do the trick too.
 		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
@@ -312,9 +221,7 @@ export default class Application extends Templated {
 	OnLegend_LayerVisibility(ev) {
 		var l = this.map.layer(ev.data.id);
 
-		if (!l)return;
-
-		l.visible = ev.checked;
+		if (l) l.visible = ev.checked;
 	}
 
 	/**
@@ -388,20 +295,11 @@ export default class Application extends Templated {
 	 * Return application HTML.
 	 * @returns {string} HTML string
 	 */
-	Template() {
-		return	"<div class='top-container'>" +
-					"<img class='button-icon large-icon search' src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
-					"<div handle='search' widget='App.Widgets.Search'></div>" +
-				"</div>" +
+	HTML() {
+		return	"<div handle='search' class='search' widget='App.Widgets.Search'></div>" +
 				"<div handle='map-container' class='map-container'>" +
 					"<div handle='map'></div>" +
-					"<div handle='waiting' class='waiting' widget='App.Widgets.Waiting'></div>" +
-					"<div handle='selector' widget='App.Widgets.Selector'></div>" +
-					"<div handle='styler' widget='App.Widgets.Styler'></div>" +
-					"<div handle='chart' widget='App.Widgets.WChart'></div>" +
-					"<div handle='legend' widget='App.Widgets.Legend'></div>" +
-					"<div handle='basemap' widget='App.Widgets.Basemap'></div>" +
-					"<div handle='bookmarks' widget='App.Widgets.Bookmarks'></div>" +
+					"<div handle='waiting' class='waiting' widget='Api.Widgets.Waiting'></div>" +
 				"</div>" +
 			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>"
 	}

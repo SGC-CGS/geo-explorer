@@ -2,7 +2,6 @@ import Core from "../geo-explorer-api/tools/core.js";
 import Dom from "../geo-explorer-api/tools/dom.js";
 import Net from "../geo-explorer-api/tools/net.js";
 import Requests from "../geo-explorer-api/tools/requests.js";
-import Configuration from "./components/configuration.js";
 
 import Application from "./application.js";
 
@@ -29,8 +28,7 @@ function Start(responses) {
 	
 	var div = Dom.Node(document.body, "#app-container");
 	
-	var config = new Configuration(responses[0]);
-	var app = new Application(div, config);
+	var app = new Application(div, responses[0]);
 }
 
 function Fail(response) {

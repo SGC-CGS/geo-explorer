@@ -1,13 +1,13 @@
-import TemplatedTable from '../../../geo-explorer-api/components/templated-table.js';
+import Widget from '../../../geo-explorer-api/components/base/widget.js';
 import Core from '../../../geo-explorer-api/tools/core.js';
 import Dom from '../../../geo-explorer-api/tools/dom.js';
 
 /**
  * Styler break widget module
  * @module widgets/styler/styler-break
- * @extends TemplatedTable
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak extends TemplatedTable {
+export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak extends Widget {
 
 	/**
 	 * Get/set min value for breaks
@@ -45,18 +45,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	}
 
 	/**
-	 * Return text for breaks in both languages
-	 * @returns {object.<string, string>} Break text for each language
-	 */	
-	static Nls(nls) {
-		nls.Add("Styler_Item_Join", "en", " to ");
-		nls.Add("Styler_Item_Join", "fr", " jusqu'à ");	
-	}
-
-	/**
 	 * Call constructor of base class (TemplatedTable) and initialize breaks
 	 * @param {object} container - breaks container and properties
-	 * @param {object} options - additional info on breaks (min, max, colors)
 	 * @returns {void}
 	 */	
 	constructor(container, info) {
@@ -73,6 +63,16 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
 		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
+	}
+
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Styler_Item_Join", "en", "to");
+		nls.Add("Styler_Item_Join", "fr", "jusqu'à");	
 	}
 
 	/**
@@ -153,22 +153,22 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	 * Create HTML for breaks
 	 * @returns {string} HTML for breaks
 	 */		
-	Template() {
-		return "<tr handle='container' class='break-line'>" +
-				 "<td class='break-color-container'>" +
+	HTML() {
+		return "<div handle='container' class='break-line'>" +
+				 "<button handle='eRemove' class= 'remove button-icon small-icon'></button>" +
+				 "<div class='break-color-container'>" +
 					"<div handle='color' class='break-color'></div>" +
-				 "</td>" +
-				 "<td handle='lFrom'></td>" +
-				 "<td>nls(Styler_Item_Join)</td>" +
-				 "<td handle='eContainer' class='break-to-container'>" +
+				 "</div>" +
+				 "<div handle='lFrom'></div>" +
+				 "<div>nls(Styler_Item_Join)</div>" +
+				 "<div handle='eContainer' class='break-to-container'>" +
 					"<button handle='bTo' class='to'></button>" +
-					"<button handle='eRemove' class= 'remove button-icon small-icon'></button>" +
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +
 						"<button handle='eCancel' class='cancel button-icon small-icon'></button>" +
 					"</div>" +
-				 "</td>" +
-			   "</tr>";
+				 "</div>" +
+			   "</div>";
 	}
 })

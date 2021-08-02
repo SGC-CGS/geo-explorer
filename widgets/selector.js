@@ -1,4 +1,4 @@
-import Templated from '../../geo-explorer-api/components/templated.js';
+import Widget from '../../geo-explorer-api/components/base/widget.js';
 import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import Requests from '../../geo-explorer-api/tools/requests.js';
@@ -7,15 +7,55 @@ import StaticTypeahead from "../../geo-explorer-api/ui/typeahead/static.js";
 /**
  * Selector widget module
  * @module widgets/selector
- * @extends Templated
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Selector", class Selector extends Templated {
+export default Core.Templatable("App.Widgets.Selector", class Selector extends Widget {
+	
+	/** 
+	 * Get / set the widget's title
+	*/	
+	get title() { return this.Nls("Selector_Title") }
 	
 	/**
-	 Return select box text in both languages
-	 * @returns {object.<string, string>} Select box text for each language
+	 * Call constructor of base class (Templated) and initialize selector widget with placeholders,
+	 * and events
+	 * @param {object} container - div selector container and properties
+	 * @returns {void}
+	 */	
+	constructor(container) {	
+		super(container);
+		this.filters = [];
+		this.metadata = null;
+		
+		this.Node("sSubject").On("Change", this.OnSubject_Change.bind(this));
+		this.Node("sTheme").On("Change", this.OnTheme_Change.bind(this));
+		this.Node("sCategory").On("Change", this.OnCategory_Change.bind(this));
+		this.Node("sValue").On("Change", this.OnValue_Change.bind(this));
+		this.Node("sGeography").On("Change", this.OnGeography_Change.bind(this));
+		
+		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
+		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
+
+		this.Elem('sSubject').placeholder = this.Nls("Selector_Subject_Placeholder");
+		this.Elem('sTheme').placeholder = this.Nls("Selector_Theme_Placeholder");
+		this.Elem('sCategory').placeholder = this.Nls("Selector_Category_Placeholder");
+		this.Elem('sValue').placeholder = this.Nls("Selector_Value_Placeholder");
+		this.Elem('sGeography').placeholder = this.Nls("Selector_Geography_Placeholder");
+		
+		this.Elem('sSubject').disabled = true;
+		this.Elem('sTheme').disabled = true;
+		this.Elem('sCategory').disabled = true;
+		this.Elem('sValue').disabled = true;
+		this.Elem('sGeography').disabled = true;
+		this.Elem('bApply').disabled = true;
+	}
+	
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
 	 */
-	static Nls(nls) {
+	Localize(nls) {
 		nls.Add("Selector_Title", "en", "Select Data");
 		nls.Add("Selector_Title", "fr", "Sélectionner des données");
 		nls.Add("Selector_Subject", "en", "Subject");
@@ -48,41 +88,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		nls.Add("Selector_Button_Apply", "fr", "Appliquer");
 		nls.Add("Selector_Button_Close", "en", "Cancel");
 		nls.Add("Selector_Button_Close", "fr", "Annuler");		
-	}
-	
-	/**
-	 * Call constructor of base class (Templated) and initialize selector widget with placeholders,
-	 * and events
-	 * @param {object} container - div selector container and properties
-	 * @param {object} options - any additional options to assign to the widget (not typically used)
-	 * @returns {void}
-	 */	
-	constructor(container, options) {	
-		super(container, options);
-		this.filters = [];
-		this.metadata = null;
-		
-		this.Node("sSubject").On("Change", this.OnSubject_Change.bind(this));
-		this.Node("sTheme").On("Change", this.OnTheme_Change.bind(this));
-		this.Node("sCategory").On("Change", this.OnCategory_Change.bind(this));
-		this.Node("sValue").On("Change", this.OnValue_Change.bind(this));
-		this.Node("sGeography").On("Change", this.OnGeography_Change.bind(this));
-		
-		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
-		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
-
-		this.Elem('sSubject').placeholder = this.Nls("Selector_Subject_Placeholder");
-		this.Elem('sTheme').placeholder = this.Nls("Selector_Theme_Placeholder");
-		this.Elem('sCategory').placeholder = this.Nls("Selector_Category_Placeholder");
-		this.Elem('sValue').placeholder = this.Nls("Selector_Value_Placeholder");
-		this.Elem('sGeography').placeholder = this.Nls("Selector_Geography_Placeholder");
-		
-		this.Elem('sSubject').disabled = true;
-		this.Elem('sTheme').disabled = true;
-		this.Elem('sCategory').disabled = true;
-		this.Elem('sValue').disabled = true;
-		this.Elem('sGeography').disabled = true;
-		this.Elem('bApply').disabled = true;
 	}
 	
 	/**
@@ -124,11 +129,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 		select.Reset();
 
 		select.value = "";
-
 		select.numCharactersToShowMatches = 0;
-
 		select.store = items;
-		
 		select.disabled = false;
 	}
 	
@@ -347,13 +349,13 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 	 * Create HTML for this widget
 	 * @returns {string} HTML for selector widget
 	 */
-	Template() {
+	HTML() {
 		return	"<label class='sm-label'>nls(Selector_Subject)</label>" + 
-				"<div handle='sSubject' widget='Basic.Components.StaticTypeahead'></div>" +
+				"<div handle='sSubject' widget='Api.Components.StaticTypeahead'></div>" +
 				"<label class='sm-label'>nls(Selector_Theme)</label>" + 
-				"<div handle='sTheme' widget='Basic.Components.StaticTypeahead'></div>" +
+				"<div handle='sTheme' widget='Api.Components.StaticTypeahead'></div>" +
 				"<label>nls(Selector_Category)</label>" +
-				"<div handle='sCategory' widget='Basic.Components.StaticTypeahead'></div>" +
+				"<div handle='sCategory' widget='Api.Components.StaticTypeahead'></div>" +
 
 				"<div class='filter-container'>" + 
 					"<label>nls(Selector_Filter_Label)</label>" +
@@ -362,9 +364,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends T
 				"</div>" +
 
 				"<label>nls(Selector_Value)</label>" +
-				"<div handle='sValue' widget='Basic.Components.StaticTypeahead'></div>" +
+				"<div handle='sValue' widget='Api.Components.StaticTypeahead'></div>" +
 				"<label>nls(Selector_Geography)</label>" +
-				"<div handle='sGeography' widget='Basic.Components.StaticTypeahead'></div>" +
+				"<div handle='sGeography' widget='Api.Components.StaticTypeahead'></div>" +
 				"<div class='button-container'>" + 
 					"<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
 					"<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +

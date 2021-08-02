@@ -1,55 +1,63 @@
-import Templated from '../../geo-explorer-api/components/templated.js';
+import Widget from '../../geo-explorer-api/components/base/widget.js';
 import Core from "../../geo-explorer-api/tools/core.js";
 import BarChart from "../charts/barChart.js";
 import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";
 import ScatterPlot from "../charts/scatterPlot.js";
 
-
 /**
  * Chart widget module
  * @module widgets/wChart
- * @extends Templated
- * @description Chart widget where a chart is selected and
- * built onto the UI
+ * @extends Widget
+ * @description Chart widget where a chart is selected and built onto the UI
  * @todo Handle product changes in Application.js?
  */
-export default Core.Templatable("App.Widgets.WChart", class WChart extends Templated {
-    set labelField(value) { this._title = value; }
+export default Core.Templatable("App.Widgets.WChart", class WChart extends Widget {
 
-    get labelField() { return this._title; }
-
-    set data(value) {
+	/** 
+	 * Get / set the widget's title
+	*/	
+	get title() { return this.Nls("Chart_Title") }
+	
+	set data(value) {
 		var data = value.items.map(item => {
-			let label = item["attributes"][this.labelField];
+			let label = item["attributes"][this.config.field];
 			let value = item["attributes"]["Value"] == null ? 0 : item["attributes"]["Value"];
-			return {
-				label: label,
-				value: value,
-			}
+			
+			return { label: label, value: value }
 		});
 
 		this.DrawChart(data);
     }
 
-	static Nls(nls) {
-		nls.Add("Chart_Title", "en", "View chart");
-		nls.Add("Chart_Title", "fr", "Type de Diagramme");		
-		nls.Add("Chart_Type", "en", "Chart Type");
-		nls.Add("Chart_Type", "fr", "Type de Graphique");		
-		nls.Add("Chart_Type_Placeholder", "en", "Select a Chart Type");
-		nls.Add("Chart_Type_Placeholder", "fr", "Sélectionnez un Type de Graphique");	
-	}
-
-    constructor(container, options) {
-		super(container, options);
+    constructor(container) {
+		super(container);
 
 		this.chart = null;
 		this.chartType = "BarChart";	// default is bar chart
 
 		this.BuildChart();
     }
-
+	
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Chart_Title", "en", "View chart");
+		nls.Add("Chart_Title", "fr", "Type de Diagramme");
+	}
+	
+	/**
+	 * Configures the widget from a json object
+	 * @param {object} config - Configuration parameters of the widget as a json object
+	 * @returns {void}
+	 */
+	Configure(config) {
+		this.config.field = config.field[Core.locale];
+	}
+	
     /**
      * @description
      * Here the chart is created based on type selection.
@@ -93,7 +101,7 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		else {
 			this.ShowChart();
 			this.chart.data = data;
-			// Updated
+
 			this.chart.Draw();
 		}
     }
@@ -123,7 +131,7 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 		this.chart = null;
     }
 
-    Template() {
+    HTML() {
       return "<div handle='ChartsContainer' width='430' height='400'></div>";
     }
   }

@@ -1,4 +1,4 @@
-import Templated from '../../../geo-explorer-api/components/templated.js';
+import Widget from '../../../geo-explorer-api/components/base/widget.js';
 import Core from '../../../geo-explorer-api/tools/core.js';
 import Dom from '../../../geo-explorer-api/tools/dom.js';
 import Requests from '../../../geo-explorer-api/tools/requests.js';
@@ -9,15 +9,48 @@ import StylerBreak from './styler-break.js';
 /**
  * Styler widget module
  * @module widgets/styler/styler
- * @extends Templated
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Styler", class Styler extends Templated {
+export default Core.Templatable("App.Widgets.Styler", class Styler extends Widget {
 
+	/** 
+	 * Get / set the widget's title
+	*/	
+	get title() { return this.Nls("Styler_Title") }
+	
 	/**
-	 * Return text for styler widget in both languages
-	 * @returns {object.<string, string>} Styler widget text for each language
-	 */		
-	static Nls(nls) {
+	 * Call constructor of base class (Templated) and initialize styler widget
+	 * @param {object} container - DOM element that will contain the widget
+	 * @returns {void}
+	 */	
+	constructor(container) {	
+		super(container, null, null);
+
+		this.metadata = null;
+		this.breaks = null;
+
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), null, { id:1, algo:"esriClassifyEqualInterval" });
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
+
+		this.Node('bColorS').On("Finished", this.OnPicker_Finished.bind(this));
+		this.Node('bColorE').On("Finished", this.OnPicker_Finished.bind(this));
+
+		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
+
+		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
+		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
+
+		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
+		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
+	}
+	
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
 		nls.Add("Styler_Title", "en", "Change map style");
 		nls.Add("Styler_Title", "fr", "Modifier le style de la carte");
 		nls.Add("Styler_Instructions_1", "en", "Use the options below to change how to render the indicator on the map. To confirm your changes, click 'Apply' at the end of the form.");
@@ -53,34 +86,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	}
 
 	/**
-	 * Call constructor of base class (Templated) and initialize styler widget
-	 * @param {object} container - div styler container and properties
-	 * @param {object} options - any additional options to assign to the widget (not typically used)	  
-	 * @returns {void}
-	 */	
-	constructor(container, options) {
-		super(container, options);
-
-		this.metadata = null;
-		this.breaks = null;
-
-		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), null, { id:1, algo:"esriClassifyEqualInterval" });
-		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"), null, { id:2, algo:"esriClassifyNaturalBreaks" });
-		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), null, { id:3, algo:"esriClassifyQuantile" });
-
-		this.Node('bColorS').On("Finished", this.OnPicker_Finished.bind(this));
-		this.Node('bColorE').On("Finished", this.OnPicker_Finished.bind(this));
-
-		var handler = function(ev) { this.onIBreaks_Change(ev); }.bind(this);
-
-		this.Node('iBreaks').On("change", Core.Debounce(handler, 350));
-		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
-
-		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
-		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
-	}
-
-	/**
 	 * Load class method, breaks, stard and end colours to styler widget
 	 * @param {object} context - Context object
 	 * @returns {void}
@@ -98,7 +103,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		this.Elem("bColorS").color = context.sublayer.renderer.classBreakInfos[0].symbol.color;
 		this.Elem("bColorE").color = context.sublayer.renderer.classBreakInfos[n - 1].symbol.color;
 
-		this.LoadClassBreaks(context.sublayer.renderer.classBreakInfos);
+		this.LoadClassBreaks(context.sublayer.renderer);
 	}
 
 	/**
@@ -125,14 +130,13 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * @param {object[]} classBreakInfos - Object describing class breaks
 	 * @returns {void}
 	 */	
-	LoadClassBreaks(classBreakInfos) {
+	LoadClassBreaks(renderer) {
 		Dom.Empty(this.Elem("breaks"));
 
-		this.breaks = classBreakInfos.map((c, i) => {
+		this.breaks = renderer.classBreakInfos.map((c, i) => {
 			var brk = new StylerBreak(this.Elem('breaks'), c);
 
 			brk.On("apply", this.OnBreak_Apply.bind(this, i));
-
 			brk.On("remove", this.OnBreak_Remove.bind(this, i));
 
 			return brk;
@@ -274,7 +278,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 		Requests.Renderer(this.context).then(sublayer => {
 			this.Emit("Idle");
 
-			this.LoadClassBreaks(sublayer.renderer.classBreakInfos);
+			this.LoadClassBreaks(sublayer.renderer);
 		}, error => this.OnRequests_Error(error));
 	}
 
@@ -282,18 +286,18 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Templ
 	 * Create HTML for this widget
 	 * @returns {string} HTML for styler widget
 	 */	
-	Template() {
+	HTML() {
 		return	"<p>nls(Styler_Instructions_1)</p>" +
 				"<label>nls(Styler_Method)</label>" +
-				"<div handle='sMethod' widget='Basic.Components.Select'></div>" +
+				"<div handle='sMethod' widget='Api.Components.Select'></div>" +
 				"<label>nls(Styler_Breaks)</label>" +
 				"<input handle='iBreaks' type='number' min='1' max='10' />" +
 				"<label>nls(Styler_Color_Range)</label>" +
 				"<div class='color-range'>" +
 					"<label>nls(Styler_Color_Start)</label>" +
-					"<div handle='bColorS' class='color start' widget='Basic.Components.Picker'></div>" +
+					"<div handle='bColorS' class='color start' widget='Api.Components.Picker'></div>" +
 					"<label>nls(Styler_Color_End)</label>" +
-					"<div handle='bColorE' class='color end' widget='Basic.Components.Picker'></div>" +
+					"<div handle='bColorE' class='color end' widget='Api.Components.Picker'></div>" +
 				"</div>" +
 				"<label>nls(Styler_Style)</label>" +
 				"<table handle='breaks' class='breaks-container'>" +

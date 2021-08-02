@@ -118,17 +118,29 @@
 }
 
 /* Top area of the application, above map */
-.gexp .top-container {
-	margin:10px 0px;
-}
-
-.gexp .top-container > * {
+.gexp .search > * {
 	display:inline-block;
 }
 
 /* Search place name typeahead */
-.gexp img.search {
-	margin-right:5px;
+.gexp .search {
+	background: white;
+	left : 55px;
+	top : 15px;
+	padding: 2px;
+}
+
+.gexp .search .typeahead .input {
+    width: 350px;
+    border: none;
+}
+
+.gexp .search img {
+    width: 22px;
+}
+
+.gexp .search {
+	box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px 0px;
 }
 
 .gexp .typeahead {
@@ -153,6 +165,7 @@
 
 .gexp .typeahead input { 
     border:solid 1px rgb(169, 169, 169);
+    height: 28px;
 }
 
 .gexp .typeahead:not(.collapsed) ul {
@@ -166,7 +179,7 @@
     border-bottom-right-radius:2px;
 }
 
-.prx .typeahead .input {
+.gexp .typeahead .input {
 	padding:3px 16px 3px 8px;
     border-top-left-radius:2px;
     border-top-right-radius:2px;
@@ -175,7 +188,7 @@
 .gexp .typeahead .input,
 .gexp .typeahead ul,
 .gexp .typeahead li {
-	width:350px;
+    width: 100%;
 }
 
 .gexp .typeahead li {
@@ -214,12 +227,11 @@
 /* Map area of the application */
 .gexp .map-container {
 	position:relative;
-    height:675px;
+    height:800px;
 }
 
 /* Menu on the left hand side */
 .gexp .map-container .esri-ui .button-icon {
-	display:block;
 	transition:background-color 125ms ease-in-out;
 	background-color:#fff;
 }
@@ -232,7 +244,6 @@
 
 .gexp .map-container .esri-ui .button-icon.selector {
 	background-image:url(./assets/filter-off-24.png);
-	border-bottom:solid 1px rgba(110,110,110,0.3);
 }
 
 .gexp .map-container .esri-ui .button-icon.basemap {
@@ -260,9 +271,7 @@
 	background-image:url(./assets/charting-24.png);
 }
 
-.gexp .map-container .esri-ui .button-icon,
-.gexp .map-container .esri-ui .esri-fullscreen,
-.gexp .map-container .esri-ui .esri-home {
+.gexp .map-container .esri-ui .esri-widget--button:not(:last-child) {
 	margin-bottom:0px;
 	border-bottom:solid 1px rgba(110,110,110,0.3);
 }
@@ -278,6 +287,7 @@
 
 .gexp .overlay {
     position:absolute;
+	top: 40px;
 }
 
 .gexp .overlay .overlay-close {
@@ -331,7 +341,7 @@
 .gexp .chart,
 
 .gexp .styler {
-	width:450px;
+	width:350px;
 }
 
 .gexp .bookmarks,
@@ -414,13 +424,16 @@
 
 .gexp .legend .break-line > *,
 .gexp .styler .break-line > * {
-    padding:3px 5px;
+    padding: 2px 3px;
+    vertical-align: middle;
+	display:inline-block;
 }
 
 .gexp .styler .break-line button.to {
     border: none;
     background: none;
     text-decoration: underline;
+    padding: 0px;
 }
 
 .gexp .styler button.color,
@@ -459,7 +472,7 @@
 }
 
 .gexp .styler .break-line .break-to-container button {
-    margin: 0px 3px;
+    margin-right: 5px;
 }
 
 .gexp .styler .break-line .break-to-container button.apply {
@@ -470,12 +483,8 @@
     background-image: url(./assets/close-16.png);
 }
 
-.gexp .styler .break-line .break-to-container button.remove {
+.gexp .styler .break-line button.remove {
     background-image: url(./assets/trashcan-16.png);
-}
-/* Legend Widget */
-.gexp .legend .break-line:not(:first-child) {
-	border-top : solid thin silver;
 }
 
 .gexp .legend .opacity-container {
@@ -488,7 +497,6 @@
     display: inline-block;
     padding: 0;
 }
-
 
 .gexp .legend .context-layers-container ul {
     list-style-type:none;

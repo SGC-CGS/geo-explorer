@@ -1,7 +1,7 @@
 'use strict';
 
 import Core from '../../geo-explorer-api/tools/core.js';
-import Evented from '../../geo-explorer-api/components/evented.js';
+import Evented from '../../geo-explorer-api/components/base/evented.js';
 import Requests from '../../geo-explorer-api/tools/requests.js';
 
 /**
