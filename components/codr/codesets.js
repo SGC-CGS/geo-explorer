@@ -1,7 +1,6 @@
 ﻿'use strict';
 
 import Core from '../../tools/core.js';
-import Nls from '../base/nls.js';
 
 /**
  * CodeSets module
@@ -15,8 +14,10 @@ export default class CodeSets {
 
     set json(value) { this._json = value; }
 
-    get nls() { return this._nls; }
-
+    constructor(json) {
+        this.json = json;        
+    }
+	
     /**
      * @description
      * Get the decoded value of a security code, depending on the locale.
@@ -28,21 +29,13 @@ export default class CodeSets {
 
 		if (!security) return null;
         
-		var fld = Core.locale == "en" ? "securityLevelRepresentationEn" : "securityLevelRepresentationFr";
+		var code = Core.locale == "en" ? "securityLevelRepresentationEn" : "securityLevelRepresentationFr";
+        var desc = Core.locale == "en" ? "securityLevelDescEn" : "securityLevelDescFr";
 		
-		return security[fld];
-    }
-
-    /**
-     * Get the description associated with the security code
-     * @param {any} code
-     */
-    securityDesc(code) {
-        var security = this.json.securityLevel.find(m => m.securityLevelCode == code);
-        if (!security) return null;
-
-        var fld = Core.locale == "en" ? "securityLevelDescEn" : "securityLevelDescFr";
-        return security[fld];        
+		return {
+			code: security[code],
+			description: security[code] + ", " + security[desc]
+		}
     }
 
     /**
@@ -53,23 +46,16 @@ export default class CodeSets {
      */
     status(code) {
         var status = this.json.status.find(m => m.statusCode == code);
+		
 		if (!status) return null;
 
-		var fld = Core.locale == "en" ? "statusRepresentationEn" : "statusRepresentationFr";
-        return status[fld];
-    }
-
-    /**
-     * Get the description associated with the status code
-     * @param {any} code
-     */
-    statusDesc(code) {
-        var status = this.json.status.find(m => m.statusCode == code);
-
-        if (!status) return null;
-
-        var fld = Core.locale == "en" ? "statusDescEn" : "statusDescFr";
-        return status[fld];
+		var code = Core.locale == "en" ? "statusRepresentationEn" : "statusRepresentationFr";
+        var desc = Core.locale == "en" ? "statusDescEn" : "statusDescFr";
+        
+		return {
+			code: status[code],
+			description: status[code] + ", " + status[desc]
+		}
     }
 
     /**
@@ -80,23 +66,16 @@ export default class CodeSets {
      */
     symbol(code) {
         var symbol = this.json.symbol.find(m => m.symbolCode == code);		
+		
 		if (!symbol) return null;
 
-		var fld = Core.locale == "en" ? "symbolRepresentationEn" : "symbolRepresentationFr";
-		return symbol[fld];
-    }
-
-    /**
-     * Get the description associated with the symbol
-     * @param {any} code
-     */
-    symbolDesc(code) {
-        var symbol = this.json.symbol.find(m => m.symbolCode == code);
-
-        if (!symbol) return null;
-
-        var fld = Core.locale == "en" ? "symbolDescEn" : "symbolDescEn";
-        return symbol[fld];
+		var code = Core.locale == "en" ? "symbolRepresentationEn" : "symbolRepresentationFr";
+        var desc = Core.locale == "en" ? "symbolDescEn" : "symbolDescEn";
+		
+		return {
+			code: symbol[code],
+			description: symbol[code] + ", " + symbol[desc]
+		}
     }
 
     /**
@@ -106,10 +85,12 @@ export default class CodeSets {
      * @param {String} code - scalar code to be decoded
      */
     scalar(code) {
-        var scalar = this.json.scalar.find(m => m.scalarFactorCode == code);		
+        var scalar = this.json.scalar.find(m => m.scalarFactorCode == code);	
+		
 		if (!scalar) return null;
 
 		var fld = Core.locale == "en" ? "scalarFactorDescEn" : "scalarFactorDescFr";
+		
 		return scalar[fld];
     }
     
@@ -121,9 +102,11 @@ export default class CodeSets {
      */
     frequency(code) {
         var frequency = this.json.frequency.find(m => m.frequencyCode == code);		
+		
 		if (!frequency) return null;
 
 		var fld = Core.locale == "en" ? "frequencyDescEn" : "frequencyDescFr";
+		
 		return frequency[fld];
     }
     
@@ -135,126 +118,12 @@ export default class CodeSets {
      */
     uom(code) {
         var uom = this.json.uom.find(m => m.memberUomCode == code);		
+		
 		if (!uom) return null;
 
 		var fld = Core.locale == "en" ? "memberUomEn" : "memberUomFr";
+		
 		return uom[fld];
-    }
-
-    static Nls(nls) {
-        nls.Add("ValueColumn", "en", "Value:");
-        nls.Add("ValueColumn", "fr", "Valeur:");
-
-        nls.Add("FreqColumn", "en", "Frequency:");
-        nls.Add("FreqColumn", "fr", "Fréquence:");
-
-        nls.Add("GeoVintageColumn", "en", "Geo Vintage:");
-        nls.Add("GeoVintageColumn", "fr", "Vintage géo:");
-
-        nls.Add("UomColumn", "en", "Unit of measure:");
-        nls.Add("UomColumn", "fr", "Unité de mesure:");
-
-        nls.Add("ScalarColumn", "en", "Scalar factor:");
-        nls.Add("ScalarColumn", "fr", "Facteur scalaire:");
-    }
-
-
-    /**
-     * @description
-     * Format a Datapoint description in html format - for a specific locale, including symbol, uom, etc.
-     * @param {String} dp - Datapoint object
-     * @param {String} geoVintage - Geography Vintage
-     * @param {String} locale - locale, en/fr
-     */
-    FormatDP_HTMLTable(dp, geoVintage, locale) {
-        var htmlTable = "<table class='popup-table'><tbody handle='body'>";
-        
-        var content = dp.Format(locale || Core.locale);
-
-        var security = this.security(dp.security);
-        var status = this.status(dp.status);
-        var symbol = this.symbol(dp.symbol);
-        var scalar = this.scalar(dp.scalar);
-        var frequency = this.frequency(dp.frequency);
-        var uom = this.uom(dp.uom);
-
-        // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
-        if (security) {
-            var securityDesc = this.securityDesc(dp.security);
-
-            if (!securityDesc) securityDesc = "";
-
-            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td><abbr title='" + securityDesc + "'>" + security + "</abbr></td></tr></tbody></table>";
-            return htmlTable;
-        }
-
-        var statusSymbolDesc = "";
-
-        if (status) {
-            var letters = ["A", "B", "C", "D", "E", "F"];
-            content = letters.indexOf(status) > -1 ? content + status.sup() : status;
-
-            statusSymbolDesc = this.statusDesc(dp.status);            
-        }
-
-        // Any standard table symbol associated to the value as supercript        
-        if (symbol) {
-            content += symbol.sup();
-
-            if (statusSymbolDesc == "") statusSymbolDesc = this.symbolDesc(dp.symbol);
-
-            else statusSymbolDesc = statusSymbolDesc + " - " + this.symbolDesc(dp.symbol);
-        }
-
-        if (statusSymbolDesc == "") htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + content + "</td></tr>";
-        
-		else {
-            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td abbr title=\"" + statusSymbolDesc + "\">" + content + "</td></tr>";
-		}
-
-        if (!frequency) frequency = "";
-        htmlTable += "<tr><td>" + this.Nls("FreqColumn") + "</td><td>" + frequency + "</td></tr>";
-        
-        if (!geoVintage) geoVintage = "";
-        htmlTable += "<tr><td>" + this.Nls("GeoVintageColumn") + "</td><td>" + geoVintage + "</td></tr>";
-        
-        if (!uom) uom = ""; 
-        htmlTable += "<tr><td>" + this.Nls("UomColumn") + "</td><td>" + uom + "</td></tr>";
-        
-        if (!scalar) scalar = "";
-        htmlTable += "<tr><td>" + this.Nls("ScalarColumn") + "</td><td>" + scalar + "</td></tr>";
-        
-        htmlTable += "</tbody></table>";
-
-        return htmlTable;
-    }
-
-    /**
-     * @description
-     * Format a Datapoint description for a specific locale, including security, symbol and status
-     * @param {String} dp - Datapoint object
-     * @param {String} locale - locale, en/fr
-     */
-	 // REVIEW: Is this used anywhere? Why doesn't it use the scalar factor?
-	FormatDP(dp, locale) {
-        var content = dp.Format(locale || Core.locale);
-        
-		var security = this.security(dp.security);
-		var status = this.status(dp.status);
-		var symbol = this.symbol(dp.symbol);
-		
-        // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
-        if (security) return security;
-		if (status) {
-            var letters = ["A", "B", "C", "D", "E", "F"];
-			
-			content = letters.indexOf(status) > -1 ? content + status.sup() : status;
-        }
-        
-        // Any standard table symbol associated to the value as supercript        
-		if (symbol) content += symbol.sup();
-		
-		return content;
     }
 
     /**
@@ -262,46 +131,45 @@ export default class CodeSets {
      * @param {any} dp
      * @param {any} locale
      */
-    FormatDPDesc(dp, locale) {
+    GetFormattedDP(dp, locale) {
         var security = this.security(dp.security);
         var status = this.status(dp.status);
         var symbol = this.symbol(dp.symbol);
+		var sup = [];
+		var abbr = [];
 
         // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
+		if (security.code) {
+			var value = security.code;
+			abbr.push(security.description);
+		}
+		
+		else {
+			if (status.code == null) var value = dp.Localized();
+			
+			else if (["A", "B", "C", "D", "E"].includes(status.code)) {
+				var value = dp.Localized();
+				sup.push(status.code);
+				abbr.push(status.description);
+			}
+			
+			else {
+				var value = status.code;
+				abbr.push(status.description);
+			}
+		}
+		
+		if (symbol.code) {
+			sup.push(symbol.code);
+			abbr.push(symbol.description);
+		}
 
-		if (security) return this.securityDesc(dp.security);
+		if (abbr.length == 0) return `${value}`;
 
+		else if (sup.length == 0) return `<abbr title="${abbr.join(" - ")}">${value}</abbr>`;
 
-        var statusSymbolDesc = "";
+		else return `<abbr title="${abbr.join("\n")}">${value}<sup>${sup.join(", ")}</sup></abbr>`;
 
-		if (status) statusSymbolDesc = this.statusDesc(dp.status);
-
-
-        // Any standard table symbol associated to the value as supercript        
-        if (symbol) {
-            if (statusSymbolDesc == "") statusSymbolDesc = this.symbolDesc(dp.symbol);
-
-            else statusSymbolDesc = statusSymbolDesc + " - " + this.symbolDesc(dp.symbol);   
-        }
-        return statusSymbolDesc;
-    }
-
-    constructor(json) {
-        this.json = json;        
-        this._nls = new Nls();
-        this.constructor.Nls(this._nls);
-    }
-
-    /**
-	 * @description
-	 * Get a localized nls string resource
-	 * @param {*} id — the id of the nls resource to retrieve
-	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
-	 * @param {String} locale - the locale for the nls resource
-	 * @returns - the localized nls string resource
-	 */
-    Nls(id, subs, locale) {
-        return this.nls.Resource(id, subs, locale);
     }
 
     /**

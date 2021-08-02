@@ -18,7 +18,7 @@ export default class Core {
     static get locale() { return _locale; }
 	
     static set locale(value) { _locale = value; }
-			
+	
 	/**
 	* A convenience function to get a defered object for asynchronous processing. 
 	* Removes one level of nesting when working with promises.
