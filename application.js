@@ -45,7 +45,7 @@ export default class Application extends Widget {
 		this.storage = new Storage("CSGE");
 
 		// Build map, menus, widgets and other UI components
-		this.map = new Map(this.Elem('map'), this.config.map.options);	
+		this.map = new Map(this.Elem('map'), this.config.map.options);
 
 		this.infoPopup = new InfoPopup();
 		this.infoPopup.Configure(this.config.infopopup, this.map, this.context);

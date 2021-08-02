@@ -128,6 +128,7 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends BaseL
 				"<label>nls(Legend_Indicators)</label>" +
 				"<ul handle='indicators'></ul>" +
 				"<label>nls(Legend_Title)</label>" +
+				"<div handle='uom'></div>" + 
 				"<div handle='breaks' class='breaks-container'>" + 
 					// Class breaks go here, dynamically created
 				"</div>" +
