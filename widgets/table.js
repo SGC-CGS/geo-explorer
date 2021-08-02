@@ -86,8 +86,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 				date : d ? d.date : "",
 				decimals : d ? d.decimals : "",
 				release : d ? d.release : "",
-				value : d ? codesets.FormatDP(d, Core.locale) : "",
-				valueDesc : d ? codesets.FormatDPDesc(d, Core.locale) : "",
+				value : d ? codesets.GetFormattedDP(d, Core.locale) : "",
 				frequency : d ? codesets.frequency(d.frequency) || "" : "",
 				calar : d ? codesets.scalar(d.scalar) || "" : ""
 			}
@@ -97,15 +96,8 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
             var tr = Dom.Create("tr", { className: "table-row" }, this.Elem("body"));
 
             this._headers.forEach(f => {
-                if (r.valueDesc != "" && f == "value") {
-					var content = "<abbr title='" + r.valueDesc + "'>" + r[f] + "</abbr>";
-				}
-				
-				else var content = r[f];
-				
-				Dom.Create("td", { className: "table-cell", innerHTML: content }, tr);             
+				Dom.Create("td", { className: "table-cell", innerHTML: r[f] }, tr);             
             });           
-            
         });
 
         this.UpdateTableVisibility();

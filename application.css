@@ -2,6 +2,16 @@
 
 }
 
+abbr[data-original-title], abbr[title] {
+    text-decoration: none;
+}
+
+.gexp sub, .gexp sup {
+    line-height: initial;
+    vertical-align: super;
+    position: initial;
+}
+
 .gexp {
 	font-size:14px;
 	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;

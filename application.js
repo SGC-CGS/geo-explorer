@@ -11,6 +11,7 @@ import Overlay from '../geo-explorer-api/widgets/overlay.js';
 import Navbar from '../geo-explorer-api/widgets/navbar.js';
 import Legend from '../geo-explorer-api/widgets/legend/legend.js';
 import Selector from './widgets/selector.js';
+import InfoPopup from './widgets/infopopup.js';
 import Table from './widgets/table.js';
 import Configuration from './components/config.js';
 import Style from './util/style.js';
@@ -26,6 +27,8 @@ export default class Application extends Widget {
 
         // Build map, menu, widgets and other UI components
         this.map = new Map(this.Elem('map'), this.config.Map);
+
+		this.infoPopup = new InfoPopup();
 		
 		this.menu = new Menu();
 		
@@ -42,7 +45,10 @@ export default class Application extends Widget {
 		
 		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
 		
-        this.LoadCodrData(this.config.product);
+		var p1 = CODR.GetCubeMetadata(this.config.product);
+		var p2 = CODR.GetCodeSets();
+        
+		Promise.all([p1, p2]).then(this.OnCODR_Ready.bind(this), error => this.OnApplication_Error(error));
 
 		/* 
 		// NOTE: This should work but for some reason, it only works on every other click.
@@ -110,33 +116,30 @@ export default class Application extends Widget {
 		this.map.Place([overlay.roots[0]], position);
 	}
 
-	LoadCodrData(product) {
-        CODR.GetCubeMetadata(product).then(metadata => {	
-            this.metadata = metadata;
-	
-			document.querySelector("#app-title").innerHTML = metadata.productName;
+	OnCODR_Ready(responses) {
+		this.metadata = responses[0];
+		this.codesets = responses[1];
+		
+		this.infoPopup.Configure(this.map, this.config, this.metadata, this.codesets);
+		
+		document.querySelector("#app-title").innerHTML = this.metadata.productName;
 
-			// Format the product ID according to CODR practices (DD-DD-DDDD)
-            var formattedId = metadata.productLabel;
-            this.tableLinkText = this.Nls("TableViewer_Label", [formattedId]);
-            this.Elem("link").innerHTML = this.tableLinkText + " - " + this.metadata.name; 
-			this.Elem("link").href = metadata.tvLink; 
-			
-            // Create the drop down lists from the dimensions and memebers
-			this.Elem("selector").Initialize(this.metadata);
+		// Format the product ID according to CODR practices (DD-DD-DDDD)
+		var formattedId = this.metadata.productLabel;
+		this.tableLinkText = this.Nls("TableViewer_Label", [formattedId]);
+		this.Elem("link").innerHTML = this.tableLinkText + " - " + this.metadata.name; 
+		this.Elem("link").href = this.metadata.tvLink; 
+		
+		// Create the drop down lists from the dimensions and memebers
+		this.Elem("selector").Initialize(this.metadata);
 
-            this.Elem("mapcontainer").className = "map-container";
-            this.Elem("loadingtitle").className = "loading-title hidden";
-			
-			if (!this.config.initialSelection) return;
-			
-			this.Elem("selector").ApplyInitialSelection(this.config.initialSelection);
-        }, error => this.OnApplication_Error(error));
-
-        CODR.GetCodeSets().then(codesets => {
-            this.codesets = codesets;
-        }, error => this.OnApplication_Error(error));
-    }
+		this.Elem("mapcontainer").className = "map-container";
+		this.Elem("loadingtitle").className = "loading-title hidden";
+		
+		if (!this.config.initialSelection) return;
+		
+		this.Elem("selector").ApplyInitialSelection(this.config.initialSelection);
+	}
 
     OnSelector_Change(ev) {
         var geo = this.Elem("selector").GetSelectedGeoLevelName().toLowerCase();
@@ -214,31 +217,8 @@ export default class Application extends Widget {
 	}
 	
     OnIdentify_Change(ev) {
-		this.ShowInfoPopup(ev.mapPoint, ev.feature);
+		this.infoPopup.Show(ev.mapPoint, ev.feature, this.data);
     }
-	
-	ShowInfoPopup(mapPoint, feature) {
-        // Get the polygon name and id as the bubble title. For example: Ottawa(350421)
-        var geo = CODR.GeoLookup(this.metadata.geoLevel);
-        var identify = this.config.Identify(geo);
-        var fid = feature.attributes[identify.id];
-        var member = this.metadata.geoMembers.find(dp => dp.code == fid);
-
-        var geoVintage = "";
-        if (member) {
-            geoVintage = member.vintage;
-        }
-
-        // Derive the DGUID from the vintage, type, schema and geographic feature id
-        var dguid = CODR.GetDGUID(this.metadata.geoLevel, geoVintage, fid);
-        var title = feature.attributes[identify.name] + " (" + dguid + ")";
-
-        // Get the value corresponding to the datapoint, properly formatted for French and English
-        // Ex: French: 35 024, 56   -   English 35, 204.56        
-        var content = this.codesets.FormatDP_HTMLTable(this.data[fid], geoVintage);
-		
-		this.map.popup.open({ location:mapPoint, title:title, content: content });
-	}
 	
 	OnApplication_Error(error) {
 		this.Elem("waiting").Hide();
