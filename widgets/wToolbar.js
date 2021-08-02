@@ -104,7 +104,7 @@ export default Core.Templatable("App.Widgets.Toolbar", class wToolbar extends Wi
 	ShowWidget(id) {
 		var item = this.menu.Item(id);
 		
-		this.menu.SetOverlay(item);
+		this.menu.ToggleOverlay(item);
 	}
 	
 	/**
