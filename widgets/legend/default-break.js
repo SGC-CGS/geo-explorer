@@ -34,6 +34,8 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 		this._color = info.symbol.color;
 		
 		this.Elem("color").style.backgroundColor = this.color.toHex();
+		
+		this.Elem("color").attributes["aria-label"].value = this.Nls("Color_Arialabel", [this.color.toRgb()]);
 	}
 
 	/**
@@ -44,6 +46,8 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	Localize(nls) {
 		nls.Add("Legend_Unavailable", "en", "Data unavailable");
 		nls.Add("Legend_Unavailable", "fr", "Donnée non-disponible");		
+        nls.Add("Color_Arialabel", "en", "Colored square ({0}), data unavailable");
+        nls.Add("Color_Arialabel", "fr", "Carré de couleur ({0}), donnée non-disponible");
 	}
 	
 	/**
@@ -53,7 +57,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	HTML() {
 		return "<div handle='container' class='break-line'>" +
 				 "<div class='break-color-container'>" + 
-					"<div handle='color' class='break-color'></div>" +
+					"<div handle='color' class='break-color' aria-label='color'></div>" +
 				 "</div>" + 
 				 "<div handle='label'>nls(Legend_Unavailable)</div>" +
 			   "</div>";

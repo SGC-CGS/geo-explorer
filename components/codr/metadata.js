@@ -100,7 +100,9 @@ export default class Metadata {
      * @description
      * Get the TV Link 
      */
-	get tvLink() { return `https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=${this.id}01`; }
+    get tvLink() {
+		return `https://www150.statcan.gc.ca/t1/tbl1/${Core.locale}/tv.action?pid=${this.id}01`;
+    }
 
     /**
      * @description
@@ -133,7 +135,6 @@ export default class Metadata {
 		else return id;
     }
 
-
 	constructor(json) {	
 		this.json = json;
 		
@@ -159,7 +160,7 @@ export default class Metadata {
 			if (member) names.push(member.name);
 		}
 
-		return `${names.join(", ")}`;
+		return `${names.join(", ").toLowerCase()}`;
 	}
 
     /**

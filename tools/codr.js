@@ -116,7 +116,7 @@ export default class CODR {
 	}
 	
 	static Post(url, data) {
-        var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
+        var proxy = `${location.origin}/geo-explorer-proxy/proxy.ashx?`;
 		var body = JSON.stringify(data);
 		var headers = { "Content-Type":"application/json" };
 		
@@ -124,7 +124,7 @@ export default class CODR {
     }
 
     static Get(url) {
-        var proxy = "http://localhost/Dev/geo-explorer-proxy/proxy.ashx?";
+        var proxy = `${location.origin}/geo-explorer-proxy/proxy.ashx?`;
         var headers = { "Content-Type": "application/json" };
 
         return Net.Get(proxy + url, headers, "json");
@@ -137,7 +137,6 @@ export default class CODR {
      */
 	static GetCubeMetadata(product) {
 		var d = Core.Defer();
-
 		var p = CODR.Post(URLS.metadata, [{"productId":product}]);
 		
 		p.then(response => {
@@ -257,9 +256,7 @@ export default class CODR {
         var p = CODR.Get(URLS.codesets);
 
         p.then(response => {
-            var codeSets = CodeSets.FromResponse(response);
-
-            d.Resolve(codeSets);
+            d.Resolve(CodeSets.FromResponse(response));
         }, error => {
             var message = `Unable to retrieve code sets. The getCodeSets service returned an error.`;
 
@@ -286,9 +283,8 @@ export default class CODR {
      */
     static GetDGUID(geoLevel, vintage, featureID) {
         var geo = this.GeoLookup(geoLevel);
-        var DGUID = vintage + this.geoType[geo] + this.geoSchema[geo] + featureID;
 
-        return DGUID;
+        return vintage + this.geoType[geo] + this.geoSchema[geo] + featureID;
     }
 
    
@@ -304,6 +300,7 @@ export default class CODR {
 		metadata.geoDimension.members.forEach(d => {			
 			if (d.geoLevel == null) return;
 
+			// TODO: We need all the census geo levels at least
             var allowedGeoLevels = [1, 2, 3, 5, 502];
             if (allowedGeoLevels.indexOf(d.geoLevel) < 0) return;
 			

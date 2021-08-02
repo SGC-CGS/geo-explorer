@@ -77,7 +77,27 @@ export default class Menu extends Component{
 		if (this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} already exists in menu.`);
 		
 		this.items[id] = item;
-	}
+    }
+
+    /**
+     * Disable a menu item
+     * @param {any} id
+     */
+    DisableMenuButton(id) {
+        if (!this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} does not exist in menu.`);
+
+        this.items[id].button.disabled = true;
+    }
+
+    /**
+     * Enable a menu item
+     * @param {any} id
+     */
+    EnableMenuButton(id) {
+        if (!this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} does not exist in menu.`);
+      
+        this.items[id].button.disabled = false;
+    }
 
 	/**
 	 * Add button to Dom
@@ -121,7 +141,7 @@ export default class Menu extends Component{
 	 * @returns {void}
 	 */
 	OnMenuButton_Click(item, ev) {
-		this.SetOverlay(item);
+		this.ToggleOverlay(item);
 	}	
 	
 	/**
@@ -142,6 +162,19 @@ export default class Menu extends Component{
 	 * @returns {void}
 	 */
 	SetOverlay(item) {
+		if (this.current) this.HideOverlay(this.current);
+		
+		this.current = item;
+		
+		if (this.current) this.ShowOverlay(this.current);
+	}
+	
+	/**
+	 * Show the overlay for the currently selected button
+	 * @param {object} item - Button and overlay
+	 * @returns {void}
+	 */
+	ToggleOverlay(item) {
 		if (this.current) this.HideOverlay(this.current);
 		
 		this.current = (this.current == item) ? null : item;

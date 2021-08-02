@@ -47,19 +47,32 @@ export default class Map extends Evented {
 		super();
 		
 		this._layers = {};
-		this._behaviors = {};
+        this._behaviors = {};
+
+        // starting from ArcGIS API for JavaScript 4.16
+        if (ESRI.intl.setLocale) ESRI.intl.setLocale(Core.locale);
+
+		let basemap = "streets";
+
+        if (options.basemap) {
+            basemap = new ESRI.Basemap({
+                baseLayers: [new ESRI.layers.MapImageLayer({ url: options.basemap, title: "Basemap" })],
+                title: "Basemap",
+                id: "basemap"
+            });
+		}
 		
-		this._map = new ESRI.Map({ basemap: "streets" });
+        this._map = new ESRI.Map({ basemap: basemap });
 		
 		this._view = new ESRI.views.MapView({
-			animation : options && options.animation || false,
-			center: options && options.center || [-100, 63], 
-			container: container, 
-			map: this._map,  
-			zoom: options && options.zoom || 4, 
-			constraints: options && options.constraints || { }
+			animation: options && options.animation || false,
+			center: options && options.center || [-100, 63],
+			container: container,
+			map: this.map,
+			zoom: options && options.zoom || 4,
+			constraints: options && options.constraints || {}
 		});
-		
+        
 		this._view.popup.collapseEnabled = false;
 
 		this._view.on("click", this.OnMapView_Click.bind(this));
