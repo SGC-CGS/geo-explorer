@@ -97,7 +97,7 @@ export default Core.Templatable("Api.Widgets.Bookmarks", class Bookmarks extends
 		if (!section) this.storage.SetSection("bookmarks", this.bookmarks);
 
 		// Save the stored bookmarks to the widget
-		this.bookmarksWidget.bookmarks = this.bookmarks.items;
+		this.bookmarksWidget.bookmarks = this.bookmarks;
 
 		// Enable bookmark events
 		this.bookmarksWidget.bookmarks.on("change", this.OnBookmark_Change.bind(this));
@@ -125,7 +125,7 @@ export default Core.Templatable("Api.Widgets.Bookmarks", class Bookmarks extends
 
 		// Filter out the removed bookmark from the context in storage
 		if (ev.removed.length == 1) {
-			this.bookmarks.contexts = this.bookmarks.contexts.filter(b => b.name != ev.removed[0].name)
+			this.bookmarks.contexts = this.bookmarks.contexts.filter(b => b.name != ev.removed[0].name);
 		}
 		
 		this.bookmarks.items = this.WorkAroundBookmarkToJSON(this.bookmarksWidget.bookmarks.items);
