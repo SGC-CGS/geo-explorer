@@ -183,7 +183,7 @@ export default class Core {
 		
 		return rgb;
 	}
-	
+		
 	/**
 	 * Wait for document to finish loading before resolving the promise
 	 * @returns {Promise} 

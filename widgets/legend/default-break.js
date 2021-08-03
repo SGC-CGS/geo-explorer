@@ -12,17 +12,20 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	/**
 	 * Get color for default breaks
 	 */
-	get color() {
-		return this._color;
+	get color() { return this._color; }
+	
+	set color(value) {
+		this._color = value;
+		
+		this.Elem("color").style.backgroundColor = this.color.toHex();
+		this.Elem("color").setAttribute("aria-label", this.Nls("Color_Arialabel", [this.color.toRgb()]));
 	}
 	
 	/**
-	 * Set label for default breaks
+	 * Get color label for default breaks
 	 */
-	set label(value) {
-		this.Elem("label").innerHTML = value;
-	}
-
+	get lColor() { return this.color && this.color.toRgb() || ""; }
+	
 	/**
 	 * Call constructor of base class and initialize legend breaks
 	 * @param {object} container - table breaks container and properties
@@ -31,11 +34,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	constructor(container, info) {	
 		super(container, info);
 		
-		this._color = info.symbol.color;
-		
-		this.Elem("color").style.backgroundColor = this.color.toHex();
-		
-		this.Elem("color").attributes["aria-label"].value = this.Nls("Color_Arialabel", [this.color.toRgb()]);
+		this.color = info.symbol.color;
 	}
 
 	/**

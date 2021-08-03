@@ -22,9 +22,8 @@ export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widge
      * Update and load class breaks from the context
      * @param {String} context - context
      */
-    Update(context) {
-        this.context = context;
-        this.LoadClassBreaks(context.sublayer.renderer);
+    Update(renderer) {
+        this.LoadClassBreaks(renderer);
     }
 
     /**
@@ -41,11 +40,15 @@ export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widge
             if (c.maxValue == null) c.maxValue = "";
             if (c.minValue == null) c.minValue = "0";
             
-            return new LegendBreak(this.Elem('breaks'), c, uom);
+			return this.MakeClassBreak(this.Elem('breaks'), c, uom);
         });
 		
 		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol:renderer.defaultSymbol }));
     }
+	
+	MakeClassBreak(container, c, uom) {
+		return new LegendBreak(this.Elem('breaks'), c, uom);
+	}
 
     EmptyClassBreaks() {
         Dom.Empty(this.Elem("breaks"));
