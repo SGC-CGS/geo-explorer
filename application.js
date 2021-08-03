@@ -56,6 +56,7 @@ export default class Application extends Widget {
 		for (var id in this.toolbar.widgets) this.AddElem(id, this.toolbar.widgets[id]);
 		
 		this.Elem("table").Configure(this.config.table);
+		this.Elem("styler").Configure(this.config.styler, this.context);
 		
 		this.map.Place([this.Elem("search").container], "manual");
 		this.map.Place([this.Elem("waiting").container], "manual");
@@ -63,9 +64,10 @@ export default class Application extends Widget {
 		// Hookup events to UI
 		this.HandleEvents(this.map);
 		this.HandleEvents(this.context);
-		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
-		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
+		this.HandleEvents(this.Node('selector'), this.ChangeContext.bind(this));
+		this.HandleEvents(this.Node('bookmarks'), this.ChangeContext.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
+		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
@@ -79,7 +81,8 @@ export default class Application extends Widget {
 
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
-			this.Elem("table").Update(this.context);	
+			this.Elem("table").Update(this.context);
+			this.Elem("bookmarks").Update(this.context);
 			
 			this.toolbar.ShowWidget("selector");			
 
@@ -125,7 +128,7 @@ export default class Application extends Widget {
 		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
 
-	OnSelector_Change(ev) {
+	ChangeContext(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 
@@ -133,7 +136,6 @@ export default class Application extends Widget {
 
 		this.Elem("bookmarks").Update(this.context);
 		this.Elem("styler").Update(this.context);
-		// this.Elem("legend").Update(this.context);
 		this.Elem("table").Update(this.context);
 
 		// REVIEW: Is this necessary? Seems like a selection clear would do the trick too.
@@ -157,17 +159,6 @@ export default class Application extends Widget {
 		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
 
-	/**
-	 * Show or hide the legend
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
-	/*OnLegend_LayerVisibility(ev) {
-		var l = this.map.layer(ev.data.id);
-
-		if (l) l.visible = ev.checked;
-	}*/
-	
 	OnSearch_Change(ev) {		
 		this.map.GoTo(ev.feature.geometry);
 	}

@@ -5,7 +5,7 @@ import Overlay from '../../geo-explorer-api/widgets/overlay.js';
 import Menu from '../../geo-explorer-api/components/menu.js';
 
 import wSelector from '../widgets/selector.js';
-import wStyler from '../widgets/styler/styler.js';
+import wStyler from '../widgets/styler.js';
 import wChart from '../widgets/wChart.js';
 // import wLegend from '../widgets/legend.js';
 import wBasemap from '../../geo-explorer-api/widgets/basemap.js';

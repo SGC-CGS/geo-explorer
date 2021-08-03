@@ -329,18 +329,24 @@ abbr[data-original-title], abbr[title] {
     background: none;
 }
 
-.gexp .selector,
 
-.gexp .chart,
-
-.gexp .styler {
-	width:380px;
+.gexp .chart {
+	width : 430px;
 }
 
+.gexp .styler,
+.gexp .selector,
 .gexp .bookmarks {
 	width:350px;
 }
 
+.gexp .esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
+    display: none;
+}
+
+.gexp .esri-bookmarks__authoring-actions .esri-button {
+    cursor: pointer;
+}
 .gexp .styler .overlay-body > * {
 	margin:5px 0px;
 }
@@ -351,10 +357,6 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .styler label {
 	font-size:1.1em;
-}
-
-.gexp .styler input {
-	display:block;
 }
 
 .gexp .color-range > * {
@@ -429,8 +431,8 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .styler button.color,
 .gexp .styler .break-line .break-color{
-	width:24px;
-	height:24px;
+	width:22px;
+	height:22px;
 	border:solid thin black;
 	border-radius:2px;
 	/* display: list-item;
@@ -493,35 +495,14 @@ abbr[data-original-title], abbr[title] {
     padding: 0;
 }
 
-.gexp .styler .context-layers-container ul {
-    list-style-type:none;
-}
-
-.gexp .styler .context-layers-container .context-layer label {
-	font-weight: normal;
-	margin-left: 8px;
-}
-
-.gexp .styler .context-layers-container li > * {
-    display: inline;
-    vertical-align: middle;
+.gexp .styler .label-name-container label {
 	cursor: pointer;
 }
 
-.gexp .styler .label-name-container ul {
-    list-style-type:none;
-}
-
-.gexp .styler .label-name-container .label-name label {
-	font-weight: normal;
-	margin-left: 8px;
-}
-
-.gexp .styler .label-name-container li > * {
-    display: inline;
-    vertical-align: middle;
-	cursor: pointer;
-	font-weight: normal;
+.gexp .styler .breaks-container,
+.gexp .styler .other-container,
+.gexp .styler .label-name-container {
+    margin-left:20px;
 }
 
 /* Select Data widget */
@@ -808,7 +789,7 @@ abbr[data-original-title], abbr[title] {
 	display: block;
 }
 
-.gexp .colorSchemeContainer {
+.gexp .color-scheme-container {
 	overflow-x: scroll;
 	white-space: nowrap;
 }
@@ -859,27 +840,20 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .fa.fa-info-circle {
 	position: relative;
-	display: inline-block;
 	margin-left: 5px; 
 	cursor: pointer;
 }
 
 .gexp .fa.fa-info-circle .tooltipText {
 	padding: 6px;
-	visibility: hidden;
-	position: absolute;
-	width: 200px;
-	text-align: center;
-	z-index: 1;
-	background: rgba(255, 255, 255, 1);
-    border-style: solid;
-    border-width: thin;
-    box-shadow: 1px 1px #888;
-	transition: opacity 125ms ease-in-out;
-	font-size:14px;
-	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
-	font-weight:normal;
-    color:#545963 !important;
+    visibility: hidden;
+    position: absolute;
+    width: 200px;
+    background: rgba(255, 255, 255, 1);
+    border: solid thin black;
+    box-shadow: 1px 1px #aaa;
+    font-family: "Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
+    z-index: 1;
 }
 
 .gexp .fa.fa-info-circle .tooltipText::after {
@@ -895,11 +869,20 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .fa.fa-info-circle:hover .tooltipText {
 	visibility: visible;
-	opacity: 1;
 }
 
 .gexp .tooltip-bottom {
 	top: 150%;
 	left: 50%;
 	margin-left: -100px;
+}
+
+
+/* Bookmark */
+.esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
+    display: none;
+}
+
+.esri-bookmarks__authoring-actions .esri-button {
+    cursor: pointer;
 }

@@ -58,7 +58,7 @@
             "animation": false 
         }
     },
-    "legend": {
+    "styler": {
 		"opacity": 0.75
     },
     "infopopup": {
