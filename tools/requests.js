@@ -333,6 +333,15 @@ export default class Requests {
 		});
 		
 		p.then(renderer => {
+			// For color palettes
+			let len = renderer.data.classBreakInfos.length;
+			if(meta.colors.palette != undefined) {
+				for (let index = 0; index < len; index++) {
+					let metaColor = meta.colors.palette[index];
+					renderer.data.classBreakInfos[index].symbol.color = Core.HexToRgb(metaColor, 255);
+				}
+			}
+			
 			var sublayer = new ESRI.layers.support.Sublayer({ 
 				id: 7, 
 				visible: true,

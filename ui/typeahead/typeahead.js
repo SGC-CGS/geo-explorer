@@ -34,17 +34,35 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 		
 		// Initially unfiltered
 		this._items = this._store;
+		this._item = null;
+	}
+	
+	/**
+	 * Get/set select box value
+	 */
+	get item() {
+		return this._item;
+	}
+	
+	/**
+	 * Get/set select box value
+	 */
+	set item(value) {
+		this._item = value;
 	}
 	
 	/**
 	 * Get/set select box value
 	 */
 	get value() {
-		return this._curr;
+		return this.item && this.item.value || null;
 	}
 	
-	set value(value) {
-		this._curr = value;
+	/**
+	 * Get/set select box value
+	 */
+	get label() {
+		return this.item && this.item.label || null;
 	}
 
 	/**
@@ -64,8 +82,8 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	 * returning to many possible matches so wait until the user enters 3 characters. 
 	 * In a StaticTypeahead you should should possible matches whenever character are entered.
 	 */
-	 // REVIEW: This name is too long but nothing comes to mind at the moment
-	 get numCharactersToShowMatches() {
+	// REVIEW: This name is too long but nothing comes to mind at the moment
+	get numCharactersToShowMatches() {
 		return this._matches;
 	}
 	
@@ -83,7 +101,7 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 		
 		this._store = null;
 		this._items = null;
-		this._curr = null;
+		this._item = null;
 		this._temp = null;
 		this._matches = 3;
 		
@@ -173,9 +191,9 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 			if (delegate(this._items[i].data, i)) break;
 		}
 		
-		this.value = this._items[i].data;
+		this.item = this._items[i].data;
 		
-		this.Elem("input").value = this.value.label;
+		this.Elem("input").value = this.label;
 	}
 		
 	/**
@@ -189,9 +207,7 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 		
 		this.Empty();
 		
-		var value = this.current ? this.current.data.label : "";
-		
-		this.Elem("input").value = value;
+		this.Elem("input").value = this.item ? this.label : "";
 	}
 	
 	/**
@@ -201,9 +217,8 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	 */
 	OnInputInput_Handler(ev) {
 		var value = ev.target.value;
-		// var value = this.Elem("input").value;	// If can'T use ...args in debounce
 		
-		if (value.length < this.numCharactersToShowMatches) return;
+		if (value.length < this.numCharactersToShowMatches) return;
 		
 		this.Empty();
 		
@@ -293,9 +308,9 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	 */
 	onLiClick_Handler(item, ev) {
 		//ev.stopPropagation();
-		if(ev != undefined) ev.preventDefault();
+		if (ev != undefined) ev.preventDefault();
 		
-		this.current = item;
+		this.item = item.data;
 		
 		this.Reset();
 		
