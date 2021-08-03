@@ -716,9 +716,7 @@ abbr[data-original-title], abbr[title] {
 }
 
 .gexp .table-widget table thead th:nth-child(3),
-.gexp .table-widget table tbody td:nth-child(3), 
-.gexp .table-widget table thead th:nth-child(6),
-.gexp .table-widget table tbody td:nth-child(6) {
+.gexp .table-widget table tbody td:nth-child(3) {
 	width:320px;
 }
 
