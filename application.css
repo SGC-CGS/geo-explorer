@@ -679,9 +679,7 @@ abbr[data-original-title], abbr[title] {
 	margin:10px;
 }
 
-.gexp .table-widget table,
-.gexp .table-widget table tbody,
-.gexp .table-widget table thead {
+.gexp .table-widget table {
 	display:block;
 }
 
