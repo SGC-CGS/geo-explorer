@@ -88,7 +88,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 				release : d ? d.release : "",
 				value : d ? codesets.GetFormattedDP(d, Core.locale) : "",
 				frequency : d ? codesets.frequency(d.frequency) || "" : "",
-				calar : d ? codesets.scalar(d.scalar) || "" : ""
+				scalar : d ? codesets.scalar(d.scalar) || "" : ""
 			}
         });
 

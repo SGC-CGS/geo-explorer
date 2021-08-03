@@ -59,7 +59,7 @@
                   <div class="row">
                      <div class="col-md-12">
                         <ul class="list-inline margin-bottom-none">
-                           <li><a lang="fr" href="/cgi-bin/change.cgi">Fran&#231;ais</a></li>
+                           <li><a id="nls_link" lang="fr">Fran&#231;ais</a></li>
                         </ul>
                      </div>
                   </div>
@@ -123,7 +123,6 @@
                      <ol class="breadcrumb">
                         <li><a href="/eng/start">Home</a></li>
                         <li><a href="/cgi-bin/IPS/display?cat_num=71-607-x" title="Online catalogue: 71-607-X">71-607-X</a></li>
-                        <li></li>
                      </ol>
                   </div>
                </div>
@@ -131,6 +130,24 @@
          </header>
          <main role="main" property="mainContentOfPage" class="prx container" id="wb-cont">
             <h1 id="app-title" property="name" class="mrgn-tp-sm">Table Viewer Map Component</h1>
+			
+			<div class="row j-hide-error">
+				<div class="col-xs-12 col-sm-12 col-md-6"> 
+					<span class="label label-primary mrgn-rght-sm"><strong>Release date:</strong> March 9, 2018</span>
+					<span id="update-date" class="label label-success"><strong>Updated on:</strong> July 9, 2021</span> 
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-6">
+					<div class="pull-right mrgn-bttm-sm mrgn-tp-sm"> 
+						<a href="#htu" role="button" aria-controls="htu" class="wb-lbx btn btn-default btn-xs wb-init" title="How to use this tool" id="wb-auto-2">
+							<span class="fa fa-question-circle mrgn-rght-sm"></span>How to use
+						</a> 
+						<a href="#moreinfo" role="button" aria-controls="moreinfo" class="wb-lbx btn btn-default btn-xs wb-init" id="wb-auto-3">
+							<span class="fa fa-info-circle mrgn-rght-sm"></span>More information
+						</a> 
+					</div>
+				</div>
+			</div>
+			
             <!--startindex-->
             <section>
                <!-- if you are skipping to a data table use this
@@ -139,45 +156,75 @@
                   </div>
                     -->
                <!-- if you are skipping to the bottom section use this -->
-               <div class="text-center">
-                  <a href="#moreinfo" class="wb-inv wb-show-onfocus wb-sl">Skip the visual interactive dashboard and go directly to the additional information section</a>
-               </div>
-               <div class="wb-inv">Start of visual interactive dashboard</div>
                <div id='app-container' class="gexp"></div>
-               <div class="wb-inv">End of visual interactive dashboard</div>
             </section>
+			
             <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
-               <header class="modal-header">
-                  <h2 class="modal-title">How to use</h2>
-               </header>
-               <div class="modal-body">
-                 
-               </div>
+				<header class="modal-header">
+					<h2 class="modal-title">How to use</h2>
+				</header>
+				<div class="modal-body">
+					<h3 class="mrgn-tp-0">How to Use This Application</h3>
+					<p>The dropdown lists can be used to selected the indicator to draw on the map. The map will be drawn once an indicator is selected and the 'update map' button is activated.</p>
+					<p>The map is interactive, the user can click on polygons to obtain more information about the corresponding data point.</p>
+					<p>The user can navigate the map in the following ways:</p>
+					<ul>
+						<li>Clicking and dragging the map will pan the map;</li>
+						<li>Scrolling the mouse wheel will zoom in or out of the map;</li>
+						<li>Clicking the 'Zoom In' button ( 
+							<span aria-hidden="true" class="esri-icon-plus" style="vertical-align: middle;"></span> 
+							) or the 'Zoom Out' button (
+							<span aria-hidden="true" class="esri-icon-minus" style="vertical-align: middle;"></span>
+							) buttons will zoom in or out, respectively; or
+						</li>
+						<li>Clicking the 'Home' button (
+							<span aria-hidden="true" class="esri-icon-home" style="vertical-align: middle;"></span>
+						) will return the map to its default extent.</li>
+					</ul>
+					<p>The 'Full Screen' button ( 
+						<span class="esri-icon-zoom-out-fixed" style="vertical-align: middle;"></span>
+						) will open the map in full screen mode.
+					</p>
+					<p>The 'Legend' button (
+						<img src="./assets/layers-24.png" style="width:18px;"></img>
+						) will toggle a legend widget with information on the color ramps used to draw the map.
+					</p>
+				</div>
             </section>
+			
             <!--stopindex-->
             <!-- More info button text, update if this is not 71-607-x -->
             <!-- More info page -->
-            <section id="moreinfo" class="mfp-hide modal-dialog modal-content overlay-def">
-               <header class="modal-header">
-                  <h2 class="modal-title">More information</h2>
-               </header>
-               <div class="modal-body">
-                  <div class="pstn-rght-lg pstn-rght-md pstn-lft-md pstn-lft-sm pstn-lft-xs mrgn-lft-md mrgn-rght-sm"> 
-                     <span class="label label-primary"></span> 
-                  </div>
-                  <span class="clearfix"></span>
-                  <h2 class="mrgn-tp-0">Note of appreciation </h2>
-                  <p>Canada owes the success of its statistical system to a long-standing partnership between Statistics Canada, the citizens of Canada, its businesses, governments and other institutions. Accurate and timely statistical information could not be produced without their continued co-operation and goodwill.</p>
-                  <h2>Standards of service to the public</h2>
-                  <p>Statistics Canada is committed to serving its clients in a prompt, reliable and courteous manner. To this end, the Agency has developed <a href="/about-apercu/standards-normes-eng.htm">standards of service</a> which its employees observe in serving its clients. </p>
-                  <h2>Copyright</h2>
-                  <p>Published by authority of the Minister responsible for Statistics Canada.</p>
-                  <p> &copy; Her Majesty the Queen in Right of Canada as represented by the Minister of Industry, 2020</p>
-                  <p>All rights reserved. Use  of this publication is governed by the <a href="/reference/licence-eng.html" title="Statistics Canada Open Licence Agreement">Statistics Canada Open Licence Agreement</a>.</p>
-                  <p>Catalogue <abbr title="number">no.</abbr> 71-607-X</p>
-                  <p> Ottawa</p>
-               </div>
-            </section>
+			<section id="moreinfo" class="modal-dialog modal-content overlay-def mfp-hide">
+				<header class="modal-header">
+					<h2 class="modal-title" id="lbx-title">More information</h2>
+				</header>
+				<div class="modal-body">
+					<div class="pstn-rght-lg pstn-rght-md pstn-lft-md pstn-lft-sm pstn-lft-xs mrgn-lft-md mrgn-rght-sm"> 
+						<span class="label label-primary"></span> 
+					</div>
+					<span class="clearfix"></span>
+					<h3 class="mrgn-tp-0">Note of appreciation </h3>
+					<p>Canada owes the success of its statistical system to a long-standing partnership between Statistics Canada, the citizens of Canada, its businesses, governments and other institutions. Accurate and timely statistical information could not be produced without their continued co-operation and goodwill.</p>
+					<h3>Standards of service to the public</h3>
+					<p>Statistics Canada is committed to serving its clients in a prompt, reliable and courteous manner. To this end, the Agency has developed <a href="https://www.statcan.gc.ca/eng/about/service/standards">standards of service</a> which its employees observe in serving its clients.</p>
+					<h3>Copyright</h3>
+					<p>Published by authority of the Minister responsible for Statistics Canada.</p>
+					<p> © Her Majesty the Queen in Right of Canada as represented by the Minister of Industry, 2021</p>
+					<p>All rights reserved. Use of this publication is governed by the <a href="https://www.statcan.gc.ca/eng/reference/licence">Statistics Canada Open Licence Agreement</a>.</p>
+					<p>Catalogue <abbr title="number">no.</abbr> 71-607-X</p>
+					<p> Ottawa</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-primary pull-left popup-modal-dismiss" title="Close overlay">Close
+						<span class="wb-inv">Close overlay</span>
+					</button>
+				</div>
+				<button title="Close overlay (escape key)" type="button" class="mfp-close">×
+					<span class="wb-inv"> Close overlay (escape key)</span>
+				</button>
+			</section>
+
             <!-- END More info page --> 
             <div class="pagedetails">
                <div class="row">

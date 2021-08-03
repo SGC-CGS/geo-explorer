@@ -25,6 +25,8 @@ export default class Application extends Widget {
 
 		this.config = Configuration.FromJson(config);
 
+		document.querySelector("#nls_link").setAttribute("href", this.Nls("Nls_Link", [this.config.product]));
+		
         // Build map, menu, widgets and other UI components
         this.map = new Map(this.Elem('map'), this.config.Map);
 
@@ -49,7 +51,7 @@ export default class Application extends Widget {
 		var p2 = CODR.GetCodeSets();
         
 		Promise.all([p1, p2]).then(this.OnCODR_Ready.bind(this), error => this.OnApplication_Error(error));
-
+		
 		/* 
 		// NOTE: This should work but for some reason, it only works on every other click.
 		// Listen for SceneView click events
@@ -84,12 +86,14 @@ export default class Application extends Widget {
 		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0}");
 		nls.Add("RefPeriod_Label", "en", "Reference period {0}");
         nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
-        nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the information table section.");
-        nls.Add("SkipTheMapLink", "fr", "Ignorez la carte visuelle interactive et accédez directement à la section du tableau d'informations.");
+        nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the data table section. The data table will appear once you have selected an indicator above.");
+        nls.Add("SkipTheMapLink", "fr", "Ignorez la carte visuelle interactive et accédez directement à la section du tableau de données. Le tableau de données apparaîtra lorsque vous aurez sélectionné un indicateur ci-haut.");
         nls.Add("Map_Header", "en", "Thematic map for ");
         nls.Add("Map_Header", "fr", "Carte thématique pour ");
         nls.Add("Table_Header", "en", "Data table for ");
         nls.Add("Table_Header", "fr", "Tableau de données pour ");
+        nls.Add("Nls_Link", "en", "/Dev/geo-explorer-lite/index-fr.html?pid={0}");
+        nls.Add("Nls_Link", "fr", "/Dev/geo-explorer-lite/index-en.html?pid={0}");
 	}
 	
 	AddPointIdentify() {
