@@ -880,3 +880,13 @@ abbr[data-original-title], abbr[title] {
 	left: 50%;
 	margin-left: -100px;
 }
+
+
+/* Bookmark */
+.esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
+    display: none;
+}
+
+.esri-bookmarks__authoring-actions .esri-button {
+    cursor: pointer;
+}
