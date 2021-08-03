@@ -52,6 +52,7 @@ function LoadEsri() {
 				 "esri/layers/support/Sublayer", 
 				 "esri/core/urlUtils", 
 				 "esri/core/watchUtils", 
+				 "esri/Color", 
 				 "esri/Map", 
 				 "esri/Graphic", 
 				 "esri/views/MapView", 
@@ -71,6 +72,7 @@ function LoadEsri() {
 						  Sublayer, 
 						  urlUtils, 
 						  watchUtils, 
+						  Color, 
 						  Map, 
 						  Graphic, 
 						  MapView, 
@@ -88,6 +90,7 @@ function LoadEsri() {
 					watchUtils : watchUtils
 				},
 				request : request,
+				Color : Color,
 				Map : Map,
 				Graphic : Graphic,
 				views : {

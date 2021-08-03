@@ -132,7 +132,7 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Widge
     }
 
     HTML() {
-      return "<div handle='ChartsContainer' width='430' height='400'></div>";
+      return "<div handle='ChartsContainer' width='400' height='300'></div>";
     }
   }
 );
