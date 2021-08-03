@@ -11,8 +11,8 @@ import Basemap from '../geo-explorer-api/widgets/basemap.js';
 import Bookmarks from '../geo-explorer-api/widgets/bookmarks.js';
 import Menu from '../geo-explorer-api/widgets/menu.js';
 import Storage from '../geo-explorer-api/tools/storage.js';
-import Styler from '../geo-explorer-api/widgets/styler/styler.js';
 
+import Styler from './widgets/styler/styler.js';
 import Selector from './widgets/selector.js';
 import Search from './widgets/search.js';
 import Table from './widgets/table.js';
