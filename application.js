@@ -63,7 +63,8 @@ export default class Application extends Widget {
 		// Hookup events to UI
 		this.HandleEvents(this.map);
 		this.HandleEvents(this.context);
-		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
+		this.HandleEvents(this.Node('selector'), this.ChangeContext.bind(this));
+		this.HandleEvents(this.Node('bookmarks'), this.ChangeContext.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
@@ -79,7 +80,8 @@ export default class Application extends Widget {
 
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
-			this.Elem("table").Update(this.context);	
+			this.Elem("table").Update(this.context);
+			this.Elem("bookmarks").Update(this.context);
 			
 			this.toolbar.ShowWidget("selector");			
 
@@ -125,7 +127,7 @@ export default class Application extends Widget {
 		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
 
-	OnSelector_Change(ev) {
+	ChangeContext(ev) {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 
