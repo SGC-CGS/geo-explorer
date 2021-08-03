@@ -106,7 +106,7 @@ export default class Overlay extends Widget {
 		
 		this.Emit("Show", { overlay:this });
 		
-		this.Elem("close").focus();
+		// this.Elem("close").focus();
 	}
 	
 	/**

@@ -76,6 +76,14 @@ export default class Map extends Evented {
 		this._view.popup.collapseEnabled = false;
 
 		this._view.on("click", this.OnMapView_Click.bind(this));
+		
+		if (Core.locale == "en") return;
+		
+		this._view.when(d => {
+			var link = this.view.container.querySelector(".esri-attribution__link");
+			
+			link.setAttribute("href", "https://www.esri.ca/fr-ca/home");
+		});
 	}
 	
 	/**
