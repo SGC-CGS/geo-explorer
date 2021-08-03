@@ -32,8 +32,8 @@ export default Core.Templatable("Api.Widgets.Opacity", class Opacity extends Wid
 	Localize(nls) {
 		nls.Add("Legend_Opacity", "en", "Opacity");
 		nls.Add("Legend_Opacity", "fr", "Opacité");	
-		nls.Add("Legend_Opacity_Info", "en", "Use the opacity bar to update the transparency of the features on the map. The closer the slider is to «Less», the lower the transparency value, and vice versa.");
-		nls.Add("Legend_Opacity_Info", "fr", "Utilisez la barre d'opacité pour mettre à jour la transparence des entités sur la carte. Plus le curseur est proche de «Moins», plus la valeur de transparence est faible, et vice versa.");	
+		nls.Add("Legend_Opacity_Info", "en", "Use the opacity bar to update the transparency of the features on the map.");
+		nls.Add("Legend_Opacity_Info", "fr", "Utilisez la barre d'opacité pour mettre à jour la transparence des entités sur la carte.");	
 		nls.Add("Legend_Opacity_Less", "en", "Less");
 		nls.Add("Legend_Opacity_Less", "fr", "Moins");	
 		nls.Add("Legend_Opacity_More", "en", "More");
