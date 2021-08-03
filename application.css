@@ -32,6 +32,7 @@ abbr[data-original-title], abbr[title] {
 
 .gexp input {
 	cursor:text;
+	padding: 3px;
 }
 
 .gexp button.button-label {
@@ -409,6 +410,10 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .styler .opacity-labels-container label:last-child {
 	float:right;
+}
+
+.gexp .styler .label-toggle {
+	margin-bottom: -10px;
 }
 
 .gexp .styler ul {
@@ -858,6 +863,7 @@ abbr[data-original-title], abbr[title] {
     box-shadow: 1px 1px #aaa;
     font-family: "Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
     z-index: 1;
+	font-size: 14px;
 }
 
 .gexp .fa.fa-info-circle .tooltipText::after {
@@ -889,4 +895,22 @@ abbr[data-original-title], abbr[title] {
 
 .esri-bookmarks__authoring-actions .esri-button {
     cursor: pointer;
+}
+
+/* Basemap */
+.esri-basemap-gallery__item { 
+	animation: none;
+}
+
+/* Type ahead */
+.gexp .typeahead-input-icon::before {
+    margin-left: -18px; 
+	font-family: "FontAwesome";
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+	content: "\f078";
+	pointer-events: none;
+    color: rgb(100, 100, 100);
 }
