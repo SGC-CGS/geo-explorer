@@ -98,10 +98,10 @@ export default class Context extends Evented {
 		var d = Core.Defer();
 		
 		var p1 = this.UpdateSubjects();		
-		var p2 = this.UpdateThemes();		
-		var p3 = this.UpdateCategories();
-		var p4 = this.UpdateIndicators();	
-		var p5 = this.UpdateMetadata();
+		var p2 = this.UpdateThemes(config.subject);		
+		var p3 = this.UpdateCategories(config.theme);
+		var p4 = this.UpdateIndicators(config.category);	
+		var p5 = this.UpdateMetadata(config.filters, config.value);
 
 		Promise.all([p1, p2, p3, p4, p5]).then(c => {
 			this.UpdateRenderer().then(c => {
@@ -268,15 +268,4 @@ export default class Context extends Evented {
 	OnContext_Error(error) {
 		this.Emit("Error", { error:error });
 	}
-
-	toJSON() {
-		return {
-			subject : this.subject,
-			theme : this.theme,
-			category : this.category,
-			filters : this.filters,
-			value : this.value,
-			geography : this.geography,
-		}
-	}	
 }

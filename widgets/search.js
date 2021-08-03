@@ -3,6 +3,7 @@ import Core from '../../geo-explorer-api/tools/core.js';
 import Requests from '../../geo-explorer-api/tools/requests.js';
 import Typeahead from '../../geo-explorer-api/ui/typeahead/dynamic.js';
 
+
 /**
  * Search widget module
  * @module widgets/search

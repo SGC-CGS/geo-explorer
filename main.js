@@ -81,7 +81,6 @@ function LoadEsri() {
 						  Home,
 						  intl) {							  
 			
-			// TODO: This needs to be moved to the API layer maybe
 			window.ESRI = {
                 intl : intl,
 				core : { 
@@ -115,7 +114,7 @@ function LoadEsri() {
 					Fullscreen : Fullscreen,
 					BasemapGallery : BasemapGallery,
 					Bookmarks : Bookmarks,
-					Home : Home
+					Home: Home
 				}
 			}
 

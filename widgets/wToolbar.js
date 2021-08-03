@@ -7,7 +7,7 @@ import Menu from '../../geo-explorer-api/components/menu.js';
 import wSelector from '../widgets/selector.js';
 import wStyler from '../widgets/styler/styler.js';
 import wChart from '../widgets/wChart.js';
-import wLegend from '../widgets/legend.js';
+// import wLegend from '../widgets/legend.js';
 import wBasemap from '../../geo-explorer-api/widgets/basemap.js';
 import wBookmarks from '../../geo-explorer-api/widgets/bookmarks.js';
 
@@ -46,7 +46,7 @@ export default Core.Templatable("App.Widgets.Toolbar", class wToolbar extends Wi
 			selector : new wSelector(Dom.Create("div")),
 			styler : new wStyler(Dom.Create("div")),
 			chart : new wChart(Dom.Create("div")),
-			legend : new wLegend(Dom.Create("div")),
+			// legend : new wLegend(Dom.Create("div")),
 			basemap : new wBasemap(Dom.Create("div")),
 			bookmarks : new wBookmarks(Dom.Create("div"))
 		}
@@ -68,7 +68,7 @@ export default Core.Templatable("App.Widgets.Toolbar", class wToolbar extends Wi
 		this.widgets.chart.Configure(config.chart);
 		this.widgets.basemap.Configure(map);
 		this.widgets.bookmarks.Configure(config.bookmarks, map, storage);
-		this.widgets.legend.Configure(config.legend);
+		// this.widgets.legend.Configure(config.legend);
 		
 		this.menu.buttons.forEach(b => Dom.Place(b, this.Elem("menu")));
 		

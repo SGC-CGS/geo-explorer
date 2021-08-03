@@ -26,9 +26,6 @@ export default class Application extends Widget {
 	
 	set context(value) { this._context = value; }
 
-	/**
-	 * Get current behavior
-	 */
 	get behavior() { return "pointselect"; }
 
 	/**
@@ -68,26 +65,21 @@ export default class Application extends Widget {
 		this.HandleEvents(this.context);
 		this.HandleEvents(this.Node('selector'), this.OnSelector_Change.bind(this));
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
-		this.HandleEvents(this.Node('bookmarks'), this.OnBookmark_NewContext.bind(this));
 		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
-		this.Node('legend').On('Opacity', this.OnLegend_Opacity.bind(this));
-		this.Node('legend').On('LayerVisibility', this.OnLegend_LayerVisibility.bind(this));
-		
-		this.Node('legend').On('LabelName', this.onLegend_LabelName.bind(this));
-		
+		this.Node("styler").On('Opacity', this.OnStyler_Opacity.bind(this));
+		this.Node("styler").On('LabelName', this.onStyler_LabelName.bind(this));
+
 		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
 		
-		this.context.Initialize().then(d => {	
+		this.context.Initialize(this.config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
 			this.Elem("selector").Update(this.context);
 			this.Elem("styler").Update(this.context);
-			this.Elem("legend").Update(this.context);
-			this.Elem("bookmarks").Update(this.context);
-			this.Elem("table").Update(this.context);
+			this.Elem("table").Update(this.context);	
 			
 			this.toolbar.ShowWidget("selector");			
 
@@ -133,73 +125,27 @@ export default class Application extends Widget {
 		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
 
-	/**
-	 * Clear map and specified elements when user makes a selector change.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
 	OnSelector_Change(ev) {
-		this.ChangeContext(this.context);
-	}
-
-	/**
-	 * Update the context
-	 * @todo Do not let new bookmark selections to occur while updating
-	 * @param {*} ev 
-	 */
-	 OnBookmark_NewContext(ev) {
-		this.ChangeContext(this.context);
-
-		this.Elem("selector").Update(this.context);
-	}
-
-	/**
-	 * @param {*} context 
-	 */
-	ChangeContext(context) {
 		this.map.EmptyLayer('main');
-		this.map.AddSubLayer('main', context.sublayer);
+		this.map.AddSubLayer('main', this.context.sublayer);
 
-		this.map.Behavior("pointselect").target = context.sublayer;
+		this.map.Behavior("pointselect").target = this.context.sublayer;
 
-		this.Elem("bookmarks").Update(context);
-		this.Elem("styler").Update(context);
-		this.Elem("legend").Update(context);
-		this.Elem("table").Update(context);
+		this.Elem("bookmarks").Update(this.context);
+		this.Elem("styler").Update(this.context);
+		// this.Elem("legend").Update(this.context);
+		this.Elem("table").Update(this.context);
 
 		// REVIEW: Is this necessary? Seems like a selection clear would do the trick too.
 		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
 	}
 	
-	/**
-	 * Update the renderer and legend when map style is changed.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
 	OnStyler_Change(ev) {	
 		this.context.sublayer.renderer = ev.renderer;
-		
-		this.Elem("legend").Update(this.context);
 	}
 	
-	/**
-	 * Update the layer opacity from the event.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
-	OnLegend_Opacity(ev) {
+	OnStyler_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
-	}
-
-	/**
-	 * Show or hide the legend
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
-	OnLegend_LayerVisibility(ev) {
-		var l = this.map.layer(ev.data.id);
-
-		if (l) l.visible = ev.checked;
 	}
 
 	/**
@@ -207,62 +153,43 @@ export default class Application extends Widget {
 	 * @param {object} ev - Event object
 	 * @returns{void}
 	 */
-	onLegend_LabelName(ev) {
+	onStyler_LabelName(ev) {
 		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
 	}
-	
+
 	/**
-	 * Go to specified location when location search box value changes.
+	 * Show or hide the legend
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
+	/*OnLegend_LayerVisibility(ev) {
+		var l = this.map.layer(ev.data.id);
+
+		if (l) l.visible = ev.checked;
+	}*/
+	
 	OnSearch_Change(ev) {		
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	/**
-	 * Zoom to the selected location when a table row is clicked.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
 	OnTable_RowClick(ev) {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	/**
-	 * Remove item from table and map selection when delete button is clicked on a table row.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
 		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
 		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
 	}
 	
-	/**
-	 * Show waiting indicator while widget is performing a task.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */
 	OnWidget_Busy(ev) {
 		this.Elem("waiting").Show();
 	}
 	
-	/**
-	 * Hide waiting indicator when widget is idle.
-	 * @param {object} ev - Event object
-	 * @returns {void}
-	 */	
 	OnWidget_Idle(ev) {
 		this.Elem("waiting").Hide();
 	}
 	
-	/**
-	 * Show error message when application encounters a problem.
-	 * @param {object} error - Error object
-	 * @returns {void}
-	 */
 	OnApplication_Error(error) {
 		alert(error.message);
 		
@@ -270,8 +197,9 @@ export default class Application extends Widget {
 	}
 
 	/**
-	 * Return application HTML.
-	 * @returns {string} HTML string
+	 * Show or hide the map labels.
+	 * @param {object} ev - Event object
+	 * @returns{void}
 	 */
 	HTML() {
 		return	"<div handle='search' class='search' widget='App.Widgets.Search'></div>" +

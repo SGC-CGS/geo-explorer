@@ -12,12 +12,12 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	/**
 	 * Get/set min value for breaks
 	 */
-	get Min() {
-		return this.min;
+	get min() {
+		return this._min;
 	}
 
-	set Min(value) {
-		this.min = value;
+	set min(value) {
+		this._min = value;
 
 		this.Elem("lFrom").innerHTML = this.min.toLocaleString(Core.locale);
 	}
@@ -25,12 +25,12 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	/**
 	 * Get/set max value for breaks
 	 */
-	get Max() {
-		return this.max;
+	get max() {
+		return this._max;
 	}
 
-	set Max(value) {
-		this.max = value;
+	set max(value) {
+		this._max = value;
 
 		this.Elem("bTo").innerHTML = this.max.toLocaleString(Core.locale);
 
@@ -40,8 +40,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	/**
 	 * Get color for breaks
 	 */	
-	get Color() {
-		return this.color;
+	get color() {
+		return this._color;
 	}
 
 	/**
@@ -52,17 +52,16 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	constructor(container, info) {
 		super(container, info);
 
-		this.Min = info.minValue;
-		this.Max = info.maxValue;
+		this.min = info.minValue;
+		this.max = info.maxValue;
 
-		this.color = info.symbol.color;
+		this._color = info.symbol.color;
 
 		this.Elem("color").style.backgroundColor = this.color.toHex();
 
 		this.Elem("bTo").addEventListener("click", this.OnEditor_Button.bind(this));
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
-		this.Elem("eRemove").addEventListener("click", this.OnEditor_Remove.bind(this));
 	}
 
 	/**
@@ -141,34 +140,24 @@ export default Core.Templatable("App.Widgets.StylerBreak", class StylerBreak ext
 	}
 
 	/**
-	 * Emit remove event when delete button of a class break is clicked
-	 * @param {object} ev - Mouse event
-	 * @returns {void}
-	 */
-	OnEditor_Remove(ev){
-		this.Emit("remove");
-	}
-
-	/**
 	 * Create HTML for breaks
 	 * @returns {string} HTML for breaks
 	 */		
 	HTML() {
-		return "<div handle='container' class='break-line'>" +
-				 "<button handle='eRemove' class= 'remove button-icon small-icon'></button>" +
-				 "<div class='break-color-container'>" +
+		return "<ul handle='container' class='break-line breaks-row'>" +
+				 "<li class='break-color-container breaks-column'>" +
 					"<div handle='color' class='break-color'></div>" +
-				 "</div>" +
-				 "<div handle='lFrom'></div>" +
-				 "<div>nls(Styler_Item_Join)</div>" +
-				 "<div handle='eContainer' class='break-to-container'>" +
-					"<button handle='bTo' class='to'></button>" +
+				 "</li>" +
+				 "<li class='breaks-column' handle='lFrom'></li>" +
+				 "<li class='breaks-column'>nls(Styler_Item_Join)</li>" +
+				 "<li handle='eContainer' class='break-to-container breaks-column'>" +
+					"<button handle='bTo' class='to'></button>" +	
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +
 						"<button handle='eCancel' class='cancel button-icon small-icon'></button>" +
 					"</div>" +
-				 "</div>" +
-			   "</div>";
+				 "</li>" +
+			   "</ul>";
 	}
 })

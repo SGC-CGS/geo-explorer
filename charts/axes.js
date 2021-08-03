@@ -48,13 +48,11 @@ export default class Axes {
      * @returns A d3.scaleLinear() function
      */
     static CreateLinearYScale(data, height){
-        let max = (d3.max(data, d => d.value) == 0) ? 1 : d3.max(data, d => d.value);
-
+        // Could also use .domain(d3.extent(data, (d) => d.value ))
         return d3.scaleLinear()
-            // Could also use .domain(d3.extent(data, (d) => d.value )) in some cases
             // max at the top of the y-axis
             // 0 at the bottom of the y-axis
-            .domain([max, 0])
+            .domain([(d3.max(data, d => d.value)), 0])
             // 0 on bottom of y-axis
             // max at top of y-axis
             .range([0, height])

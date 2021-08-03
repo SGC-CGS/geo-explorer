@@ -3,6 +3,7 @@ import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import Requests from '../../geo-explorer-api/tools/requests.js';
 import StaticTypeahead from "../../geo-explorer-api/ui/typeahead/static.js";
+import Select from '../../geo-explorer-api/ui/select.js';
 
 /**
  * Selector widget module
@@ -15,6 +16,45 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 	 * Get / set the widget's title
 	*/	
 	get title() { return this.Nls("Selector_Title") }
+	
+	
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Selector_Title", "en", "Select Data");
+		nls.Add("Selector_Title", "fr", "Sélectionner des données");
+		nls.Add("Selector_Subject", "en", "Subject");
+		nls.Add("Selector_Subject", "fr", "Sujet");
+		nls.Add("Selector_Subject_Placeholder", "en", "Select a subject");
+		nls.Add("Selector_Subject_Placeholder", "fr", "Sélectionnez un sujet");
+		nls.Add("Selector_Theme", "en", "Theme");
+		nls.Add("Selector_Theme", "fr", "Thème");
+		nls.Add("Selector_Theme_Placeholder", "en", "*... Select a theme");
+		nls.Add("Selector_Theme_Placeholder", "fr", "*... Sélectionnez un thème");
+		nls.Add("Selector_Category", "en", "Category (Product)");
+		nls.Add("Selector_Category", "fr", "Catégorie (Produit)");
+		nls.Add("Selector_Category_Placeholder", "en", "*... Select a product");
+		nls.Add("Selector_Category_Placeholder", "fr", "*... Sélectionnez un produit");
+		nls.Add("Selector_Value", "en", "Value to Display");
+		nls.Add("Selector_Value", "fr", "Valeur à afficher");
+		nls.Add("Selector_Value_Placeholder", "en", "*... Select a value to Display");
+		nls.Add("Selector_Value_Placeholder", "fr", "*... Sélectionnez une valeur à afficher");
+		nls.Add("Selector_Geography", "en", "Geographic Level");
+		nls.Add("Selector_Geography", "fr", "Niveau géographique");
+		nls.Add("Selector_Geography_Placeholder", "en", "*... Select a geographic Level");
+		nls.Add("Selector_Geography_Placeholder", "fr", "*... Sélectionnez un niveau géographique");
+		nls.Add("Selector_Filter_Label", "en", "Filters");
+		nls.Add("Selector_Filter_Label", "fr", "Filtres");
+		nls.Add("Selector_Filter_Instructions", "en", "Select a subject, theme and category (product) to show available filters.");
+		nls.Add("Selector_Filter_Instructions", "fr", "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles.");
+		nls.Add("Selector_Button_Apply", "en", "Apply");
+		nls.Add("Selector_Button_Apply", "fr", "Appliquer");
+		nls.Add("Selector_Button_Close", "en", "Cancel");
+		nls.Add("Selector_Button_Close", "fr", "Annuler");		
+	}
 	
 	/**
 	 * Call constructor of base class (Templated) and initialize selector widget with placeholders,
@@ -51,71 +91,29 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 	}
 	
 	/**
-	 * Add specified language strings to the nls object
-	 * @param {object} nls - Existing nls object
-	 * @returns {void}
-	 */
-	Localize(nls) {
-		nls.Add("Selector_Title", "en", "Select Data");
-		nls.Add("Selector_Title", "fr", "Sélectionner des données");
-		nls.Add("Selector_Subject", "en", "Subject");
-		nls.Add("Selector_Subject", "fr", "Sujet");
-		nls.Add("Selector_Subject_Placeholder", "en", "*... Select a subject");
-		nls.Add("Selector_Subject_Placeholder", "fr", "*... Sélectionnez un sujet");
-		nls.Add("Selector_Theme", "en", "Theme");
-		nls.Add("Selector_Theme", "fr", "Thème");
-		nls.Add("Selector_Theme_Placeholder", "en", "*... Select a theme");
-		nls.Add("Selector_Theme_Placeholder", "fr", "*... Sélectionnez un thème");
-		nls.Add("Selector_Category", "en", "Category (Product)");
-		nls.Add("Selector_Category", "fr", "Catégorie (Produit)");
-		nls.Add("Selector_Category_Placeholder", "en", "*... Select a product");
-		nls.Add("Selector_Category_Placeholder", "fr", "*... Sélectionnez un produit");
-		nls.Add("Selector_Value", "en", "Value to Display");
-		nls.Add("Selector_Value", "fr", "Valeur à afficher");
-		nls.Add("Selector_Value_Placeholder", "en", "*... Select a value to Display");
-		nls.Add("Selector_Value_Placeholder", "fr", "*... Sélectionnez une valeur à afficher");
-		nls.Add("Selector_Geography", "en", "Geographic Level");
-		nls.Add("Selector_Geography", "fr", "Niveau géographique");
-		nls.Add("Selector_Geography_Placeholder", "en", "*... Select a geographic Level");
-		nls.Add("Selector_Geography_Placeholder", "fr", "*... Sélectionnez un niveau géographique");
-		nls.Add("Selector_Filter_Label", "en", "Filters");
-		nls.Add("Selector_Filter_Label", "fr", "Filtres");
-		nls.Add("Selector_Filter_Placeholder", "en", "*... Select a Filter");
-		nls.Add("Selector_Filter_Placeholder", "fr", "*... Sélectionnez un filtre");
-		nls.Add("Selector_Filter_Instructions", "en", "Select a subject, theme and category (product) to show available filters.");
-		nls.Add("Selector_Filter_Instructions", "fr", "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles.");
-		nls.Add("Selector_Button_Apply", "en", "Apply");
-		nls.Add("Selector_Button_Apply", "fr", "Appliquer");
-		nls.Add("Selector_Button_Close", "en", "Cancel");
-		nls.Add("Selector_Button_Close", "fr", "Annuler");		
-	}
-	
-	/**
-	 * Load data to select elements 
+	 * Load data to select elements
 	 * @param {object} context - Context object
 	 * @returns {void}
 	 */
 	Update(context) {
 		this.context = context;
-
+		
 		this.LoadDropDown(this.Elem("sSubject"), context.Lookup("subjects"));
 		this.LoadDropDown(this.Elem("sTheme"), context.Lookup("themes"));
 		this.LoadDropDown(this.Elem("sCategory"), context.Lookup("categories"));
-		this.LoadDropDown(this.Elem('sValue'), context.Lookup("values"));
 		this.LoadDropDown(this.Elem("sGeography"), context.Lookup("geographies"));
-
-		this.ResetFilter();
+		this.LoadDropDown(this.Elem('sValue'), context.Lookup("values"));
 		
 		this.LoadFilters(context.Lookup("filters"));
-
+		
 		this.Elem("sSubject").Select(i => i.value == context.subject);
 		this.Elem("sTheme").Select(i => i.value == context.theme);
 		this.Elem("sCategory").Select(i => i.value == context.category);
-		this.Elem("sValue").Select(i => i.value == context.value);
 		this.Elem("sGeography").Select(i => i.value == context.geography);
-
-		this.filters.forEach((f, i) => {
-			f.Select(j => j.value == context.filters[i]);
+		this.Elem("sValue").Select(i => i.value == context.value);
+		
+		this.filters.forEach((f, i) => {
+			f.Select(j => j.value == context.filters[i]);
 		});
 	}
 		
@@ -128,7 +126,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 	LoadDropDown(select, items) {
 		select.Reset();
 
-		select.value = "";
 		select.numCharactersToShowMatches = 0;
 		select.store = items;
 		select.disabled = false;
@@ -155,32 +152,33 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 		
 		this.filters = filters.map(d => {
 			var label = Dom.Create("label", { innerHTML:d.label }, this.Elem('filter'));
-
 			var div = Dom.Create("div", null, this.Elem('filter'));
+			var select = new Select(div);
 			
-			var select = new StaticTypeahead(div);
-
-			select.store = d.values;
-
-			select.numCharactersToShowMatches = 0;
-
-			select.placeholder = this.Nls("Selector_Filter_Placeholder");
-
-			select.On("Change", this.OnFilterChange.bind(this));
+			d.values.forEach(item => select.Add(item.label, null, item));
+			
+			select.Elem("root").firstChild.selected = true;
+			
+			select.On("Change", this.OnValue_Change.bind(this));
 			
 			return select;
 		});
 	}
-
+	
 	/**
 	 * Deselect and disable specified select elements
 	 * @param {string[]} elements - List of select elements to be disabled
 	 * @returns {void}
-	 */	
+	 */
 	Disable(elements) {
-		elements.forEach(e => this.Elem(e).disabled = true);
-
-		if (elements.indexOf('sCategory') != -1) this.ResetFilter();
+		elements.forEach(e => {
+			this.Elem(e).disabled = true;
+			this.Elem(e).item = null;
+		});
+		
+		if (elements.indexOf('sValue') == -1) return;
+		
+		this.ResetFilter();
 	}
 	
 	/**
@@ -197,7 +195,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 			this.Emit("Idle");
 		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
-
 		}, error => this.OnRequests_Error(error));		
 	}
 	
@@ -215,7 +212,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 			this.Emit("Idle");
 		
 			this.LoadDropDown(this.Elem("sCategory"), this.context.Lookup("categories"));
-			
 		}, error => this.OnRequests_Error(error));		
 	}
 	
@@ -228,64 +224,30 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 		this.Disable(['sValue', 'sGeography', 'bApply']);
 		
 		this.Emit("Busy");
-
+		
 		this.context.ChangeCategory(ev.item.value).then(c => {
 			this.Emit("Idle");
-
-			this.ResetFilter();
 		
 			this.LoadFilters(this.context.Lookup("filters"));
-
+			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
 		}, error => this.OnRequests_Error(error));		
 	}
 	
-	/**
-	 * Update filter select element. 
-	 * 
-	 * Also, enable sValue or call SendValueAndFilterToContext(). 
-	 * @param {*} ev - Event object
-	 * @returns {void}
-	 */
-	OnFilterChange(ev) {
-		// Update the selected filter TypeAhead value 
-		ev.target.value = ev.item
-
-		if (this.filters.some(f => f.value == null)) return;
-
-		// When sValue is enabled and all filters are not null valued
-		if (!this.Elem('sValue').disabled) this.ChangeContext();
-
-		// Enable sValue once all filters are not null valued
-		else {
-			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
-			
-			this.Elem('sValue').disabled = false;
-		}
-	}
-	
-	/**
-	 * Update value select element and call ChangeContext()
-	 * @param {*} ev - Event object
-	 * @returns {void}
-	 */
-	OnValue_Change(ev) {
-		this.Elem("sValue").value = ev.item;
-		
-		this.ChangeContext();	
-	}
-
 	/**
 	 * Update geographic level select element when a value to display is selected
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-	ChangeContext() {
-		var value = this.Elem("sValue").value.value;
-
-		var filters = this.filters.map((f, i)=> f.value.value);
-
+	OnValue_Change(ev) {
+		if (this.Elem("sValue").item == null) return;
+		
+		this.Disable(['sGeography', 'bApply']);
+		
+		var filters = this.filters.map(f => f.selected.value);
+		var value = this.Elem("sValue").value;
+		
 		this.Emit("Busy");
-
+		
 		this.context.ChangeIndicators(filters, value).then(c => {	
 			this.Emit("Idle");
 			
@@ -362,7 +324,6 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 					"<div handle='instructions' class='filter-instructions'>nls(Selector_Filter_Instructions)</div>" +
 					"<div handle='filter' class='filter'></div>" +
 				"</div>" +
-
 				"<label>nls(Selector_Value)</label>" +
 				"<div handle='sValue' widget='Api.Components.StaticTypeahead'></div>" +
 				"<label>nls(Selector_Geography)</label>" +
