@@ -25,7 +25,8 @@ export default class Application extends Widget {
 
 		this.config = Configuration.FromJson(config);
 
-		document.querySelector("#nls_link").setAttribute("href", this.Nls("Nls_Link", [this.config.product]));
+        var nlsLnk = document.querySelector("#nls_link");
+        if (nlsLnk) nlsLnk.setAttribute("href", this.Nls("Nls_Link", [this.config.product]));
 		
         // Build map, menu, widgets and other UI components
         this.map = new Map(this.Elem('map'), this.config.Map);
@@ -92,8 +93,14 @@ export default class Application extends Widget {
         nls.Add("Map_Header", "fr", "Carte thématique pour ");
         nls.Add("Table_Header", "en", "Data table for ");
         nls.Add("Table_Header", "fr", "Tableau de données pour ");
+
+        // Local dev
         nls.Add("Nls_Link", "en", "/Dev/geo-explorer-lite/index-fr.html?pid={0}");
         nls.Add("Nls_Link", "fr", "/Dev/geo-explorer-lite/index-en.html?pid={0}");
+
+        // Server deployments
+        //nls.Add("Nls_Link", "en", "/geo-explorer/geo-explorer-lite/index-fr.html?pid={0}");
+        //nls.Add("Nls_Link", "fr", "/geo-explorer/geo-explorer-lite/index-en.html?pid={0}");
 	}
 	
 	AddPointIdentify() {

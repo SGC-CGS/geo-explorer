@@ -19,7 +19,7 @@
 		},	
 		"basemap_internal": {
 			"en": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_Labels_EN_L013/MapServer",
-			"fr": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_2006_Labels_FR_L013/MapServer"
+			"fr": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_Labels_FR_L013/MapServer"
 		},
 		"constraints": {
 			"geometry": {
@@ -74,7 +74,7 @@
     },
     "identify_internal": {
         "PR": {
-            "id": "PRUID",
+            "id": "PRCODE",
             "nameEn": "ENG_LABEL",
             "nameFr": "FRE_LABEL"
         },
@@ -84,7 +84,7 @@
             "nameFr": "FRE_LABEL"
         },
         "CD": {
-            "id": "CDUID",
+            "id": "CD_UID",
             "nameEn": "ENGNAME",
             "nameFr": "FRENAME"
         },
@@ -94,7 +94,7 @@
             "nameFr": "OFFNAME"
         },
         "CSD": {
-            "id": "CSDUID",
+            "id": "CSD_UID",
             "nameEn": "ENGNAME",
             "nameFr": "FRENAME"
         }
