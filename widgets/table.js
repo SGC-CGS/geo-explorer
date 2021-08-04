@@ -51,6 +51,12 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 		this.CreateButton(th, null, this.Nls("Table_Trash_All_Title"), "fa fa-trash"); 
 		
 		this.config.headers.forEach(h => {			
+			if(h.label == "DGUID"){
+				let label = `<abbr class="abbr" title="Dissemination Geography Unique Identifier">DGUID</abbr>`;
+				Dom.Create("th", { innerHTML:label }, tr);
+				return;
+			} 
+				
 			Dom.Create("th", { innerHTML:h.label }, tr);
 		});
 	}
@@ -158,7 +164,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 			      "<div handle='table' class='table-container hidden'>" + 
 					 // "<summary handle='description'></summary>" +
 				     "<table>" +
-				        "<thead handle='header'></thead>" +
+				        "<thead id=`tHead` handle='header'></thead>" +
 				        "<tbody handle='body'></tbody>" + 
 				     "</table>" + 
 			      "</div>" + 
