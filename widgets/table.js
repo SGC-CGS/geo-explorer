@@ -48,7 +48,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 		// For removing all rows from selection
 		var tr = Dom.Create("tr", { }, this.Elem("header"));
 		var th = Dom.Create("th", { }, tr);
-		this.CreateButton(th, this.graphic, this.Nls("Table_Trash_All_Title"), "fa fa-trash"); 
+		this.CreateButton(th, null, this.Nls("Table_Trash_All_Title"), "fa fa-trash"); 
 		
 		this.config.headers.forEach(h => {			
 			Dom.Create("th", { innerHTML:h.label }, tr);
@@ -132,7 +132,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 		bt.addEventListener("click", ev => {
 			ev.stopPropagation();
 			
-			this.Emit("RowButtonClick", { graphic:g })
+			this.Emit("RowDeselectButtonClick", { graphic:g })
 		});
 	}
 	

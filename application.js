@@ -70,7 +70,7 @@ export default class Application extends Widget {
 		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
 		
 		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
-		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
+		this.Node("table").On("RowDeselectButtonClick", this.OnTable_RowDeselectButtonClick.bind(this));
 		this.Node("styler").On('Opacity', this.OnStyler_Opacity.bind(this));
 		this.Node("styler").On('LabelName', this.onStyler_LabelName.bind(this));
 
@@ -167,10 +167,11 @@ export default class Application extends Widget {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	OnTable_RowButtonClick(ev) {
-		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
-		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
+	OnTable_RowDeselectButtonClick(ev) {
+		var mb = this.map.Behavior(this.behavior);
+		ev.graphic ? mb.layer.remove(ev.graphic) : mb.layer.removeAll();
+		this.Elem("table").data = mb.graphics;
+		this.Elem("chart").data = mb.graphics;
 	}
 	
 	OnWidget_Busy(ev) {
