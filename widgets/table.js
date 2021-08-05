@@ -49,12 +49,6 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 		Dom.Create("th", { }, this.Elem("header"));
 
 		this.config.headers.forEach(h => {
-			if(h.label == "DGUID"){
-				let label = `<abbr class="abbr" title="Dissemination Geography Unique Identifier">DGUID</abbr>`;
-				Dom.Create("th", { innerHTML:label }, this.Elem("header"));
-				return;
-			} 
-				
 			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
 		});
 	}
@@ -158,7 +152,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 			      "<div handle='table' class='table-container hidden'>" + 
 					 // "<summary handle='description'></summary>" +
 				     "<table>" +
-				        "<thead id=`tHead`>" + 
+				        "<thead>" + 
 				           "<tr handle='header'></tr>" + 
 				        "</thead>" +
 				        "<tbody handle='body'></tbody>" + 

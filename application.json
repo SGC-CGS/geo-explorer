@@ -216,8 +216,8 @@
                     "fr": "GeographyReferenceId"
                 },
                 "label": {
-                    "en": "DGUID",
-                    "fr": "IDUGD"
+                    "en": "<abbr title='Dissemination Geography Unique Identifier'>DGUID</abbr>",
+                    "fr": "<abbr title='Identificateur unique des géographies de diffusion'>IDUGD</abbr>"
                 }
             }, {
                 "id": {
