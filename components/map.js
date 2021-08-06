@@ -4,7 +4,7 @@ import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Net from '../tools/net.js';
 import Requests from '../tools/requests.js';
-import Evented from './evented.js';
+import Evented from './base/evented.js';
 
 /**
  * Map module
@@ -15,13 +15,13 @@ export default class Map extends Evented {
 
 	/**
 	 * @description get the popup and view content from the feature's attributes
-	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Popup.html|ArcGIS API for JavaScript}
+	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Popup.html| ArcGIS API for JavaScript}
 	 */
 	get popup() { return this._view.popup; }
 
 	/**
 	 * @description get the view
-	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-views-View.html#ui|ArcGIS API for JavaScript}
+	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-views-View.html#ui| ArcGIS API for JavaScript}
 	 */
 	get view() { return this._view; }
 	
@@ -43,13 +43,29 @@ export default class Map extends Evented {
 	 */
 	get behaviors() { return this._behaviors; }
 
+	/**
+	 * {@link https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Widget.html| ArcGIS API for JavaScript}
+	 */
 	constructor(container, options) {
 		super();
 		
 		this._layers = {};
-		this._behaviors = {};
+        this._behaviors = {};
+
+        // starting from ArcGIS API for JavaScript 4.16
+        if (ESRI.intl.setLocale) ESRI.intl.setLocale(Core.locale);
+
+		let basemap = "streets";
+
+        if (options.basemap) {
+            basemap = new ESRI.Basemap({
+                baseLayers: [new ESRI.layers.MapImageLayer({ url: options.basemap, title: "Basemap" })],
+                title: "Basemap",
+                id: "basemap"
+            });
+		}
 		
-		this._map = new ESRI.Map({ basemap: "streets" });
+        this._map = new ESRI.Map({ basemap: basemap });
 		
 		this._view = new ESRI.views.MapView({
 			animation : options && options.animation || false,
@@ -57,28 +73,25 @@ export default class Map extends Evented {
 			container: container, 
 			map: this._map,  
 			zoom: options && options.zoom || 4, 
+			constraints: options && options.constraints || {},
 			highlightOptions: {
 				color: [255, 255, 0, 1],
 				haloOpacity: 0.0,
 				fillOpacity: 0.4
 			  }
 		});
-		
+        
 		this._view.popup.collapseEnabled = false;
 
 		this._view.on("click", this.OnMapView_Click.bind(this));
 		
-		var fullscreen = new ESRI.widgets.Fullscreen({ 
-			view: this._view
+		if (Core.locale == "en") return;
+		
+		this._view.when(d => {
+			var link = this.view.container.querySelector(".esri-attribution__link");
+			
+			link.setAttribute("href", "https://www.esri.ca/fr-ca/home");
 		});
-
-		this._view.ui.add(fullscreen, "top-left");
-
-		var home = new ESRI.widgets.Home({ 
-			view: this._view
-		});
-
-		this._view.ui.add(home, "top-left");
 	}
 	
 	/**

@@ -87,10 +87,10 @@ export default class Datapoint {
         return this.value;
 	}
 	
-	Format(locale) {
-		return Core.LocalizeNumber(this.value, locale);
+	Localized(locale) {
+		return Core.LocalizeNumber(this.value, locale || Core.locale);
 	}
-
+	
     /**
      * @description
      * Parse Datapoint from JSON

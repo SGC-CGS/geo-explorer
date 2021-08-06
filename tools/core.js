@@ -18,7 +18,7 @@ export default class Core {
     static get locale() { return _locale; }
 	
     static set locale(value) { _locale = value; }
-			
+	
 	/**
 	* A convenience function to get a defered object for asynchronous processing. 
 	* Removes one level of nesting when working with promises.
@@ -174,12 +174,16 @@ export default class Core {
 	 * @param {string} hex - Hexidecimal code
 	 * @returns {string} RGB code
 	 */	
-	static HexToRgb(hex) {
+	static HexToRgb(hex, a) {
 		var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		
-		return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
+		var rgb = m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : null;
+		
+		if (a != undefined) rgb.push(a);
+		
+		return rgb;
 	}
-	
+		
 	/**
 	 * Wait for document to finish loading before resolving the promise
 	 * @returns {Promise} 

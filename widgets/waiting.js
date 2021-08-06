@@ -1,33 +1,33 @@
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 
 /**
  * Waiting widget module
  * @module widgets/waiting
- * @extends Templated
+ * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Waiting", class Waiting extends Templated {
+export default Core.Templatable("Api.Widgets.Waiting", class Waiting extends Widget {
 	
 	/**
-	 * Return text for waiting widget in both languages
-	 * @returns {object.<string, string>} Waiting widget text for each language
+	 * Call constructor of base class and initialize waiting widget
+	 * @param {object} container - div waiting container and properties
+	 * @returns {void}
 	 */
-	static Nls(nls) {
-		nls.Add("Waiting_Label", "en", "Working...");
-		nls.Add("Waiting_Label", "fr", "Chargement...");		
+	constructor(container) {	
+		super(container);
+		
+		this.Hide();
 	}
 	
 	/**
-	 * Call constructor of base class (Templated) and initialize waiting widget
-	 * @param {object} container - div waiting container and properties
-	 * @param {object} options - any additional options to assign to the widget (not typically used)	  
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
 	 * @returns {void}
 	 */
-	constructor(container, options) {	
-		super(container, options);
-		
-		this.Hide();
+	Localize(nls) {
+		nls.Add("Waiting_Label", "en", "Working...");
+		nls.Add("Waiting_Label", "fr", "Chargement...");		
 	}
 	
 	/**
@@ -50,7 +50,7 @@ export default Core.Templatable("App.Widgets.Waiting", class Waiting extends Tem
 	 * Create HTML for this widget
 	 * @returns {string} HTML for waiting widget
 	 */
-	Template() {        
+	HTML() {        
 		return "<label handle='label'>nls(Waiting_Label)</label>" +
 			   "<i class='fa fa-circle-o-notch fa-spin'></i>";
 	}

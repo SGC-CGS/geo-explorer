@@ -6,29 +6,29 @@ import Core from '../../tools/core.js';
  * @module ui/typeahead/static
  * @extends Typeahead
  */
-export default Core.Templatable("Basic.Components.StaticTypeahead", class StaticTypeahead extends Typeahead {
-
+export default Core.Templatable("Api.Components.StaticTypeahead", class StaticTypeahead extends Typeahead {
+	
 	/**
-	 * Return ui text in both languages
-	 * @returns {object.<string, string>} Text for each language
-	 */	
-	static Nls(nls) {
+	 * Call constructor of base class and initialize typeahead
+	 * @param {object} container - div container and properties
+	 * @returns {void}
+	 */		
+	constructor(container) {	
+		super(container);
+	}
+		
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
 		nls.Add("Search_Typeahead_Title", "en", "A Filtered list of items will appear as characters are typed.");
 		nls.Add("Search_Typeahead_Title", "fr", "Une liste filtrée d'objets apparaîtra lorsque des caractères seront saisis.");
 		nls.Add("Search_Typeahead_Placeholder", "en", "Find a place on the map...");
 		nls.Add("Search_Typeahead_Placeholder", "fr", "Rechercher un endroit sur la carte...");
 		nls.Add("Search_Typeahead_loading", "en", "loading...");
 		nls.Add("Search_Typeahead_loading", "fr", "en chargement...");
-	}
-	
-	/**
-	 * Call constructor of base class (Typeahead) and initialize typeahead
-	 * @param {object} container - div container and properties
-	 * @param {object} options - any additional options to assign (not typically used)
-	 * @returns {void}
-	 */		
-	constructor(container, options) {	
-		super(container, options);
 	}
 	
 	/**

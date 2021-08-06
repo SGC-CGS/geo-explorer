@@ -2,15 +2,14 @@
 
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
-
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 
 /**
  * Tooltip module
  * @module ui/tooltip
- * @extends Templated
+ * @extends Widget
  */
-export default class Tooltip extends Templated  {
+export default class Tooltip extends Widget  {
 	
 	/**
 	 * Get bounding box
@@ -27,7 +26,7 @@ export default class Tooltip extends Templated  {
 	}
 	
 	/**
-	 * Call constructor of base class (Templated) and add required css
+	 * Call constructor of base class and add required css
 	 * @param {string} - CSS to add
 	 * @returns {void}
 	 */
@@ -35,16 +34,6 @@ export default class Tooltip extends Templated  {
 		super(document.body);		
 
 		if (css) Dom.AddCss(this.Elem("root"), css);		
-	}
-	
-	/**
-	 * Create HTML for tooltip
-	 * @returns {string} HTML for tooltip div
-	 */			
-	Template() {
-		return '<div handle="root" class="gexp tooltip">' +
-				  '<div handle="content"></div>' +
-			   '</div>';
 	}
 		
 	/**
@@ -107,5 +96,15 @@ export default class Tooltip extends Templated  {
 	 */
 	Empty() {
 		Dom.Empty(this.Elem("content"));
+	}
+	
+	/**
+	 * Create HTML for tooltip
+	 * @returns {string} HTML for tooltip div
+	 */			
+	HTML() {
+		return '<div handle="root" class="gexp tooltip">' +
+				  '<div handle="content"></div>' +
+			   '</div>';
 	}
 }

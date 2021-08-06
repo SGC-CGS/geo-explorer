@@ -1,14 +1,14 @@
 
 import Dom from '../tools/dom.js';
 import Core from '../tools/core.js';
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 
 /**
  * Picker module
  * @module ui/picker
- * @extends Templated
+ * @extends Widget
  */
-export default Core.Templatable("Basic.Components.Picker", class Picker extends Templated {
+export default Core.Templatable("Api.Components.Picker", class Picker extends Widget {
 
 	/**
 	 * Get/set color rgb value from picker
@@ -33,7 +33,7 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 	}
 
 	/**
-	 * Call constructor of base class (Templated) and initialize color picker
+	 * Call constructor of base class and initialize color picker
 	 * @param {object} container - div color container and properties
 	 * @returns {void}
 	 */
@@ -71,11 +71,7 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 	OnContainer_Click(ev) {
 		ev.stopPropagation();
 	}
-	
-	// OnPicker_Change(ev) {
- 	//	this.Elem('button').style.backgroundColor = this.picker.color.rgbString;
-	// }
-	
+
 	/**
 	 * Show or hide color picker when a styling start or end color square is clicked
 	 * @param {object} ev - Mouse event
@@ -140,7 +136,7 @@ export default Core.Templatable("Basic.Components.Picker", class Picker extends 
 	 * Create HTML for color picker
 	 * @returns {string} HTML for color picker div
 	 */
-	Template() {
+	HTML() {
 		return "<div class='color-picker'>" +
 				  "<button handle='button' class='color'></button>" +
 			      "<div handle='container' class='wheel-container collapsed'>" +

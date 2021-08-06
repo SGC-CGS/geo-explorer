@@ -2,15 +2,14 @@
 
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
-
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 
 /**
  * Select box module
  * @module ui/select
- * @extends Templated
+ * @extends Widget
  */
-export default Core.Templatable("Basic.Components.Select", class Select extends Templated {
+export default Core.Templatable("Api.Components.Select", class Select extends Widget {
 	
 	/**
 	 * Get/set select box value
@@ -56,13 +55,12 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 	}
 	
 	/**
-	 * Call constructor of base class (Templated) and initialize select
+	 * Call constructor of base class and initialize select
 	 * @param {object} container - div container and properties
-	 * @param {object} options - any additional options to assign (not typically used)
 	 * @returns {void}
 	 */	
-	constructor(container, options) {
-		super(container, options);
+	constructor(container) {
+		super(container);
 		
 		this._items = [];
 		
@@ -121,7 +119,7 @@ export default Core.Templatable("Basic.Components.Select", class Select extends 
 	 * Create HTML for select element
 	 * @returns {string} HTML for select element
 	 */
-	Template() {
+	HTML() {
 		return '<select handle="root"></select>';
 	}
 	

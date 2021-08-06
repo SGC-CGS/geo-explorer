@@ -2,7 +2,7 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from '../components/evented.js';
+import Evented from '../components/base/evented.js';
 import Behavior from './behavior.js';
 
 /**
@@ -48,7 +48,7 @@ export default class PointIdentifyBehavior extends Behavior {
 	set symbol(value) { this._options.symbol = value; }
 
 	/**
-	 * Call constructor of base class (Behavior) and initialize point-select class 
+	 * Call constructor of base class and initialize point-select class 
 	 * Adds point-select graphics layer and click handler.
 	 * @param {object} map - Map object
 	 * @param {object} options - Map options (not generally used)
@@ -126,6 +126,9 @@ export default class PointIdentifyBehavior extends Behavior {
 				
 				else {
 					this.layer.add(r.feature);
+					// REVIEW: pointselect as a property name is a bit awkward. I say we should replace by selected.
+					// Every behavior that selects on the map should use the same data structure (this is a reason why 
+					// a selection object can be useful)
 					this.Emit("Change", { mapPoint:ev.mapPoint, feature:r.feature, pointselect:this.graphics }); // for popup + table
 				}
 			}

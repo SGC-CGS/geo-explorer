@@ -1,21 +1,27 @@
 import Dom from '../tools/dom.js';
 import Core from '../tools/core.js';
-import Templated from '../components/templated.js';
+import Widget from '../components/base/widget.js';
 
 /**
  * Overlay widget module
  * @module widgets/overlay
- * @extends Templated
+ * @extends Widget
  */
-export default class Overlay extends Templated { 
+export default class Overlay extends Widget { 
 	
 	/**
-	 * Set the overlay title
+	 * Set the overlay id
 	 * @type {string}
 	 */
-	set title(value) {
-		this.Elem("title").innerHTML = value;
-	}
+	set id(value) { this._id = value; }
+	get id() { return this._id; }
+	
+	/**
+	 * Get/set the overlay title
+	 * @type {string}
+	 */
+	set title(value) { this.Elem("title").innerHTML = value; }
+	get title() { return this.Elem("title").innerHTML; }
 	
 	/**
 	 * Get/set the overlay widget
@@ -35,36 +41,41 @@ export default class Overlay extends Templated {
 	 * Set the overlay top css rule
 	 * @type {string}
 	 */
-	set css(value) {
-		Dom.AddCss(this.roots[0], value);
-	}
+	set css(value) { Dom.AddCss(this.roots[0], value); }
 	
 	/**
-	 Return hover text for overlay close button in both languages
-	 * @returns {object.<string, string>} Button text for each language
-	 */
-	static Nls(nls) {
-		nls.Add("Overlay_Close", "en", "Cancel");
-		nls.Add("Overlay_Close", "fr", "Annuler");		
-	}
-	
-	/**
-	 * Call constructor of base class (Templated) and initialize overlay
+	 * Call constructor of base class and initialize overlay
 	 * @param {object} container - div.map-container and properties
 	 * @returns {void}
 	 */
-	constructor(container, options) {	
+	constructor(container) {	
 		super(container);
 		
 		this.SetStyle(0, "none");
 		
 		this.Node("close").On("click", this.onBtnClose_Click.bind(this));
-		
-		if (!options) return;
-
-		if (options.css) this.css = options.css;		
-		if (options.widget)	this.widget = options.widget;	
-		if (options.title) this.title = options.title;		
+	}
+	
+	/**
+	 * Configures the widget from a json object
+	 * @param {object} config - Configuration parameters of the widget as a json object
+	 * @returns {void}
+	 */
+	Configure(config) {
+		if (config.id) this.id = config.id;		
+		if (config.css) this.css = config.css;		
+		if (config.widget) this.widget = config.widget;	
+		if (config.title) this.title = config.title;	
+	}
+	
+	/**
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
+	 * @returns {void}
+	 */
+	Localize(nls) {
+		nls.Add("Overlay_Close", "en", "Close");
+		nls.Add("Overlay_Close", "fr", "Fermer");		
 	}
 	
 	/**
@@ -95,7 +106,7 @@ export default class Overlay extends Templated {
 		
 		this.Emit("Show", { overlay:this });
 		
-		this.Elem("close").focus();
+		// this.Elem("close").focus();
 	}
 	
 	/**
@@ -123,8 +134,8 @@ export default class Overlay extends Templated {
 	 * Create a div for this widget
 	 * @returns {string} HTML with custom div
 	 */
-	Template() {
-		return	  "<div handle=esri-component class='overlay esri-component'>" +
+	HTML() {
+		return	  "<div class='overlay esri-component'>" +
 					  "<div class='overlay-header'>" +
 						  "<h2 class='overlay-title' handle='title'></h2>" +
 						  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +

@@ -1,7 +1,6 @@
 ﻿'use strict';
 
 import Core from '../../tools/core.js';
-import Nls from '../nls.js';
 
 /**
  * CodeSets module
@@ -15,8 +14,10 @@ export default class CodeSets {
 
     set json(value) { this._json = value; }
 
-    get nls() { return this._nls; }
-
+    constructor(json) {
+        this.json = json;        
+    }
+	
     /**
      * @description
      * Get the decoded value of a security code, depending on the locale.
@@ -25,12 +26,16 @@ export default class CodeSets {
      */
     security(code) {
         var security = this.json.securityLevel.find(m => m.securityLevelCode == code);
-        
+
 		if (!security) return null;
         
-		var fld = Core.locale == "en" ? "securityLevelRepresentationEn" : "securityLevelRepresentationFr";
+		var code = Core.locale == "en" ? "securityLevelRepresentationEn" : "securityLevelRepresentationFr";
+        var desc = Core.locale == "en" ? "securityLevelDescEn" : "securityLevelDescFr";
 		
-		return security[fld];
+		return {
+			code: security[code],
+			description: security[code] + ", " + security[desc]
+		}
     }
 
     /**
@@ -44,9 +49,13 @@ export default class CodeSets {
 		
 		if (!status) return null;
 
-		var fld = Core.locale == "en" ? "statusRepresentationEn" : "statusRepresentationFr";
-
-		return status[fld];
+		var code = Core.locale == "en" ? "statusRepresentationEn" : "statusRepresentationFr";
+        var desc = Core.locale == "en" ? "statusDescEn" : "statusDescFr";
+        
+		return {
+			code: status[code],
+			description: status[code] + ", " + status[desc]
+		}
     }
 
     /**
@@ -56,13 +65,17 @@ export default class CodeSets {
      * @param {String} code - symbol code to be decoded
      */
     symbol(code) {
-        var symbol = this.json.symbol.find(m => m.symbolCode == code);
+        var symbol = this.json.symbol.find(m => m.symbolCode == code);		
 		
 		if (!symbol) return null;
 
-		var fld = Core.locale == "en" ? "symbolRepresentationEn" : "symbolRepresentationFr";
-
-		return symbol[fld];
+		var code = Core.locale == "en" ? "symbolRepresentationEn" : "symbolRepresentationFr";
+        var desc = Core.locale == "en" ? "symbolDescEn" : "symbolDescEn";
+		
+		return {
+			code: symbol[code],
+			description: symbol[code] + ", " + symbol[desc]
+		}
     }
 
     /**
@@ -72,15 +85,15 @@ export default class CodeSets {
      * @param {String} code - scalar code to be decoded
      */
     scalar(code) {
-        var scalar = this.json.scalar.find(m => m.scalarFactorCode == code);
+        var scalar = this.json.scalar.find(m => m.scalarFactorCode == code);	
 		
 		if (!scalar) return null;
 
 		var fld = Core.locale == "en" ? "scalarFactorDescEn" : "scalarFactorDescFr";
-
+		
 		return scalar[fld];
     }
-
+    
     /**
      * @description
      * Get the decoded value of a frequency code, depending on the locale.
@@ -88,15 +101,15 @@ export default class CodeSets {
      * @param {String} code - frequency code to be decoded
      */
     frequency(code) {
-        var frequency = this.json.frequency.find(m => m.frequencyCode == code);
+        var frequency = this.json.frequency.find(m => m.frequencyCode == code);		
 		
 		if (!frequency) return null;
 
 		var fld = Core.locale == "en" ? "frequencyDescEn" : "frequencyDescFr";
-
+		
 		return frequency[fld];
     }
-
+    
     /**
      * @description
      * Get the decoded value of a unit of measure (uom) code, depending on the locale.
@@ -104,140 +117,59 @@ export default class CodeSets {
      * @param {String} code - unit of measure code to be decoded
      */
     uom(code) {
-        var uom = this.json.uom.find(m => m.memberUomCode == code);
+        var uom = this.json.uom.find(m => m.memberUomCode == code);		
 		
 		if (!uom) return null;
 
 		var fld = Core.locale == "en" ? "memberUomEn" : "memberUomFr";
-
+		
 		return uom[fld];
     }
 
-    static Nls(nls) {
-        nls.Add("ValueColumn", "en", "Value:");
-        nls.Add("ValueColumn", "fr", "Valeur:");
-
-        nls.Add("FreqColumn", "en", "Frequency:");
-        nls.Add("FreqColumn", "fr", "Fréquence:");
-
-        nls.Add("GeoVintageColumn", "en", "Geo Vintage:");
-        nls.Add("GeoVintageColumn", "fr", "Vintage géo:");
-
-        nls.Add("UomColumn", "en", "Unit of measure:");
-        nls.Add("UomColumn", "fr", "Unité de mesure:");
-
-        nls.Add("ScalarColumn", "en", "Scalar factor:");
-        nls.Add("ScalarColumn", "fr", "Facteur scalaire:");
-    }
-
-
     /**
-     * @description
-     * Format a Datapoint description in html format - for a specific locale, including symbol, uom, etc.
-     * @param {String} dp - Datapoint object
-     * @param {String} geoVintage - Geography Vintage
-     * @param {String} locale - locale, en/fr
+     * Get the description of security, status and symbol values, if any, for the datapoint 
+     * @param {any} dp
+     * @param {any} locale
      */
-    FormatDP_HTMLTable(dp, geoVintage, locale) {
-        var htmlTable = "<table class='popup-table'><tbody handle='body'>";
-        
-        var content = dp.Format(locale || Core.locale);
-
+    GetFormattedDP(dp, locale) {
         var security = this.security(dp.security);
         var status = this.status(dp.status);
         var symbol = this.symbol(dp.symbol);
-        var scalar = this.scalar(dp.scalar);
-        var frequency = this.frequency(dp.frequency);
-        var uom = this.uom(dp.uom);
+		var sup = [];
+		var abbr = [];
 
         // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
-        if (security) {
-            htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + security + "</td></tr></tbody></table>";
-            return htmlTable;
-        }
-
-        if (status) {
-            var letters = ["A", "B", "C", "D", "E", "F"];
-
-            content = letters.indexOf(status) > -1 ? content + status.sup() : status;
-        }
-
-        // Any standard table symbol associated to the value as supercript        
-        if (symbol) content += symbol.sup();
-        
-        htmlTable += "<tr><td>" + this.Nls("ValueColumn") + "</td><td>" + content + "</td></tr>";
-
-        if (!frequency) frequency = "";
-        htmlTable += "<tr><td>" + this.Nls("FreqColumn") + "</td><td>" + frequency + "</td></tr>";
-        
-        if (!geoVintage) geoVintage = "";
-        htmlTable += "<tr><td>" + this.Nls("GeoVintageColumn") + "</td><td>" + geoVintage + "</td></tr>";
-        
-        if (!uom) uom = ""; 
-        htmlTable += "<tr><td>" + this.Nls("UomColumn") + "</td><td>" + uom + "</td></tr>";
-        
-        if (!scalar) scalar = "";
-        htmlTable += "<tr><td>" + this.Nls("ScalarColumn") + "</td><td>" + scalar + "</td></tr>";
-        
-        htmlTable += "</tbody></table>";
-
-        return htmlTable;
-    }
-
-    /**
-     * @description
-     * Format a Datapoint description for a specific locale, including symbol, uom, etc.
-     * @param {String} dp - Datapoint object
-     * @param {String} locale - locale, en/fr
-     */
-	FormatDP(dp, locale) {
-        var content = dp.Format(locale || Core.locale);
-        
-		var security = this.security(dp.security);
-		var status = this.status(dp.status);
-		var symbol = this.symbol(dp.symbol);
-		var scalar = this.scalar(dp.scalar);
-		var frequency = this.frequency(dp.frequency);
-		var uom = this.uom(dp.uom);
+		if (security.code) {
+			var value = security.code;
+			abbr.push(security.description);
+		}
 		
-        // If the value is suppressed, confidential or otherwise unavailable, show the replacement symbol (i.e: X, F, .. etc.)
-        if (security) return security;
-        
-		if (status) {
-            var letters = ["A", "B", "C", "D", "E", "F"];
+		else {
+			if (status.code == null) var value = dp.Localized();
 			
-			content = letters.indexOf(status) > -1 ? content + status.sup() : status;
-        }
-        
-        // Any standard table symbol associated to the value as supercript        
-		if (symbol) content += symbol.sup();
+			else if (["A", "B", "C", "D", "E"].includes(status.code)) {
+				var value = dp.Localized();
+				sup.push(status.code);
+				abbr.push(status.description);
+			}
+			
+			else {
+				var value = status.code;
+				abbr.push(status.description);
+			}
+		}
 		
-        // Units of measure associated to the value        
-		if (uom) content = content + " " + uom;
-		
-		if (scalar && scalar != "units") content = content + " " + scalar;
-        
-		if (frequency) content = content + " - " + frequency;
-		
-		return content;
-	}
+		if (symbol.code) {
+			sup.push(symbol.code);
+			abbr.push(symbol.description);
+		}
 
-    constructor(json) {
-        this.json = json;        
-        this._nls = new Nls();
-        this.constructor.Nls(this._nls);
-    }
+		if (abbr.length == 0) return `${value}`;
 
-    /**
-	 * @description
-	 * Get a localized nls string resource
-	 * @param {*} id — the id of the nls resource to retrieve
-	 * @param {Array} subs - an array of Strings to substitute in the localized nls string resource
-	 * @param {String} locale - the locale for the nls resource
-	 * @returns - the localized nls string resource
-	 */
-    Nls(id, subs, locale) {
-        return this.nls.Resource(id, subs, locale);
+		else if (sup.length == 0) return `<abbr title="${abbr.join(" - ")}">${value}</abbr>`;
+
+		else return `<abbr title="${abbr.join("\n")}">${value}<sup>${sup.join(", ")}</sup></abbr>`;
+
     }
 
     /**

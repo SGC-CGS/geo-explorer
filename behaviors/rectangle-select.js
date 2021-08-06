@@ -2,7 +2,7 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from '../components/evented.js';
+import Evented from '../components/base/evented.js';
 import Behavior from './behavior.js';
 
 /**
