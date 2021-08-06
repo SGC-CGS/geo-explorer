@@ -33,18 +33,6 @@ export default class Application extends Widget {
 	get behavior() { return "selection"; }
 
 	/**
-	 * Add specified language strings to the nls object
-	 * @param {object} nls - Existing nls object
-	 * @returns {void}
-	 */
-	static Nls(nls) {
-		nls.Add("Fullscreen_Title", "en", "Fullscreen");
-		nls.Add("Fullscreen_Title", "fr", "Plein écran");
-		nls.Add("Home_Title", "en", "Default map view");
-		nls.Add("Home_Title", "fr", "Vue cartographique par défaut");
-	}
-
-	/**
 	 * Call constructor of base class (Templated) and initialize application
 	 * @param {object} node - Application div
 	 * @param {object} config - Configuration data
