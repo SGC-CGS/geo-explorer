@@ -2,7 +2,6 @@ import Core from "../geo-explorer-api/tools/core.js";
 import Dom from "../geo-explorer-api/tools/dom.js";
 import Net from "../geo-explorer-api/tools/net.js";
 import Requests from "../geo-explorer-api/tools/requests.js";
-import Configuration from "./components/configuration.js";
 
 import Application from "./application.js";
 
@@ -29,8 +28,7 @@ function Start(responses) {
 	
 	var div = Dom.Node(document.body, "#app-container");
 	
-	var config = new Configuration(responses[0]);
-	var app = new Application(div, config);
+	var app = new Application(div, responses[0]);
 }
 
 function Fail(response) {
@@ -54,6 +52,7 @@ function LoadEsri() {
 				 "esri/layers/support/Sublayer", 
 				 "esri/core/urlUtils", 
 				 "esri/core/watchUtils", 
+				 "esri/Color", 
 				 "esri/Map", 
 				 "esri/Graphic", 
 				 "esri/views/MapView", 
@@ -61,7 +60,8 @@ function LoadEsri() {
 				 "esri/widgets/BasemapGallery", 
 				 "esri/widgets/Bookmarks", 
 				 "esri/widgets/Fullscreen", 
-				 "esri/widgets/Home"], 				 
+				 "esri/widgets/Home",
+                 "esri/intl"], 				 
 				 
 				 function(jsonUtils, 
 						  Renderer, 
@@ -72,6 +72,7 @@ function LoadEsri() {
 						  Sublayer, 
 						  urlUtils, 
 						  watchUtils, 
+						  Color, 
 						  Map, 
 						  Graphic, 
 						  MapView, 
@@ -79,15 +80,17 @@ function LoadEsri() {
 						  BasemapGallery, 
 						  Bookmarks, 
 						  Fullscreen,
-						  Home) {							  
+						  Home,
+						  intl) {							  
 			
-			// TODO: This needs to be moved to the API layer maybe
 			window.ESRI = {
+                intl : intl,
 				core : { 
 					urlUtils : urlUtils,
 					watchUtils : watchUtils
 				},
 				request : request,
+				Color : Color,
 				Map : Map,
 				Graphic : Graphic,
 				views : {
@@ -114,7 +117,7 @@ function LoadEsri() {
 					Fullscreen : Fullscreen,
 					BasemapGallery : BasemapGallery,
 					Bookmarks : Bookmarks,
-					Home : Home
+					Home: Home
 				}
 			}
 

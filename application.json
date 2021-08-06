@@ -1,20 +1,13 @@
 {
-    "map": {
-        "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
-        "opacity": 0.75
+    "context": {
+        "subject": 13,
+        "theme": 1399,
+        "category": 13100113,
+        "filters": [3046, 3001, 3007, 3021],
+        "value": 3037,
+        "geography": "A0007"
     },
-    "layers": {
-		"PR" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
-		"CD" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
-		"CSD" : "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
-	},
-	"id": {
-		"PR" : "PRUID",
-		"CD" : "CDUID",
-		"CSD" : "CSDUID"
-	},
-	"colors": [[239,243,255],[189,215,231,255],[107,174,214,255],[49,130,189,255],[8,81,156,255]],
-    "symbols": {
+	"symbols": {
         "selection": {
             "type": "simple-fill",
             "color": [0, 0, 0, 0.2],
@@ -34,7 +27,7 @@
                 "width": 1.5,
                 "style": "solid"
             }
-        },        
+        },
         "pointselect": {
             "type": "simple-fill",
             "color": [0, 0, 0, 0.2],
@@ -46,13 +39,175 @@
             }
         }
     },
-    "context": {
-        "subject": 13,
-        "theme": 1399,
-        "category": 13100113,
-        "filters": [3046, 3001, 3007, 3021],
-        "value": 3037,
-        "geography": "A0007"
+    "map": {
+        "url": "https://www97.statcan.gc.ca/arcgis/rest/services/CHSP/stcdv_dyn/MapServer/",
+        "opacity": 0.75,
+        "options": {
+            "constraints": {
+                "geometry": {
+                    "type": "extent",
+                    "xmin": -141,
+                    "xmax": -53,
+                    "ymin": 41,
+                    "ymax": 83
+                },
+                "minZoom": 3
+            },
+            "zoom": 4,
+            "center": [-99, 62],
+            "animation": false 
+        }
+    },
+    "styler": {
+		"opacity": 0.75
+    },
+    "infopopup": {
+        "title": {
+            "en": "DisplayNameShort_EN",
+            "fr": "DisplayNameShort_FR"
+        },
+        "uom": {
+            "en": "UOM_EN",
+            "fr": "UOM_FR"
+        },
+        "value": {
+            "en": "FormattedValue_EN",
+            "fr": "FormattedValue_FR"
+        },
+        "indicator": {
+            "en": "IndicatorDisplay_EN",
+            "fr": "IndicatorDisplay_FR"
+        },
+        "symbol": {
+            "en": "Symbol",
+            "fr": "Symbol"
+        },
+        "nulldesc": {
+            "en": "NullDescription_EN",
+            "fr": "NullDescription_FR"
+        },
+        "tableviewer": {
+            "en": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=",
+            "fr": "https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid="
+        }
+    },
+    "bookmarks": {
+        "items": [{
+                "name": "Abbotsford - Mission",
+                "extent": [[-122.461478, 49.002173], [-122.072559, 49.361]]
+            }, {
+                "name": "Barrie",
+                "extent": [[-79.984429, 44.164742], [-79.505361, 44.648444]]
+            },{
+                "name": "Belleville",
+                "extent": [[-77.754464, 44.017965], [-77.044724, 44.479139]]
+            }, {
+                "name": "Brantford",
+                "extent": [[-80.608745, 42.984863], [-79.984323, 43.306533]]
+            }, {
+                "name": "Calgary",
+                "extent": [[-114.72816, 50.794297], [-113.376704, 51.489714]]
+            }, {
+                "name": "Edmonton",
+                "extent": [[-115.11844, 53.044623], [-112.840683, 54.022998]]
+            }, {
+                "name": "Greater Sudbury / Grand Sudbury",
+                "extent": [[-81.597481, 46.195306], [-80.290648, 46.973681]]
+            }, {
+                "name": "Guelph",
+                "extent": [[-80.409749, 43.387191], [-80.034339, 43.725302]]
+            }, {
+                "name": "Halifax",
+                "extent": [[-64.2372, 43.92054], [-59.707316, 45.275872]]
+            }, {
+                "name": "Hamilton",
+                "extent": [[-80.248486, 43.050516], [-79.511992, 43.476542]]
+            }, {
+                "name": "Kelowna",
+                "extent": [[-120.056807, 49.675274], [-118.797557, 50.235324]]
+            }, {
+                "name": "Kingston",
+                "extent": [[-76.904469, 44.095203], [-76.167373, 44.740694]]
+            }, {
+                "name": "Kitchener - Cambridge - Waterloo",
+                "extent": [[-80.796365, 43.266802], [-80.187603, 43.689596]]
+            }, {
+                "name": "Lethbridge",
+                "extent": [[-113.276809, 49.523211], [-112.217763, 50.136059]]
+            }, {
+                "name": "London",
+                "extent": [[-81.795655, 42.648205], [-80.898693, 43.231461]]
+            }, {
+                "name": "Moncton",
+                "extent": [[-65.223834, 45.649235], [-64.481432, 46.43166]]
+            }, {
+                "name": "Montréal",
+                "extent": [[-74.327969, 45.217539], [-73.128561, 45.968489]]
+            }, {
+                "name": "Oshawa",
+                "extent": [[-79.047311, 43.833493], [-78.436983, 44.098757]]
+            }, {
+                "name": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
+                "extent": [[-76.353971, 44.845647], [-75.079539, 45.587534]]
+            }, {
+                "name": "Ottawa - Gatineau (partie du Québec / Quebec part)",
+                "extent": [[-76.325509, 45.372698], [-75.12962, 45.994786]]
+            }, {
+                "name": "Peterborough",
+                "extent": [[-78.584226, 44.081278], [-77.926007, 44.583151]]
+            }, {
+                "name": "Québec",
+                "extent": [[-71.814619, 46.528725], [-70.712302, 47.307312]]
+            }, {
+                "name": "Regina",
+                "extent": [[-105.305668, 50.04769], [-104.052705, 50.819264]]
+            }, {
+                "name": "Saguenay",
+                "extent": [[-71.577174, 48.189331], [-70.430625, 48.780637]]
+            }, {
+                "name": "Saint John",
+                "extent": [[-66.593037, 45.058163], [-65.082482, 45.692173]]
+            }, {
+                "name": "Saskatoon",
+                "extent": [[-107.299569, 51.707041], [-105.687539, 52.579696]]
+            }, {
+                "name": "Sherbrooke",
+                "extent": [[-72.253301, 45.159204], [-71.626193, 45.650305]]
+            }, {
+                "name": "St. Catharines - Niagara",
+                "extent": [[-79.583816, 42.835953], [-78.908239, 43.263257]]
+            }, {
+                "name": "St. John's",
+                "extent": [[-53.096822, 47.244192], [-52.619408, 47.810048]]
+            }, {
+                "name": "Thunder Bay",
+                "extent": [[-89.767906, 47.996436], [-88.513239, 48.738557]]
+            }, {
+                "name": "Toronto",
+                "extent": [[-80.171741, 43.371696], [-78.970501, 44.459783]]
+            }, {
+                "name": "Trois-Rivières",
+                "extent": [[-72.921609, 46.193611], [-72.160276, 46.535625]]
+            }, {
+                "name": "Vancouver",
+                "extent": [[-123.431892, 49.001919], [-122.408639, 49.574275]]
+            }, {
+                "name": "Victoria",
+                "extent": [[-124.055285, 48.308915], [-123.224611, 48.699401]]
+            }, {
+                "name": "Windsor",
+                "extent": [[-83.131229, 42.017788], [-82.429919, 42.349148]]
+            }, {
+                "name": "Winnipeg",
+                "extent": [[-97.950368, 49.531128], [-96.352954, 50.547882]]
+            }
+        ]
+    },
+    "chart": {
+        "field": {
+            "en": "DisplayNameLong_EN",
+            "fr": "DisplayNameLong_FR"
+        }
     },
     "table": {
         "headers": [{
@@ -61,8 +216,8 @@
                     "fr": "GeographyReferenceId"
                 },
                 "label": {
-                    "en": "DGUID",
-                    "fr": "IDUGD"
+                    "en": "<abbr title='Dissemination Geography Unique Identifier'>DGUID</abbr>",
+                    "fr": "<abbr title='Identificateur unique des géographies de diffusion'>IDUGD</abbr>"
                 }
             }, {
                 "id": {
@@ -99,7 +254,7 @@
                 "label": {
                     "en": "Symbol",
                     "fr": "Symbole"
-                }                
+                }
             }, {
                 "id": {
                     "en": "UOM_EN",
@@ -108,7 +263,7 @@
                 "label": {
                     "en": "Unit of Measure",
                     "fr": "Unité de mesure"
-                }                
+                }
             }, {
                 "id": {
                     "en": "NullDescription_EN",
@@ -139,147 +294,5 @@
                 "fr" : "La Base de Données Ouverte des Établissements de Santé"
             }
         }
-    ]},
-    "bookmarks": [{
-            "name": "Calgary",
-            "extent": [[-114.72816, 50.794297], [-113.376704, 51.489714]]
-        }, {
-            "name": "Edmonton",
-            "extent": [[-115.11844, 53.044623], [-112.840683, 54.022998]]
-        }, {
-            "name": "Belleville",
-            "extent": [[-77.754464, 44.017965], [-77.044724, 44.479139]]
-        }, {
-            "name": "Windsor",
-            "extent": [[-83.131229, 42.017788], [-82.429919, 42.349148]]
-        }, {
-            "name": "Trois-Rivières",
-            "extent": [[-72.921609, 46.193611], [-72.160276, 46.535625]]
-        }, {
-            "name": "Lethbridge",
-            "extent": [[-113.276809, 49.523211], [-112.217763, 50.136059]]
-        }, {
-            "name": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
-            "extent": [[-76.353971, 44.845647], [-75.079539, 45.587534]]
-        }, {
-            "name": "Guelph",
-            "extent": [[-80.409749, 43.387191], [-80.034339, 43.725302]]
-        }, {
-            "name": "Saskatoon",
-            "extent": [[-107.299569, 51.707041], [-105.687539, 52.579696]]
-        }, {
-            "name": "Ottawa - Gatineau (partie du Québec / Quebec part)",
-            "extent": [[-76.325509, 45.372698], [-75.12962, 45.994786]]
-        }, {
-            "name": "London",
-            "extent": [[-81.795655, 42.648205], [-80.898693, 43.231461]]
-        }, {
-            "name": "Regina",
-            "extent": [[-105.305668, 50.04769], [-104.052705, 50.819264]]
-        }, {
-            "name": "Saint John",
-            "extent": [[-66.593037, 45.058163], [-65.082482, 45.692173]]
-        }, {
-            "name": "Moncton",
-            "extent": [[-65.223834, 45.649235], [-64.481432, 46.43166]]
-        }, {
-            "name": "Halifax",
-            "extent": [[-64.2372, 43.92054], [-59.707316, 45.275872]]
-        }, {
-            "name": "Victoria",
-            "extent": [[-124.055285, 48.308915], [-123.224611, 48.699401]]
-        }, {
-            "name": "Kelowna",
-            "extent": [[-120.056807, 49.675274], [-118.797557, 50.235324]]
-        }, {
-            "name": "Sherbrooke",
-            "extent": [[-72.253301, 45.159204], [-71.626193, 45.650305]]
-        }, {
-            "name": "Abbotsford - Mission",
-            "extent": [[-122.461478, 49.002173], [-122.072559, 49.361]]
-        }, {
-            "name": "Kitchener - Cambridge - Waterloo",
-            "extent": [[-80.796365, 43.266802], [-80.187603, 43.689596]]
-        }, {
-            "name": "St. Catharines - Niagara",
-            "extent": [[-79.583816, 42.835953], [-78.908239, 43.263257]]
-        }, {
-            "name": "Vancouver",
-            "extent": [[-123.431892, 49.001919], [-122.408639, 49.574275]]
-        }, {
-            "name": "Brantford",
-            "extent": [[-80.608745, 42.984863], [-79.984323, 43.306533]]
-        }, {
-            "name": "St. John's",
-            "extent": [[-53.096822, 47.244192], [-52.619408, 47.810048]]
-        }, {
-            "name": "Québec",
-            "extent": [[-71.814619, 46.528725], [-70.712302, 47.307312]]
-        }, {
-            "name": "Greater Sudbury / Grand Sudbury",
-            "extent": [[-81.597481, 46.195306], [-80.290648, 46.973681]]
-        }, {
-            "name": "Hamilton",
-            "extent": [[-80.248486, 43.050516], [-79.511992, 43.476542]]
-        }, {
-            "name": "Saguenay",
-            "extent": [[-71.577174, 48.189331], [-70.430625, 48.780637]]
-        }, {
-            "name": "Toronto",
-            "extent": [[-80.171741, 43.371696], [-78.970501, 44.459783]]
-        }, {
-            "name": "Winnipeg",
-            "extent": [[-97.950368, 49.531128], [-96.352954, 50.547882]]
-        }, {
-            "name": "Peterborough",
-            "extent": [[-78.584226, 44.081278], [-77.926007, 44.583151]]
-        }, {
-            "name": "Montréal",
-            "extent": [[-74.327969, 45.217539], [-73.128561, 45.968489]]
-        }, {
-            "name": "Oshawa",
-            "extent": [[-79.047311, 43.833493], [-78.436983, 44.098757]]
-        }, {
-            "name": "Barrie",
-            "extent": [[-79.984429, 44.164742], [-79.505361, 44.648444]]
-        }, {
-            "name": "Thunder Bay",
-            "extent": [[-89.767906, 47.996436], [-88.513239, 48.738557]]
-        }, {
-            "name": "Kingston",
-            "extent": [[-76.904469, 44.095203], [-76.167373, 44.740694]]
-        }
-    ],
-    "popup": {
-        "title": {
-            "en": "DisplayNameShort_EN",
-            "fr": "DisplayNameShort_FR"
-        }, 
-        "uom": {
-            "en": "UOM_EN",
-            "fr": "UOM_FR"
-        },
-        "value": {
-            "en": "FormattedValue_EN",
-            "fr": "FormattedValue_FR"
-        },
-        "indicator": {
-            "en": "IndicatorDisplay_EN",
-            "fr": "IndicatorDisplay_FR"
-        },
-        "symbol": {
-            "en": "Symbol",
-            "fr": "Symbol"
-        }, 
-        "nulldesc": {
-            "en": "NullDescription_EN",
-            "fr": "NullDescription_FR"
-        }
-    },
-    "tableviewer": {
-        "url": {
-            "en": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=",
-            "fr": "https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid="
-        }
-    }    
+    ]}
 }

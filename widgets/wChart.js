@@ -1,47 +1,55 @@
-import Templated from '../../geo-explorer-api/components/templated.js';
+import Widget from '../../geo-explorer-api/components/base/widget.js';
 import Core from "../../geo-explorer-api/tools/core.js";
 import BarChart from "../charts/barChart.js";
 import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";
 import ScatterPlot from "../charts/scatterPlot.js";
 
-
 /**
  * Chart widget module
  * @module widgets/wChart
- * @extends Templated
- * @description Chart widget where a chart is selected and
- * built onto the UI
+ * @extends Widget
+ * @description Chart widget where a chart is selected and built onto the UI
  * @todo Handle product changes in Application.js?
  */
-export default Core.Templatable("App.Widgets.WChart", class WChart extends Templated {
+export default Core.Templatable("App.Widgets.WChart", class WChart extends Widget {
+
+	/** 
+	 * Get the widgets title
+	*/	
+	get title() { return this.Nls("Chart_Title"); }
 
 	/**
-	 * Get / set data label, value, and uom
+	 * Get / set the widgets title with a link
 	 */
-	get data() { return this._data; }
+	get linkTitle() { return this._linkTitle; }
+
+	set linkTitle(link) {
+		this._linkTitle = this.Nls('Chart_Title_Link', link);
+	}
+
+	/**
+	 *  Get the widgets disabled title
+	 */
+	get disabledTitle() { return this.Nls("Chart_Disabled"); }
+
+	/**
+	 * Get / Set data label, value, and uom
+	 */
+	get data() { return this.chart.data; }
 
     set data(value) {
-		this._data = value.items.map(item => {
-			let label = item["attributes"][this.config.title];
+		var data = value.items.map(item => {
+			let label = item["attributes"][this.config.field];
 			let value = item["attributes"]["Value"] == null ? 0 : item["attributes"]["Value"];
 			let uom = item["attributes"][this.config.uom];
-			return {
-				label: label,
-				value: value,
-				uom: uom
-			}
+			
+			return { label: label, value: value, uom: uom };
 		});
-		this.DrawChart();
+
+		this.DrawChart(data);
     }
-
-	/**
-	 * Get / set the configuration of the chart
-	 */
-	get config() { return this._config; }
-
-	set config(value) { this._config = value; }
-
+	
 	/**
 	 * Get / set the description of the chart 
 	 */
@@ -65,55 +73,69 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 	}
 
 	/**
-	 * Add any required text to the Nls object
-	 * @param {object} nls - Object for holding nls strings
-	 * @returns {void}
-	 */
-	static Nls(nls) {
-		nls.Add("Chart_Title", "en", "View chart");
-		nls.Add("Chart_Title", "fr", "Type de Diagramme");		
-		nls.Add("Chart_Type", "en", "Chart Type");
-		nls.Add("Chart_Type", "fr", "Type de Graphique");		
-		nls.Add("Chart_Type_Placeholder", "en", "Select a Chart Type");
-		nls.Add("Chart_Type_Placeholder", "fr", "Sélectionnez un Type de Graphique");	
-	}
-
-	/**
 	 * Set up chart widget
 	 * @param {object} container - Div chart container and properties
 	 * @param {object} options - Any additional options to assign to the widget
 	 * @returns {void}
 	 */
-    constructor(container, options) {
-		super(container, options);
+    constructor(container) {
+		super(container);
 
 		this.chart = null;
-
 		this.chartType = "BarChart";	// default is bar chart
-    }
 
+		this.BuildChart();
+    }
+	
 	/**
-	 * Create chart based on chart type selection.
-	 * @param {*} type - Type of chart to be built
+	 * Add specified language strings to the nls object
+	 * @param {object} nls - Existing nls object
 	 * @returns {void}
 	 */
-    BuildChart(type) {
-		let element = this.Elem("ChartsContainer");
+	Localize(nls) {
+		nls.Add("Chart_Title", "en", "View chart");
+		nls.Add("Chart_Title", "fr", "Type de Diagramme");
+		nls.Add("Chart_Title_Link", "en", "Selected data from table <a href='{0}' target='_blank'>{1}</a>");
+		nls.Add("Chart_Title_Link", "fr", "Données sélectionnées du tableau <a href='{0}' target='_blank'>{1}</a>");
+		nls.Add("Chart_Disabled", "en", "No chart to view until data selected");
+		nls.Add("Chart_Disabled", "fr", "Aucun graphique à afficher tant que les données n'ont pas été sélectionnées");
+	}
+	
+	/**
+	 * Configures the widget from a json object
+	 * @param {object} config - Configuration parameters of the widget as a json object
+	 * @returns {void}
+	 */
+	Configure(config) {
+		this.config.field = config.field[Core.locale];
+		this.config.uom = config.uom[Core.locale];
+	}
+	
+    /**
+     * @description
+     * Here the chart is created based on type selection.
+     * @todo 
+     * Chart type selection based on JSON.
+     */
+    BuildChart() {
+		// Chart container element
+		let element = this.Node("ChartsContainer").elem;
 
-		if (type == "PieChart") {
-			this.chart = new PieChart({ element: element });
-		}
-
-		else if (type == "LineChart") {
-			this.chart = new LineChart({ element: element });
-		}
-
-		else if (type == "ScatterPlot") {
-			this.chart = new ScatterPlot({ element: element });
-		}
-
-		else {
-			this.chart = new BarChart({ element: element });
+		// Bar Chart by default
+		if (this.chartType == "BarChart") {
+			this.chart = new BarChart({ element:element });
+		} 
+		
+		else if (this.chartType == "PieChart") {
+		  this.chart = new PieChart({ element:element });
+		} 
+		
+		else if (this.chartType == "LineChart") {
+		  this.chart = new LineChart({ element:element });
+		} 
+		
+		else if (this.chartType == "ScatterPlot") {
+		  this.chart = new ScatterPlot({ element:element });
 		}
 
 		this.HideChart();
@@ -124,11 +146,11 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 	 * @param {object[]} data - Array of objects containing data values, labels, and uom
 	 * @returns {void}
      */
-    DrawChart() {
-		if (this.data.length == 0) this.HideChart();
+    DrawChart(data) {
+		if (data.length == 0) this.HideChart();
 
 		else {
-			this.chart.data = this.data;
+			this.chart.data = data;
 			this.chart.Draw();
 			this.ShowChart();
 		}
@@ -170,9 +192,9 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Templ
 	 * Create a div for this widget
 	 * @returns {string} HTML with custom div
 	 */	
-    Template() {
-      return 	"<div handle='ChartDescription'></div>" +
-				"<div handle='ChartsContainer' width='430' height='400'></div>";
+    HTML() {
+      return "<div handle='ChartDescription'></div>" +
+	  		 "<div handle='ChartsContainer' width='400' height='300'></div>";
     }
   }
 );

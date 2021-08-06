@@ -1,6 +1,6 @@
-import Tooltip from "../../geo-explorer-api/ui/tooltip.js"
 import Dimensions from "./components/dimensions.js";
 import Evented from "../../geo-explorer-api/components/evented.js";
+import Tooltip from "../../geo-explorer-api/ui/tooltip.js";
 
 /**
  * Chart module
