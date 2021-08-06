@@ -207,6 +207,10 @@
         "field": {
             "en": "DisplayNameLong_EN",
             "fr": "DisplayNameLong_FR"
+        },
+        "uom": {
+            "en": "UOM_EN",
+            "fr": "UOM_FR"
         }
     },
     "table": {
