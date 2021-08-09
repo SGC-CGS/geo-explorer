@@ -154,9 +154,16 @@
                   <div class="text-center">
                   	<a href="#" class="wb-inv wb-show-onfocus wb-sl">Ignorez les fonctions interactives et allez directement à la table de données.</a>
                   </div>
-                  
-                  	  	  <!-- if you are skipping to the bottom section use this -->
-               <div id='app-container' class='gexp'></div>
+               <!-- if you are skipping to the bottom section use this -->
+			   <script type="application/javascript">
+					window.addEventListener("message", ev => {
+						var data = JSON.parse(ev.data);
+
+						document.querySelector("#app-container").height = data.height;
+					});
+			   </script>
+			   
+			   <div id='app-container' class='gexp'></div>
             </section>
             <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
 				<header class="modal-header">
