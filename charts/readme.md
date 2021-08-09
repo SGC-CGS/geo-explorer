@@ -1,27 +1,5 @@
 # D3 for Data Visualization in CSGE
 
-## Workflow
-
-By using the drag function in CSGE, map feature data can be sent to the chart widget for the creation of a desired chart. 
-
-![](./img/drag.png)
-
-In application.js, the following functions are used to get the selected feature layers into ```wChart.js```:
-
-![](./img/application.png)
-
-Notice the use of ```this.Elem("chart").data``` as it utilizes the accessors in ```wChart.js``` (seen below).
-
-![](./img/accessors.png)
-
-Once the ```data``` has been set for ```this.Elem("chart").data```, an array is populated with the information coming from the feature layers selected. The ```Chart()``` function is then used to create a chart for visualization based on the information in ```this._data```. 
-
-![](./img/populate.png)
-
-And finally a chart is displayed. 
-
-![](./img/output.png)
-
 ## Overview of D3
 
 D3 binds data and graphical elements to DOMs. 
@@ -139,36 +117,11 @@ See [a commented example of tweening](http://bl.ocks.org/mbostock/5100636) arcs 
 
 ## D3 Mouse Events
 
-https://stackoverflow.com/questions/40722344/understanding-d3-with-an-example-mouseover-mouseup-with-multiple-arguments
+[Understanding D3 with an Example Mouseover Mouseup with Multiple Arguments](https://stackoverflow.com/questions/40722344/understanding-d3-with-an-example-mouseover-mouseup-with-multiple-arguments)
 
 ## D3 v4 Curves
 
-https://bl.ocks.org/d3noob/ced1b9b18bd8192d2c898884033b5529
-
-## TODO
-- Make chart unavailable if no polygon clicked (alert)?
-  - Add model-container alert like the one in CSGE V1 
-    - Text: "No charts available. Select one or more locations to generate charts."
-- Overlay and widget should use an association instead of inheritance 
-- Develop sub charts (related indicator? Remove related indicator value when clicked?)
-- Download button? https://www.quebec.ca/en/health/health-issues/a-z/2019-coronavirus/situation-coronavirus-in-quebec/
-- Chart type up to SME
-- Handle overcrowding in charts
-- Add axis titles?
-- Tick marks get weird
-- When provinces and territories are un-highlighted they should be removed from the table and chart 
-- When selecting a new dataset, the chart doesn't clear, but table does
-- PieChart
-  - Add new square DIV for legend with label and multiline
-    - E.g., https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018012-eng.htm
-- BarChart
-  - Prevent user from selecting too much (or hide x axis labels)
-- LineChart
-  - Need better data for testing
-  - Add red line tooltip instead of hover
-    - E.g., https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2017003-eng.htm
-- ScatterPlot
-  - Need better data for testing 
+[v4 Curve Interpolation Comparison](https://bl.ocks.org/d3noob/ced1b9b18bd8192d2c898884033b5529)
 
 ## Author(s)
 

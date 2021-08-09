@@ -96,7 +96,7 @@ export default Core.Templatable("App.Widgets.InfoPopup", class InfoPopup extends
 				   `<div>` + 
 					   `<b>${this.Nls("Indicator_Title")}</b>:` +
 					   `<ul>${indicators}</ul>` +
-					   `${link}` +
+					   `${this.Nls('TableViewer_Link', link)}` +
 				   `</div>` + 
 				   `<br>` +
 				   `<sup>${symbol}</sup> ${nulldesc}`;
@@ -112,6 +112,6 @@ export default Core.Templatable("App.Widgets.InfoPopup", class InfoPopup extends
 		var url = this.config.tableviewer + this.context.category + "01";
 		var prod = prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
 		
-		return this.Nls('TableViewer_Link', [url, prod]);
+		return [url, prod];
 	}
 })

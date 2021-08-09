@@ -55,7 +55,12 @@
             },
             "zoom": 4,
             "center": [-99, 62],
-            "animation": false 
+            "animation": false,
+			"highlight": {
+				"color": [255, 255, 0, 1],
+				"haloOpacity": 0.0,
+				"fillOpacity": 0.4
+			}
         }
     },
     "styler": {
@@ -207,6 +212,10 @@
         "field": {
             "en": "DisplayNameLong_EN",
             "fr": "DisplayNameLong_FR"
+        },
+        "uom": {
+            "en": "UOM_EN",
+            "fr": "UOM_FR"
         }
     },
     "table": {

@@ -10,10 +10,12 @@ import Dom from '../../geo-explorer-api/tools/dom.js';
 export default Core.Templatable("App.Widgets.Table", class Table extends Widget {
 	
 	/**
-	 * Set table title
+	 * Get / set table title
 	 */
+	get title() { return this.Elem("title").innerHTML }
+
 	set title(value) { this.Elem("title").innerHTML = value; }
-	
+
 	/**
 	 * Set data
 	 */

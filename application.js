@@ -3,7 +3,8 @@
 import Widget from '../geo-explorer-api/components/base/widget.js';
 import Map from '../geo-explorer-api/components/map.js';
 import Storage from '../geo-explorer-api/components/storage.js';
-import IdentifyBehavior from '../geo-explorer-api/behaviors/point-select.js';
+import SelectBehavior from '../geo-explorer-api/behaviors/rectangle-select.js';
+import Selection from './components/selection.js';
 import Waiting from '../geo-explorer-api/widgets/waiting.js';
 import Navbar from '../geo-explorer-api/widgets/navbar.js';
 import Table from './widgets/table.js';
@@ -26,7 +27,10 @@ export default class Application extends Widget {
 	
 	set context(value) { this._context = value; }
 
-	get behavior() { return "pointselect"; }
+	/**
+	 * Get current behavior
+	 */
+	get behavior() { return "selection"; }
 
 	/**
 	 * Call constructor of base class (Templated) and initialize application
@@ -40,13 +44,14 @@ export default class Application extends Widget {
 		this.config = config;
 		this.context = new Context(config.context);
 		this.storage = new Storage("CSGE");
+		this.selection = new Selection();
 
 		// Build map, menus, widgets and other UI components
 		this.map = new Map(this.Elem('map'), this.config.map.options);
 
 		this.infoPopup = new InfoPopup();
 		this.infoPopup.Configure(this.config.infopopup, this.map, this.context);
-
+		
 		this.toolbar = new Toolbar();
 		this.toolbar.Configure(this.config, this.map, this.storage);
 
@@ -73,10 +78,13 @@ export default class Application extends Widget {
 		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
 		this.Node("styler").On('Opacity', this.OnStyler_Opacity.bind(this));
 		this.Node("styler").On('LabelName', this.onStyler_LabelName.bind(this));
-
-		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
 		
-		this.context.Initialize(this.config.context).then(d => {	
+		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
+
+		// REVIEW: The NLS string for the title goes in application.js
+		this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"));
+
+		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
 			this.Elem("selector").Update(this.context);
@@ -84,36 +92,113 @@ export default class Application extends Widget {
 			this.Elem("table").Update(this.context);
 			this.Elem("bookmarks").Update(this.context);
 			
-			this.toolbar.ShowWidget("selector");			
+			this.toolbar.ShowWidget("selector");
 
-			this.AddIdentifyBehavior(this.map, this.context, this.config);
-
-			this.map.Behavior("pointselect").Activate();
+			this.AddSelectBehavior(this.map, this.context, this.config);
 		}, error => this.OnApplication_Error(error));
 	}
-	
+
 	/**
 	 * Adds the behavior and handles the event for generating popup and table from map selection.
+	 * Also handles disabling / enabling the "view chart" button.
 	 * @param {object} map - Map object to which the behavior will be applied
 	 * @param {object} context - Context object for retrieving the sublayer
 	 * @param {object} config - Configuration data
 	 * @returns {void}
 	 */
-	AddIdentifyBehavior(map, context, config) {
-		var behavior = this.map.AddBehavior("pointselect", new IdentifyBehavior(map));
+	 AddSelectBehavior(map, context, config) {
+		// REVIEW: No way to `esc` from rectangle select
+		var behavior = this.map.AddBehavior("selection", new SelectBehavior(map));
 
 		behavior.target = context.sublayer;
 		behavior.field = "GeographyReferenceId";
-		behavior.symbol = config.symbols["pointselect"];
+		behavior.symbol = config.symbols["selection"];
 
-		this.HandleEvents(behavior, ev => {
-			if (ev.feature) this.infoPopup.Show(ev.mapPoint, ev.feature);
+		behavior.Activate();
+
+		map.EnableHitTest(behavior);
+
+		this.MapViewEventsHandler();
+
+		this.HandleEvents(behavior, ev => {
+			this.Elem("table").data = ev.selection; 
+			this.Elem("chart").data = ev.selection;
+
+			// REVIEW: Reading titles and labels from widgets like this will get confusing. We should have a central place 
+			// where we can get them. Context probably. We could also just call an UpdateSelection function on each widget
+			// and provide the selection object similar to what we do when the context changes.
+			this.Elem("chart").linkTitle = this.infoPopup.GetLink();
 			
-			this.Elem("table").data = ev.pointselect; 
-			this.Elem("chart").data = ev.pointselect;
+			if (ev.selection.items.length == 0) {		
+				this.Elem("chart").description = "";
+				this.toolbar.menu.Overlay("chart").title = "";
+				this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"));
+			} 
+			
+			else if (this.toolbar.menu.Button("chart").disabled == true) {
+				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
+				this.toolbar.menu.Overlay("chart").title = this.Elem("chart").linkTitle;
+				this.toolbar.menu.EnableButton(this.toolbar.menu.Button("chart"), this.Elem("chart").title);
+			}
 		});	
+
+		this.HandleEvents(this.Elem("chart").chart, ev => {
+			if (this.highlight || ev.hovered == null) {
+				this.selection.ClearGraphicHighlight();
+				return;
+			} 
+
+			this.selection.HighlightTargetGraphic(ev.hovered, this.Elem("chart").config.field);
+		});
+    }
+
+	MapViewEventsHandler() {
+		this.map.view.on("layerViewCreated", (ev) => {
+			this.selection.layerView = ev.layerView;
+		});
+
+		// When exiting the map view, remove all highlights and close the popup 
+		this.map.view.on("PointerLeave", (ev) => {
+			this.selection.ClearAll(this.map.popup);
+		});
+
+		this.map.view.on("PointerMove", (ev) => {
+			// All the below code in the selection class
+			this.selection.layerView = ev.layerView;
+
+			// The selected graphic has changed and there is a highlight on the previous graphic
+			if (this.selection.graphic != ev.graphic && this.selection.highlight) {
+				// REVIEW: Why go through the selection to clear chart if we're doing it from application.js?
+				this.selection.ClearGraphicHighlight();
+				this.selection.ClearChartElementHighlight();
+			}
+
+			// The selected graphic has changed
+			else if (this.selection.graphic != ev.graphic) {
+				this.selection.graphic = ev.graphic;
+				// REVIEW: Same as above
+				// i.e, Do this.Elem("chart").Highlight();
+				this.selection.HighlightGraphic(this.selection.graphic);
+				this.selection.HighlightChartElement(this.Elem("chart").chart, this.Elem("chart").config.field);
+
+				this.infoPopup.Show(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
+			}
+
+			// Update the popup position if the current graphic is highlighted
+			else if (this.selection.highlight) {
+				this.map.view.popup.location = this.map.view.toMap(ev.response.screenPoint);
+			} 
+
+			// The current graphic is not highlighted
+			else if (!this.selection.highlight) {
+				this.selection.HighlightGraphic(this.selection.graphic);
+				this.selection.HighlightChartElement(this.Elem("chart").chart, this.Elem("chart").config.field);
+
+				this.infoPopup.Show(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
+			}
+		});
 	}
-	
+
 	/**
 	 * Handle events for the specified node..
 	 * @param {object} node - Node to which the event handler will be added (ex. Map)
@@ -132,14 +217,13 @@ export default class Application extends Widget {
 		this.map.EmptyLayer('main');
 		this.map.AddSubLayer('main', this.context.sublayer);
 
-		this.map.Behavior("pointselect").target = this.context.sublayer;
+		this.map.Behavior("selection").target = this.context.sublayer;
 
 		this.Elem("bookmarks").Update(this.context);
 		this.Elem("styler").Update(this.context);
 		this.Elem("table").Update(this.context);
 
-		// REVIEW: Is this necessary? Seems like a selection clear would do the trick too.
-		this.Elem("chart").data = this.map.Behavior("pointselect").graphics;
+		this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"));
 	}
 	
 	OnStyler_Change(ev) {	
@@ -168,9 +252,16 @@ export default class Application extends Widget {
 	}
 	
 	OnTable_RowButtonClick(ev) {
-		this.map.Behavior(this.behavior).layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior(this.behavior).graphics;
-		this.Elem("chart").data = this.map.Behavior(this.behavior).graphics;
+		this.map.Behavior("selection").layer.remove(ev.graphic);
+		this.Elem("table").data = this.map.Behavior("selection").graphics;
+		this.Elem("chart").data = this.map.Behavior("selection").graphics;
+
+		// REVIEW: This code is a repeat
+		if (this.map.Behavior("selection").graphics.items.length == 0) {
+			this.Elem("chart").description = this.Elem("chart").disabledTitle;
+			this.toolbar.menu.Overlay("chart").title = this.Elem("chart").title;
+			this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"), this.Elem("chart").disabledTitle);
+	   }
 	}
 	
 	OnWidget_Busy(ev) {
