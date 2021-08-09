@@ -1,141 +1,35 @@
 ﻿<!DOCTYPE html>
-<!--[if lt IE 9]>
-<html class="no-js lt-ie9" lang="fr" dir="ltr">
-   <![endif]--><!--[if gt IE 8]><!-->
-   <html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="fr" dir="ltr">
-      <!--<![endif]-->
-      <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
-         wet-boew.github.io/wet-boew/License-en.htm / wet-boew.github.io/wet-boew/Licence-fr.htm -->
-      <!-- METADATA BEGINS | DEBUT DES METADONNEES -->
-      <head prefix="dcterms: http://purl.org/dc/terms/">
-         <title>Explorateur géospatial des statistiques canadiennes Lite</title>
-         <meta charset="utf-8">
-         <!-- METADATA ENDS | FIN DES METADONNEES -->
-         <meta property="dcterms:service" content="StatCan"/>
-         <meta property="dcterms:accessRights" content="2"/>
-         <meta property="dcterms:description" content="Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'Recharger la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte."/>
-         <meta property="dcterms.creator" content="Gouvernement du Canada, Statistique Canada">
-         
-         <!--[if gte IE 9 | !IE ]><!-->
-         <link href="./assets/favicon.ico" rel="icon" type="image/x-icon">
-         <link rel="stylesheet" href="./reference/wet-boew4b/css/wet-boew.min.css">
-         <script src="./reference/wet-boew4b/js/jquery.min.js"></script>
-         <!--<![endif]-->
-         <link rel="stylesheet" href="./reference/wet-boew4b/css/theme.min.css">
-         <link rel="stylesheet" href="./reference/wet-boew4b/css/statcan.css">
-         <!--[if lt IE 9]>
-         <link href="./wet-boew4b/assets/favicon.ico" rel="shortcut icon" />
-         <link rel="stylesheet" href="./wet-boew4b/css/ie8-wet-boew.min.css" />
-         <script src="./wet-boew4b/js/ie8-wet-boew.min.js"></script>
-         <![endif]-->
-         <noscript>
-            <link rel="stylesheet" href="./reference/wet-boew4b/css/noscript.min.css" />
-         </noscript>
-         <script src="//assets.adobedtm.com/caacec67651710193d2331efef325107c23a0145/satelliteLib-c2082deaf69c358c641c5eb20f94b615dd606662.js"></script>
-         <script>dataLayer1 = [];</script>
-         <script src="./reference/wet-boew4b/js/jquery.tooltipster.min.js"></script>
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
-		 
-         <!-- CustomScriptsCSSStart -->
-		 <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
-         <link href='./application.css' rel='stylesheet' />		 
-         <!-- CustomScriptsCSSEnd -->
-      </head>
-      <body vocab="http://schema.org/" typeof="WebPage">
-         <!--stopindex-->
-         <main role="main" property="mainContentOfPage" class="prx container" id="wb-cont">
-            <h1 id="app-title" property="name" class="mrgn-tp-sm" >Composante Carto du Table Viewer</h1>
-            <!--startindex-->
-            <section>
-               <!-- if you are skipping to a data table use this
-                  <div class="text-center">
-                  	<a href="#" class="wb-inv wb-show-onfocus wb-sl">Ignorez les fonctions interactives et allez directement à la table de données.</a>
-                  </div>
-                  
-                  	  	  <!-- if you are skipping to the bottom section use this -->
-               <div class="text-center">
-                  <a href="#moreinfo" class="wb-inv wb-show-onfocus wb-sl">Ignorer le tableau de bord visuel interactif et aller directement à la section des renseignements supplémentaires</a>
-               </div>
-               <div class="wb-inv">Début du tableau de bord interactif visuel</div>
-               <div id='app-container' class='gexp'></div>
-               <div class="wb-inv">Fin du tableau de bord interactif visuel</div>
-            </section>
-            <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
-               <header class="modal-header">
-                  <h2 class="modal-title">Comment utiliser</h2>
-               </header>
-               <div class="modal-body">
-			   
-               </div>
-            </section>
-            <!--stopindex-->
-            <!-- More info button text -->
-            <!-- More info page -->
-            <section id="moreinfo" class="mfp-hide modal-dialog modal-content overlay-def">
-               <header class="modal-header">
-                  <h2 class="modal-title">Renseignements supplémentaires</h2>
-               </header>
-               <div class="modal-body">
-                  <div class="pstn-rght-lg pstn-rght-md pstn-lft-md pstn-lft-sm pstn-lft-xs mrgn-lft-md mrgn-rght-sm"> 
-                     <span class="label label-primary"></span> 
-                  </div>
-                  <span class="clearfix"></span>
-                  <h2 class="mrgn-tp-0">Note of appreciation </h2>
-                  <p>Canada owes the success of its statistical system to a long-standing partnership between Statistics Canada, the citizens of Canada, its businesses, governments and other institutions. Accurate and timely statistical information could not be produced without their continued co-operation and goodwill.</p>
-                  <h2>Standards of service to the public</h2>
-                  <p>Statistics Canada is committed to serving its clients in a prompt, reliable and courteous manner. To this end, the Agency has developed <a href="/about-apercu/standards-normes-eng.htm">standards of service</a> which its employees observe in serving its clients. </p>
-                  <h2>Copyright</h2>
-                  <p>Published by authority of the Minister responsible for Statistics Canada.</p>
-                  <p> &copy; Her Majesty the Queen in Right of Canada as represented by the Minister of Industry, 2020</p>
-                  <p>All rights reserved. Use  of this publication is governed by the <a href="/reference/licence-eng.html" title="Statistics Canada Open Licence Agreement">Statistics Canada Open Licence Agreement</a>.</p>
-                  <p>Catalogue <abbr title="number">no.</abbr> 71-607-X</p>
-                  <p> Ottawa</p>
-               </div>
-            </section>
-            <!-- END More info page --> 
-            <div class="pagedetails">
-               <div class="row">
-                  <div class="col-sm-6 col-lg-4 mrgn-tp-sm">
-                     <details class="brdr-0">
-                        <summary class="btn btn-default text-center">Signaler un problème sur cette page</summary>
-                        <div class="clearfix"></div>
-                        <div class="well row">
-                           <div class="gc-rprt-prblm">
-                              <div class="gc-rprt-prblm-frm gc-rprt-prblm-tggl">
-                                 <p>Quelque chose ne fonctionne pas? L'information n'est plus à jour? Vous ne trouvez pas ce que vous cherchez?</p>
-                                 <p>S'il vous plaît <a href="https://www.statcan.gc.ca/fra/reference/centreref/index?MM=RAP">contactez-nous</a> et nous informer comment nous pouvons vous aider.</p>
-                                 <p><a href="https://www.statcan.gc.ca/fra/reference/privee?MM=RAP">Avis de confidentialité</a></p>
-                              </div>
-                           </div>
-                        </div>
-                     </details>
-                  </div>
-                  <!-- Share button -->
-                  <div class="wb-share col-sm-4 col-md-3 col-sm-offset-2 col-md-offset-4 col-lg-offset-5" data-wb-share='{"lnkClass": "btn btn-default btn-block"}'></div>
-                  <!-- END Share button -->
-               </div>
-               <dl id="wb-dtmd">
-                  <dt>Date de modification&#160;:&#32;</dt>
-                  <dd><time property="dateModified">
-                     2020-04-06
-                     </time>
-                  </dd>
-               </dl>
-            </div>
-         </main>
-         
-         <script src="./reference/wet-boew4b/js/wet-boew.min.js"></script>
-         <script src="./reference/wet-boew4b/js/theme.min.js"></script>
-		 
-         <!-- CustomScriptsJSStart -->
-         <script src="./reference/polyfill/promise.min.js"></script>
-		 <script src="./reference/iro/iro@5.js"></script>
-		 
-		 <!--script src="./reference/dojo.js"></script-->
-         <script src='./main.js' type='module'></script>
-         <!-- CustomScriptsJSEnd -->
-      </body>
-   </html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="fr" dir="ltr">
+	<head prefix="dcterms: http://purl.org/dc/terms/">
+		<title>Explorateur géospatial des statistiques canadiennes Lite</title>
+		<meta charset="utf-8">
+		<meta property="dcterms:service" content="StatCan"/>
+		<meta property="dcterms:accessRights" content="2"/>
+		<meta property="dcterms:description" content="Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'Recharger la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte."/>
+		<meta property="dcterms.creator" content="Gouvernement du Canada, Statistique Canada">
+
+		<link href="./assets/favicon.ico" rel="icon" type="image/x-icon">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/wet-boew.min.css">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/theme.min.css">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/statcan.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+		<link href='./application.css' rel='stylesheet' />		 
+	</head>
+
+	<body vocab="http://schema.org/" typeof="WebPage">
+		<main role="main" property="mainContentOfPage" id="wb-cont">
+			<h1 id="app-title" property="name" class="mrgn-tp-sm" >Composante Carto du Table Viewer</h1>
+			<section>
+				<div id='app-container' class='gexp'></div>
+			</section>
+		</main>
+		
+		<script src='./reference/dojo.js' type='module'></script>
+		<script src='./main.js' type='module'></script>
+	</body>
+</html>

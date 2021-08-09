@@ -30,16 +30,11 @@
          <noscript>
             <link rel="stylesheet" href="/wet-boew4b/css/noscript.min.css" />
          </noscript>
-         <script>dataLayer1 = [];</script>
          <script src="./reference/wet-boew4b/js/jquery.tooltipster.min.js"></script>
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
-		 
-         <!-- CustomScriptsCSSStart -->         
-		 <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
-         <!-- CustomScriptsCSSEnd -->
       </head>
       <body vocab="http://schema.org/" typeof="WebPage">
          <!--stopindex-->
@@ -128,33 +123,8 @@
             </nav>
          </header>
          <main role="main" property="mainContentOfPage" class="prx container" id="wb-cont">
-            <h1 id="app-title" property="name" class="mrgn-tp-sm">Table Viewer Map Component</h1>
-			
-			<div class="row j-hide-error">
-				<div class="col-xs-12 col-sm-12 col-md-6"> 
-					<span class="label label-primary mrgn-rght-sm"><strong>Release date:</strong> March 9, 2018</span>
-					<span id="update-date" class="label label-success"><strong>Updated on:</strong> July 9, 2021</span> 
-				</div>
-				<div class="col-xs-12 col-sm-12 col-md-6">
-					<div class="pull-right mrgn-bttm-sm mrgn-tp-sm"> 
-						<a href="#htu" role="button" aria-controls="htu" class="wb-lbx btn btn-default btn-xs wb-init" title="How to use this tool" id="wb-auto-2">
-							<span class="fa fa-question-circle mrgn-rght-sm"></span>How to use
-						</a> 
-						<a href="#moreinfo" role="button" aria-controls="moreinfo" class="wb-lbx btn btn-default btn-xs wb-init" id="wb-auto-3">
-							<span class="fa fa-info-circle mrgn-rght-sm"></span>More information
-						</a> 
-					</div>
-				</div>
-			</div>
-			
             <!--startindex-->
             <section>
-               <!-- if you are skipping to a data table use this
-                  <div class="text-center">
-                  	<a href="#" class="wb-inv wb-show-onfocus wb-sl">Skip the interactive features and go directly to the data table.</a>
-                  </div>
-                    -->
-               <!-- if you are skipping to the bottom section use this -->
 			   <script type="application/javascript">
 					window.addEventListener("message", ev => {
 						var data = JSON.parse(ev.data);
@@ -165,7 +135,6 @@
 			   
 			   <iframe id='app-container' src="./main-en.html?pid=46100049" style="border:none;width:100%;"></iframe>
             </section>
-			
             <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
 				<header class="modal-header">
 					<h2 class="modal-title">How to use</h2>
@@ -199,9 +168,6 @@
 				</div>
             </section>
 			
-            <!--stopindex-->
-            <!-- More info button text, update if this is not 71-607-x -->
-            <!-- More info page -->
 			<section id="moreinfo" class="modal-dialog modal-content overlay-def mfp-hide">
 				<header class="modal-header">
 					<h2 class="modal-title" id="lbx-title">More information</h2>
@@ -232,7 +198,6 @@
 				</button>
 			</section>
 
-            <!-- END More info page --> 
             <div class="pagedetails">
                <div class="row">
                   <div class="col-sm-6 col-lg-4 mrgn-tp-sm">
@@ -263,6 +228,7 @@
                </dl>
             </div>
          </main>
+		 
          <footer role="contentinfo" id="wb-info">
             <div class="landscape">
                <nav role="navigation" class="container wb-navcurr">

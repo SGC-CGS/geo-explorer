@@ -41,116 +41,108 @@ function Fail(response) {
 function LoadEsri() {
 	var d = Core.Defer();
 
-	var esriJs = document.createElement('script');
-
-	esriJs.addEventListener("load", (ev) => {
-		require(["esri/renderers/support/jsonUtils", 
-				 "esri/renderers/Renderer",
-				 "esri/renderers/SimpleRenderer",
-				 "esri/renderers/UniqueValueRenderer",
-				 "esri/renderers/ClassBreaksRenderer",
-				 "esri/symbols/SimpleFillSymbol",
-				 "esri/request", 
-				 "esri/layers/MapImageLayer", 
-				 "esri/layers/FeatureLayer", 
-				 "esri/layers/GraphicsLayer", 
-				 "esri/layers/support/Sublayer", 
-				 "esri/core/urlUtils", 
-				 "esri/core/watchUtils", 
-                 "esri/Map", 
-                 "esri/Basemap",
-                 "esri/layers/support/TileInfo",
-				 "esri/Graphic", 
-				 "esri/views/MapView", 
-                 "esri/views/draw/Draw",
-                 "esri/widgets/BasemapGallery", 
-				 "esri/widgets/Bookmarks", 
-				 "esri/widgets/Fullscreen",
-				 "esri/widgets/Home",
-                 "esri/intl"], 
-				 
-				 function(jsonUtils, 
-						  Renderer, 
-						  SimpleRenderer, 
-						  UniqueValueRenderer, 
-						  ClassBreaksRenderer, 
-						  SimpleFillSymbol, 
-						  request, 
-						  MapImageLayer, 
-						  FeatureLayer, 
-						  GraphicsLayer, 
-						  Sublayer, 
-						  urlUtils, 
-						  watchUtils, 
-                          Map, 
-                          Basemap,
-                          TileInfo,
-						  Graphic, 
-						  MapView, 
-                          Draw, 
-                          BasemapGallery, 
-						  Bookmarks, 
-						  Fullscreen,
-                          Home,
-                          intl) {
-			
-			window.ESRI = {
-                intl : intl,
-				core : { 
-					urlUtils : urlUtils,
-					watchUtils : watchUtils
-				},
-				request : request,
-				Map : Map,
-                Basemap : Basemap,
-				Graphic : Graphic,
-				views : {
-					MapView : MapView,
-					draw : {
-						Draw : Draw
-					}
-				},
-				renderers : {
-					Renderer : Renderer,
-					SimpleRenderer : SimpleRenderer,
-					UniqueValueRenderer : UniqueValueRenderer,
-					ClassBreaksRenderer : ClassBreaksRenderer,
-					support : {
-						jsonUtils : jsonUtils
-					}
-				},
-				symbols : {
-					SimpleFillSymbol : SimpleFillSymbol
-				},
-				layers : {
-					MapImageLayer : MapImageLayer,
-					FeatureLayer : FeatureLayer,
-					GraphicsLayer : GraphicsLayer,
-					support : {
-						Sublayer : Sublayer,
-                        TileInfo : TileInfo
-					}
-				},
-				widgets : {
-                    Fullscreen : Fullscreen,
-                    BasemapGallery : BasemapGallery,
-					Bookmarks : Bookmarks,
-					Home : Home
+	require(["esri/renderers/support/jsonUtils", 
+			 "esri/renderers/Renderer",
+			 "esri/renderers/SimpleRenderer",
+			 "esri/renderers/UniqueValueRenderer",
+			 "esri/renderers/ClassBreaksRenderer",
+			 "esri/symbols/SimpleFillSymbol",
+			 "esri/request", 
+			 "esri/layers/MapImageLayer", 
+			 "esri/layers/FeatureLayer", 
+			 "esri/layers/GraphicsLayer", 
+			 "esri/layers/support/Sublayer", 
+			 "esri/core/urlUtils", 
+			 "esri/core/watchUtils", 
+			 "esri/Map", 
+			 "esri/Basemap",
+			 "esri/layers/support/TileInfo",
+			 "esri/Graphic", 
+			 "esri/views/MapView", 
+			 "esri/views/draw/Draw",
+			 "esri/widgets/BasemapGallery", 
+			 "esri/widgets/Bookmarks", 
+			 "esri/widgets/Fullscreen",
+			 "esri/widgets/Home",
+			 "esri/intl"], 
+			 
+			 function(jsonUtils, 
+					  Renderer, 
+					  SimpleRenderer, 
+					  UniqueValueRenderer, 
+					  ClassBreaksRenderer, 
+					  SimpleFillSymbol, 
+					  request, 
+					  MapImageLayer, 
+					  FeatureLayer, 
+					  GraphicsLayer, 
+					  Sublayer, 
+					  urlUtils, 
+					  watchUtils, 
+					  Map, 
+					  Basemap,
+					  TileInfo,
+					  Graphic, 
+					  MapView, 
+					  Draw, 
+					  BasemapGallery, 
+					  Bookmarks, 
+					  Fullscreen,
+					  Home,
+					  intl) {
+		
+		window.ESRI = {
+			intl : intl,
+			core : { 
+				urlUtils : urlUtils,
+				watchUtils : watchUtils
+			},
+			request : request,
+			Map : Map,
+			Basemap : Basemap,
+			Graphic : Graphic,
+			views : {
+				MapView : MapView,
+				draw : {
+					Draw : Draw
 				}
+			},
+			renderers : {
+				Renderer : Renderer,
+				SimpleRenderer : SimpleRenderer,
+				UniqueValueRenderer : UniqueValueRenderer,
+				ClassBreaksRenderer : ClassBreaksRenderer,
+				support : {
+					jsonUtils : jsonUtils
+				}
+			},
+			symbols : {
+				SimpleFillSymbol : SimpleFillSymbol
+			},
+			layers : {
+				MapImageLayer : MapImageLayer,
+				FeatureLayer : FeatureLayer,
+				GraphicsLayer : GraphicsLayer,
+				support : {
+					Sublayer : Sublayer,
+					TileInfo : TileInfo
+				}
+			},
+			widgets : {
+				Fullscreen : Fullscreen,
+				BasemapGallery : BasemapGallery,
+				Bookmarks : Bookmarks,
+				Home : Home
 			}
+		}
 
-			urlUtils.addProxyRule({
-				urlPrefix: "www97.statcan.gc.ca",
-				proxyUrl: `${location.origin}/../geo-explorer-proxy/proxy.ashx`
-			});
-			
-			d.Resolve();
+		urlUtils.addProxyRule({
+			urlPrefix: "www97.statcan.gc.ca",
+			proxyUrl: `${location.origin}/../geo-explorer-proxy/proxy.ashx`
 		});
+		
+		d.Resolve();
 	});
-	
-	esriJs.setAttribute('src','./reference/dojo.js');
-	
-	document.head.appendChild(esriJs);
 	
 	return d.promise;
 }
