@@ -1,139 +1,34 @@
 ﻿<!DOCTYPE html>
-<!--[if lt IE 9]>
-<html class="no-js lt-ie9" lang="en" dir="ltr">
-   <![endif]--><!--[if gt IE 8]><!-->
-   <html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" dir="ltr">
-      <!--<![endif]-->
-      <!-- Web Experience Toolkit (WET) / Bo�te � outils de l'exp�rience Web (BOEW)
-         wet-boew.github.io/wet-boew4b/License-en.htm / wet-boew.github.io/wet-boew4b/Licence-fr.htm -->
-      <!-- METADATA BEGINS | DEBUT DES METADONNEES -->
-      <head prefix="dcterms: http://purl.org/dc/terms/">
-         <title>Canadian Statistical Geo-Explorer Lite</title>
-         <meta charset="utf-8">
-         <!-- METADATA ENDS | FIN DES METADONNEES -->
-         <meta property="dcterms:service" content="StatCan"/>
-         <meta property="dcterms:accessRights" content="2"/>
-         <meta property="dcterms:description" content="This map will display a thematic map according to the indicator selected. Use the dropdown lists below to select dimension members for each dimensions of the current CODR product. Then, click on the 'Update Map' button to display the thematic map. A data table at the bottom contains the data shown on the map."/>
-         <meta property="dcterms.creator" content="Government of Canada, Statistics Canada">
-         <!--[if gte IE 9 | !IE ]><!-->
-         <link href="./assets/favicon.ico" rel="icon" type="image/x-icon">
-         <link rel="stylesheet" href="./reference/wet-boew4b/css/wet-boew.min.css">
-         <script src="./reference/wet-boew4b/js/jquery.min.js"></script>
-         <!--<![endif]-->
-         <link rel="stylesheet" href="./reference/wet-boew4b/css/theme.min.css">
-         <link rel="stylesheet" href="./reference/wet-boew4b/css/statcan.css">
-         <!--[if lt IE 9]>
-         <link href="/wet-boew4b/assets/favicon.ico" rel="shortcut icon" />
-         <link rel="stylesheet" href="/wet-boew4b/css/ie8-wet-boew.min.css" />
-         <script src="/wet-boew4b/js/ie8-wet-boew.min.js"></script>
-         <![endif]-->
-         <noscript>
-            <link rel="stylesheet" href="/wet-boew4b/css/noscript.min.css" />
-         </noscript>
-         <script>dataLayer1 = [];</script>
-         <script src="./reference/wet-boew4b/js/jquery.tooltipster.min.js"></script>
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
-         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
-		 
-         <!-- CustomScriptsCSSStart -->         
-		 <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
-         <link href='./application.css' rel='stylesheet' />		 
-         <!-- CustomScriptsCSSEnd -->
-      </head>
-      <body vocab="http://schema.org/" typeof="WebPage">
-         <!--stopindex-->
-         <main role="main" property="mainContentOfPage" class="prx container" id="wb-cont">
-            <h1 id="app-title" property="name" class="mrgn-tp-sm">Table Viewer Map Component</h1>
-            <!--startindex-->
-            <section>
-               <!-- if you are skipping to a data table use this
-                  <div class="text-center">
-                  	<a href="#" class="wb-inv wb-show-onfocus wb-sl">Skip the interactive features and go directly to the data table.</a>
-                  </div>
-                    -->
-               <!-- if you are skipping to the bottom section use this -->
-               <div class="text-center">
-                  <a href="#moreinfo" class="wb-inv wb-show-onfocus wb-sl">Skip the visual interactive dashboard and go directly to the additional information section</a>
-               </div>
-               <div class="wb-inv">Start of visual interactive dashboard</div>
-               <div id='app-container' class="gexp"></div>
-               <div class="wb-inv">End of visual interactive dashboard</div>
-            </section>
-            <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
-               <header class="modal-header">
-                  <h2 class="modal-title">How to use</h2>
-               </header>
-               <div class="modal-body">
-                 
-               </div>
-            </section>
-            <!--stopindex-->
-            <!-- More info button text, update if this is not 71-607-x -->
-            <!-- More info page -->
-            <section id="moreinfo" class="mfp-hide modal-dialog modal-content overlay-def">
-               <header class="modal-header">
-                  <h2 class="modal-title">More information</h2>
-               </header>
-               <div class="modal-body">
-                  <div class="pstn-rght-lg pstn-rght-md pstn-lft-md pstn-lft-sm pstn-lft-xs mrgn-lft-md mrgn-rght-sm"> 
-                     <span class="label label-primary"></span> 
-                  </div>
-                  <span class="clearfix"></span>
-                  <h2 class="mrgn-tp-0">Note of appreciation </h2>
-                  <p>Canada owes the success of its statistical system to a long-standing partnership between Statistics Canada, the citizens of Canada, its businesses, governments and other institutions. Accurate and timely statistical information could not be produced without their continued co-operation and goodwill.</p>
-                  <h2>Standards of service to the public</h2>
-                  <p>Statistics Canada is committed to serving its clients in a prompt, reliable and courteous manner. To this end, the Agency has developed <a href="/about-apercu/standards-normes-eng.htm">standards of service</a> which its employees observe in serving its clients. </p>
-                  <h2>Copyright</h2>
-                  <p>Published by authority of the Minister responsible for Statistics Canada.</p>
-                  <p> &copy; Her Majesty the Queen in Right of Canada as represented by the Minister of Industry, 2020</p>
-                  <p>All rights reserved. Use  of this publication is governed by the <a href="/reference/licence-eng.html" title="Statistics Canada Open Licence Agreement">Statistics Canada Open Licence Agreement</a>.</p>
-                  <p>Catalogue <abbr title="number">no.</abbr> 71-607-X</p>
-                  <p> Ottawa</p>
-               </div>
-            </section>
-            <!-- END More info page --> 
-            <div class="pagedetails">
-               <div class="row">
-                  <div class="col-sm-6 col-lg-4 mrgn-tp-sm">
-                     <details class="brdr-0">
-                        <summary class="btn btn-default text-center">Report a problem on this page</summary>
-                        <div class="clearfix"></div>
-                        <div class="well row">
-                           <div class="gc-rprt-prblm">
-                              <div class="gc-rprt-prblm-frm gc-rprt-prblm-tggl">
-                                 <p>Is something not working? Is there information outdated? Can't find what you're looking for?</p>
-                                 <p>Please <a href="https://www.statcan.gc.ca/eng/reference/refcentre/index?MM=RAP">contact us</a> and let us know how we can help you.</p>
-                                 <p><a href="https://www.statcan.gc.ca/eng/reference/privacy?MM=RAP">Privacy notice</a></p>
-                              </div>
-                           </div>
-                        </div>
-                     </details>
-                  </div>
-                  <!-- Share button -->
-                  <div class="wb-share col-sm-4 col-md-3 col-sm-offset-2 col-md-offset-4 col-lg-offset-5" data-wb-share='{"lnkClass": "btn btn-default btn-block"}'></div>
-                  <!-- END Share button -->
-               </div>
-               <dl id="wb-dtmd">
-                  <dt>Date modified:&#32;</dt>
-                  <dd><time property="dateModified">
-                     2020-04-06
-                     </time>
-                  </dd>
-               </dl>
-            </div>
-         </main>
-		 
-         <script src="./reference/wet-boew4b/js/wet-boew.min.js"></script>
-         <script src="./reference/wet-boew4b/js/theme.min.js"></script>
-		 
-         <!-- CustomScriptsJSStart -->
-         <script src="./reference/polyfill/promise.min.js"></script>
-		 <script src="./reference/iro/iro@5.js"></script>
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en" dir="ltr">
+	<head prefix="dcterms: http://purl.org/dc/terms/">
+		<title>Canadian Statistical Geo-Explorer Lite</title>
+		<meta charset="utf-8">
+		<meta property="dcterms:service" content="StatCan"/>
+		<meta property="dcterms:accessRights" content="2"/>
+		<meta property="dcterms:description" content="This map will display a thematic map according to the indicator selected. Use the dropdown lists below to select dimension members for each dimensions of the current CODR product. Then, click on the 'Update Map' button to display the thematic map. A data table at the bottom contains the data shown on the map."/>
+		<meta property="dcterms.creator" content="Government of Canada, Statistics Canada">
 
-		 <!--script src="./reference/dojo.js"></script-->
-         <script src='./main.js' type='module'></script>
-         <!-- CustomScriptsJSEnd -->
-      </body>
-   </html>
+		<link href="./assets/favicon.ico" rel="icon" type="image/x-icon">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/wet-boew.min.css">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/theme.min.css">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/statcan.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+		<link href='./application.css' rel='stylesheet' />		 
+	</head>
+
+	<body vocab="http://schema.org/" typeof="WebPage">
+		<main role="main" property="mainContentOfPage" id="wb-cont">
+			<h1 id="app-title" property="name" class="mrgn-tp-sm">Table Viewer Map Component</h1>
+			<section>
+				<div id='app-container' class="gexp"></div>
+			</section>
+		</main>
+
+		<script src='./main.js' type='module'></script>
+	</body>
+</html>

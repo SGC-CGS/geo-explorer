@@ -19,7 +19,6 @@ import Map from './components/map.js';
 
 export default class Application extends Widget { 
 
-	
 	constructor(container, config) {		
 		super(container);
 
@@ -147,6 +146,8 @@ export default class Application extends Widget {
 		this.Elem("mapcontainer").className = "map-container";
 		this.Elem("loadingtitle").className = "loading-title hidden";
 		
+		this.Resize();
+		
 		if (!this.config.initialSelection) return;
 		
 		this.Elem("selector").ApplyInitialSelection(this.config.initialSelection);
@@ -160,6 +161,7 @@ export default class Application extends Widget {
         this.Elem("tableHeader").innerHTML = this.Nls("Table_Header") + indicator;
 		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
 		this.Elem("waiting").Show();
+		this.Resize();
 
         CODR.GetCoordinateData(this.metadata, ev.coordinates).then(data => {
 			this.data = data;			
@@ -172,7 +174,8 @@ export default class Application extends Widget {
 			}
 			
 			this.LoadLayer(ev.geo, data, uoms[0]);
-            this.LoadTable(data);        
+            this.LoadTable(data);     
+			this.Resize();
 		}, error => this.OnApplication_Error(error));
 	}
 	
@@ -237,6 +240,12 @@ export default class Application extends Widget {
 		alert(error.message);
 		
 		console.error(error);
+	}
+
+	Resize() {
+		var data = { event:"resize", height:document.body.getBoundingClientRect().height };
+		
+		top.postMessage(JSON.stringify(data), "*");  
 	}
 
 	HTML() {		

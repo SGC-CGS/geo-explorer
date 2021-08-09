@@ -39,7 +39,6 @@
 		 
          <!-- CustomScriptsCSSStart -->         
 		 <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
-         <link href='./application.css' rel='stylesheet' />		 
          <!-- CustomScriptsCSSEnd -->
       </head>
       <body vocab="http://schema.org/" typeof="WebPage">
@@ -156,7 +155,15 @@
                   </div>
                     -->
                <!-- if you are skipping to the bottom section use this -->
-               <div id='app-container' class="gexp"></div>
+			   <script type="application/javascript">
+					window.addEventListener("message", ev => {
+						var data = JSON.parse(ev.data);
+
+						document.querySelector("#app-container").height = data.height;
+					});
+			   </script>
+			   
+			   <iframe id='app-container' src="./main-en.html?pid=46100049" style="border:none;width:100%;"></iframe>
             </section>
 			
             <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
@@ -299,13 +306,5 @@
 		 
          <script src="./reference/wet-boew4b/js/wet-boew.min.js"></script>
          <script src="./reference/wet-boew4b/js/theme.min.js"></script>
-		 
-         <!-- CustomScriptsJSStart -->
-         <script src="./reference/polyfill/promise.min.js"></script>
-		 <script src="./reference/iro/iro@5.js"></script>
-
-		 <!--script src="./reference/dojo.js"></script-->
-         <script src='./main.js' type='module'></script>
-         <!-- CustomScriptsJSEnd -->
       </body>
    </html>

@@ -4,17 +4,10 @@ import Net from "../geo-explorer-api/tools/net.js";
 
 import Application from "./application.js";
 
-if (wb && wb.isReady) DocumentReady();
-else $(document).on("wb-ready.wb", ev => DocumentReady());
+var p1 = Net.JSON(`./application.json`);
+var p2 = LoadEsri();
 
-window.ESRI = null;
-
-function DocumentReady() {	
-	var p1 = Net.JSON(`./application.json`);
-	var p2 = LoadEsri();
-
-	Promise.all([p1, p2]).then(Start, Fail);
-}
+Promise.all([p1, p2]).then(Start, Fail);
 
 function Start(responses) {
 	var config = responses[0];

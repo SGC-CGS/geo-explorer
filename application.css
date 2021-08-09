@@ -1,5 +1,11 @@
-#app-title {
-
+html, body {	
+	font-size:14px;
+	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
+	font-weight:normal;
+    color:#545963 !important;
+    padding:0;
+    margin:0;
+	overflow-y:hidden;
 }
 
 abbr[data-original-title], abbr[title] {
@@ -10,13 +16,6 @@ abbr[data-original-title], abbr[title] {
     line-height: initial;
     vertical-align: super;
     position: initial;
-}
-
-.gexp {
-	font-size:14px;
-	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
-	font-weight:normal;
-    color:#545963 !important;
 }
 
 .gexp h2 {
