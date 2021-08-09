@@ -3,7 +3,6 @@ import Core from '../../geo-explorer-api/tools/core.js';
 import Dom from '../../geo-explorer-api/tools/dom.js';
 import Requests from '../../geo-explorer-api/tools/requests.js';
 import StaticTypeahead from "../../geo-explorer-api/ui/typeahead/static.js";
-import Select from '../../geo-explorer-api/ui/select.js';
 
 /**
  * Selector widget module
@@ -48,6 +47,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 		nls.Add("Selector_Geography_Placeholder", "fr", "*... Sélectionnez un niveau géographique");
 		nls.Add("Selector_Filter_Label", "en", "Filters");
 		nls.Add("Selector_Filter_Label", "fr", "Filtres");
+		nls.Add("Selector_Filter_Placeholder", "en", "*... Select a Filter");
+		nls.Add("Selector_Filter_Placeholder", "fr", "*... Sélectionnez un filtre");
 		nls.Add("Selector_Filter_Instructions", "en", "Select a subject, theme and category (product) to show available filters.");
 		nls.Add("Selector_Filter_Instructions", "fr", "Sélectionner un sujet, thème et catégorie (produit) pour afficher les filtres disponibles.");
 		nls.Add("Selector_Button_Apply", "en", "Apply");
@@ -126,7 +127,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 	LoadDropDown(select, items) {
 		select.Reset();
 
-		select.numCharactersToShowMatches = 0;
+		select.minCharacters = 0;
 		select.store = items;
 		select.disabled = false;
 	}
@@ -153,13 +154,13 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 		this.filters = filters.map(d => {
 			var label = Dom.Create("label", { innerHTML:d.label }, this.Elem('filter'));
 			var div = Dom.Create("div", null, this.Elem('filter'));
-			var select = new Select(div);
+			var select = new StaticTypeahead(div);
+
+			select.minCharacters = 0;
+			select.store = d.values;
+			select.placeholder = this.Nls("Selector_Filter_Placeholder");
 			
-			d.values.forEach(item => select.Add(item.label, null, item));
-			
-			select.Elem("root").firstChild.selected = true;
-			
-			select.On("Change", this.OnValue_Change.bind(this));
+			select.On("Change", this.OnFilterChange.bind(this));
 			
 			return select;
 		});
@@ -195,6 +196,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 			this.Emit("Idle");
 		
 			this.LoadDropDown(this.Elem("sTheme"), this.context.Lookup("themes"));
+
 		}, error => this.OnRequests_Error(error));		
 	}
 	
@@ -229,8 +231,28 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 			this.Emit("Idle");
 		
 			this.LoadFilters(this.context.Lookup("filters"));
-			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
 		}, error => this.OnRequests_Error(error));		
+	}
+
+	/**
+	 * Update filter select element. Once all filters have been selected,
+	 * sValue can be enabled. If sValue is already enabled after selecting 
+	 * a new filter, then call onValueChange()
+	 * @param {*} ev - Event object
+	 * @returns {void}
+	 */
+	OnFilterChange(ev) {
+		let index = this.filters.indexOf(ev.target);
+
+		this.filters[index].value = ev.item;
+
+		let filtersNotYetSelected = this.filters.some(f => f.value == null);
+
+		if(filtersNotYetSelected == false && !this.Elem('sValue').disabled) {
+			this.OnValue_Change();
+		} else if(filtersNotYetSelected == false) {
+			this.LoadDropDown(this.Elem("sValue"), this.context.Lookup("values"));
+		}
 	}
 	
 	/**
@@ -239,11 +261,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 	 * @returns {void}
 	 */
 	OnValue_Change(ev) {
-		if (this.Elem("sValue").item == null) return;
-		
 		this.Disable(['sGeography', 'bApply']);
 		
-		var filters = this.filters.map(f => f.selected.value);
+		var filters = this.filters.map(f => f.value);
 		var value = this.Elem("sValue").value;
 		
 		this.Emit("Busy");

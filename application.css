@@ -164,6 +164,7 @@ abbr[data-original-title], abbr[title] {
 .gexp .typeahead input { 
     border:solid 1px rgb(169, 169, 169);
     height: 28px;
+	text-overflow: ellipsis;
 }
 
 .gexp .typeahead:not(.collapsed) ul {
@@ -178,7 +179,7 @@ abbr[data-original-title], abbr[title] {
 }
 
 .gexp .typeahead .input {
-	padding:3px 8px;
+	padding: 0px 16px 0px 8px;
 	
     border-top-left-radius:2px;
     border-top-right-radius:2px;
@@ -221,6 +222,18 @@ abbr[data-original-title], abbr[title] {
     overflow-y:auto;
     overflow-x:hidden;
     max-height:400px;
+}
+
+.gexp .typeahead-input-icon::before {
+    margin-left: -18px; 
+	font-family: "FontAwesome";
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+	content: "\f078";
+	pointer-events: none;
+    color: rgb(100, 100, 100);
 }
 
 /* Map area of the application */
@@ -900,17 +913,4 @@ abbr[data-original-title], abbr[title] {
 /* Basemap */
 .esri-basemap-gallery__item { 
 	animation: none;
-}
-
-/* Type ahead */
-.gexp .typeahead-input-icon::before {
-    margin-left: -18px; 
-	font-family: "FontAwesome";
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-	content: "\f078";
-	pointer-events: none;
-    color: rgb(100, 100, 100);
 }
