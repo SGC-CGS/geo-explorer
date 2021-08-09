@@ -73,7 +73,8 @@ export default class Map extends Evented {
 			container: container,
 			map: this.map,
 			zoom: options && options.zoom || 4,
-			constraints: options && options.constraints || {}
+			constraints: options && options.constraints || {},
+			highlightOptions: options && options.highlight || {}
 		});
         
 		this._view.popup.collapseEnabled = false;
@@ -261,5 +262,39 @@ export default class Map extends Evented {
 	
 	OnMapView_Error(error) {		
 		this.Emit("Error", { error:error });
+	}
+
+	/**
+	 * @description
+	 * Given a behavior, identify, and emit the graphic being hovered on by using a simple hit test
+	 * {@link https://developers.arcgis.com/javascript/latest/sample-code/view-hittest/|ArcGIS API for JavaScript}
+	 * @param {*} behavior - Behavior on the map object
+	 */
+	 // REVIEW: Not sure this really goes here, it's too dependent on the behavior. 
+	 // I'm not sure that it goes in the behavior directly either so I'll have to think about it.
+	EnableHitTest(behavior) {
+		this.view.whenLayerView(behavior.layer).then(layerView => {
+			this.view.emit("layerViewCreated", { layerView: layerView });
+
+			this.view.on("pointer-move", ev => {
+				this.view.hitTest(ev).then((response, ev) => {
+					// For when you enter a graphic in the collection of graphics
+					if (response.results.length && behavior.drawComplete == true) {
+						this.view.emit("PointerMove", {
+							layerView: layerView,
+							response: response,
+							graphic: response.results[0].graphic 
+						});
+					}
+					// For when you have left the graphic 
+					else { this.view.emit("PointerLeave"); }
+				})
+			})
+
+			// For when you have left the view
+			this.view.on("pointer-leave", ev => {
+				this.view.emit("PointerLeave");
+			})
+		})
 	}
 }
