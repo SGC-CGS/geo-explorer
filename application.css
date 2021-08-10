@@ -635,6 +635,7 @@ abbr[data-original-title], abbr[title] {
 	max-width: 300px;
     padding: 4px;
 	transition: opacity 125ms ease-in-out;
+    user-select: none;
 }
 
 .gexp.tooltip ul {
@@ -877,6 +878,26 @@ abbr[data-original-title], abbr[title] {
 	visibility: visible;
 }
 
+.gexp .chart-overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.gexp .hover-line {
+  stroke: red;
+  stroke-width: 2px;
+  stroke-dasharray: 2,4;
+}
+
+.esri-popup__footer {
+    display: none;
+}
+
+.esri-popup__content { 
+    margin: 4px 15px 12px;
+
+    
+}
 .gexp .tooltip-bottom {
 	top: 150%;
 	left: 50%;

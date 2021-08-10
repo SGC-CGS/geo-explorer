@@ -43,21 +43,9 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 	constructor(container) {
 		super(container);
 
-		this.Elem('sMethod').Add(
-			this.Nls("Styler_Method_Equal"), 
-			this.Nls("Styler_Method_Info_Equal"), 
-			{ id: 1, algo: "esriClassifyEqualInterval" }
-		);
-		this.Elem('sMethod').Add(
-			this.Nls("Styler_Method_Natural"), 
-			this.Nls("Styler_Method_Info_Natural"), 
-			{ id: 2, algo: "esriClassifyNaturalBreaks" }
-		);
-		this.Elem('sMethod').Add(
-			this.Nls("Styler_Method_Quantile"), 
-			this.Nls("Styler_Method_Info_Quantile"),
-			{ id: 3, algo: "esriClassifyQuantile" }
-		);
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), this.Nls("Styler_Method_Info_Equal"), { id:1, algo:"esriClassifyEqualInterval" });
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"),this.Nls("Styler_Method_Info_Natural"), { id:2, algo:"esriClassifyNaturalBreaks" });
+		this.Elem('sMethod').Add(this.Nls("Styler_Method_Quantile"), this.Nls("Styler_Method_Info_Quantile"), { id:3, algo:"esriClassifyQuantile" });
 		
 		this.Node('sMethod').On("Change", this.onMethod_Change.bind(this));
 

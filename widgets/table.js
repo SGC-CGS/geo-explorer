@@ -10,10 +10,12 @@ import Dom from '../../geo-explorer-api/tools/dom.js';
 export default Core.Templatable("App.Widgets.Table", class Table extends Widget {
 	
 	/**
-	 * Set table title
+	 * Get / set table title
 	 */
+	get title() { return this.Elem("title").innerHTML }
+
 	set title(value) { this.Elem("title").innerHTML = value; }
-	
+
 	/**
 	 * Set data
 	 */
@@ -50,14 +52,9 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 		var th = Dom.Create("th", { }, tr);
 		this.CreateButton(th, null, this.Nls("Table_Trash_All_Title"), "fa fa-trash"); 
 		
-		this.config.headers.forEach(h => {			
-			if(h.label == "DGUID"){
-				let label = `<abbr class="abbr" title="Dissemination Geography Unique Identifier">DGUID</abbr>`;
-				Dom.Create("th", { innerHTML:label }, tr);
-				return;
-			} 
-				
+		this.config.headers.forEach(h => {
 			Dom.Create("th", { innerHTML:h.label }, tr);
+
 		});
 	}
 	
@@ -164,7 +161,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 			      "<div handle='table' class='table-container hidden'>" + 
 					 // "<summary handle='description'></summary>" +
 				     "<table>" +
-				        "<thead id=`tHead` handle='header'></thead>" +
+				        "<thead handle='header'></thead>" +
 				        "<tbody handle='body'></tbody>" + 
 				     "</table>" + 
 			      "</div>" + 
