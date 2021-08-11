@@ -31,6 +31,11 @@ export default class Menu extends Component{
 		this.items = {};
 	}
 	
+	Localize(nls) {
+		nls.Add("Widget_Disabled", "en", "Widget unavailable until a map selection is made.");
+		nls.Add("Widget_Disabled", "fr", "Le widget n'est pas disponible jusqu'à ce qu'une sélection soit faite sur la carte.");
+	}
+	
 	/**
 	 * Gets button from items for specified id
 	 * @param {string} id - Button ID
@@ -79,26 +84,6 @@ export default class Menu extends Component{
 		this.items[id] = item;
     }
 
-    /**
-     * Disable a menu item
-     * @param {any} id
-     */
-    DisableMenuButton(id) {
-        if (!this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} does not exist in menu.`);
-
-        this.items[id].button.disabled = true;
-    }
-
-    /**
-     * Enable a menu item
-     * @param {any} id
-     */
-    EnableMenuButton(id) {
-        if (!this.items.hasOwnProperty(id)) throw new Error(`Item with id ${id} does not exist in menu.`);
-      
-        this.items[id].button.disabled = false;
-    }
-
 	/**
 	 * Add button to Dom
 	 * @param {string} id - button id
@@ -111,6 +96,32 @@ export default class Menu extends Component{
 		}
 		
 		this.AddItem(id, item);
+	}
+
+	/**
+	 * Disable an overlay widget button and update properties
+	 * @param {*} button - An overlay widget button
+	 * @param {*} title - The message to show for the disabled button
+	 */
+	DisableButton(button) {
+		button.disabled = true;
+		button.title = this.Nls("Widget_Disabled");
+		// REVIEW: Use CSS button:disabled {cursor:not-allowed, opacity:0.3 }
+		button.style.cursor = "not-allowed";
+		button.style.opacity = "0.3";
+	}
+	
+	/**
+	 * Enable an overlay widget button and update properties
+	 * @param {*} button - An overlay widget button
+	 * @param {*} title - The message to show for the enabled button
+	 */
+	EnableButton(button, title) {
+		button.disabled = false;
+		button.title = title;
+		// REVIEW: Use CSS, see above
+		button.style.cursor = "pointer";
+		button.style.opacity = "1";
 	}
 	
 	/**
