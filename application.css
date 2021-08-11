@@ -504,11 +504,11 @@ abbr[data-original-title], abbr[title] {
 	cursor: pointer;
 }
 
-.gexp .styler .breaks-container,
+/* .gexp .styler .breaks-container,
 .gexp .styler .other-container,
 .gexp .styler .label-name-container {
     margin-left:20px;
-}
+} */
 
 /* Select Data widget */
 .gexp .selector label {
@@ -934,4 +934,37 @@ abbr[data-original-title], abbr[title] {
 	content: "\f078";
 	pointer-events: none;
     color: rgb(100, 100, 100);
+}
+
+/* Styler legend Checkbox */
+.gexp .styler .eyes {
+	padding: 0 5px 5px 0;
+    display: block;
+}
+
+.gexp .styler .eyes-container {
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.gexp .styler input[type=checkbox] {
+     position: relative;
+}
+/* Hide eye */
+.gexp .styler div>input[type=checkbox]:before {
+    position: absolute;
+    background-color: #FFFFFF;
+    height: 100%;
+	width: 100%;
+    font-family: "FontAwesome";
+    display: inline-block;
+    content:"\f06e";
+    letter-spacing: 10px;
+}
+/* Show eye */
+.gexp .styler div>input[type=checkbox]:checked:before {
+	font-family: "FontAwesome";
+    display: inline-block;
+    content:"\f070";
+    letter-spacing: 5px;
 }

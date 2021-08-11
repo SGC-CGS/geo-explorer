@@ -68,6 +68,7 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 		this.Node('opacity').On("change", this.OnOpacity_Changed.bind(this));
 		this.Node('label-toggle').On("change", this.OnLabelChk_Changed.bind(this));
 		this.Node('color-schemes').On("change", this.OnColorSchemes_Changed.bind(this));
+		this.Node("styler-breaks").On("visibility", this.OnVisibility_Changed.bind(this));
 	}
 	
 	Configure(config, context) {
@@ -105,10 +106,6 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 		nls.Add("Styler_Button_Close", "fr", "Annuler");
 	}
 
-	CloneRenderer(renderer) {		
-		return ESRI.renderers.support.jsonUtils.fromJSON(renderer.toJSON());
-	}
-
 	/**
 	 * Load class method, breaks, and colours to styler widget
 	 * @param {object} context - Context object
@@ -117,7 +114,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 	Update(context) {
 		this.context = context;
 		
-		this.renderer = this.CloneRenderer(context.sublayer.renderer);
+		// Create a deep clone of the renderer
+		this.renderer = context.sublayer.renderer.clone();
 
 		this.Elem("sMethod").value = this.Elem('sMethod').FindIndex(i => i.algo === context.metadata.breaks.algo);
 		this.Elem("iBreaks").value = context.metadata.breaks.n;
@@ -153,11 +151,17 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 	 * @returns {void}
 	 */
 	OnColorSchemes_Changed(ev) {
+		this.changeInProgress = true;
+
 		this.scheme = ev.scheme;
-		
+
+		this.palette = ev.scheme[this.context.metadata.breaks.n];
+
 		this.FixRendererColors(this.renderer, this.scheme);
-		
+
 		this.Elem("styler-breaks").Update(this.renderer);
+
+		this.UpdateVisibilityIconEvent("none", "not-allowed");
 	}
 
 	/**
@@ -168,9 +172,13 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 	OnApply_Click(ev) {		
 		this.context.Commit();
 		
-		this.renderer = this.CloneRenderer(this.renderer);
+		this.renderer = this.renderer.clone();
 		
 		this.FixRendererBreaks(this.renderer, this.Elem("styler-breaks").breaks);
+
+		this.UpdateVisibilityIconEvent("auto", "pointer");
+
+		this.changeInProgress = false;
 		
 		this.Emit("Change", { renderer:this.renderer });
 	}
@@ -206,6 +214,38 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 		this.Emit("LabelName", { checked:ev.checked });	
 	}
 
+	OnVisibility_Changed(ev) {
+		let breaks = this.renderer.classBreakInfos;
+		let color; 
+
+		if(ev.breakIndex >= breaks.length) {
+			color = this.renderer.defaultSymbol.color;
+		} else {
+			color = breaks[ev.breakIndex].symbol.color;
+		}
+
+		color.a = ev.checked ? 1 : 0;
+
+		this.renderer = this.renderer.clone();
+
+		this.Emit("Change", { renderer:this.renderer });
+	}
+
+	/**
+	 * Re-enable or disable visibility icons. An "auto" pointerEvent
+	 * will re-enable. "none" will disable. 
+	 * @param {*} PointerEvent - e.g., "none", "auto"
+	 * @param {*} cursor - e.g., "not-allowed", "pointer"
+	 */
+	 UpdateVisibilityIconEvent(PointerEvent, cursor) {
+		let breaks = this.Elem("styler-breaks").breaks;
+
+		breaks.forEach(brk => {
+			brk.iconPointerEvents = PointerEvent;
+			brk.iconCursorType = cursor
+		});
+	}
+
 	/**
 	 * Refresh class breaks based on currently selected options
 	 * @returns {void}
@@ -219,6 +259,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 			this.FixRendererColors(this.renderer, this.scheme);
 			
 			this.Elem("styler-breaks").Update(this.renderer);
+
+			if(this.changeInProgress) this.UpdateVisibilityIconEvent("none", "not-allowed");
 		
 			this.Emit("Idle");
 		}, error => this.OnRequests_Error(error));
