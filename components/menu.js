@@ -92,6 +92,7 @@ export default class Menu extends Component{
 	 */
 	AddButton(id, title){
 		var item = {
+			title : title,
 			button : Dom.Create("button", { title:title, className:`button-icon large-icon ${id}` })
 		}
 		
@@ -103,12 +104,11 @@ export default class Menu extends Component{
 	 * @param {*} button - An overlay widget button
 	 * @param {*} title - The message to show for the disabled button
 	 */
-	DisableButton(button) {
+	DisableButton(id) {
+		var button = this.Button(id);
+		
 		button.disabled = true;
 		button.title = this.Nls("Widget_Disabled");
-		// REVIEW: Use CSS button:disabled {cursor:not-allowed, opacity:0.3 }
-		button.style.cursor = "not-allowed";
-		button.style.opacity = "0.3";
 	}
 	
 	/**
@@ -116,12 +116,11 @@ export default class Menu extends Component{
 	 * @param {*} button - An overlay widget button
 	 * @param {*} title - The message to show for the enabled button
 	 */
-	EnableButton(button, title) {
+	EnableButton(id) {
+		var button = this.Button(id);
+		
 		button.disabled = false;
-		button.title = title;
-		// REVIEW: Use CSS, see above
-		button.style.cursor = "pointer";
-		button.style.opacity = "1";
+		button.title = this.Item(id).title;
 	}
 	
 	/**
@@ -133,6 +132,7 @@ export default class Menu extends Component{
 	 */
 	AddOverlay(overlay) {
 		var item = {
+			title : overlay.title,
 			button : Dom.Create("button", { title:overlay.title, className:`button-icon large-icon ${overlay.id}` }),
 			overlay : overlay
 		}
