@@ -8,6 +8,20 @@ import Dom from '../../tools/dom.js';
  * @extends Widget
  */
 export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak extends Widget {
+
+	/**
+	 * Set visibility icon cursor
+	 */
+	 set iconCursor(value) {
+		this.Elem("visible-icon").style.cursor = value;
+	}
+
+	/**
+	 * Set visibility icon pointer event
+	 */
+	 set iconPointerEvents(value) {
+		this.Elem("checkbox").style.pointerEvents = value;
+	}
 	
 	/**
 	 * Get color for default breaks
@@ -19,6 +33,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 		
 		this.Elem("color").style.backgroundColor = this.color.toHex();
 		this.Elem("color").setAttribute("aria-label", this.Nls("Color_Arialabel", [this.color.toRgb()]));
+		this.Elem("checkbox").addEventListener("change", this.OnEditor_Visible.bind(this));
 	}
 	
 	/**
@@ -34,6 +49,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	constructor(container, info) {	
 		super(container, info);
 		
+		this.checked = true;
 		this.color = info.symbol.color;
 	}
 
@@ -48,6 +64,17 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
         nls.Add("Color_Arialabel", "en", "Colored square ({0}), data unavailable");
         nls.Add("Color_Arialabel", "fr", "Carré de couleur ({0}), donnée non-disponible");
 	}
+
+	/**
+	 * Emit whether the checkbox is filled or not so that 
+	 * the feature's alpha value may be updated
+	 * @param {*} ev - Event received from the checkbox
+	 */
+	OnEditor_Visible(ev) {
+		this.checked = !this.checked;
+
+		this.Emit("visibility", { checked:this.checked });
+	}
 	
 	/**
 	 * Create HTML for legend breaks
@@ -55,6 +82,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	 */	
 	HTML() {
 		return "<div handle='container' class='break-line'>" +
+				"<div handle='visible-icon' style='float: Left;'class='eyes breaks-column'><input type='checkbox' handle='checkbox'></div>" +
 				 "<div class='break-color-container'>" + 
 					"<div handle='color' class='break-color' aria-label='color'></div>" +
 				 "</div>" + 

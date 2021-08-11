@@ -30,6 +30,7 @@ export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widge
      * @description
      * Load the class breaks from renderer settings
      * @param {String} renderer - renderer object
+     * @param {String} uom - unit of measure (optional)
      */
     LoadClassBreaks(renderer, uom) {
 		if (uom) this.Elem("uom").innerHTML = uom;
@@ -47,7 +48,7 @@ export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widge
     }
 	
 	MakeClassBreak(container, c, uom) {
-		return new LegendBreak(this.Elem('breaks'), c, uom);
+		return new LegendBreak(container, c, uom);
 	}
 
     EmptyClassBreaks() {

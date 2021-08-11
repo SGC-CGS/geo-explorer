@@ -40,7 +40,8 @@ export default Core.Templatable("Api.Widgets.LegendEditable", class LegendEditab
 	Update(renderer) {
 		super.Update(renderer);
 		
-		this.breaks.forEach((brk, i) => brk.On("apply", this.OnBreak_Apply.bind(this, i)))
+		this.breaks.forEach((brk, i) => brk.On("apply", this.OnBreak_Apply.bind(this, i)));
+		this.breaks.forEach((brk, i) => brk.On("visibility", this.OnCheckboxUpdate.bind(this, i)));
 	}
 	
 	MakeClassBreak(container, c, uom) {
@@ -67,5 +68,15 @@ export default Core.Templatable("Api.Widgets.LegendEditable", class LegendEditab
 
 			next.min = curr.max;
 		}
+	}
+
+	/**
+	 * Emit whether the checkbox is filled or not and the index of the break so that 
+	 * the feature's alpha value may be updated
+	 * @param {*} i - Index for the break whose alpha value needs to be updated
+	 * @param {*} ev - Event received from the checkbox
+	 */
+	OnCheckboxUpdate(i, ev) {
+		this.Emit("visibility", { checked:ev.checked, breakIndex:i });
 	}
 })
