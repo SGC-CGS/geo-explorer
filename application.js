@@ -82,7 +82,7 @@ export default class Application extends Widget {
 		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
 
 		// REVIEW: The NLS string for the title goes in application.js
-		this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"));
+		this.toolbar.menu.DisableButton("chart");
 
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
@@ -132,13 +132,13 @@ export default class Application extends Widget {
 			if (ev.selection.items.length == 0) {		
 				this.Elem("chart").description = "";
 				this.toolbar.menu.Overlay("chart").title = "";
-				this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"));
+				this.toolbar.menu.DisableButton("chart");
 			} 
 			
 			else if (this.toolbar.menu.Button("chart").disabled == true) {
 				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
 				this.toolbar.menu.Overlay("chart").title = this.Elem("chart").linkTitle;
-				this.toolbar.menu.EnableButton(this.toolbar.menu.Button("chart"), this.Elem("chart").title);
+				this.toolbar.menu.EnableButton("chart");
 			}
 		});	
 
@@ -223,7 +223,7 @@ export default class Application extends Widget {
 		this.Elem("styler").Update(this.context);
 		this.Elem("table").Update(this.context);
 
-		this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"));
+		this.toolbar.menu.DisableButton("chart");
 	}
 	
 	OnStyler_Change(ev) {	
@@ -260,7 +260,7 @@ export default class Application extends Widget {
 		if (this.map.Behavior("selection").graphics.items.length == 0) {
 			this.Elem("chart").description = this.Elem("chart").disabledTitle;
 			this.toolbar.menu.Overlay("chart").title = this.Elem("chart").title;
-			this.toolbar.menu.DisableButton(this.toolbar.menu.Button("chart"), this.Elem("chart").disabledTitle);
+			this.toolbar.menu.DisableButton("chart");
 	   }
 	}
 	
