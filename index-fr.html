@@ -125,15 +125,24 @@
          <main role="main" property="mainContentOfPage" class="prx container" id="wb-cont">
             <!--startindex-->
             <section>
+			    <iframe id='app-container' src="./main-fr.html?pid=46100049" style="border:none;width:100%;"></iframe>
+				
 				<script type="application/javascript">
 					window.addEventListener("message", ev => {
 						var data = JSON.parse(ev.data);
 
 						document.querySelector("#app-container").height = data.height;
 					});
+					
+					const p = new URLSearchParams(location.search);
+
+					if (!p.get('pid')) {
+						alert("product id not specified through URL.");
+						throw new Error("product id not specified through URL.");
+					}
+					
+					document.querySelector("#app-container").src = `./main-fr.html?pid=${p.get('pid')}`;
 				</script>
-			   
-			   <iframe id='app-container' src="./main-fr.html?pid=46100049" style="border:none;width:100%;"></iframe>
             </section>
             <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
 				<header class="modal-header">
