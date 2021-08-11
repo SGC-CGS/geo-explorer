@@ -261,5 +261,12 @@ export default class Map extends Evented {
 	
 	OnMapView_Error(error) {		
 		this.Emit("Error", { error:error });
-	}
+    }
+
+    RemoveAttribution() {
+        this._view.when(d => {
+            // Remove ESRI attribution
+            this._view.ui._removeComponents(["attribution"]);
+        });
+    }
 }
