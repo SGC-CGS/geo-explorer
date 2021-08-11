@@ -50,8 +50,10 @@ export default class Application extends Widget {
 		var p1 = CODR.GetCubeMetadata(this.config.product);
 		var p2 = CODR.GetCodeSets();
         
-		Promise.all([p1, p2]).then(this.OnCODR_Ready.bind(this), error => this.OnApplication_Error(error));
-		
+        Promise.all([p1, p2]).then(this.OnCODR_Ready.bind(this), error => this.OnApplication_Error(error));
+
+        this.map.RemoveAttribution();
+        		
 		/* 
 		// NOTE: This should work but for some reason, it only works on every other click.
 		// Listen for SceneView click events
@@ -124,9 +126,9 @@ export default class Application extends Widget {
 		menu.AddOverlay(overlay);
 		
 		this.map.Place([overlay.roots[0]], position);
-	}
+    }
 
-	OnCODR_Ready(responses) {
+    OnCODR_Ready(responses) {
 		this.metadata = responses[0];
 		this.codesets = responses[1];
 		
