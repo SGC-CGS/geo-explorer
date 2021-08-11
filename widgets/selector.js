@@ -173,8 +173,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
         return 	"<h2 handle='dropdowntitle' class='col-md-12 mrgn-tp-sm hidden'>nls(Dropdowns_Title)</h2>" +
                 "<div handle='dimensions' class='dimensions'></div>" +
 				"<div class='row mrgn-tp-sm'>" +
-                "<button handle='submit' type='submit' class='btn btn-primary col-md-2 pull-right hidden' title='nls(UpdateMapBtn_Title)'>" +
-                "nls(UpdateMapBtn_Title)</button > " +
+					"<button handle='submit' type='submit' class='btn btn-primary col-md-2 pull-right hidden' title='nls(UpdateMapBtn_Title)'>" +
+					"nls(UpdateMapBtn_Title)</button > " +
 				"</div>";
     }
 })

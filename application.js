@@ -39,8 +39,8 @@ export default class Application extends Widget {
 		
 		this.AddPointIdentify();
         this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
-        this.menu.DisableMenuButton("legend"); // until data is available on the map
-        
+        this.menu.DisableButton("legend"); // until data is available on the map
+		
 		// Move all widgets inside the map div, required for fullscreen
 		this.map.Place(this.menu.buttons, "top-left");
         this.map.Place([this.Elem("waiting").container], "manual");
@@ -53,7 +53,7 @@ export default class Application extends Widget {
         Promise.all([p1, p2]).then(this.OnCODR_Ready.bind(this), error => this.OnApplication_Error(error));
 
         this.map.RemoveAttribution();
-        		
+        
 		/* 
 		// NOTE: This should work but for some reason, it only works on every other click.
 		// Listen for SceneView click events
@@ -80,10 +80,8 @@ export default class Application extends Widget {
 	 * @returns {void}
 	 */
 	Localize(nls) {
-		nls.Add("Legend_Title", "en", "Legend");
-		nls.Add("Legend_Title", "fr", "Légende");
-		nls.Add("LoadingData_Title", "en", "Loading Data...");
-		nls.Add("LoadingData_Title", "fr", "Chargement des données...");
+		nls.Add("Legend_Title", "en", "Show map legend");
+		nls.Add("Legend_Title", "fr", "Afficher la légende cartographique");
 		nls.Add("TableViewer_Label", "en", "Statistics Canada. Table {0}");
 		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0}");
 		nls.Add("RefPeriod_Label", "en", "Reference period {0}");
@@ -144,9 +142,8 @@ export default class Application extends Widget {
 		
 		// Create the drop down lists from the dimensions and memebers
 		this.Elem("selector").Initialize(this.metadata);
-
-		this.Elem("mapcontainer").className = "map-container";
-		this.Elem("loadingtitle").className = "loading-title hidden";
+		
+		Dom.RemoveCss(document.body, 'wait');
 		
 		this.Resize();
 		
@@ -208,13 +205,13 @@ export default class Application extends Widget {
             this.behavior.target = layer;
 
             this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer, uom);
-            this.menu.EnableMenuButton("legend");
+			this.menu.EnableButton("legend");
         }
         else {
             // Remove the waiting symbol
             this.Elem("waiting").Hide();
             this.Elem("legend").EmptyClassBreaks();
-            this.menu.DisableMenuButton("legend"); // until data is available on the map
+			this.menu.DisableButton("legend"); // until data is available on the map
         }
     }
 
@@ -251,14 +248,11 @@ export default class Application extends Widget {
 	}
 
 	HTML() {		
-        return  "<div class='row'>" +
-                    "<h2 handle='loadingtitle' class='col-md-12 mrgn-tp-sm'>nls(LoadingData_Title)</h2>" +
-				"</div>" +
-                "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+        return  "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
                 "<div class='text-center mrgn-tp-md'><a href='#table' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
-				"<div class='map-container hidden' handle='mapcontainer'>" +
+				"<div handle='mapcontainer' class='map-container hidden'>" +
                     "<div handle='map'></div>" +
                     "<div handle='legend' class='legend' widget='Api.Widgets.Legend'></div>" +
                     "<div handle='waiting' class='waiting' widget='Api.Widgets.Waiting'></div>" +
