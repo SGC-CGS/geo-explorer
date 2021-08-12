@@ -49,22 +49,19 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 		super(container);
 
         this.sliders = [
-            {toggled: false, selectors: [
+            {selectors: [
                 this.Elem('sLayout'),
                 this.Elem('sMapScale')
             ]},
-            {toggled: false, selectors: []},
-            {toggled: false, selectors: [
+            {selectors: []},
+            {selectors: [
                 this.Elem('sLayer')
-            ]},
-
+            ]}
         ];
 
         this.SetupMapSelectors();
 
         this.SetupLayerSelectors();
-
-        this.EnableToggles();
 
         this.Node("bExport").On("click", this.OnExport_Click.bind(this));
 	}
@@ -120,38 +117,19 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 	}
 
     /**
-     * Make the toggles interactive 
-     * @returns {void}
-     */
-    EnableToggles() {
-        for (let index = 0; index < this.sliders.length; index++) {
-            this.Elem(`dropdownBtn${index}`).addEventListener("click", function (ev) {
-                if (this.Elem(`content${index}`)) this.Elem(`content${index}`).classList.toggle("active");
-
-                if (ev.target.className == "collapsedToggle") {
-                    ev.target.className = "expandedToggle";
-                    this.sliders[index].toggled = true;
-                }else {
-                    ev.target.className = "collapsedToggle";
-                    this.sliders[index].toggled = false;
-                };
-            }.bind(this));
-        }
-    }
-
-    /**
 	 * Check which content should be exported and their selections (if any)
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
     OnExport_Click(ev) {
-        this.sliders.forEach(s => {
-            if (s.toggled == true) {
-                for (let index = 0; index < s.selectors.length; index++) {
-                    console.log(s.selectors[index].selected);
-                }
+        let value, radios = this.container.firstElementChild.getElementsByTagName('input');
+        for (var index = 0; index < radios.length; index++) {
+            if (radios[index].checked) {
+                // The selected radio button
+                value = radios[index].value;
+                //console.log(this.sliders[value].selectors)
             }
-        })
+        }
     }
 
     /**
@@ -159,35 +137,41 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 	 * @returns {string} HTML with custom div
 	 */	
      HTML() {
-        return "<div handle='toggle0' class='toggleCollapse active'>nls(Export_Map)" +
-					"<i title='toggle map' handle='dropdownBtn0' class='collapsedToggle'></i>" +
-				"</div>" +
+        return "<form handle='exportForm' name='exportForm'>" +
+                    "<div><input type='radio' id='radio0' name='radios' value='0' checked>" +
+                    "<label class='exportLabel'>nls(Export_Map)</label>" +
 
-				"<div handle='content0' class='content'>" +
-                    "<label style='display: inline;'>nls(Export_Map_Layout)" +
-                        "<div handle='sLayout' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
-                    "</label>" +
+                    "<div class='content active'>" +
+                            "<label class='subLabel'>nls(Export_Map_Layout)" +
+                                "<div handle='sLayout' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
+                            "</label>" +
+
+                            "<div style='margin-bottom: 15px;'></div>"+
+
+                            "<label class='subLabel'>nls(Export_Map_MapScale)" +
+                                "<div handle='sMapScale' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
+                            "</label>" +
+                        "</div>" +
+                    "</div>" +
 
                     "<div style='margin-bottom: 15px;'></div>"+
 
-                    "<label style='display: inline;'>nls(Export_Map_MapScale)" +
-                        "<div handle='sMapScale' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
-                    "</label>" +
-                "</div>" +
+                    "<div><input type='radio' id='radio1' name='radios' value='1'>" +
+                    "<label class='exportLabel'>nls(Export_Table)</label>" +
+                    "</div>" +
 
-                "<div handle='toggle1' class='toggleCollapse active'>nls(Export_Table)" +
-					"<i title='toggle table' handle='dropdownBtn1' class='collapsedToggle'></i>" +
-				"</div>" +
+                    "<div style='margin-bottom: 15px;'></div>"+
 
-                "<div handle='toggle2' class='toggleCollapse active'>nls(Export_Layer)" +
-					"<i title='toggle table' handle='dropdownBtn2' class='collapsedToggle'></i>" +
-				"</div>" +
+                    "<div><input type='radio' id='radio2' name='radios' value='2'>" +
+                    "<label class='exportLabel'>nls(Export_Layer)</label>" +
+                    "</div>"+
 
-                "<div handle='content2' class='content'>" +
-                    "<label style='display: inline;'>nls(Export_Layer_Type)" +
-                        "<div handle='sLayer' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
-                    "</label>" +
-                "</div>" +
+                    "<div class='content active'>" +
+                        "<label class='subLabel'>nls(Export_Layer_Type)" +
+                            "<div handle='sLayer' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
+                        "</label>" +
+                    "</div>" +
+                "</form>" +
 
                 "<div class='button-container'>" +
                     "<button handle='bExport' class='button-label button-apply'>nls(Export_Button_Export)</button>" +
