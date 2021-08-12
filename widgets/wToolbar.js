@@ -10,6 +10,7 @@ import wChart from '../widgets/wChart.js';
 // import wLegend from '../widgets/legend.js';
 import wBasemap from '../../geo-explorer-api/widgets/basemap.js';
 import wBookmarks from '../../geo-explorer-api/widgets/bookmarks.js';
+import wExport from '../widgets/wExport.js';
 
 /**
  * Search widget module
@@ -48,7 +49,8 @@ export default Core.Templatable("App.Widgets.Toolbar", class wToolbar extends Wi
 			chart : new wChart(Dom.Create("div")),
 			// legend : new wLegend(Dom.Create("div")),
 			basemap : new wBasemap(Dom.Create("div")),
-			bookmarks : new wBookmarks(Dom.Create("div"))
+			bookmarks : new wBookmarks(Dom.Create("div")),
+			export : new wExport(Dom.Create("div"))
 		}
 	}
 	

@@ -261,6 +261,10 @@ abbr[data-original-title], abbr[title] {
 	background-image:url(./assets/bookmark-24.png);
 }
 
+.gexp .map-container .esri-ui .button-icon.export {
+	background-image:url(./assets/export-24.png);
+}
+
 .gexp .map-container .esri-ui .button-icon.behaviour{
 	background-image:url(./assets/toggle.png);
 	background-size: 17pt;
@@ -337,7 +341,8 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .styler,
 .gexp .selector,
-.gexp .bookmarks {
+.gexp .bookmarks,
+.gexp .export {
 	width:350px;
 }
 
@@ -786,6 +791,11 @@ abbr[data-original-title], abbr[title] {
 	border: none;
 	width: 100%;
   }
+
+.gexp .toggleCollapse {
+    font-size: large;
+    width: 100%;
+  }
   
 .gexp .content {
     min-height: fit-content;
@@ -815,7 +825,6 @@ abbr[data-original-title], abbr[title] {
     -webkit-font-smoothing: antialiased;
 	font-weight: 900;
 	content: "\f0d7";
-	display: inline-block;
 }
 
 .gexp .expandedDropdown::before {
@@ -829,7 +838,34 @@ abbr[data-original-title], abbr[title] {
     -webkit-font-smoothing: antialiased;
 	font-weight: 900;
 	content: "\f0d8";
+}
+
+.gexp .collapsedToggle::before {
+	margin-left: 5px; 
+	cursor: pointer;
+	font-family: "FontAwesome";
 	display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+	font-weight: 900;
+	content: "\f204";
+    vertical-align: middle;
+}
+
+.gexp .expandedToggle::before {
+	margin-left: 5px; 
+	cursor: pointer;
+	font-family: "FontAwesome";
+	display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+	font-weight: 900;
+	content: "\f205";
+    vertical-align: middle;
 }
 
 /* Color Schemes and Color Scheme tooltips */
