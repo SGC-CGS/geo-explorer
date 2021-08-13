@@ -159,7 +159,7 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 
 		this.Elem("styler-breaks").Update(this.renderer);
 
-		this.UpdateVisibilityIconEvent("none", "not-allowed");
+		this.Elem("styler-breaks").EnableVisibilityIcon(false);
 	}
 
 	/**
@@ -174,7 +174,7 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 		
 		this.FixRendererBreaks(this.renderer, this.Elem("styler-breaks").breaks);
 
-		this.UpdateVisibilityIconEvent("auto", "pointer");
+		this.Elem("styler-breaks").EnableVisibilityIcon(true);
 
 		this.changeInProgress = false;
 		
@@ -215,9 +215,9 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	OnVisibility_Changed(ev) {
 		let breaks = this.renderer.classBreakInfos;
 
-		if (ev.breakIndex >= breaks.length) let color = this.renderer.defaultSymbol.color;
+		if (ev.breakIndex >= breaks.length) var color = this.renderer.defaultSymbol.color;
 
-		else let color = breaks[ev.breakIndex].symbol.color;
+		else var color = breaks[ev.breakIndex].symbol.color;
 
 		color.a = ev.checked ? 1 : 0;
 
@@ -225,22 +225,7 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 
 		this.Emit("Change", { renderer:this.renderer });
 	}
-
-	// TODO: This can be done with CSS. Put a "working" class when the update is occuring. 
-	// Remove it when done. Assign Pointer events and cursor using that css rule.
-	/**
-	 * Re-enable or disable visibility icons. An "auto" pointerEvent
-	 * will re-enable. "none" will disable. 
-	 * @param {*} PointerEvent - e.g., "none", "auto"
-	 * @param {*} cursor - e.g., "not-allowed", "pointer"
-	 */
-	 UpdateVisibilityIconEvent(PointerEvent, cursor) {
-		this.Elem("styler-breaks").breaks.forEach(brk => {
-			brk.iconPointerEvents = PointerEvent;
-			brk.iconCursorType = cursor
-		});
-	}
-
+	
 	/**
 	 * Refresh class breaks based on currently selected options
 	 * @returns {void}
@@ -254,9 +239,9 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 			this.FixRendererColors(this.renderer, this.scheme);
 			
 			this.Elem("styler-breaks").Update(this.renderer);
+			
+			if (this.changeInProgress) this.Elem("styler-breaks").EnableVisibilityIcon(false);
 
-			if(this.changeInProgress) this.UpdateVisibilityIconEvent("none", "not-allowed");
-		
 			this.Emit("Idle");
 		}, error => this.OnRequests_Error(error));
 	}

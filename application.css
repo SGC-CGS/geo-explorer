@@ -984,17 +984,10 @@ abbr[data-original-title], abbr[title] {
 .gexp .styler div>input[type=checkbox]:before {
     position: absolute;
     background-color: #FFFFFF;
-    height: 100%;
-	width: 100%;
     font-family: "FontAwesome";
-    display: inline-block;
-    content:"\f06e";
-    letter-spacing: 10px;
+    content:"\f070";
 }
 /* Show eye */
 .gexp .styler div>input[type=checkbox]:checked:before {
-	font-family: "FontAwesome";
-    display: inline-block;
-    content:"\f070";
-    letter-spacing: 5px;
+    content:"\f06e";
 }
