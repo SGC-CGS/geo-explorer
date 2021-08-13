@@ -256,7 +256,7 @@ export default class Application extends Widget {
 	 * @returns{void}
 	 */
 	onStyler_LabelName(ev) {
-		this.map.Layer("main").findSublayerById(this.context.sublayer.id).labelsVisible = ev.checked;
+		this.context.sublayer.labelsVisible = ev.checked;
 	}
 
 	OnSearch_Change(ev) {		
