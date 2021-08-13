@@ -16,10 +16,9 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 	 * @param {object} container - div table container and properties
 	 * @returns {void}
 	 */
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
-        Dom.AddCss(this.container, 'hidden');
 	}
 
 	/**
@@ -118,7 +117,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 	 * @returns {string} HTML for table widget
 	 */
 	HTML() {
-		return "<table handle='table' class='table-widget'>" +	
+		return "<table handle='table' class='table-widget hidden'>" +	
 				  "<thead>" +
 					  "<tr handle='header'></tr>" +
 				  "</thead>" +

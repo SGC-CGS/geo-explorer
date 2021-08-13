@@ -136,7 +136,7 @@ abbr[data-original-title], abbr[title] {
     opacity:0.4;
 }
 
-.gexp .overlay .overlay-title {
+.gexp .overlay .overlay-header {
 	display:inline-block;
 	margin:0;
 }

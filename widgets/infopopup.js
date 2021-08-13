@@ -25,8 +25,8 @@ export default Core.Templatable("App.Widgets.InfoPopup", class InfoPopup extends
 	 * @param {object} nls - localized resources for multi lingual support
 	 * @returns {void}
 	 */
-	constructor() {	
-		super(null);
+	constructor(...config) {	
+		super(...config);
 	}
 	
 	/**

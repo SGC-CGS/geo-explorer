@@ -38,8 +38,8 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
      */
 	set geoLevel(value) { this.geoSelect.value = value; }
 	
-    constructor(container) {
-        super(container);
+    constructor(...config) {
+        super(...config);
     }
 
 	/**
@@ -63,7 +63,7 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
      * Initialize the selectors, create and load dropdowns with options
      * @param {String} metadata - metadata
      */
-	Initialize(metadata) {
+	Configure(metadata) {
 		this.metadata = metadata; 
 		
 		this.CreateDropdowns();

@@ -1,77 +1,68 @@
 'use strict';
 
-import Core from '../geo-explorer-api/tools/core.js';
+import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
+
 import CODR from '../geo-explorer-api/tools/codr.js';
 import Dom from '../geo-explorer-api/tools/dom.js';
-import Widget from '../geo-explorer-api/components/base/widget.js';
-import Menu from '../geo-explorer-api/components/menu.js';
-import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
-import Waiting from '../geo-explorer-api/widgets/waiting.js';
-import Overlay from '../geo-explorer-api/widgets/overlay.js';
-import Navbar from '../geo-explorer-api/widgets/navbar.js';
-import Legend from '../geo-explorer-api/widgets/legend/legend.js';
-import Selector from './widgets/selector.js';
-import InfoPopup from './widgets/infopopup.js';
-import Table from './widgets/table.js';
-import Configuration from './components/config.js';
 import Style from './util/style.js';
+
+import Widget from '../geo-explorer-api/components/base/widget.js';
 import Map from './components/map.js';
+import Configuration from './components/config.js';
+
+import wLegend from '../geo-explorer-api/widgets/legend/legend.js';
+import wToolbar from '../geo-explorer-api/widgets/toolbar.js';
+import wWaiting from '../geo-explorer-api/widgets/waiting.js';
+import wSelector from './widgets/selector.js';
+import wInfoPopup from './widgets/infopopup.js';
+import wTable from './widgets/table.js';
 
 export default class Application extends Widget { 
 
 	constructor(container, config) {		
-		super(container);
+		super();
 
+		this.container = container;
 		this.config = Configuration.FromJson(config);
 
         var nlsLnk = document.querySelector("#nls_link");
+		
         if (nlsLnk) nlsLnk.setAttribute("href", this.Nls("Nls_Link", [this.config.product]));
 		
         // Build map, menu, widgets and other UI components
         this.map = new Map(this.Elem('map'), this.config.Map);
 
-		this.infoPopup = new InfoPopup();
+        this.map.RemoveAttribution();
 		
-		this.menu = new Menu();
+		this.navbar = new wToolbar();
+
+		this.widgets = {
+			fullscreen: this.navbar.AddEsriWidget("fullscreen", new ESRI.widgets.Fullscreen({ view: this.map.view })),
+			home: this.navbar.AddEsriWidget("home", new ESRI.widgets.Home({ view: this.map.view })),
+			legend: this.navbar.AddOverlay("legend", new wLegend()),
+			waiting: new wWaiting(),
+			table: new wTable(this.config.table),
+			selector: new wSelector(),
+			infoPopup: new wInfoPopup()
+		}		
 		
-		this.navbar = new Navbar();
-		this.navbar.Configure(this.map);
+		this.widgets.selector.container = this.Elem("selector");
+		this.widgets.table.container = this.Elem("table");
+		
+		this.map.Place(this.navbar.roots, "top-left");
+		this.map.Place(this.widgets.waiting.roots, "manual");
+		this.map.Place(this.navbar.Item("legend").overlay.roots, "top-right");
+		
+        this.navbar.DisableButton("legend"); // until data is available on the map
+		
+		this.widgets.selector.On("Change", this.OnSelector_Change.bind(this));
 		
 		this.AddPointIdentify();
-        this.AddOverlay(this.menu, "legend", this.Nls("Legend_Title"), this.Elem("legend"), "top-right");
-        this.menu.DisableButton("legend"); // until data is available on the map
-		
-		// Move all widgets inside the map div, required for fullscreen
-		this.map.Place(this.menu.buttons, "top-left");
-        this.map.Place([this.Elem("waiting").container], "manual");
-		
-		this.Node("selector").On("Change", this.OnSelector_Change.bind(this));
 		
 		var p1 = CODR.GetCubeMetadata(this.config.product);
 		var p2 = CODR.GetCodeSets();
         
         Promise.all([p1, p2]).then(this.OnCODR_Ready.bind(this), error => this.OnApplication_Error(error));
-
-        this.map.RemoveAttribution();
-        
-		/* 
-		// NOTE: This should work but for some reason, it only works on every other click.
-		// Listen for SceneView click events
-		this.map.view.on("click", ev => {  
-			// Search for symbols on click's position
-			this.map.view.hitTest(ev.screenPoint).then(response => {
-				// Retrieve the first symbol
-				var result = response.results[0];
-				
-				if (!result) return;
-
-				this.ShowInfoPopup(result.mapPoint, result.graphic);
-
-				// We now have access to its attributes
-				console.log(result.graphic.attributes);
-			});
-		}); 
-		*/
 	}
 
 	/**
@@ -82,8 +73,8 @@ export default class Application extends Widget {
 	Localize(nls) {
 		nls.Add("Legend_Title", "en", "Show map legend");
 		nls.Add("Legend_Title", "fr", "Afficher la légende cartographique");
-		nls.Add("TableViewer_Label", "en", "Statistics Canada. Table {0}");
-		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0}");
+		nls.Add("TableViewer_Label", "en", "Statistics Canada. Table {0} - {1}");
+		nls.Add("TableViewer_Label", "fr", "Statistique Canada. Tableau {0} - {1}");
 		nls.Add("RefPeriod_Label", "en", "Reference period {0}");
         nls.Add("RefPeriod_Label", "fr", "Période de référence {0}");
         nls.Add("SkipTheMapLink", "en", "Skip the visual interactive map and go directly to the data table section. The data table will appear once you have selected an indicator above.");
@@ -108,40 +99,28 @@ export default class Application extends Widget {
 		
 		this.behavior.symbol = this.config.Symbol("identify");
 		
-		this.behavior.On('Busy', ev => this.Elem("waiting").Show());
-		this.behavior.On('Idle', ev => this.Elem("waiting").Hide());
+		this.behavior.On('Busy', ev => this.widgets.waiting.Show());
+		this.behavior.On('Idle', ev => this.widgets.waiting.Hide());
 		this.behavior.On('Error', this.OnApplication_Error.bind(this));
 		this.behavior.On('Change', this.OnIdentify_Change.bind(this));
 		
         this.behavior.Activate();
 	}
-	
-	AddOverlay(menu, id, title, widget, position) {
-		var overlay = new Overlay();
-		
-		overlay.Configure({ id:id, widget:widget, title:title, css:id });
-		
-		menu.AddOverlay(overlay);
-		
-		this.map.Place([overlay.roots[0]], position);
-    }
 
     OnCODR_Ready(responses) {
 		this.metadata = responses[0];
 		this.codesets = responses[1];
 		
-		this.infoPopup.Configure(this.map, this.config, this.metadata, this.codesets);
-		
 		document.querySelector("#app-title").innerHTML = this.metadata.productName;
+		
+		this.widgets.infoPopup.Configure(this.map, this.config, this.metadata, this.codesets);
+		this.widgets.selector.Configure(this.metadata);
 
 		// Format the product ID according to CODR practices (DD-DD-DDDD)
-		var formattedId = this.metadata.productLabel;
-		this.tableLinkText = this.Nls("TableViewer_Label", [formattedId]);
-		this.Elem("link").innerHTML = this.tableLinkText + " - " + this.metadata.name; 
+		this.Elem("link").innerHTML = this.Nls("TableViewer_Label", [this.metadata.productLabel, this.metadata.name]);
 		this.Elem("link").href = this.metadata.tvLink; 
 		
 		// Create the drop down lists from the dimensions and memebers
-		this.Elem("selector").Initialize(this.metadata);
 		
 		Dom.RemoveCss(document.body, 'wait');
 		
@@ -149,17 +128,19 @@ export default class Application extends Widget {
 		
 		if (!this.config.initialSelection) return;
 		
-		this.Elem("selector").ApplyInitialSelection(this.config.initialSelection);
+		this.widgets.selector.ApplyInitialSelection(this.config.initialSelection);
 	}
 
     OnSelector_Change(ev) {
-        var geo = this.Elem("selector").GetSelectedGeoLevelName().toLowerCase();
+        var geo = this.widgets.selector.GetSelectedGeoLevelName().toLowerCase();
         var indicator = geo + ", " + this.metadata.IndicatorLabel(ev.coordinates);
 
         this.Elem("indicator").innerHTML = this.Nls("Map_Header") + indicator;
         this.Elem("tableHeader").innerHTML = this.Nls("Table_Header") + indicator;
 		this.Elem("refper").innerHTML = this.Nls("RefPeriod_Label", [this.metadata.date]);
-		this.Elem("waiting").Show();
+		
+		this.widgets.waiting.Show();
+		
 		this.Resize();
 
         CODR.GetCoordinateData(this.metadata, ev.coordinates).then(data => {
@@ -199,38 +180,37 @@ export default class Application extends Widget {
 			var identify = this.config.Identify(decodedGeo)
             var layer = this.map.AddFeatureLayer("geo", url, exp, identify.id, renderer, 0);
 
-            this.WaitForLayer(layer);
-
             this.behavior.Clear();
             this.behavior.target = layer;
 
-            this.Elem("legend").LoadClassBreaks(this.map.layers.geo.renderer, uom);
-			this.menu.EnableButton("legend");
+            this.widgets.legend.LoadClassBreaks(this.map.layers.geo.renderer, uom);
+
+            this.WaitForLayer(layer);
         }
         else {
-            // Remove the waiting symbol
-            this.Elem("waiting").Hide();
-            this.Elem("legend").EmptyClassBreaks();
-			this.menu.DisableButton("legend"); // until data is available on the map
+            this.widgets.waiting.Hide();
+            this.widgets.legend.EmptyClassBreaks();
+			this.navbar.DisableButton("legend"); // until data is available on the map
         }
     }
 
     LoadTable(data) {
-        this.Elem("table").Clear();
-        this.Elem("table").Populate(this.metadata, data, this.codesets);
+        this.widgets.table.Clear();
+        this.widgets.table.Populate(this.metadata, data, this.codesets);
     }
 	
 	WaitForLayer(layer) {
 		this.map.view.whenLayerView(layer).then(layerView => {				
 			layerView.when(() => {
-				this.menu.SetOverlay(this.menu.Item("legend"));
-                this.Elem("waiting").Hide();
+				this.navbar.EnableButton("legend");
+				this.navbar.ShowOverlay(this.navbar.Item("legend"));
+                this.widgets.waiting.Hide();
 			}, this.OnApplication_Error.bind(this));
 		}, this.OnApplication_Error.bind(this))
 	}
 	
     OnIdentify_Change(ev) {
-		this.infoPopup.Show(ev.mapPoint, ev.feature, this.data);
+		this.widgets.infoPopup.Show(ev.mapPoint, ev.feature, this.data);
     }
 	
 	OnApplication_Error(error) {
@@ -248,19 +228,36 @@ export default class Application extends Widget {
 	}
 
 	HTML() {		
-        return  "<div handle='selector' class='selector' widget='App.Widgets.Selector'></div>" +
+        return  "<div handle='selector' class='selector'></div>" +
                 "<div class='text-center mrgn-tp-md'><a href='#table' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
 				"<div handle='mapcontainer' class='map-container'>" +
                     "<div handle='map'></div>" +
-                    "<div handle='legend' class='legend' widget='Api.Widgets.Legend'></div>" +
-                    "<div handle='waiting' class='waiting' widget='Api.Widgets.Waiting'></div>" +
 				"</div>" +
 				"<div class='pull-right'>" + 
 					"<a handle='link' target='_blank'></a>" +
                 "</div>" +
 				"<h2 handle='tableHeader' property='name' class='tableHeader mrgn-tp-lg'></h2>" +
-                "<div id='table' handle='table' class='table' widget='App.Widgets.Table'></div>";
+				"<div id='table' handle='table' class='table'></div>";
 	}
 }
+
+/* 
+// NOTE: This should work but for some reason, it only works on every other click.
+// Listen for SceneView click events
+this.map.view.on("click", ev => {  
+	// Search for symbols on click's position
+	this.map.view.hitTest(ev.screenPoint).then(response => {
+		// Retrieve the first symbol
+		var result = response.results[0];
+		
+		if (!result) return;
+
+		this.ShowInfoPopup(result.mapPoint, result.graphic);
+
+		// We now have access to its attributes
+		console.log(result.graphic.attributes);
+	});
+}); 
+*/
