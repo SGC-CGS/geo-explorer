@@ -7,7 +7,7 @@ import Dom from '../../geo-explorer-api/tools/dom.js';
  * @module widgets/table
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Table", class Table extends Widget {
+export default Core.Templatable("App.Widgets.Table", class wTable extends Widget {
 	
 	/**
 	 * Get / set table title
@@ -28,10 +28,10 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 	 * @param {object} container - div table container and properties
 	 * @returns {void}
 	 */
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
-		Dom.AddCss(this.container, 'hidden');
+		Dom.AddCss(this.roots[0], 'hidden');
 	}
 	
 	/**
@@ -79,7 +79,7 @@ export default Core.Templatable("App.Widgets.Table", class Table extends Widget 
 		
 		Dom.Empty(this.Elem('body'));
 		
-		Dom.RemoveCss(this.container, 'hidden');
+		Dom.RemoveCss(this.roots[0], 'hidden');
 		
 		this.UpdateTableVisibility();
 		

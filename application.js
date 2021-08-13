@@ -1,17 +1,23 @@
 'use strict';
 
+import SelectBehavior from '../geo-explorer-api/behaviors/rectangle-select.js';
+
 import Widget from '../geo-explorer-api/components/base/widget.js';
 import Map from '../geo-explorer-api/components/map.js';
 import Storage from '../geo-explorer-api/components/storage.js';
-import SelectBehavior from '../geo-explorer-api/behaviors/rectangle-select.js';
 import Selection from './components/selection.js';
-import Waiting from '../geo-explorer-api/widgets/waiting.js';
-import Navbar from '../geo-explorer-api/widgets/navbar.js';
-import Table from './widgets/table.js';
-import Search from './widgets/search.js';
-import InfoPopup from './widgets/infopopup.js';
-import Toolbar from './widgets/wToolbar.js';
 import Context from './components/context.js';
+
+import wToolbar from '../geo-explorer-api/widgets/toolbar.js';
+import wWaiting from '../geo-explorer-api/widgets/waiting.js';
+import wBookmarks from '../geo-explorer-api/widgets/bookmarks.js';
+import wBasemap from '../geo-explorer-api/widgets/basemap.js';
+import wTable from './widgets/table.js';
+import wSearch from './widgets/search.js';
+import wInfoPopup from './widgets/infopopup.js';
+import wSelector from './widgets/selector.js';
+import wStyler from './widgets/styler.js';
+import wChart from './widgets/wChart.js';
 
 /**
  * Application module
@@ -38,63 +44,71 @@ export default class Application extends Widget {
 	 * @param {object} config - Configuration data
 	 * @returns {void}
 	 */
-	constructor(container, config) {		
-		super(container, null, null);
-
+	constructor(container, config) {
+		super();
+		
+		this.container = container;
 		this.config = config;
+		
 		this.context = new Context(config.context);
 		this.storage = new Storage("CSGE");
 		this.selection = new Selection();
 
 		// Build map, menus, widgets and other UI components
 		this.map = new Map(this.Elem('map'), this.config.map.options);
-
-		this.infoPopup = new InfoPopup();
-		this.infoPopup.Configure(this.config.infopopup, this.map, this.context);
 		
-		this.toolbar = new Toolbar();
-		this.toolbar.Configure(this.config, this.map, this.storage);
-
-		this.navbar = new Navbar();
-		this.navbar.Configure(this.map);
+		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
 		
-		for (var id in this.toolbar.widgets) this.AddElem(id, this.toolbar.widgets[id]);
+		this.toolbar = new wToolbar("tools");
+		this.navbar = new wToolbar("navigation");
 		
-		this.Elem("table").Configure(this.config.table);
-		this.Elem("styler").Configure(this.config.styler, this.context);
+		this.widgets = {
+			selector: this.toolbar.AddOverlay("selector", new wSelector()),		
+			styler: this.toolbar.AddOverlay("styler", new wStyler(this.config.styler, this.context)),
+			chart: this.toolbar.AddOverlay("chart", new wChart(this.config.chart)),
+			fullscreen: this.navbar.AddEsriWidget("fullscreen", new ESRI.widgets.Fullscreen({ view: this.map.view })),
+			home: this.navbar.AddEsriWidget("home", new ESRI.widgets.Home({ view: this.map.view })),
+			bookmarks: this.navbar.AddOverlay("bookmarks", new wBookmarks(this.config.bookmarks, this.map, this.storage)),
+			basemap: this.navbar.AddOverlay("basemap", new wBasemap({ view: this.map.view })),
+			search: new wSearch(),
+			waiting: new wWaiting(),
+			table: new wTable(this.config.table),
+			infoPopup: new wInfoPopup(this.config.infopopup, this.map, this.context)
+		}
 		
-		this.map.Place([this.Elem("search").container], "manual");
-		this.map.Place([this.Elem("waiting").container], "manual");
+		this.widgets.table.container = container;
+		
+		this.map.Place(this.widgets.search.roots, "manual");
+		this.map.Place(this.widgets.waiting.roots, "manual");
+		this.map.Place(this.toolbar.roots, "top-right");
+		this.map.Place(this.navbar.roots, "top-left");
 		
 		// Hookup events to UI
 		this.HandleEvents(this.map);
 		this.HandleEvents(this.context);
-		this.HandleEvents(this.Node('selector'), this.ChangeContext.bind(this));
-		this.HandleEvents(this.Node('bookmarks'), this.ChangeContext.bind(this));
-		this.HandleEvents(this.Node('search'), this.OnSearch_Change.bind(this));
-		this.HandleEvents(this.Node('styler'), this.OnStyler_Change.bind(this));
+		this.HandleEvents(this.widgets.selector, this.ChangeContext.bind(this));
+		this.HandleEvents(this.widgets.bookmarks, this.ChangeContext.bind(this));
+		this.HandleEvents(this.widgets.search, this.OnSearch_Change.bind(this));
+		this.HandleEvents(this.widgets.styler, this.OnStyler_Change.bind(this));
 		
-		this.Node("table").On("RowClick", this.OnTable_RowClick.bind(this));
-		this.Node("table").On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
-		this.Node("styler").On('Opacity', this.OnStyler_Opacity.bind(this));
-		this.Node("styler").On('LabelName', this.onStyler_LabelName.bind(this));
-		
-		this.map.AddMapImageLayer('main', this.config.map.url, this.config.map.opacity);
+		this.widgets.table.On("RowClick", this.OnTable_RowClick.bind(this));
+		this.widgets.table.On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
+		this.widgets.styler.On('Opacity', this.OnStyler_Opacity.bind(this));
+		this.widgets.styler.On('LabelName', this.onStyler_LabelName.bind(this));
 
-		// REVIEW: The NLS string for the title goes in application.js
-		this.toolbar.menu.DisableButton("chart");
+		this.toolbar.DisableButton("chart");
 
 		this.context.Initialize(config.context).then(d => {	
 			this.map.AddSubLayer('main', this.context.sublayer);
 
-			this.Elem("selector").Update(this.context);
-			this.Elem("styler").Update(this.context);
-			this.Elem("table").Update(this.context);
-			this.Elem("bookmarks").Update(this.context);
-			
-			this.toolbar.ShowWidget("selector");
+			this.widgets.selector.Update(this.context);
+			this.widgets.styler.Update(this.context);
+			this.widgets.table.Update(this.context);
+			this.widgets.bookmarks.Update(this.context);
 
 			this.AddSelectBehavior(this.map, this.context, this.config);
+			
+			this.toolbar.ShowWidget("selector");
 		}, error => this.OnApplication_Error(error));
 	}
 
@@ -121,34 +135,34 @@ export default class Application extends Widget {
 		this.MapViewEventsHandler();
 
 		this.HandleEvents(behavior, ev => {
-			this.Elem("table").data = ev.selection; 
-			this.Elem("chart").data = ev.selection;
+			this.widgets.table.data = ev.selection; 
+			this.widgets.chart.data = ev.selection;
 
 			// REVIEW: Reading titles and labels from widgets like this will get confusing. We should have a central place 
 			// where we can get them. Context probably. We could also just call an UpdateSelection function on each widget
 			// and provide the selection object similar to what we do when the context changes.
-			this.Elem("chart").linkTitle = this.infoPopup.GetLink();
+			this.widgets.chart.linkTitle = this.widgets.infoPopup.GetLink();
 			
 			if (ev.selection.items.length == 0) {		
-				this.Elem("chart").description = "";
-				this.toolbar.menu.Overlay("chart").title = "";
-				this.toolbar.menu.DisableButton("chart");
+				this.widgets.chart.description = "";
+				this.toolbar.Overlay("chart").title = "";
+				this.toolbar.DisableButton("chart");
 			} 
 			
-			else if (this.toolbar.menu.Button("chart").disabled == true) {
-				this.Elem("chart").description = this.Elem("table").title + " (" + this.Elem("chart").data[0].uom + ")";
-				this.toolbar.menu.Overlay("chart").title = this.Elem("chart").linkTitle;
-				this.toolbar.menu.EnableButton("chart");
+			else if (this.toolbar.Button("chart").disabled == true) {
+				this.widgets.chart.description = this.widgets.table.title + " (" + this.widgets.chart.data[0].uom + ")";
+				this.toolbar.Item("chart").overlay.header = this.widgets.chart.linkTitle;
+				this.toolbar.EnableButton("chart");
 			}
 		});	
 
-		this.HandleEvents(this.Elem("chart").chart, ev => {
+		this.HandleEvents(this.widgets.chart.chart, ev => {
 			if (this.highlight || ev.hovered == null) {
 				this.selection.ClearGraphicHighlight();
 				return;
 			} 
 
-			this.selection.HighlightTargetGraphic(ev.hovered, this.Elem("chart").config.field);
+			this.selection.HighlightTargetGraphic(ev.hovered, this.widgets.chart.config.field);
 		});
     }
 
@@ -166,6 +180,8 @@ export default class Application extends Widget {
 			// All the below code in the selection class
 			this.selection.layerView = ev.layerView;
 
+			ev.response.screenPoint.y -= 10;
+				
 			// The selected graphic has changed and there is a highlight on the previous graphic
 			if (this.selection.graphic != ev.graphic && this.selection.highlight) {
 				// REVIEW: Why go through the selection to clear chart if we're doing it from application.js?
@@ -177,11 +193,11 @@ export default class Application extends Widget {
 			else if (this.selection.graphic != ev.graphic) {
 				this.selection.graphic = ev.graphic;
 				// REVIEW: Same as above
-				// i.e, Do this.Elem("chart").Highlight();
+				// i.e, Do this.widgets.chart.Highlight();
 				this.selection.HighlightGraphic(this.selection.graphic);
-				this.selection.HighlightChartElement(this.Elem("chart").chart, this.Elem("chart").config.field);
+				this.selection.HighlightChartElement(this.widgets.chart.chart, this.widgets.chart.config.field);
 
-				this.infoPopup.Show(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
+				this.widgets.infoPopup.Show(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
 			}
 
 			// Update the popup position if the current graphic is highlighted
@@ -192,9 +208,9 @@ export default class Application extends Widget {
 			// The current graphic is not highlighted
 			else if (!this.selection.highlight) {
 				this.selection.HighlightGraphic(this.selection.graphic);
-				this.selection.HighlightChartElement(this.Elem("chart").chart, this.Elem("chart").config.field);
+				this.selection.HighlightChartElement(this.widgets.chart.chart, this.widgets.chart.config.field);
 
-				this.infoPopup.Show(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
+				this.widgets.infoPopup.Show(this.map.view.toMap(ev.response.screenPoint), this.selection.graphic);
 			}
 		});
 	}
@@ -219,11 +235,11 @@ export default class Application extends Widget {
 
 		this.map.Behavior("selection").target = this.context.sublayer;
 
-		this.Elem("bookmarks").Update(this.context);
-		this.Elem("styler").Update(this.context);
-		this.Elem("table").Update(this.context);
+		this.widgets.bookmarks.Update(this.context);
+		this.widgets.styler.Update(this.context);
+		this.widgets.table.Update(this.context);
 
-		this.toolbar.menu.DisableButton("chart");
+		this.toolbar.DisableButton("chart");
 	}
 	
 	OnStyler_Change(ev) {	
@@ -253,23 +269,23 @@ export default class Application extends Widget {
 	
 	OnTable_RowButtonClick(ev) {
 		this.map.Behavior("selection").layer.remove(ev.graphic);
-		this.Elem("table").data = this.map.Behavior("selection").graphics;
-		this.Elem("chart").data = this.map.Behavior("selection").graphics;
+		this.widgets.table.data = this.map.Behavior("selection").graphics;
+		this.widgets.chart.data = this.map.Behavior("selection").graphics;
 
 		// REVIEW: This code is a repeat
 		if (this.map.Behavior("selection").graphics.items.length == 0) {
-			this.Elem("chart").description = this.Elem("chart").disabledTitle;
-			this.toolbar.menu.Overlay("chart").title = this.Elem("chart").title;
-			this.toolbar.menu.DisableButton("chart");
+			this.widgets.chart.description = this.widgets.chart.disabledTitle;
+			this.toolbar.Overlay("chart").title = this.widgets.chart.title;
+			this.toolbar.DisableButton("chart");
 	   }
 	}
 	
 	OnWidget_Busy(ev) {
-		this.Elem("waiting").Show();
+		this.widgets.waiting.Show();
 	}
 	
 	OnWidget_Idle(ev) {
-		this.Elem("waiting").Hide();
+		this.widgets.waiting.Hide();
 	}
 	
 	OnApplication_Error(error) {
@@ -284,11 +300,8 @@ export default class Application extends Widget {
 	 * @returns{void}
 	 */
 	HTML() {
-		return	"<div handle='search' class='search' widget='App.Widgets.Search'></div>" +
-				"<div handle='map-container' class='map-container'>" +
+		return	"<div handle='map-container' class='map-container'>" +
 					"<div handle='map'></div>" +
-					"<div handle='waiting' class='waiting' widget='Api.Widgets.Waiting'></div>" +
-				"</div>" +
-			    "<div handle='table' class='table' widget='App.Widgets.Table'></div>"
+				"</div>";
 	}
 }

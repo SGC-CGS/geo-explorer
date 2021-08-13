@@ -9,15 +9,15 @@ import Typeahead from '../../geo-explorer-api/ui/typeahead/dynamic.js';
  * @module widgets/search
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Search", class Search extends Widget {
+export default Core.Templatable("App.Widgets.Search", class wSearch extends Widget {
 	
 	/**
 	 * Call constructor of base class (Widget) and initialize search widget
 	 * @param {object} container - DOM element that will contain the widget
 	 * @returns {void}
 	 */
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
 		this.Elem("typeahead").storeFn = (value) => Requests.Typeahead(value);
 		
@@ -55,7 +55,9 @@ export default Core.Templatable("App.Widgets.Search", class Search extends Widge
 	 * @returns {string} HTML with custom div
 	 */
 	HTML() {        
-		return "<img src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
-			   "<div handle='typeahead' widget='Api.Components.DynamicTypeahead'></div>";
+		return "<div class='search'>" +
+				   "<img src='./assets/search-24.png' alt='nls(Search_Icon_Alt)' />" +
+				   "<div handle='typeahead' widget='Api.Components.DynamicTypeahead'></div>" +
+			   "</div>";
 	}
 })

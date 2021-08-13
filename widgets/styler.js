@@ -13,11 +13,11 @@ import LegendEditable from '../../geo-explorer-api/widgets/legend/legend-editabl
  * @module widgets/styler/styler
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Styler", class Styler extends Widget {
+export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widget {
 
 	/** 
 	 * Get / set the widget's title
-	*/	
+	 */	
 	get title() { return this.Nls("Styler_Title") }
 	
 	get renderer() { return this._renderer; }
@@ -40,8 +40,8 @@ export default Core.Templatable("App.Widgets.Styler", class Styler extends Widge
 	 * @param {object} container - div styler container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Equal"), this.Nls("Styler_Method_Info_Equal"), { id:1, algo:"esriClassifyEqualInterval" });
 		this.Elem('sMethod').Add(this.Nls("Styler_Method_Natural"),this.Nls("Styler_Method_Info_Natural"), { id:2, algo:"esriClassifyNaturalBreaks" });

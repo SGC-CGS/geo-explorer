@@ -10,7 +10,7 @@ import Select from '../../geo-explorer-api/ui/select.js';
  * @module widgets/selector
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Selector", class Selector extends Widget {
+export default Core.Templatable("App.Widgets.Selector", class wSelector extends Widget {
 	
 	/** 
 	 * Get / set the widget's title
@@ -62,8 +62,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 	 * @param {object} container - div selector container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
+		
 		this.filters = [];
 		this.metadata = null;
 		
@@ -152,8 +153,9 @@ export default Core.Templatable("App.Widgets.Selector", class Selector extends W
 		
 		this.filters = filters.map(d => {
 			var label = Dom.Create("label", { innerHTML:d.label }, this.Elem('filter'));
-			var div = Dom.Create("div", null, this.Elem('filter'));
-			var select = new Select(div);
+			var select = new Select();
+			
+			select.container = Dom.Create("div", null, this.Elem('filter'));
 			
 			d.values.forEach(item => select.Add(item.label, null, item));
 			

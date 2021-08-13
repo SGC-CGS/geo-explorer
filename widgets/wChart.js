@@ -12,7 +12,7 @@ import ScatterPlot from "../charts/scatterPlot.js";
  * @description Chart widget where a chart is selected and built onto the UI
  * @todo Handle product changes in Application.js?
  */
-export default Core.Templatable("App.Widgets.WChart", class WChart extends Widget {
+export default Core.Templatable("App.Widgets.WChart", class wChart extends Widget {
 
 	/** 
 	 * Get the widgets title
@@ -73,8 +73,8 @@ export default Core.Templatable("App.Widgets.WChart", class WChart extends Widge
 	 * @param {object} options - Any additional options to assign to the widget
 	 * @returns {void}
 	 */
-    constructor(container) {
-		super(container);
+    constructor(...config) {
+		super(...config);
 
 		this.chart = null;
 		this.chartType = "BarChart";	// default is bar chart

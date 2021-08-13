@@ -6,7 +6,7 @@ import Widget from '../../geo-explorer-api/components/base/widget.js';
  * @module components/infopopup
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.InfoPopup", class InfoPopup extends Widget {
+export default Core.Templatable("App.Widgets.InfoPopup", class wInfoPopup extends Widget {
 
 	/**
 	 * Get/set the map object
@@ -37,8 +37,8 @@ export default Core.Templatable("App.Widgets.InfoPopup", class InfoPopup extends
 	 * @param {object} nls - localized resources for multi lingual support
 	 * @returns {void}
 	 */
-	constructor() {	
-		super(null);
+	constructor(...config) {	
+		super(...config);
 	}
 	
 	/**

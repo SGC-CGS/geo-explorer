@@ -7,7 +7,7 @@ import Dom from '../../geo-explorer-api/tools/dom.js';
  * @module widgets/legend/legend
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.Legend", class Legend extends BaseLegend {
+export default Core.Templatable("App.Widgets.Legend", class wLegend extends BaseLegend {
 
 	/** 
 	 * Get / set the widget's title
@@ -19,8 +19,8 @@ export default Core.Templatable("App.Widgets.Legend", class Legend extends BaseL
 	 * @param {object} container - div legend container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 
