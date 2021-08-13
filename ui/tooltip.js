@@ -30,10 +30,14 @@ export default class Tooltip extends Widget  {
 	 * @param {string} - CSS to add
 	 * @returns {void}
 	 */
-	constructor(css) {	
-		super(document.body);		
+	constructor(...config) {	
+		super(...config);
 
-		if (css) Dom.AddCss(this.Elem("root"), css);		
+		this.container = document.body;
+	}
+		
+	Configure(css) {
+		if (css) Dom.AddCss(this.Elem("root"), css);	
 	}
 		
 	/**

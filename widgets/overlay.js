@@ -7,21 +7,14 @@ import Widget from '../components/base/widget.js';
  * @module widgets/overlay
  * @extends Widget
  */
-export default class Overlay extends Widget { 
+export default class wOverlay extends Widget { 
 	
 	/**
-	 * Set the overlay id
+	 * Get/set the overlay header
 	 * @type {string}
 	 */
-	set id(value) { this._id = value; }
-	get id() { return this._id; }
-	
-	/**
-	 * Get/set the overlay title
-	 * @type {string}
-	 */
-	set title(value) { this.Elem("title").innerHTML = value; }
-	get title() { return this.Elem("title").innerHTML; }
+	set header(value) { this.Elem("header").innerHTML = value; }
+	get header() { return this.Elem("header").innerHTML; }
 	
 	/**
 	 * Get/set the overlay widget
@@ -32,7 +25,7 @@ export default class Overlay extends Widget {
 		
 		this._widget = widget;
 		
-		Dom.Place(widget.container, this.Elem("body"));		
+		widget.container = this.Elem("body");
 	}
 	
 	get widget() { return this._widget; }
@@ -48,8 +41,8 @@ export default class Overlay extends Widget {
 	 * @param {object} container - div.map-container and properties
 	 * @returns {void}
 	 */
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
 		this.SetStyle(0, "none");
 		
@@ -62,10 +55,9 @@ export default class Overlay extends Widget {
 	 * @returns {void}
 	 */
 	Configure(config) {
-		if (config.id) this.id = config.id;		
 		if (config.css) this.css = config.css;		
 		if (config.widget) this.widget = config.widget;	
-		if (config.title) this.title = config.title;	
+		if (config.header) this.header = config.header;	
 	}
 	
 	/**
@@ -105,8 +97,6 @@ export default class Overlay extends Widget {
 		this.SetStyle(1, "block");
 		
 		this.Emit("Show", { overlay:this });
-		
-		// this.Elem("close").focus();
 	}
 	
 	/**
@@ -137,7 +127,7 @@ export default class Overlay extends Widget {
 	HTML() {
 		return	  "<div class='overlay esri-component'>" +
 					  "<div class='overlay-header'>" +
-						  "<h2 class='overlay-title' handle='title'></h2>" +
+						  "<h2 class='overlay-header' handle='header'></h2>" +
 						  "<button class='overlay-close' handle='close' title='nls(Overlay_Close)'>×</button>" +
 					  "</div>" +
 					  "<div class='overlay-body' handle='body'></div>" +

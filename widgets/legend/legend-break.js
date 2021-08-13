@@ -7,7 +7,7 @@ import Dom from '../../tools/dom.js';
  * @module widgets/legend/legend-break
  * @extends TemplatedTable
  */
-export default Core.Templatable("Api.Widgets.LegendBreak", class LegendBreak extends DefaultBreak {
+export default Core.Templatable("Api.Widgets.LegendBreak", class wLegendBreak extends DefaultBreak {
 	
 	/**
 	 * Get/set uom value for breaks
@@ -71,13 +71,17 @@ export default Core.Templatable("Api.Widgets.LegendBreak", class LegendBreak ext
 	 * @param {object} container - table breaks container and properties
 	 * @returns {void}
 	 */	
-	constructor(container, info, uom) {	
-		super(container, info);
+	constructor(...config) {	
+		super(...config);
+    }
+	
+	Configure(info, uom) {
+		super.Configure(info);
 		
 		this.min = info.minValue;
 		this.max = info.maxValue;
 		this.uom = uom;
-    }
+	}
 
 	/**
 	 * Add specified language strings to the nls object

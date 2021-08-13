@@ -37,8 +37,8 @@ export default Core.Templatable("Api.Components.Picker", class Picker extends Wi
 	 * @param {object} container - div color container and properties
 	 * @returns {void}
 	 */
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 		
 		this._h = null;
 		this._collapsed = true;

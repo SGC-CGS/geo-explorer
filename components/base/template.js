@@ -9,7 +9,7 @@ import Node from '../node.js';
  * @module components/templated
  * @extends Evented
  */
-export default class Templated { 
+export default class Template { 
 
 	get roots() { return this._roots; }
 
@@ -28,8 +28,8 @@ export default class Templated {
 		this._template = Dom.Create("div", { innerHTML:html });
 		
 		this.SetNamedNodes();
-		this.SetSubWidgets();
 		this.SetRoots();
+		this.SetSubWidgets();
 	}
 	
 	SetNamedNodes() {		
@@ -52,7 +52,10 @@ export default class Templated {
 		for (var i = 0; i < nodes.length; i++) {
 			var path = Dom.GetAttribute(nodes[i], "widget");
 			var module = Core.Templatable(path);
-			var widget = new module(nodes[i]);
+			var widget = new module();
+			
+			widget.container = nodes[i];
+			
 			var handle = Dom.GetAttribute(widget.container, "handle");
 			
 			if (handle) this._elems[handle] = widget;

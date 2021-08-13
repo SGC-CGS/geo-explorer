@@ -96,8 +96,8 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	 * @param {object} container - div container and properties
 	 * @returns {void}
 	 */		
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
 		this._store = null;
 		this._items = null;

@@ -11,11 +11,21 @@ import DefaultBreak from '../../widgets/legend/default-break.js';
  * @extends Widget
  * @description This class is a simple legend widget for the map.
  */
-export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widget {
+export default Core.Templatable("Api.Widgets.Legend", class wLegend extends Widget {
 
-    constructor(container) {
-        super(container);
+	/** 
+	 * Get / set the widget's title
+	*/	
+	get title() { return this.Nls("Legend_Title") }
+	
+    constructor(...config) {
+        super(...config);
     }
+	
+	Localize(nls) {
+		nls.Add("Legend_Title", "en", "Map legend");
+		nls.Add("Legend_Title", "fr", "Légende cartographique");
+	}
 
     /**
      * @description
@@ -40,16 +50,18 @@ export default Core.Templatable("Api.Widgets.Legend", class Legend extends Widge
             if (c.maxValue == null) c.maxValue = "";
             if (c.minValue == null) c.minValue = "0";
             
-			return this.MakeClassBreak(this.Elem('breaks'), c, uom);
+			return this.MakeClassBreak(c, uom);
         });
 		
-		this.breaks.push(new DefaultBreak(this.Elem('breaks'), { symbol:renderer.defaultSymbol }));
+		this.breaks.push(new DefaultBreak({ symbol:renderer.defaultSymbol }));
+		
+		this.breaks.forEach(brk => brk.container = this.Elem("breaks"));
     }
 	
-	MakeClassBreak(container, c, uom) {
-		return new LegendBreak(this.Elem('breaks'), c, uom);
+	MakeClassBreak(info, uom) {
+		return new LegendBreak(info, uom);
 	}
-
+	
     EmptyClassBreaks() {
         Dom.Empty(this.Elem("breaks"));
     }

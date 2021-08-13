@@ -7,15 +7,15 @@ import Dom from '../tools/dom.js';
  * @module widgets/waiting
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.Waiting", class Waiting extends Widget {
+export default Core.Templatable("Api.Widgets.Waiting", class wWaiting extends Widget {
 	
 	/**
 	 * Call constructor of base class and initialize waiting widget
 	 * @param {object} container - div waiting container and properties
 	 * @returns {void}
 	 */
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
 		this.Hide();
 	}
@@ -35,7 +35,7 @@ export default Core.Templatable("Api.Widgets.Waiting", class Waiting extends Wid
 	 * @returns {void}
 	 */
 	Show() {
-		Dom.RemoveCss(this.container, "hidden");
+		Dom.RemoveCss(this.roots[0], "hidden");
 	}
 	
 	/**
@@ -43,7 +43,7 @@ export default Core.Templatable("Api.Widgets.Waiting", class Waiting extends Wid
 	 * @returns {void}
 	 */
 	Hide() {
-		Dom.AddCss(this.container, "hidden");
+		Dom.AddCss(this.roots[0], "hidden");
 	}
 	
 	/**
@@ -51,7 +51,9 @@ export default Core.Templatable("Api.Widgets.Waiting", class Waiting extends Wid
 	 * @returns {string} HTML for waiting widget
 	 */
 	HTML() {        
-		return "<label handle='label'>nls(Waiting_Label)</label>" +
-			   "<i class='fa fa-circle-o-notch fa-spin'></i>";
+		return "<div class='hidden waiting'>" +
+				   "<label handle='label'>nls(Waiting_Label)</label>" +
+				   "<i class='fa fa-circle-o-notch fa-spin'></i>" +
+			   "</div>";
 	}
 })

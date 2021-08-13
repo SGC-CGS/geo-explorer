@@ -6,7 +6,7 @@ import Core from '../tools/core.js';
  * @module widgets/bookmarks
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.Bookmarks", class Bookmarks extends Widget {
+export default Core.Templatable("Api.Widgets.Bookmarks", class wBookmarks extends Widget {
 
 	/** 
 	 * Get / set the widget's title
@@ -32,8 +32,8 @@ export default Core.Templatable("Api.Widgets.Bookmarks", class Bookmarks extends
 	 * @param {object} container - div.bookmarks and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 		
 		this.bookmarksWidget = null;
 	}

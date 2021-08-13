@@ -1,4 +1,4 @@
-import Widget from '..//components/base/widget.js';
+import Widget from '../components/base/widget.js';
 import Core from '../tools/core.js';
 import Dom from '../tools/dom.js';
 import Tooltip from "../ui/tooltip.js";
@@ -9,15 +9,15 @@ import Colors from '../tools/colors.js';
  * @module widgets/styler/styler
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.ColorSchemes", class ColorSchemes extends Widget {
+export default Core.Templatable("Api.Widgets.ColorSchemes", class wColorSchemes extends Widget {
 
 	/**
 	 * Call constructor of base class (Templated) and initialize styler widget
 	 * @param {object} container - div styler container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 		
 		this.tooltip = new Tooltip();
 

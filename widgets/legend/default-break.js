@@ -7,7 +7,7 @@ import Dom from '../../tools/dom.js';
  * @module widgets/legend/legend-break
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak extends Widget {
+export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak extends Widget {
 	
 	/**
 	 * Get color for default breaks
@@ -31,9 +31,11 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class DefaultBreak e
 	 * @param {object} container - table breaks container and properties
 	 * @returns {void}
 	 */	
-	constructor(container, info) {	
-		super(container, info);
-		
+	constructor(...config) {	
+		super(...config);
+	}
+
+	Configure(info) {
 		this.color = info.symbol.color;
 	}
 

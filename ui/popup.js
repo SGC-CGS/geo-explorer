@@ -23,8 +23,8 @@ export default class Popup extends Widget {
 	
 	get Widget() { return this._widget; }
 	
-	constructor(container) {	
-		super(container || document.body);
+	constructor(...config) {	
+		super(...config);
 		
 		this.onBody_KeyUp_Bound = this.onBody_KeyUp.bind(this);
 		

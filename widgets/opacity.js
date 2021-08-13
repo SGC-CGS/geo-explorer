@@ -6,7 +6,7 @@ import Core from '../tools/core.js';
  * @module widgets/styler/styler
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.Opacity", class Opacity extends Widget {
+export default Core.Templatable("Api.Widgets.Opacity", class wOpacity extends Widget {
 
 	/**
 	 * Get/set opacity
@@ -23,8 +23,8 @@ export default Core.Templatable("Api.Widgets.Opacity", class Opacity extends Wid
 	 * @param {object} container - div styler container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 	}

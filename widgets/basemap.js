@@ -7,7 +7,7 @@ import Dom from '../tools/dom.js';
  * @module widgets/basemap
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.Basemap", class Basemap extends Widget {
+export default Core.Templatable("Api.Widgets.Basemap", class wBasemap extends Widget {
 	
 	/** 
 	 * Get / set the widget's title

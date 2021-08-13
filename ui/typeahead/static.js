@@ -13,8 +13,8 @@ export default Core.Templatable("Api.Components.StaticTypeahead", class StaticTy
 	 * @param {object} container - div container and properties
 	 * @returns {void}
 	 */		
-	constructor(container) {	
-		super(container);
+	constructor(...config) {	
+		super(...config);
 	}
 		
 	/**

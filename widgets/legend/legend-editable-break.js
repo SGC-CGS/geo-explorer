@@ -8,7 +8,7 @@ import LegendBreak from './legend-break.js'
  * @module widgets/styler/styler-break
  * @extends Widget
  */
-export default Core.Templatable("App.Widgets.StylerBreak", class LegendEditableBreak extends LegendBreak {
+export default Core.Templatable("App.Widgets.StylerBreak", class wLegendEditableBreak extends LegendBreak {
 
 	
 	/**
@@ -41,12 +41,16 @@ export default Core.Templatable("App.Widgets.StylerBreak", class LegendEditableB
 	 * @param {object} container - breaks container and properties
 	 * @returns {void}
 	 */	
-	constructor(container, info) {
-		super(container, info);
+	constructor(...config) {
+		super(...config);
 
 		this.Elem("bTo").addEventListener("click", this.OnEditor_Button.bind(this));
 		this.Elem("eApply").addEventListener("click", this.OnEditor_Apply.bind(this));
 		this.Elem("eCancel").addEventListener("click", this.OnEditor_Cancel.bind(this));
+	}
+
+	Configure(bucket, color) {
+		super.Configure(bucket, color);
 	}
 
 	/**

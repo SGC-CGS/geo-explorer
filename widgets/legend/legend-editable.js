@@ -8,7 +8,7 @@ import LegendEditableBreak from './legend-editable-break.js';
  * @module widgets/styler/styler
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.LegendEditable", class LegendEditable extends Legend {
+export default Core.Templatable("Api.Widgets.LegendEditable", class wLegendEditable extends Legend {
 
 	get breaks() { return this._breaks; }
 	
@@ -19,13 +19,15 @@ export default Core.Templatable("Api.Widgets.LegendEditable", class LegendEditab
 	 * @param {object} container - div styler container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 
 		this.breaks = null;
 	}
 
 	Localize(nls) {
+		super.Localize(nls);
+		
 		nls.Add("Styler_Max_Lt_Min", "en", "New maximum value is less than the current minimum value for the layer. Input a higher value.");
 		nls.Add("Styler_Max_Lt_Min", "fr", "La nouvelle valeur maximale est inférieure à la valeur minimale actuelle pour la couche. Saisir une valeur plus élevée.");
 		nls.Add("Styler_Max_Gt_Next", "en", "New maximum value exceeds the next range's maximum value. Input a lower value or increase the next range first.");
@@ -43,8 +45,8 @@ export default Core.Templatable("Api.Widgets.LegendEditable", class LegendEditab
 		this.breaks.forEach((brk, i) => brk.On("apply", this.OnBreak_Apply.bind(this, i)))
 	}
 	
-	MakeClassBreak(container, c, uom) {
-		return new LegendEditableBreak(this.Elem('breaks'), c, uom);
+	MakeClassBreak(c, uom) {
+		return new LegendEditableBreak(c, uom);
 	}
 
 	/**

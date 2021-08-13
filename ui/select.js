@@ -59,8 +59,8 @@ export default Core.Templatable("Api.Components.Select", class Select extends Wi
 	 * @param {object} container - div container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 		
 		this._items = [];
 		

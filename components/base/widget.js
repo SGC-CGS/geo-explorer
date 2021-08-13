@@ -13,20 +13,29 @@ export default class Widget extends Component {
 	 * Get/set the widget's title
 	*/	
 	get title() { throw new Error("The getter for the widget's title must be implemented by the inhering widget."); }
-		
+	
+	/**
+	 * Get/set the config json object
+	 */
+	get config() { return this._config; }
+	set config(value) { this._config = value; }
+	
 	/**
 	 * Get/set the template object
 	 */
 	get template() { return this._template; }
-
 	set template(value) { this._template = value; }
 
 	/**
 	 * Get/set the container DOM Element
 	 */
 	get container() { return this._container; }
-
-	set container(value) { this._container = value; }
+	
+	set container(value) { 
+		this._container = value;
+		
+		if (this.container) this.template.Place(this.container); 
+	}
 
 	/**
 	 * Get the roots of the widget
@@ -40,21 +49,31 @@ export default class Widget extends Component {
 	 * @param {object} nls - A Nls object containing the localized strings
 	 * @returns {void}
 	 */
-	constructor(container) {
-		super();
+	constructor(...config) {
+		super(...config);
 		
-		this.container = container;
+		this.config = {};
 		
 		// Use html provided in config first, use HTML function second
 		var html = this.config.html ? this.config.html : this.HTML();
 	
-		if (!html) return;
+		if (html) {
+			this.template = new Template(html);
+			
+			this.template.Build(this.nls);
+		};
 		
-		this.template = new Template(html);
-		
-		this.template.Build(this.nls);
-		
-		if (this.container) this.template.Place(this.container);
+		if (config.length > 0) this.Configure(...config);
+	}
+	
+	/**
+	 * Configures the widget from a json object
+	 * @param {object} config - Configuration parameters of the widget as a json object
+	 * @param {string} locale - The app's current language 
+	 * @returns {void}
+	 */
+	Configure(config) {
+		return;
 	}
 	
 	/**

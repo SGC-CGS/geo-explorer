@@ -6,7 +6,7 @@ import Core from '../tools/core.js';
  * @module widgets/styler/styler
  * @extends Widget
  */
-export default Core.Templatable("Api.Widgets.LabelToggle", class LabelToggle extends Widget {
+export default Core.Templatable("Api.Widgets.LabelToggle", class wLabelToggle extends Widget {
 
 	/**
 	 * Get/set opacity
@@ -24,8 +24,8 @@ export default Core.Templatable("Api.Widgets.LabelToggle", class LabelToggle ext
 	 * @param {object} container - div styler container and properties
 	 * @returns {void}
 	 */	
-	constructor(container) {
-		super(container);
+	constructor(...config) {
+		super(...config);
 
 		this.Node('labelChk').On("change", this.OnLabelChk_Changed.bind(this));
 	}
