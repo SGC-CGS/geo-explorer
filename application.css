@@ -195,6 +195,10 @@ abbr[data-original-title], abbr[title] {
 	font-weight: normal;
 }
 
+.gexp .legend .eyes.breaks-column {
+	display:none;
+}
+
 .gexp .waiting > * {
     display:inline-block;
 }
