@@ -38,15 +38,12 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	}
 	
 	/**
-	 * Get/set select box value
+	 * Get/set select box item
 	 */
 	get item() {
 		return this._item;
 	}
 	
-	/**
-	 * Get/set select box value
-	 */
 	set item(value) {
 		this._item = value;
 	}
@@ -57,16 +54,18 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	get value() {
 		return this.item && this.item.value || null;
 	}
+
+	set value(item) { this.item = item; }
 	
 	/**
-	 * Get/set select box value
+	 * Get select box label
 	 */
 	get label() {
 		return this.item && this.item.label || null;
 	}
 
 	/**
-	 * Get/set disabled value
+	 * Get/set disabled input box
 	 */
 	set disabled(value) {
 		this.Elem('input').disabled = value;
@@ -82,12 +81,11 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	 * returning to many possible matches so wait until the user enters 3 characters. 
 	 * In a StaticTypeahead you should should possible matches whenever character are entered.
 	 */
-	// REVIEW: This name is too long but nothing comes to mind at the moment
-	get numCharactersToShowMatches() {
+	get minCharacters() {
 		return this._matches;
 	}
 	
-	set numCharactersToShowMatches(value) {
+	set minCharacters(value) {
 		this._matches = value;
 	}
 	
@@ -218,7 +216,7 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	OnInputInput_Handler(ev) {
 		var value = ev.target.value;
 		
-		if (value.length < this.numCharactersToShowMatches) return;
+		if (value.length < this.minCharacters) return;
 		
 		this.Empty();
 		
@@ -234,10 +232,12 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	 * @param {object} ev - Focus event object
 	 * @returns {void}
 	 */
-	OnInputClick_Handler(ev) {			
-		if (ev.target.value.length < this.numCharactersToShowMatches) return;
-		
-		this.Refresh(ev.target.value).then(items => { 
+	OnInputClick_Handler(ev) {
+		if (ev.target.value.length < this.minCharacters) return;
+
+		this.Elem("input").value = ev.target.value.substring(0, this.minCharacters);
+
+		this.Refresh(this.Elem("input").value).then(items => { 
 			this.Fill(items, ev.target.value);
 
 			this.UpdateCss();
