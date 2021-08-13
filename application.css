@@ -686,9 +686,7 @@ abbr[data-original-title], abbr[title] {
 	margin:10px;
 }
 
-.gexp .table-widget table,
-.gexp .table-widget table tbody,
-.gexp .table-widget table thead {
+.gexp .table-widget table {
 	display:block;
 }
 
@@ -725,9 +723,7 @@ abbr[data-original-title], abbr[title] {
 }
 
 .gexp .table-widget table thead th:nth-child(3),
-.gexp .table-widget table tbody td:nth-child(3), 
-.gexp .table-widget table thead th:nth-child(6),
-.gexp .table-widget table tbody td:nth-child(6) {
+.gexp .table-widget table tbody td:nth-child(3) {
 	width:320px;
 }
 

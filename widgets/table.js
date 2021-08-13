@@ -46,12 +46,15 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 				label: h.label[Core.locale]
 			}
 		});
-		
-		// NOTE: Trashcan goes here.
-		Dom.Create("th", { }, this.Elem("header"));
 
+		// For removing all rows from selection
+		var tr = Dom.Create("tr", { }, this.Elem("header"));
+		var th = Dom.Create("th", { }, tr);
+		this.CreateButton(th, null, this.Nls("Table_Trash_All_Title"), "fa fa-trash"); 
+		
 		this.config.headers.forEach(h => {
-			Dom.Create("th", { innerHTML:h.label }, this.Elem("header"));
+			Dom.Create("th", { innerHTML:h.label }, tr);
+
 		});
 	}
 	
@@ -65,8 +68,10 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 		nls.Add("Table_Message", "fr", "Veuillez sélectionner des géométries sur la carte afin d'afficher leur attributs dans le tableau.");	
 		nls.Add("Table_Row_Title", "en", "Click to zoom to geometry ({0})");
 		nls.Add("Table_Row_Title", "fr", "Cliquer pour zoomer sur la géométrie ({0})");	
-		nls.Add("Table_Thrash_Title", "en", "Click to remove geometry ({0}) from selection");
-		nls.Add("Table_Thrash_Title", "fr", "Cliquer retirer la géométrie ({0}) de la sélection");	
+		nls.Add("Table_Trash_Item_Title", "en", "Click to remove geometry ({0}) from selection");
+		nls.Add("Table_Trash_Item_Title", "fr", "Cliquer retirer la géométrie ({0}) de la sélection");	
+		nls.Add("Table_Trash_All_Title", "en", "Click to remove all geometries from selection");
+		nls.Add("Table_Trash_All_Title", "fr", "Cliquer retirer toutes les géométries de la sélection");			
 	}
 
 	/**
@@ -96,10 +101,11 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 		
 		graphics.forEach(g => {
 			var name = g.attributes[this.config.headers[1].id];
-			
+			var title = this.Nls("Table_Trash_Item_Title", [name]);
 			var tr = Dom.Create("tr", { className:"table-row" }, this.Elem("body"));
-			
-			this.CreateButton(tr, g, name);
+			var td = Dom.Create("td", { className:"table-cell" }, tr);
+
+			this.CreateButton(td, g, title, "fa fa-remove"); // For deleting row from selection
 			
 			this.config.headers.forEach(f => {				
 				Dom.Create("td", { className:"table-cell", innerHTML:g.attributes[f.id] }, tr);
@@ -115,20 +121,21 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 
 	/**
 	 * Create trash button for each row of table
-	 * @param {object} tr - Table row
+	 * @param {string} cell - Table cell element for holding button (td/th)
 	 * @param {object} g - Accessor for map
-	 * @param {string} name - Name of location in table row
+	 * @param {string} title Localized button title
+	 * @param {string} icon - fa icon name
 	 * @returns {void}
 	 */
-	CreateButton(tr, g, name){
-		var td = Dom.Create("td", { className:"table-cell" }, tr);
-		var bt = Dom.Create("button", { className:"table-button", title:this.Nls("Table_Thrash_Title", [name]) }, td);
-		var ic = Dom.Create("i", { className:"fa fa-trash" }, bt);
+	CreateButton(cell, g, title, icon){
+		
+		var bt = Dom.Create("button", { className:"table-button", title:title }, cell);
+		var ic = Dom.Create("i", { className:icon }, bt);
 		
 		bt.addEventListener("click", ev => {
 			ev.stopPropagation();
 			
-			this.Emit("RowButtonClick", { graphic:g })
+			this.Emit("RowDeselectButtonClick", { graphic:g })
 		});
 	}
 	
@@ -154,9 +161,7 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 			      "<div handle='table' class='table-container hidden'>" + 
 					 // "<summary handle='description'></summary>" +
 				     "<table>" +
-				        "<thead>" + 
-				           "<tr handle='header'></tr>" + 
-				        "</thead>" +
+				        "<thead handle='header'></thead>" +
 				        "<tbody handle='body'></tbody>" + 
 				     "</table>" + 
 			      "</div>" + 

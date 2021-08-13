@@ -92,7 +92,7 @@ export default class Application extends Widget {
 		this.HandleEvents(this.widgets.styler, this.OnStyler_Change.bind(this));
 		
 		this.widgets.table.On("RowClick", this.OnTable_RowClick.bind(this));
-		this.widgets.table.On("RowButtonClick", this.OnTable_RowButtonClick.bind(this));
+		this.widgets.table.On("RowDeselectButtonClick", this.OnTable_RowDeselectButtonClick.bind(this));
 		this.widgets.styler.On('Opacity', this.OnStyler_Opacity.bind(this));
 		this.widgets.styler.On('LabelName', this.onStyler_LabelName.bind(this));
 
@@ -267,10 +267,11 @@ export default class Application extends Widget {
 		this.map.GoTo(ev.feature.geometry);
 	}
 	
-	OnTable_RowButtonClick(ev) {
-		this.map.Behavior("selection").layer.remove(ev.graphic);
-		this.widgets.table.data = this.map.Behavior("selection").graphics;
-		this.widgets.chart.data = this.map.Behavior("selection").graphics;
+	OnTable_RowDeselectButtonClick(ev) {
+		var mb = this.map.Behavior("selection");
+		ev.graphic ? mb.layer.remove(ev.graphic) : mb.layer.removeAll();
+		this.widgets.table.data = mb.graphics;
+		this.widgets.chart.data = mb.graphics;
 
 		// REVIEW: This code is a repeat
 		if (this.map.Behavior("selection").graphics.items.length == 0) {
@@ -278,6 +279,7 @@ export default class Application extends Widget {
 			this.toolbar.Overlay("chart").title = this.widgets.chart.title;
 			this.toolbar.DisableButton("chart");
 	   }
+
 	}
 	
 	OnWidget_Busy(ev) {
