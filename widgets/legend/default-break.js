@@ -8,7 +8,7 @@ import Dom from '../../tools/dom.js';
  * @extends Widget
  */
 export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak extends Widget {
-	
+
 	/**
 	 * Get color for default breaks
 	 */
@@ -33,12 +33,14 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak 
 	 */	
 	constructor(...config) {	
 		super(...config);
+		
+		this.Elem("checkbox").addEventListener("change", this.OnCheckbox_Change.bind(this));
 	}
 
 	Configure(info) {
 		this.color = info.symbol.color;
 	}
-
+	
 	/**
 	 * Add specified language strings to the nls object
 	 * @param {object} nls - Existing nls object
@@ -50,6 +52,20 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak 
         nls.Add("Color_Arialabel", "en", "Colored square ({0}), data unavailable");
         nls.Add("Color_Arialabel", "fr", "Carré de couleur ({0}), donnée non-disponible");
 	}
+
+	EnableVisibilityIcon(enabled) {
+		this.Elem("visible-icon").style.cursor = enabled ? "pointer" : "not-allowed";
+		this.Elem("checkbox").style.pointerEvents = enabled ? "auto" : "none";
+	}
+
+	/**
+	 * Emit whether the checkbox is filled or not so that 
+	 * the feature's alpha value may be updated
+	 * @param {*} ev - Event received from the checkbox
+	 */
+	OnCheckbox_Change(ev) {
+		this.Emit("visibility", { checked:this.Elem("checkbox").checked });
+	}
 	
 	/**
 	 * Create HTML for legend breaks
@@ -57,10 +73,13 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak 
 	 */	
 	HTML() {
 		return "<div handle='container' class='break-line'>" +
-				 "<div class='break-color-container'>" + 
+				  "<div handle='visible-icon' style='float: Left;'class='eyes breaks-column'>" + 
+					 "<input type='checkbox' handle='checkbox' checked>" + 
+				  "</div>" +
+				  "<div class='break-color-container'>" + 
 					"<div handle='color' class='break-color' aria-label='color'></div>" +
-				 "</div>" + 
-				 "<div handle='label'>nls(Legend_Unavailable)</div>" +
+				  "</div>" + 
+				  "<div handle='label'>nls(Legend_Unavailable)</div>" +
 			   "</div>";
 	}
 })

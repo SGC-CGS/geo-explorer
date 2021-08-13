@@ -42,7 +42,7 @@ export default Core.Templatable("Api.Widgets.LegendEditable", class wLegendEdita
 	Update(renderer) {
 		super.Update(renderer);
 		
-		this.breaks.forEach((brk, i) => brk.On("apply", this.OnBreak_Apply.bind(this, i)))
+		this.breaks.forEach((brk, i) => brk.On("apply", this.OnBreak_Apply.bind(this, i)));
 	}
 	
 	MakeClassBreak(c, uom) {

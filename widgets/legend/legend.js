@@ -34,12 +34,15 @@ export default Core.Templatable("Api.Widgets.Legend", class wLegend extends Widg
      */
     Update(renderer) {
         this.LoadClassBreaks(renderer);
+		
+		this.breaks.forEach((brk, i) => brk.On("visibility", this.OnCheckboxUpdate.bind(this, i)));
     }
 
     /**
      * @description
      * Load the class breaks from renderer settings
      * @param {String} renderer - renderer object
+     * @param {String} uom - unit of measure (optional)
      */
     LoadClassBreaks(renderer, uom) {
 		if (uom) this.Elem("uom").innerHTML = uom;
@@ -55,7 +58,7 @@ export default Core.Templatable("Api.Widgets.Legend", class wLegend extends Widg
 		
 		this.breaks.push(new DefaultBreak({ symbol:renderer.defaultSymbol }));
 		
-		this.breaks.forEach(brk => brk.container = this.Elem("breaks"));
+		this.breaks.forEach(brk => brk.container = this.Elem("breaks"));
     }
 	
 	MakeClassBreak(info, uom) {
@@ -65,7 +68,21 @@ export default Core.Templatable("Api.Widgets.Legend", class wLegend extends Widg
     EmptyClassBreaks() {
         Dom.Empty(this.Elem("breaks"));
     }
-	 
+	
+	EnableVisibilityIcon(enabled) {
+		this.breaks.forEach(brk => brk.EnableVisibilityIcon(enabled));
+	}
+
+	/**
+	 * Emit whether the checkbox is filled or not and the index of the break so that 
+	 * the feature's alpha value may be updated
+	 * @param {*} i - Index for the break whose alpha value needs to be updated
+	 * @param {*} ev - Event received from the checkbox
+	 */
+	OnCheckboxUpdate(i, ev) {
+		this.Emit("visibility", { checked:ev.checked, breakIndex:i });
+	}
+	
     HTML() {
         return "<div handle='uom'></div>" + 
 			   "<div handle='breaks' class='breaks-container'></div>";
