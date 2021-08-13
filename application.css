@@ -35,6 +35,18 @@ abbr[data-original-title], abbr[title] {
 	padding: 3px;
 }
 
+.gexp input {
+	cursor:text;
+	padding: 3px;
+}
+
+.gexp select, .gexp button, 
+.gexp input[type=checkbox], 
+.gexp input[type=radio],
+.gexp label[for] {
+	cursor:pointer;
+}
+
 .gexp button.button-label {
     color:white;
     font-weight:bold;
@@ -46,13 +58,13 @@ abbr[data-original-title], abbr[title] {
     border-bottom:solid 2px #000;
 }
 
-.gexp select, .gexp button, .gexp input[type="checkbox"] {
-	cursor:pointer;
-}
-
-.gexp select, .gexp input {
+.gexp select, .gexp input:not([type=radio]):not([type=checkbox]) {
 	padding:3px;
 	font-weight:normal;
+    border:solid 1px rgb(169, 169, 169);
+    height: 28px;
+	text-overflow: ellipsis;
+    border-radius:2px;
 }
 
 .gexp input:disabled,
@@ -169,12 +181,6 @@ abbr[data-original-title], abbr[title] {
 	display:none;
 }
 
-.gexp .typeahead input { 
-    border:solid 1px rgb(169, 169, 169);
-    height: 28px;
-	text-overflow: ellipsis;
-}
-
 .gexp .typeahead:not(.collapsed) ul {
     border-bottom:solid 1px rgb(169, 169, 169);
     border-left:solid 1px rgb(169, 169, 169);
@@ -289,6 +295,10 @@ abbr[data-original-title], abbr[title] {
 	background-image:url(./assets/bookmark-24.png);
 }
 
+.gexp .map-container .esri-ui .button-icon.export {
+	background-image:url(./assets/export-24.png);
+}
+
 .gexp .map-container .esri-ui .button-icon.behaviour{
 	background-image:url(./assets/toggle.png);
 	background-size: 17pt;
@@ -345,6 +355,7 @@ abbr[data-original-title], abbr[title] {
 }
 
 /* Map Styler widget */
+.gexp .export,
 .gexp .basemap { 
     width: 300px;
 }
@@ -512,6 +523,9 @@ abbr[data-original-title], abbr[title] {
     background-image: url(./assets/trashcan-16.png);
 }
 /* Styler Widget */
+
+/* Export Widget */
+
 
 /* For the breaks-container table */
 .gexp .styler .breaks-row {
@@ -815,18 +829,6 @@ abbr[data-original-title], abbr[title] {
     background: none;
 	border: none;
 	width: 100%;
-  }
-  
-.gexp .content {
-    min-height: fit-content;
-	margin-left: 10px;
-    margin-top: 5px;
-	display: none;
-}
-
-.gexp .content.active {
-	height: fit-content;
-	display: block;
 }
 
 .gexp .color-scheme-container {
@@ -845,7 +847,6 @@ abbr[data-original-title], abbr[title] {
     -webkit-font-smoothing: antialiased;
 	font-weight: 900;
 	content: "\f0d7";
-	display: inline-block;
 }
 
 .gexp .expandedDropdown::before {
@@ -859,7 +860,6 @@ abbr[data-original-title], abbr[title] {
     -webkit-font-smoothing: antialiased;
 	font-weight: 900;
 	content: "\f0d8";
-	display: inline-block;
 }
 
 /* Color Schemes and Color Scheme tooltips */
@@ -990,4 +990,23 @@ abbr[data-original-title], abbr[title] {
 /* Show eye */
 .gexp .styler div>input[type=checkbox]:checked:before {
     content:"\f06e";
+}
+
+.gexp .export .export-section {
+    margin: 4px 0px;
+}
+
+.gexp .export .export-section > *:not(:first-child) {
+    margin-left: 16px;
+}
+ 
+.gexp .export .export-row * {
+	display: inline-block;
+	vertical-align: middle;
+    margin: 1px 3px;
+}
+
+.gexp .export .export-section-label {
+	font-size: 1.1em;
+	font-weight: bold;
 }

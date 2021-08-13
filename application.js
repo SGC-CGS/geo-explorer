@@ -18,6 +18,7 @@ import wInfoPopup from './widgets/infopopup.js';
 import wSelector from './widgets/selector.js';
 import wStyler from './widgets/styler.js';
 import wChart from './widgets/wChart.js';
+import wExport from './widgets/wExport.js';
 
 /**
  * Application module
@@ -66,6 +67,7 @@ export default class Application extends Widget {
 			selector: this.toolbar.AddOverlay("selector", new wSelector()),		
 			styler: this.toolbar.AddOverlay("styler", new wStyler(this.config.styler, this.context)),
 			chart: this.toolbar.AddOverlay("chart", new wChart(this.config.chart)),
+			export: this.toolbar.AddOverlay("export", new wExport(this.config.chart)),
 			fullscreen: this.navbar.AddEsriWidget("fullscreen", new ESRI.widgets.Fullscreen({ view: this.map.view })),
 			home: this.navbar.AddEsriWidget("home", new ESRI.widgets.Home({ view: this.map.view })),
 			bookmarks: this.navbar.AddOverlay("bookmarks", new wBookmarks(this.config.bookmarks, this.map, this.storage)),
