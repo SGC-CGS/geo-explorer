@@ -181,6 +181,53 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 		this.chart = null;
     }
 
+    HandleSelection(selectionObj) {
+        this.selectionObj = selectionObj;
+
+        this.selectionObj.On("UpdateSelection", ev => {
+            this.data = ev.data; // populate selection items
+        });
+
+        this.selectionObj.On("HighlightChartElement", ev => {
+            // Highlight a chart element. This requires a chart type and ID
+            let type = this.chart.typeOfChartElement;
+            let title = this.config.field;
+            
+            // This will only work if the chart you are using has IDs assigned to the chart elements
+            this.chartElement = document.querySelector(
+                `${type}[id="${ev.graphic.attributes[title]}"]`
+            );
+
+            this.chartElement.style.opacity = 0.5;
+            
+        });
+
+        this.selectionObj.On("ClearChartElementHighlight", ev => {
+            // Restore the highlighted chart element to its original opacity
+            if (this.chartElement) this.chartElement.style.opacity = 1;
+            
+        });
+
+        this.selectionObj.On("UpdateChartTool", ev => {
+            // REVIEW: Reading titles and labels from widgets like this will get confusing. We should have a central place 
+            // where we can get them. Context probably. We could also just call an UpdateSelection function on each widget
+            // and provide the selection object similar to what we do when the context changes.
+            this.linkTitle = ev.infoPopup.GetLink();
+
+            if (ev.selection.items.length == 0) {
+                this.description = "";
+                ev.toolbar.Overlay("chart").title = "";
+                ev.toolbar.DisableButton("chart");
+            }
+            else if (ev.toolbar.Button("chart").disabled == true) {
+                // Used context.IndicatorsLabel instead of table.title
+                this.description = ev.context.IndicatorsLabel() + " (" + this.data[0].uom + ")";
+                ev.toolbar.Item("chart").overlay.header = this.linkTitle;
+                ev.toolbar.EnableButton("chart");
+            }
+        });
+    }
+
 	/**
 	 * Create a div for this widget
 	 * @returns {string} HTML with custom div

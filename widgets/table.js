@@ -148,7 +148,19 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 		
 		Dom.ToggleCss(this.Elem("message"), 'hidden', isVisible);
 		Dom.ToggleCss(this.Elem("table"), 'hidden', !isVisible);
-	}
+    }
+
+    /**
+     * Event handling for selection
+     * @param {any} selectionObj
+     */
+    HandleSelection(selectionObj) {
+        this.selectionObj = selectionObj;
+
+        this.selectionObj.On("UpdateSelection", ev => {
+            this.data = ev.data; // populate selection items
+        });
+    }
 	
 	/**
 	 * Create HTML for this widget
