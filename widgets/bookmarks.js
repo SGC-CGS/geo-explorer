@@ -34,8 +34,6 @@ export default Core.Templatable("Api.Widgets.Bookmarks", class wBookmarks extend
 	 */	
 	constructor(...config) {	
 		super(...config);
-		
-		this.bookmarksWidget = null;
 	}
 	
 	/**

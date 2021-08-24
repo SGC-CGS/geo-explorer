@@ -134,15 +134,15 @@ export default Core.Templatable("App.Widgets.StylerBreak", class wLegendEditable
 	 * @returns {string} HTML for breaks
 	 */		
 	HTML() {
-		return "<div handle='container' class='break-line breaks-row'>" +
-				 "<div handle='visible-icon' class='eyes breaks-column'><input type='checkbox' handle='checkbox' checked></div>" +
-				 "<div class='break-color-container breaks-column'>" +
-					"<div handle='color' class='break-color'></div>" +
+		return "<div handle='container' class='breaks-line'>" +
+				 "<div handle='visible-icon' class='eyes'><input type='checkbox' handle='checkbox' checked></div>" +
+				 "<div class=''>" +
+					"<div handle='color' class=''></div>" +
 				 "</div>" +
-				 "<div class='breaks-column' handle='lFrom'></div>" +
-				 "<div class='breaks-column'>nls(Styler_Item_Join)</div>" +
-				 "<div handle='eContainer' class='break-to-container breaks-column'>" +
-					"<button handle='bTo' class='to'></button>" +	
+				 "<div class='' handle='lFrom'></div>" +
+				 "<div class=''>nls(Styler_Item_Join)</div>" +
+				 "<div handle='eContainer' class='break-to-container'>" +
+					"<button handle='bTo' class=''></button>" +	
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
 						"<button handle='eApply' class='apply button-icon small-icon'></button>" +

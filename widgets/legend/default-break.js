@@ -73,7 +73,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak 
 	 */	
 	HTML() {
 		return "<div handle='container' class='break-line'>" +
-				  "<div handle='visible-icon' style='float: Left;'class='eyes breaks-column'>" + 
+				  "<div handle='visible-icon' class='eyes'>" + 
 					 "<input type='checkbox' handle='checkbox' checked>" + 
 				  "</div>" +
 				  "<div class='break-color-container'>" + 
