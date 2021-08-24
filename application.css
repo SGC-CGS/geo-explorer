@@ -489,45 +489,53 @@ abbr[data-original-title], abbr[title] {
 	list-style-type: none; */
 }
 
-.gexp .styler .break-line .break-to-container:not(.editing) .editor {
-	display:none;
-}
-
-.gexp .styler .break-line .break-to-container.editing button.to {
-	display:none;
-}
-.gexp .styler .break-line .break-to-container > *,
-.gexp .styler .break-line .break-to-container .editor > * {
-	display:inline-block;
-	vertical-align:middle;
-} 
-
-.gexp .styler .break-line .break-to-container .editor .editor-input {
-	width:80px;    
-	height: 24px;
-}
-
-.gexp .styler .break-line .break-to-container button {
-    margin-right: 5px;
-}
-
-.gexp .styler .break-line .break-to-container button.apply {
-    background-image: url(./assets/check-16.png);
-}
-
-.gexp .styler .break-line .break-to-container button.cancel {
-    background-image: url(./assets/close-16.png);
-}
-
-.gexp .styler .break-line button.remove {
-    background-image: url(./assets/trashcan-16.png);
-}
 /* Styler Widget */
 
 /* Export Widget */
 
 
 /* For the breaks-container table */
+.gexp .styler .breaks-line > *{
+	display:inline-block;
+	padding: 2px 3px;
+}
+.gexp .styler .breaks-line .break-to-container:not(.editing) .editor {
+	display:none;
+}
+
+.gexp .styler .breaks-line .break-to-container.editing button.to {
+	display:none;
+}
+.gexp .styler .breaks-line .break-to-container > *,
+.gexp .styler .breaks-line .break-to-container .editor > * {
+	display:inline-block;
+	vertical-align:middle;
+} 
+
+.gexp .styler .breaks-line .break-to-container .editor .editor-input {
+	width:80px;    
+	height: 24px;
+}
+
+.gexp .styler .breaks-line .break-to-container button {
+    margin-right: 5px;
+}
+
+.gexp .styler .breaks-line .break-to-container button.apply {
+    background-image: url(./assets/check-16.png);
+}
+
+.gexp .styler .breaks-line .break-to-container button.cancel {
+    background-image: url(./assets/close-16.png);
+}
+
+.gexp .styler .breaks-line button.remove {
+    background-image: url(./assets/trashcan-16.png);
+}
+
+
+
+
 .gexp .styler .breaks-row {
 	display: table-row;
 }
@@ -969,7 +977,6 @@ abbr[data-original-title], abbr[title] {
 /* Styler legend Checkbox */
 .gexp .styler .eyes {
 	padding: 0 5px 5px 0;
-    display: block;
 }
 
 .gexp .styler .eyes-container {
