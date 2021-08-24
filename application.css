@@ -96,10 +96,6 @@ abbr[data-original-title], abbr[title] {
 	cursor : pointer;
 }
 
-.gexp .map-container .esri-ui .button-icon.legend {
-    background-image: url(./assets/layers-24.png);
-}
-
 .gexp .map-container .hidden,
 .gexp .dropdown-title .hidden,
 .gexp .loading-title .hidden,

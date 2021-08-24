@@ -46,6 +46,8 @@ export default class Application extends Widget {
 			infoPopup: new wInfoPopup()
 		}		
 		
+		Dom.AddCss(this.navbar.Button("legend"), "esri-icon-layers");
+		
 		this.widgets.selector.container = this.Elem("selector");
 		this.widgets.table.container = this.Elem("table");
 		
