@@ -493,54 +493,50 @@ abbr[data-original-title], abbr[title] {
 
 /* Export Widget */
 
-
 /* For the breaks-container table */
-.gexp .styler .breaks-line > *{
+.gexp .styler .break-line > *{
 	display:inline-block;
 	padding: 2px 3px;
 }
-.gexp .styler .breaks-line .break-to-container:not(.editing) .editor {
+.gexp .styler .break-line .break-to-container:not(.editing) .editor {
 	display:none;
 }
 
-.gexp .styler .breaks-line .break-to-container.editing button.to {
+.gexp .styler .break-line .break-to-container.editing button.to {
 	display:none;
 }
-.gexp .styler .breaks-line .break-to-container > *,
-.gexp .styler .breaks-line .break-to-container .editor > * {
+.gexp .styler .break-line .break-to-container > *,
+.gexp .styler .break-line .break-to-container .editor > * {
 	display:inline-block;
 	vertical-align:middle;
 } 
 
-.gexp .styler .breaks-line .break-to-container .editor .editor-input {
+.gexp .styler .break-line .break-to-container .editor .editor-input {
 	width:80px;    
 	height: 24px;
 }
 
-.gexp .styler .breaks-line .break-to-container button {
+.gexp .styler .break-line .break-to-container button {
     margin-right: 5px;
 }
 
-.gexp .styler .breaks-line .break-to-container button.apply {
+.gexp .styler .break-line .break-to-container button.apply {
     background-image: url(./assets/check-16.png);
 }
 
-.gexp .styler .breaks-line .break-to-container button.cancel {
+.gexp .styler .break-line .break-to-container button.cancel {
     background-image: url(./assets/close-16.png);
 }
 
-.gexp .styler .breaks-line button.remove {
+.gexp .styler .break-line button.remove {
     background-image: url(./assets/trashcan-16.png);
 }
 
-
-
-
-.gexp .styler .breaks-row {
+.gexp .styler .break-row {
 	display: table-row;
 }
 
-.gexp .styler .breaks-column {
+.gexp .styler .break-column {
 	display: table-cell;
 	vertical-align: middle;
 }
@@ -560,7 +556,7 @@ abbr[data-original-title], abbr[title] {
 	cursor: pointer;
 }
 
-/* .gexp .styler .breaks-container,
+/* .gexp .styler .break-container,
 .gexp .styler .other-container,
 .gexp .styler .label-name-container {
     margin-left:20px;
