@@ -2,7 +2,6 @@ html, body {
 	font-size:14px;
 	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
 	font-weight:normal;
-    color:#545963 !important;
     padding:0;
     margin:0;
 	overflow-y:hidden;
@@ -67,6 +66,10 @@ abbr[data-original-title], abbr[title] {
 .gexp .selector .selectorDropdown {
     float: right;
     width: 50%;
+}
+
+.gexp .selector > label {
+	font-style:italic;
 }
 
 .gexp hr {
@@ -178,6 +181,11 @@ abbr[data-original-title], abbr[title] {
 	border:solid thin black;
 	border-radius:2px;
 }
+
+.gexp .legend .break-line .eyes {
+	display:none;
+}
+
 /* Legend Widget */
 .gexp .legend .label-name-container ul {
     list-style-type:none;

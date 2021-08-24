@@ -111,7 +111,7 @@ export default class Application extends Widget {
 		this.metadata = responses[0];
 		this.codesets = responses[1];
 		
-		document.querySelector("#app-title").innerHTML = this.metadata.productName;
+		this.Elem("app-title").innerHTML = this.metadata.productName;
 		
 		this.widgets.infoPopup.Configure(this.map, this.config, this.metadata, this.codesets);
 		this.widgets.selector.Configure(this.metadata);
@@ -228,14 +228,15 @@ export default class Application extends Widget {
 	}
 
 	HTML() {		
-        return  "<div handle='selector' class='selector'></div>" +
+        return  "<h2 handle='app-title' class='mrgn-tp-sm'></h2>" +
+				"<div handle='selector' class='selector'></div>" +
                 "<div class='text-center mrgn-tp-md'><a href='#table' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
 				"<label handle='refper' property='name' class='mrgn-tp-sm'></label>" + 
 				"<div handle='mapcontainer' class='map-container'>" +
                     "<div handle='map'></div>" +
 				"</div>" +
-				"<div class='pull-right'>" + 
+				"<div>" + 
 					"<a handle='link' target='_blank'></a>" +
                 "</div>" +
 				"<h2 handle='tableHeader' property='name' class='tableHeader mrgn-tp-lg'></h2>" +
