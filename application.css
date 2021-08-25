@@ -5,6 +5,8 @@ html, body {
     padding:0;
     margin:0;
 	overflow-y:hidden;
+	color: #000;
+    background-color: #fff;
 }
 
 body.wait main {

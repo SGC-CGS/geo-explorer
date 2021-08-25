@@ -176,7 +176,7 @@ export default class Application extends Widget {
         // Remove the current layer if it exists before adding a new one
         this.map.RemoveFeatureLayer("geo");
 		
-        var renderer = Style.Renderer(data, this.config.Id(decodedGeo), this.config.ramps, this.config.defColor);
+        var renderer = Style.Renderer(data, this.config.Id(decodedGeo), this.config.ramp, this.config.defColor);
 		
         if (renderer) {
 			var identify = this.config.Identify(decodedGeo)
@@ -216,7 +216,7 @@ export default class Application extends Widget {
     }
 	
 	OnApplication_Error(error) {
-		this.Elem("waiting").Hide();
+		this.widgets.waiting.Hide();
 		
 		alert(error.message);
 		
@@ -230,7 +230,7 @@ export default class Application extends Widget {
 	}
 
 	HTML() {		
-        return  "<h2 handle='app-title' class='mrgn-tp-sm'></h2>" +
+        return  "<h1 handle='app-title' class='mrgn-tp-sm'></h1>" +
 				"<div handle='selector' class='selector'></div>" +
                 "<div class='text-center mrgn-tp-md'><a href='#table' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 

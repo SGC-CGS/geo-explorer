@@ -35,6 +35,12 @@
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
          <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
+		 <style>
+			#wb-bc, body {
+				background:#fff;
+				color:#000;
+			}
+		 </style>
       </head>
       <body vocab="http://schema.org/" typeof="WebPage">
          <!--stopindex-->
@@ -130,18 +136,10 @@
 			   <script type="application/javascript">
 					window.addEventListener("message", ev => {
 						var data = JSON.parse(ev.data);
-
 						document.querySelector("#app-container").height = data.height;
 					});
 					
-					const p = new URLSearchParams(location.search);
-
-					if (!p.get('pid')) {
-						alert("product id not specified through URL.");
-						throw new Error("product id not specified through URL.");
-					}
-					
-					document.querySelector("#app-container").src = `./main-en.html?pid=${p.get('pid')}`;
+					document.querySelector("#app-container").src = "./main-en.html" + location.search;
 			   </script>
             </section>
             <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">

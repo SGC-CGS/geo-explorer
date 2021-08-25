@@ -12,9 +12,12 @@ Promise.all([p1, p2]).then(Start, Fail);
 function Start(responses) {
 	var config = responses[0];
 	
+	const p = new URLSearchParams(location.search);
+
 	config.data = {
-        product: Net.GetUrlParameter("pid"),
-        initialSelection: Net.GetUrlParameter("selected")
+        product: p.get('pid'),
+        ramp: p.get('ramp') || "blue",
+        initialSelection: p.get('selected')
 	}
 	
 	if (!config.data.product) {

@@ -26,6 +26,12 @@ export default class Configuration {
      * Get the ramps 
      */
 	get ramps() { return this.json.ramps }
+	
+    /**
+     * @description
+     * Get the ramps 
+     */
+	get ramp() { return this.json.ramps[this.json.data.ramp] }
 
     /**
      * @description
