@@ -57,7 +57,7 @@
             "center": [-99, 62],
             "animation": false,
 			"highlight": {
-				"color": [255, 255, 0, 1],
+				"color": [200, 200, 0, 0.8],
 				"haloOpacity": 0.0,
 				"fillOpacity": 0.4
 			}
@@ -90,10 +90,6 @@
         "nulldesc": {
             "en": "NullDescription_EN",
             "fr": "NullDescription_FR"
-        },
-        "tableviewer": {
-            "en": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=",
-            "fr": "https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid="
         }
     },
     "bookmarks": {

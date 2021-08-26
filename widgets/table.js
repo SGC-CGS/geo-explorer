@@ -15,13 +15,6 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 	get title() { return this.Elem("title").innerHTML }
 
 	set title(value) { this.Elem("title").innerHTML = value; }
-
-	/**
-	 * Set data
-	 */
-	set data(selection){
-		this.Populate(selection.items);
-	}
 	
 	/**
 	 * Call constructor of base class (Templated) and initialize table widget
@@ -39,7 +32,7 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 	 * @param {object} config - Configuration parameters of the widget as a json object
 	 * @returns {void}
 	 */
-	Configure(config) {
+	Configure(config, selection) {
 		this.config.headers = config.headers.map(h => {
 			return {
 				id: h.id[Core.locale],
@@ -54,8 +47,11 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 		
 		this.config.headers.forEach(h => {
 			Dom.Create("th", { innerHTML:h.label }, tr);
-
 		});
+		
+		this.selection = selection;
+		
+		this.selection.On("change", ev => this.Populate(ev.graphics));
 	}
 	
 	/**
@@ -81,8 +77,6 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 	 */
 	Update(context) {
 		this.context = context; 
-		
-		Dom.Empty(this.Elem('body'));
 		
 		Dom.RemoveCss(this.roots[0], 'hidden');
 		
@@ -128,14 +122,13 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 	 * @returns {void}
 	 */
 	CreateButton(cell, g, title, icon){
-		
 		var bt = Dom.Create("button", { className:"table-button", title:title }, cell);
 		var ic = Dom.Create("i", { className:icon }, bt);
 		
 		bt.addEventListener("click", ev => {
 			ev.stopPropagation();
 			
-			this.Emit("RowDeselectButtonClick", { graphic:g })
+            ev.graphic ? this.selection.Remove(ev.graphic) : this.selection.RemoveAll();
 		});
 	}
 	
@@ -148,7 +141,7 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 		
 		Dom.ToggleCss(this.Elem("message"), 'hidden', isVisible);
 		Dom.ToggleCss(this.Elem("table"), 'hidden', !isVisible);
-	}
+    }
 	
 	/**
 	 * Create HTML for this widget

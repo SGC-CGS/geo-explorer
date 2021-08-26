@@ -18,7 +18,12 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 	 * Get the widgets title
 	*/	
 	get title() { return this.Nls("Chart_Title"); }
-
+	
+	/** 
+	 * Get the widgets header
+	*/	
+	get header() { return this._header; }
+	set header(value) { this._header = value; }
 	/**
 	 * Get / set the widgets title with a link
 	 */
@@ -34,13 +39,17 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 	get data() { return this.chart.data; }
 
     set data(value) {
-		var data = value.items.map(item => {
+		var data = value.map(item => {
 			let label = item["attributes"][this.config.field];
 			let value = item["attributes"]["Value"] == null ? 0 : item["attributes"]["Value"];
 			let uom = item["attributes"][this.config.uom];
 			
 			return { label: label, value: value, uom: uom };
 		});
+		
+		var uom = data.length > 0 ? `(${data[0].uom})` : "";
+		
+		this.description = this.context.IndicatorsLabel() + uom;
 
 		this.DrawChart(data);
     }
@@ -90,8 +99,8 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 	Localize(nls) {
 		nls.Add("Chart_Title", "en", "View chart");
 		nls.Add("Chart_Title", "fr", "Type de Diagramme");
-		nls.Add("Chart_Title_Link", "en", "Selected data from table <a href='{0}' target='_blank'>{1}</a>");
-		nls.Add("Chart_Title_Link", "fr", "Données sélectionnées du tableau <a href='{0}' target='_blank'>{1}</a>");
+		nls.Add("Chart_Title_Link", "en", "Selected data from table <a href='https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid={0}01' target='_blank'>{1}</a>");
+		nls.Add("Chart_Title_Link", "fr", "Données sélectionnées du tableau <a href='https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid={0}01' target='_blank'>{1}</a>");
 	}
 	
 	/**
@@ -99,9 +108,13 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 	 * @param {object} config - Configuration parameters of the widget as a json object
 	 * @returns {void}
 	 */
-	Configure(config) {
+	Configure(config, selection) {
 		this.config.field = config.field[Core.locale];
 		this.config.uom = config.uom[Core.locale];
+		
+		this.selection = selection;
+		
+		this.selection.On("change", ev => this.data = ev.graphics);
 	}
 	
     /**
@@ -180,6 +193,35 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 		
 		this.chart = null;
     }
+
+	Update(context) {
+		this.context = context;
+		
+		var uom = this.data ? `(${this.data[0].uom})` : "";
+		
+		this.description = context.IndicatorsLabel() + uom;
+		
+		var link = [this.context.category, this.context.product_id];
+
+		this.header = this.Nls("Chart_Title_Link", link);
+	}		
+
+	Highlight(graphic) { 
+		if (!graphic) this.chartElement.style.opacity = 1;
+		
+		else {
+			// Highlight a chart element. This requires a chart type and ID
+			let type = this.chart.typeOfChartElement;
+			let title = this.config.field;
+			
+			// This will only work if the chart you are using has IDs assigned to the chart elements
+			this.chartElement = document.querySelector(
+				`${type}[id="${graphic.attributes[title]}"]`
+			);
+
+			this.chartElement.style.opacity = 0.5;
+		}
+	}
 
 	/**
 	 * Create a div for this widget

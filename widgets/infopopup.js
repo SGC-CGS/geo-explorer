@@ -57,7 +57,6 @@ export default Core.Templatable("App.Widgets.InfoPopup", class wInfoPopup extend
 		this.config.indicator = config.indicator[Core.locale];
 		this.config.symbol = config.symbol[Core.locale];
 		this.config.nulldesc = config.nulldesc[Core.locale];
-		this.config.tableviewer = config.tableviewer[Core.locale];
 	}
 	
 	/**
@@ -68,8 +67,8 @@ export default Core.Templatable("App.Widgets.InfoPopup", class wInfoPopup extend
 	Localize(nls) {
 		nls.Add("Indicator_Title", "en", "Selected indicators");
 		nls.Add("Indicator_Title", "fr", "Indicateurs sélectionnés");
-		nls.Add("TableViewer_Link", "en", "<b>Statistics Canada.</b> Table <a href='{0}' target='_blank'>{1}</a>");
-		nls.Add("TableViewer_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='{0}' target='_blank'>{1}</a>");	
+		nls.Add("TableViewer_Link", "en", "<b>Statistics Canada.</b> Table <a href='https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid={0}01' target='_blank'>{1}</a>");
+		nls.Add("TableViewer_Link", "fr", "<b>Statistique Canada.</b> Tableau <a href='https://www150.statcan.gc.ca/t1/tbl1/fr/tv.action?pid={0}01' target='_blank'>{1}</a>");
 	}
 	
 	/**
@@ -88,8 +87,8 @@ export default Core.Templatable("App.Widgets.InfoPopup", class wInfoPopup extend
 		symbol = symbol && value != "F" ? symbol : ''; 
 		
 		var indicators = this.context.IndicatorItems().map(f => `<li>${f.label}</li>`).join("");
-		
-		var link = this.GetLink();
+				
+		var link = [this.context.category, this.context.product_id];
 		
 		var html = `<b>${uom}</b>: ${value}<sup>${symbol}</sup>` + 
 				   `<br><br>` + 
@@ -104,14 +103,7 @@ export default Core.Templatable("App.Widgets.InfoPopup", class wInfoPopup extend
 		this.map.popup.open({ location:mapPoint, title:f.attributes[this.config.title], content:html });
 	}
 	
-	GetLink() {
-		var prod = this.context.category.toString();
-
-		if (prod.length != 8) return "";
-
-		var url = this.config.tableviewer + this.context.category + "01";
-		var prod = prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
-		
-		return [url, prod];
+	Hide() {
+		this.map.popup.close();
 	}
 })

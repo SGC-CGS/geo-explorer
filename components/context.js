@@ -63,6 +63,14 @@ export default class Context extends Evented {
 	
 	get indicators() { return this.filters.concat([this.value]); }
 	
+	get product_id() {
+		var prod = this.category.toString();
+
+		if (prod.length != 8) return "";
+
+		return prod.replace(/(\d{2})(\d{2})(\d{4})/, "$1-$2-$3-01");
+	}
+	
 	constructor (json) {
 		super();
 		
