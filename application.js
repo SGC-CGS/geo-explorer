@@ -123,15 +123,12 @@ export default class Application extends Widget {
 
 	AddBehaviors(map, selection, layer, target, symbols) {
 		this.map.AddBehavior("drag", new DragSelect(map, selection, layer, target, symbols.selection));
-		this.map.AddBehavior("click", new ClickSelect(map, selection, layer, target, symbols.selection));
-		this.map.AddBehavior("hover", new HoverHighlight(map, layer));
+		this.map.AddBehavior("click", new ClickSelect(map, selection, layer, target, symbols.selection)).Activate();
+		this.map.AddBehavior("hover", new HoverHighlight(map, layer)).Activate();
 	
 		this.HandleEvents(this.map.Behavior("drag"));
 		this.HandleEvents(this.map.Behavior("click"));
-	
-		this.map.Behavior("drag").Activate();
-		this.map.Behavior("hover").Activate();
-		
+
 		this.map.Behavior("hover").On("pointer-move", ev => {
 			this.widgets.infoPopup.Show(ev.position, ev.graphic);
 			this.widgets.chart.Highlight(ev.graphic);
@@ -141,6 +138,9 @@ export default class Application extends Widget {
 			this.widgets.infoPopup.Hide();
 			this.widgets.chart.Highlight(null);
 		});
+		
+		document.addEventListener("keydown", this.OnDocument_KeyUpDown.bind(this, false));
+		document.addEventListener("keyup", this.OnDocument_KeyUpDown.bind(this, true))
 	}
 
 	/**
@@ -189,12 +189,7 @@ export default class Application extends Widget {
 	OnStyler_Opacity(ev) {
 		this.map.Layer('main').opacity = ev.opacity;
 	}
-
-	/**
-	 * Show or hide the map labels.
-	 * @param {object} ev - Event object
-	 * @returns{void}
-	 */
+	
 	onStyler_LabelName(ev) {
 		this.context.sublayer.labelsVisible = ev.checked;
 	}
@@ -213,6 +208,14 @@ export default class Application extends Widget {
 	
 	OnWidget_Idle(ev) {
 		this.widgets.waiting.Hide();
+	}
+
+	OnDocument_KeyUpDown(isClick, ev) {
+		if (ev.keyCode != 16) return;
+		
+		this.map.Behavior("click").SetActive(isClick);
+		this.map.Behavior("hover").SetActive(isClick);
+		this.map.Behavior("drag").SetActive(!isClick);
 	}
 	
 	OnApplication_Error(error) {
