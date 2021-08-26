@@ -137,6 +137,8 @@ export default class Map extends Evented {
 		this._layers[id] = layer;
 		
 		this._map.add(layer);
+		
+		return layer;
 	}
 
 	/**
@@ -184,26 +186,6 @@ export default class Map extends Evented {
 		this._layers[id] = layer;
 		
 		this._map.add(layer);
-	}
-	
-	/**
-	 * @description
-	 * Clean a layer of all it's sublayers
-	 * @param {*} id - item ID
-	 */
-	EmptyLayer(id) {
-		this.Layer(id).sublayers.removeAll();
-	}
-	
-	/**
-	 * @description
-	 * Map services contain sublayers. Add a sublayer to
-	 * a layer.
-	 * @param {*} id - item ID
-	 * @param {*} sublayer - One of the several layers part of a group layer
-	 */
-	AddSubLayer(id, sublayer) {
-		this.Layer(id).sublayers.add(sublayer);
 	}
 	
 	/**

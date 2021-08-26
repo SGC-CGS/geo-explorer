@@ -2,85 +2,51 @@
 
 import Core from '../tools/core.js';
 import Requests from '../tools/requests.js';
-import Evented from '../components/base/evented.js';
-import Behavior from './behavior.js';
+import Behavior from '../components/base/behavior.js';
 
-/**
- * Rectangle Select module
- * @module behaviors/rectangle-select
- * @extends Behavior
- */
 export default class RectangleSelectBehavior extends Behavior { 
 
-	/**
-	 * Get selection layer object
-	 */	
-	get layer() { return this._map.Layer('selection'); }
+	get selection() { return this._options.selection; }
+	set selection(value) { this._options.selection = value; }
 
-	/**
-	 * Get layer vector graphics
-	 */	
-	get graphics() { return this.layer.graphics; }
+	get layer() { return this._options.layer; }
+	set layer(value) { this._options.layer = value; }
 
-	/**
-	 * Get/set target object from layer
-	 */	
 	get target() { return this._options.target; }
+	set target(value) { this._options.target = value; }
 
-	set target(value) { 
-		this._options.target = value;
+    get symbol() { return this._options.symbol; }
+    set symbol(value) { this._options.symbol = value; }
+
+	constructor(map, selection, layer, target, symbol) {	
+		super(map);
 		
-		this.Clear();
-	}
-
-	/**
-	 * Get/set field name (ex. "GeographyReferenceId")
-	 */	
-	get field() { return this._options.field; }
-
-	set field(value) { this._options.field = value; }
-
-	/**
-	 * Get/set symbol object for highlighting selections (type, color, style, outline)
-	 */	
-	get symbol() { return this._options.symbol; }
-
-	set symbol(value) { this._options.symbol = value; }
-
-	/**
-	 * Get / set whether the draw query is complete. This is for knowing whether 
-	 * the cursor is no longer being updated.
-	 */
-	get drawComplete() { return this._drawComplete; }
-
-	set drawComplete(value) { this._drawComplete = value; }
-
-	/**
-	 * Call constructor of base class (Behavior) and initialize rectangle-select class 
-	 * Adds drawing, selection graphics layer, and handlers.
-	 * @param {object} map - Map object
-	 * @param {object} options - Map options 
-	 * @returns {void}
-	 */	
-	constructor(map, options) {	
-		super();
+		this.selection = selection;
+		this.layer = layer;
+		this.target = target;
+		this.symbol = symbol;
 		
-		this._options = {};
-		this._map = map;
-		this._draw = new ESRI.views.draw.Draw({ view : this._map.view });
+		this._draw = new ESRI.views.draw.Draw({ view : this.map.view });
 		this._action = null;
 		
-		this._map.AddGraphicsLayer('selection');
-		
 		this._handlers = {"cursor-update": null, "draw-complete": null};
+		
+		// TODO: Keep the handlers and remove them when deactivated maybe? Not a problem for now
+		this.selection.On("added", ev => {
+			ev.added.symbol = this.symbol;
+			
+			this.layer.add(ev.added)
+		});
+		
+		this.selection.On("removed", ev => this.layer.remove(ev.removed));
 	}
 
 	/**
 	 * Clear selection and remove drawing event hanlders
 	 * @returns {void}
 	 */
-	Deactivate(){
-		this.Clear();
+	Deactivate() {	
+		super.Deactivate();
 		
 		this._handlers["cursor-update"].remove();
 		this._handlers["draw-complete"].remove();	
@@ -90,20 +56,13 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * Setup rectangle drawing and bind drawing event handlers
 	 * @returns {void}
 	 */
-	Activate(){		
+	Activate() {		
+		super.Activate();
+		
 		this._action = this._draw.create("rectangle", { mode: "click" });
 		
 		this._handlers["cursor-update"] = this._action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
 		this._handlers["draw-complete"] = this._action.on(["draw-complete"], this.OnDraw_Complete.bind(this));
-	}
-	
-	/**
-	 * De-select the selected layers and remove highlight
-	 * @returns {void}
-	 */
-	Clear() {
-		this.layer.removeAll();
-		this._map.view.graphics.removeAll();
 	}
 	
 	/**
@@ -130,16 +89,14 @@ export default class RectangleSelectBehavior extends Behavior {
 	 */
 	OnDraw_CursorUpdate(ev) {
 		if (ev.vertices.length < 2) return;
-
-		this.drawComplete = false;
-
-		this._map.view.graphics.removeAll();
 		
-		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
+		this.map.view.graphics.removeAll();
+		
+		var geometry = this.VerticesToPolygon(ev.vertices, this.map.view.spatialReference);
 		var outline = { color: [200, 20, 0], width: 1 }
 		var symbol = { type: "simple-fill", color: [200, 20, 0, 0.3], style: "solid", outline: outline }
 		
-		this._map.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
+		this.map.view.graphics.add(new ESRI.Graphic({ geometry: geometry, symbol: symbol }));
 	}
 	
 	/**
@@ -148,15 +105,13 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	OnDraw_Complete(ev) {
-		this.drawComplete = true;
-
 		this.Emit("Busy");
 		
-		this._map.view.graphics.removeAll();
+		this.map.view.graphics.removeAll();
 		
 		if (ev.vertices.length < 2) return;
 		
-		var geometry = this.VerticesToPolygon(ev.vertices, this._map.view.spatialReference);
+		var geometry = this.VerticesToPolygon(ev.vertices, this.map.view.spatialReference);
 		
 		var p = Requests.QueryGeometry(this.target, geometry);
 		
@@ -170,22 +125,10 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	OnDraw_QueryComplete(results) {
-		results.features.forEach(f => {
-			var exists = this.layer.graphics.find(g => g.attributes[this.field] == f.attributes[this.field]);
-			
-			if (exists) this.layer.remove(exists);
-			
-			else {
-				f.symbol = this.symbol;
-				
-				this.layer.graphics.add(f);
-			}
-		});
+		this.selection.ToggleMany(results.features);
 		
 		this.Emit("Idle");
 		
-		this.Emit("Change", { selection:this.layer.graphics });
-
 		this.Activate();
 	}
 	

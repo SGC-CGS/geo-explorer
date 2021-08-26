@@ -1,8 +1,8 @@
 'use strict';
 
-import Core from '../tools/core.js';
-import Requests from '../tools/requests.js';
-import Evented from '../components/base/evented.js';
+import Core from '../../tools/core.js';
+import Requests from '../../tools/requests.js';
+import Evented from '../base/evented.js';
 
 /**
  * Parent class of the other behaviors 
@@ -10,6 +10,8 @@ import Evented from '../components/base/evented.js';
  * @extends Evented
  */
 export default class Behavior extends Evented { 
+
+	get active() { return this._active; }
 
 	get map() { return this._options.map; }
 	set map(value) { this._options.map = value; }
@@ -23,6 +25,9 @@ export default class Behavior extends Evented {
 	constructor(map) {	
 		super();
 		
+		this._options = {};
+		this._active = false;
+		
 		this.map = map;
 	}
 
@@ -31,7 +36,7 @@ export default class Behavior extends Evented {
 	 * @returns {void}
 	 */	
 	Deactivate(){
-        throw new Error("Deactivate must be implemented by inheriting class.");
+		this._active = false;
 	}
 
 	/**
@@ -39,6 +44,6 @@ export default class Behavior extends Evented {
 	 * @returns {void}
 	 */	
 	Activate(){
-        throw new Error("Activate must be implemented by inheriting class.");
+		this._active = true;
 	}
 }

@@ -158,6 +158,10 @@ export default Core.Templatable("Api.Widgets.Toolbar", class wToolbar extends Wi
 		
 		button.disabled = true;
 		button.title = this.Nls("Widget_Disabled");
+		
+		if (this.current && button == this.current.button) {
+			this.ToggleOverlay(this.Item(id));
+		}
 	}
 	
 	/**
