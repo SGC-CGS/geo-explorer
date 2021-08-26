@@ -21,10 +21,14 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	Deactivate() {
+		if (!this.active) return;
+		
 		super.Deactivate();	
 		
 		this._handlers["pointer-move"].remove();
 		this._handlers["pointer-leave"].remove();
+		
+		this.StopHover();
 	}
 
 	/**
@@ -32,6 +36,8 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	Activate() {
+		if (this.active) return;
+		
 		super.Activate();
 		
 		this.EnableHitTest();

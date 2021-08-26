@@ -28,20 +28,18 @@ export default class ClickSelectBehavior extends Behavior {
 		
 		this.ClickHandler = this.OnMap_Click.bind(this);
 		
-		// TODO: Keep the handlers and remove them when deactivated maybe? Not a problem for now
-		this.selection.On("added", ev => {
-			ev.added.symbol = this.symbol;
-			
-			this.layer.add(ev.added)
-		});
-		
-		this.selection.On("removed", ev => this.layer.remove(ev.removed));
+		this._handlers = { "added":null, "removed":null};
 	}
 
 	Deactivate() {
+		if (!this.active) return;
+		
 		super.Deactivate();
 		
 		this.map.Off("Click", this.ClickHandler);
+		
+		this.selection.Off("added", this._handlers["added"]);
+		this.selection.Off("removed", this._handlers["removed"]);
 	}
 
 	/**
@@ -49,9 +47,18 @@ export default class ClickSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	Activate() {
+		if (this.active) return;
+		
 		super.Activate();
 		
 		this.map.On("Click", this.ClickHandler);
+		
+		this._handlers["added"] = this.selection.On("added", ev => {
+			ev.added.symbol = this.symbol;
+			this.layer.add(ev.added)
+		});
+		
+		this._handlers["removed"] = this.selection.On("removed", ev => this.layer.remove(ev.removed));
 	}
 	
 	/**

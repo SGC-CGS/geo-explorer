@@ -46,4 +46,8 @@ export default class Behavior extends Evented {
 	Activate(){
 		this._active = true;
 	}
+	
+	SetActive(isActive) {
+		isActive ? this.Activate() : this.Deactivate();
+	}
 }

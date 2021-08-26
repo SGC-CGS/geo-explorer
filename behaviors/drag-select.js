@@ -18,7 +18,8 @@ export default class RectangleSelectBehavior extends Behavior {
     get symbol() { return this._options.symbol; }
     set symbol(value) { this._options.symbol = value; }
 
-	constructor(map, selection, layer, target, symbol) {	
+	constructor(map, selection, layer, target, symbol) {
+		// TODO MAYBE: This whole class would be maybe simpler if we didn't use the ESRI draw mechanism		
 		super(map);
 		
 		this.selection = selection;
@@ -29,16 +30,7 @@ export default class RectangleSelectBehavior extends Behavior {
 		this._draw = new ESRI.views.draw.Draw({ view : this.map.view });
 		this._action = null;
 		
-		this._handlers = {"cursor-update": null, "draw-complete": null};
-		
-		// TODO: Keep the handlers and remove them when deactivated maybe? Not a problem for now
-		this.selection.On("added", ev => {
-			ev.added.symbol = this.symbol;
-			
-			this.layer.add(ev.added)
-		});
-		
-		this.selection.On("removed", ev => this.layer.remove(ev.removed));
+		this._handlers = {"cursor-update": null, "draw-complete": null, "added":null, "removed":null};
 	}
 
 	/**
@@ -46,19 +38,42 @@ export default class RectangleSelectBehavior extends Behavior {
 	 * @returns {void}
 	 */
 	Deactivate() {	
+		if (!this.active) return;
+		
 		super.Deactivate();
 		
 		this._handlers["cursor-update"].remove();
-		this._handlers["draw-complete"].remove();	
+		this._handlers["draw-complete"].remove();
+		
+		this.selection.Off("added", this._handlers["added"]);
+		this.selection.Off("removed", this._handlers["removed"]);
+		
+		this.map.view.graphics.removeAll();
 	}
 
 	/**
 	 * Setup rectangle drawing and bind drawing event handlers
 	 * @returns {void}
 	 */
-	Activate() {		
+	Activate() {
+		if (this.active) return;
+		
 		super.Activate();
 		
+		// Whenever activated, we need to start listening to the selection object. 
+		// Maybe the selection should handleEvent drawing selected objects
+		this._handlers["added"] = this.selection.On("added", ev => {
+			ev.added.symbol = this.symbol;
+			this.layer.add(ev.added)
+		});
+		
+		this._handlers["removed"] = this.selection.On("removed", ev => this.layer.remove(ev.removed));
+		
+		this.Start();
+	}
+	
+	Start() {
+		// Generate new action object, we have to listen to the new object
 		this._action = this._draw.create("rectangle", { mode: "click" });
 		
 		this._handlers["cursor-update"] = this._action.on(["cursor-update"], this.OnDraw_CursorUpdate.bind(this));
@@ -129,7 +144,9 @@ export default class RectangleSelectBehavior extends Behavior {
 		
 		this.Emit("Idle");
 		
-		this.Activate();
+		// Restart the drawing process only if the behavior is still active. Because
+		// the query is Async, there's a possibility that it's been deactivated  here.		
+		if (this.active) this.Start();
 	}
 	
 	/**
