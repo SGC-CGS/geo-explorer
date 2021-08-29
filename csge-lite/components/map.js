@@ -1,7 +1,7 @@
 'use strict';
 
-import Core from '../../geo-explorer-api/tools/core.js';
-import Map from '../../geo-explorer-api/components/map.js';
+import Core from '../../csge-api/tools/core.js';
+import Map from '../../csge-api/components/map.js';
 
 export default class MapExt extends Map { 
 

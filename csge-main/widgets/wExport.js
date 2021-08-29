@@ -1,6 +1,6 @@
-import Widget from '../../geo-explorer-api/components/base/widget.js';
-import Core from "../../geo-explorer-api/tools/core.js";
-import Select from '../../geo-explorer-api/ui/select.js';
+import Widget from '../../csge-api/components/base/widget.js';
+import Core from "../../csge-api/tools/core.js";
+import Select from '../../csge-api/ui/select.js';
 
 /**
  * Export widget module

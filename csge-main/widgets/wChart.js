@@ -1,5 +1,5 @@
-import Widget from '../../geo-explorer-api/components/base/widget.js';
-import Core from "../../geo-explorer-api/tools/core.js";
+import Widget from '../../csge-api/components/base/widget.js';
+import Core from "../../csge-api/tools/core.js";
 import BarChart from "../charts/barChart.js";
 import PieChart from "../charts/pieChart.js";
 import LineChart from "../charts/lineChart.js";

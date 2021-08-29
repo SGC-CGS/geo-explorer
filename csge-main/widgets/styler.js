@@ -1,12 +1,12 @@
-import Widget from '../../geo-explorer-api/components/base/widget.js';
-import Select from '../../geo-explorer-api/ui/select.js';
-import Core from '../../geo-explorer-api/tools/core.js';
-import Dom from '../../geo-explorer-api/tools/dom.js';
-import Requests from '../../geo-explorer-api/tools/requests.js';
-import Opacity from '../../geo-explorer-api/widgets/opacity.js';
-import LabelToggle from '../../geo-explorer-api/widgets/label-toggle.js';
-import ColorSchemes from '../../geo-explorer-api/widgets/color-schemes.js';
-import LegendEditable from '../../geo-explorer-api/widgets/legend/legend-editable.js';
+import Widget from '../../csge-api/components/base/widget.js';
+import Select from '../../csge-api/ui/select.js';
+import Core from '../../csge-api/tools/core.js';
+import Dom from '../../csge-api/tools/dom.js';
+import Requests from '../../csge-api/tools/requests.js';
+import Opacity from '../../csge-api/widgets/opacity.js';
+import LabelToggle from '../../csge-api/widgets/label-toggle.js';
+import ColorSchemes from '../../csge-api/widgets/color-schemes.js';
+import LegendEditable from '../../csge-api/widgets/legend/legend-editable.js';
 
 /**
  * Styler widget module

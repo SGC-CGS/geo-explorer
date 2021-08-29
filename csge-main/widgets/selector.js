@@ -1,8 +1,8 @@
-import Widget from '../../geo-explorer-api/components/base/widget.js';
-import Core from '../../geo-explorer-api/tools/core.js';
-import Dom from '../../geo-explorer-api/tools/dom.js';
-import Requests from '../../geo-explorer-api/tools/requests.js';
-import StaticTypeahead from "../../geo-explorer-api/ui/typeahead/static.js";
+import Widget from '../../csge-api/components/base/widget.js';
+import Core from '../../csge-api/tools/core.js';
+import Dom from '../../csge-api/tools/dom.js';
+import Requests from '../../csge-api/tools/requests.js';
+import StaticTypeahead from "../../csge-api/ui/typeahead/static.js";
 
 /**
  * Selector widget module

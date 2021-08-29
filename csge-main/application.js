@@ -1,19 +1,19 @@
 'use strict';
 
-import ClickSelect from '../geo-explorer-api/behaviors/click-select.js';
-import DragSelect from '../geo-explorer-api/behaviors/drag-select.js';
-import HoverHighlight from '../geo-explorer-api/behaviors/hover-highlight.js';
+import ClickSelect from '../csge-api/behaviors/click-select.js';
+import DragSelect from '../csge-api/behaviors/drag-select.js';
+import HoverHighlight from '../csge-api/behaviors/hover-highlight.js';
 
-import Widget from '../geo-explorer-api/components/base/widget.js';
-import Map from '../geo-explorer-api/components/map.js';
-import Storage from '../geo-explorer-api/components/storage.js';
-import Selection from '../geo-explorer-api/components/selection.js';
+import Widget from '../csge-api/components/base/widget.js';
+import Map from '../csge-api/components/map.js';
+import Storage from '../csge-api/components/storage.js';
+import Selection from '../csge-api/components/selection.js';
 import Context from './components/context.js';
 
-import wToolbar from '../geo-explorer-api/widgets/toolbar.js';
-import wWaiting from '../geo-explorer-api/widgets/waiting.js';
-import wBookmarks from '../geo-explorer-api/widgets/bookmarks.js';
-import wBasemap from '../geo-explorer-api/widgets/basemap.js';
+import wToolbar from '../csge-api/widgets/toolbar.js';
+import wWaiting from '../csge-api/widgets/waiting.js';
+import wBookmarks from '../csge-api/widgets/bookmarks.js';
+import wBasemap from '../csge-api/widgets/basemap.js';
 import wTable from './widgets/table.js';
 import wSearch from './widgets/search.js';
 import wInfoPopup from './widgets/infopopup.js';

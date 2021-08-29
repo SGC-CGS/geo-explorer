@@ -1,18 +1,18 @@
 'use strict';
 
-import IdentifyBehavior from '../geo-explorer-api/behaviors/point-identify.js';
+import IdentifyBehavior from './behaviors/point-identify.js';
 
-import CODR from '../geo-explorer-api/tools/codr.js';
-import Dom from '../geo-explorer-api/tools/dom.js';
+import CODR from '../csge-api/tools/codr.js';
+import Dom from '../csge-api/tools/dom.js';
 import Style from './util/style.js';
 
-import Widget from '../geo-explorer-api/components/base/widget.js';
+import Widget from '../csge-api/components/base/widget.js';
 import Map from './components/map.js';
 import Configuration from './components/config.js';
 
-import wLegend from '../geo-explorer-api/widgets/legend/legend.js';
-import wToolbar from '../geo-explorer-api/widgets/toolbar.js';
-import wWaiting from '../geo-explorer-api/widgets/waiting.js';
+import wLegend from '../csge-api/widgets/legend/legend.js';
+import wToolbar from '../csge-api/widgets/toolbar.js';
+import wWaiting from '../csge-api/widgets/waiting.js';
 import wSelector from './widgets/selector.js';
 import wInfoPopup from './widgets/infopopup.js';
 import wTable from './widgets/table.js';

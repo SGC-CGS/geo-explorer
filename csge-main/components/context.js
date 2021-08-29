@@ -1,8 +1,8 @@
 'use strict';
 
-import Core from '../../geo-explorer-api/tools/core.js';
-import Evented from '../../geo-explorer-api/components/base/evented.js';
-import Requests from '../../geo-explorer-api/tools/requests.js';
+import Core from '../../csge-api/tools/core.js';
+import Evented from '../../csge-api/components/base/evented.js';
+import Requests from '../../csge-api/tools/requests.js';
 
 /**
  * Context module

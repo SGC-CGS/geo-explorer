@@ -1,6 +1,6 @@
-import BaseLegend from '../../geo-explorer-api/widgets/legend/legend.js';
-import Core from '../../geo-explorer-api/tools/core.js';
-import Dom from '../../geo-explorer-api/tools/dom.js';
+import BaseLegend from '../../csge-api/widgets/legend/legend.js';
+import Core from '../../csge-api/tools/core.js';
+import Dom from '../../csge-api/tools/dom.js';
 
 /**
  * Legend widget module

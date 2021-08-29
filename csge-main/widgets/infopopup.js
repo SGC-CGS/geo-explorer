@@ -1,5 +1,5 @@
-import Core from '../../geo-explorer-api/tools/core.js';
-import Widget from '../../geo-explorer-api/components/base/widget.js';
+import Core from '../../csge-api/tools/core.js';
+import Widget from '../../csge-api/components/base/widget.js';
 
 /**
  * Info Popup widget for map

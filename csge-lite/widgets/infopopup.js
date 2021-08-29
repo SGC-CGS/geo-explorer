@@ -1,7 +1,7 @@
-import Core from '../../geo-explorer-api/tools/core.js';
-import Dom from '../../geo-explorer-api/tools/dom.js';
-import CODR from '../../geo-explorer-api/tools/codr.js';
-import Widget from '../../geo-explorer-api/components/base/widget.js';
+import Core from '../../csge-api/tools/core.js';
+import Dom from '../../csge-api/tools/dom.js';
+import CODR from '../../csge-api/tools/codr.js';
+import Widget from '../../csge-api/components/base/widget.js';
 
 /**
  * Info Popup widget for map

@@ -1,3 +1,3 @@
-# geo-explorer-api
+# csge-api
 
 Common code for geo-explorer sites

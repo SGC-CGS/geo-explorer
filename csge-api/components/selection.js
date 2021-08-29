@@ -1,4 +1,4 @@
-import Evented from "../../geo-explorer-api/components/base/evented.js";
+import Evented from "../../csge-api/components/base/evented.js";
 
 /**
  * Selection module

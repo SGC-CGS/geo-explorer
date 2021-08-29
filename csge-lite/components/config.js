@@ -1,6 +1,6 @@
 'use strict';
 
-import Core from '../../geo-explorer-api/tools/core.js';
+import Core from '../../csge-api/tools/core.js';
 
 /**
  * Configuration module
