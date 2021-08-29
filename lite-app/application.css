@@ -1,0 +1,349 @@
+html, body {	
+	font-size:14px;
+	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
+	font-weight:normal;
+    padding:0;
+    margin:0;
+	overflow-y:hidden;
+	color: #000;
+    background-color: #fff;
+}
+
+body.wait main {
+	display:none;
+}
+
+body:not(.wait) .wait-message {
+	display:none;
+}
+
+abbr[data-original-title], abbr[title] {
+    text-decoration: none;
+}
+
+.gexp sub, .gexp sup {
+    line-height: initial;
+    vertical-align: super;
+    position: initial;
+}
+
+.gexp h2 {
+	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif !important;
+    font-size:1.3em;
+	font-weight:normal;
+}
+
+
+.gexp h2 {
+	font-weight:bold;
+	margin-bottom:0px;
+}
+
+.gexp label.tableHeader {
+    font-weight: bold;
+    line-height: 20px;
+}
+
+.gexp select, .gexp button {
+    cursor: pointer;
+    padding: 3px;
+    height: 30px;
+}
+
+.gexp label {
+	font-weight:normal;
+	line-height:30px;
+	font-size:1.1em;
+}
+
+.gexp .dimensions label {
+	padding-left : 25px;
+}
+
+.gexp .selector .row {
+	margin-left:0px;
+	margin-right:0px;
+}
+
+.gexp .selector .selectorDropdown {
+    float: right;
+    width: 50%;
+}
+
+.gexp .selector > label {
+	font-style:italic;
+}
+
+.gexp hr {
+    margin: 10px 0px;
+}
+
+.gexp .indicator {
+	min-height: 20px;
+}
+
+/* Map area of the application */
+.gexp .map-container {
+	position:relative;
+    height:680px;
+}
+
+
+/* Esri's map view */
+.gexp .map-container .esri-view {
+	height:100%;
+}
+
+.gexp .map-container .esri-view .esri-view-surface {
+	cursor : pointer;
+}
+
+.gexp .map-container .hidden,
+.gexp .dropdown-title .hidden,
+.gexp .loading-title .hidden,
+.gexp .dropdown-submit .hidden {
+    display: none;
+}
+
+
+/* Waiting message */
+.gexp .waiting,
+.gexp .overlay {
+	background:rgba(255, 255, 255, 0.925);
+	transition:opacity 125ms ease-in-out;
+	padding:10px;
+}
+.gexp .waiting {
+    left: 50%;
+	padding-top:4px;
+	padding-bottom:4px;
+    transform: translate(-50%, 15px);
+}
+
+/* Map overlays */
+.gexp .overlay {
+    position:absolute;
+}
+
+.gexp .overlay .overlay-close {
+    position:absolute;
+    right:2px;
+    top:2px;
+    line-height: 1;
+    background:none;
+    border:none;
+    font-size:22px;
+    font-weight:700;
+    opacity:0.4;
+}
+
+.gexp .overlay .overlay-header {
+	display:inline-block;
+	margin:0;
+}
+
+/* selector widget */
+.gexp .selector h2 {
+    padding-left: 0px;
+}
+
+/* legend widget */
+.gexp .legend {
+	width:250px;
+}
+
+.gexp .legend label {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin: 5px 0px;
+}
+
+.gexp .legend ul {
+    padding-inline-start: 30px;
+    margin-bottom: 0px;
+}
+
+.gexp .legend .break-line > *,
+.gexp .styler .break-line > * {
+    padding:5px 7px;
+	white-space: nowrap;
+    vertical-align: middle;
+	display:inline-block;
+}
+
+.gexp .styler button.color,
+.gexp .legend .break-line .break-color,
+.gexp .styler .break-line .break-color{
+	width:24px;
+	height:24px;
+	border:solid thin black;
+	border-radius:2px;
+}
+
+.gexp .legend .break-line .eyes {
+	display:none;
+}
+
+/* Legend Widget */
+.gexp .legend .label-name-container ul {
+    list-style-type:none;
+}
+
+.gexp .legend .label-name-container .label-name label {
+	font-weight: normal;
+	margin-left: 8px;
+}
+
+.gexp .legend .label-name-container li > * {
+    display: inline;
+    vertical-align: middle;
+	cursor: pointer;
+	font-weight: normal;
+}
+
+.gexp .legend .eyes.breaks-column {
+	display:none;
+}
+
+.gexp .waiting > * {
+    display:inline-block;
+}
+
+.gexp .waiting label {
+    margin-right:10px;
+}
+
+/* ESRI buttons */
+.gexp button.button-icon {
+    width:32px;
+    height:32px;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-color:transparent;
+    border-color:transparent;
+}
+
+.gexp .map-container .esri-ui .button-icon {
+	display:block;
+	transition:background-color 125ms ease-in-out;
+	background-color:#fff;
+}
+
+.gexp .map-container .esri-ui .button-icon:hover,
+.gexp .map-container .esri-ui .button-icon.checked,
+.gexp .map-container .esri-ui .button-icon:disabled {
+    background-color: #dcdcdc;
+    color: #2e2e2e;
+}
+
+.gexp .map-container .esri-ui .button-icon:disabled {
+	cursor:not-allowed;
+    opacity: 0.7;
+}
+
+.gexp .overlay .esri-widget {
+    background: none;
+}
+
+/* Remove dock button */
+.gexp .esri-popup {
+    cursor: default;
+}
+
+.gexp .esri-popup ul {
+	padding-left:20px;
+	list-style:circle;
+}
+
+.gexp .esri-popup__button.esri-popup__button--dock {
+	display:none;
+}
+
+.gexp .esri-view-width-large .esri-popup__main-container {
+    width: 325px;
+}
+
+.gexp .esri-popup__header-title {
+	word-break:break-word;
+}
+
+.esri-popup__footer {
+	display:none;
+}
+
+.gexp .map-container .esri-ui .button-icon,
+.gexp .map-container .esri-ui .esri-fullscreen,
+.gexp .map-container .esri-ui .esri-home {
+	margin-bottom:0px;
+	border-bottom:solid 1px rgba(110,110,110,0.3);
+}
+
+.gexp table.table-widget {
+    margin-top: 10px;
+}
+
+.gexp table.table-widget {
+    table-layout: fixed;
+    width: 100%;
+    max-height: 300px;
+    display: block;
+    overflow-y: scroll;
+    border-collapse: initial;
+    border: solid thin silver;
+}
+
+.gexp table.table-widget thead th {
+    text-align: center;
+    position: sticky;
+    top: 0;
+    background: rgb(240,240,240);
+    border-bottom: solid thin silver;
+}
+
+.gexp table.table-widget tbody {
+    width: 100%;
+    border-bottom: solid thin silver;
+    border-top: solid thin silver;
+}
+
+.gexp table.table-widget th,
+.gexp table.table-widget td {
+    font-size: 1em;
+    padding: 5px;
+}
+
+.gexp table.table-widget th,
+.gexp table.table-widget td {
+    border-right: solid thin lightgray;
+}
+
+.gexp table.table-widget th:nth-child(1),
+.gexp table.table-widget td:nth-child(1) {
+    width: 180px;
+}
+    
+.gexp table.table-widget th:nth-child(2),
+.gexp table.table-widget td:nth-child(2) {
+    width: 385px;
+}
+
+.gexp table.table-widget th:nth-child(n+3),
+.gexp table.table-widget td:nth-child(n+3) {
+    width: 140px;
+}
+
+.gexp table.table-widget td:nth-child(3) {
+    text-align: right;
+}
+
+.gexp table.table-widget tr:nth-child(even) {
+    background: rgb(240,240,240);
+}
+
+.gexp .popup-table tr {
+    padding: 2px;
+}
+
+.gexp .popup-table td {
+    padding: 2px;
+}

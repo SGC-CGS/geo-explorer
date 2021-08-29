@@ -1,0 +1,125 @@
+{
+    "map": {
+		"layers": {
+			"PR": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/province_territory_2016_en/MapServer/0",
+			"CD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_division_2016_en/MapServer/0",
+			"CSD": "https://webservices.maps.canada.ca/arcgis/rest/services/StatCan/census_subdivisions_2016_en/MapServer/0"
+		},
+		"layers_internal": {
+			"PR": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/0",
+			"GRC": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/1",
+			"CD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/2",
+			"CCS": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/3",
+			"CSD": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/4",
+			"DA": "https://geographydev.stc.ca/arcgis/rest/services/CSGELight/MapServer/5"
+		},
+		"basemap": {
+			"en": "https://geoprod.statcan.gc.ca/arcgis/rest/services/NDM_BaseMap_Labels_EN_L013/MapServer",
+			"fr": "https://geoprod.statcan.gc.ca/arcgis/rest/services/NDM_BaseMap_Labels_FR_L013/MapServer"
+		},	
+		"basemap_internal": {
+			"en": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_Labels_EN_L013/MapServer",
+			"fr": "https://geographydev.stc.ca/arcgis/rest/services/NDM_BaseMap_Labels_FR_L013/MapServer"
+		},
+		"constraints": {
+			"geometry": {
+				"type": "extent",
+				"xmin": -141,
+				"xmax": -53,
+				"ymin": 41,
+				"ymax": 83
+			},
+			"minZoom": 3
+		},
+		"zoom": 5,
+		"center": [-120, 60],
+		"animation": false
+    },
+	"ramps":{
+		"blue": {
+			"1": [[158, 202, 225, 0.7]],
+			"2": [[222, 235, 247, 0.7], [49, 130, 189, 0.7]],
+			"3": [[222, 235, 247, 0.7], [158, 202, 225, 0.7], [49, 130, 189, 0.7]],
+			"4": [[239, 243, 255, 0.7], [189, 215, 231, 0.7], [107, 174, 214, 0.7], [33, 113, 181, 0.7]],
+			"5": [[239, 243, 255, 0.7], [189, 215, 231, 0.7], [107, 174, 214, 0.7], [49, 130, 189, 0.7], [8, 81, 156, 0.7]]
+		},
+		"purple": {
+			"1": [[188,189,220,0.7]],
+			"2": [[239,237,245,0.7],[117,107,177,0.7]],
+			"3": [[239,237,245,0.7],[188,189,220,0.7],[117,107,177,0.7]],
+			"4": [[242,240,247,0.7],[203,201,226,0.7],[158,154,200,0.7],[106,81,163,0.7]],
+			"5": [[242,240,247,0.7],[203,201,226,0.7],[158,154,200,0.7],[117,107,177,0.7],[84,39,143,0.7]]
+		},
+		"orange": {
+			"1": [[253,174,107,0.7]],
+			"2": [[254,230,206,0.7],[230,85,13,0.7]],
+			"3": [[254,230,206,0.7],[253,174,107,0.7],[230,85,13,0.7]],
+			"4": [[254,237,222,0.7],[253,190,133,0.7],[253,141,60,0.7],[217,71,1,0.7]],
+			"5": [[254,237,222,0.7],[253,190,133,0.7],[253,141,60,0.7],[230,85,13,0.7],[166,54,3,0.7]]
+		},
+		"green": {
+			"1": [[161,217,155,0.7]],
+			"2": [[229,245,224,0.7],[49,163,84,0.7]],
+			"3": [[229,245,224,0.7],[161,217,155,0.7],[49,163,84,0.7]],
+			"4": [[237,248,233,0.7],[186,228,179,0.7],[116,196,118,0.7],[35,139,69,0.7]],
+			"5": [[237,248,233,0.7],[186,228,179,0.7],[116,196,118,0.7],[49,163,84,0.7],[0,109,44,0.7]]
+		}
+	},
+    "defColor": [125, 125, 125, 0.65],
+    "symbols": {
+        "identify": {
+            "type": "simple-fill",
+            "color": [0, 0, 0, 0.2],
+            "style": "none",
+            "outline": {
+                "color": [54, 69, 79, 1],
+                "width": 1.5,
+                "style": "solid"
+            }
+        }
+    },
+    "identify": {
+        "PR": {
+            "id": "PRUID",
+            "nameEn": "PRENAME",
+            "nameFr": "PRFNAME"
+        },
+        "CD": {
+            "id": "CD_UID",
+            "nameEn": "ENGNAME",
+            "nameFr": "FRENAME"
+        },
+        "CSD": {
+            "id": "CSDUID",
+            "nameEn": "CSDNAME",
+            "nameFr": "CSDNAME"
+        }
+    },
+    "identify_internal": {
+        "PR": {
+            "id": "PRCODE",
+            "nameEn": "ENG_LABEL",
+            "nameFr": "FRE_LABEL"
+        },
+        "GRC": {
+            "id": "GRC_UID",
+            "nameEn": "ENG_LABEL",
+            "nameFr": "FRE_LABEL"
+        },
+        "CD": {
+            "id": "CD_UID",
+            "nameEn": "ENGNAME",
+            "nameFr": "FRENAME"
+        },
+        "CCS": {
+            "id": "CCS_UID",
+            "nameEn": "OFFNAME",
+            "nameFr": "OFFNAME"
+        },
+        "CSD": {
+            "id": "CSD_UID",
+            "nameEn": "ENGNAME",
+            "nameFr": "FRENAME"
+        }
+    }
+}

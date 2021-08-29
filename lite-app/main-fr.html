@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="fr" dir="ltr">
+	<head prefix="dcterms: http://purl.org/dc/terms/">
+		<title>Explorateur géospatial des statistiques canadiennes Lite</title>
+		<meta charset="utf-8">
+		<meta property="dcterms:service" content="StatCan"/>
+		<meta property="dcterms:accessRights" content="2"/>
+		<meta property="dcterms:description" content="Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'Recharger la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte."/>
+		<meta property="dcterms.creator" content="Gouvernement du Canada, Statistique Canada">
+
+		<link href="./assets/favicon.ico" rel="icon" type="image/x-icon">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/wet-boew.min.css">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/theme.min.css">
+		<link rel="stylesheet" href="./reference/wet-boew4b/css/statcan.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
+
+		<link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+		<link href='./application.css' rel='stylesheet' />		 
+	</head>
+
+	<body vocab="http://schema.org/" typeof="WebPage" class="wait">
+        <label style="margin:18px;font-size:1.3em;" class="wait-message">Chargement, veuillez patienter...</label>
+		<main role="main" property="mainContentOfPage" id="wb-cont">
+			<div id='app-container' class='gexp'></div>
+		</main>
+		
+		<script src='./reference/dojo.js' type='module'></script>
+		<script src='./main.js' type='module'></script>
+	</body>
+</html>

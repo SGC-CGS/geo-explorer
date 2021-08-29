@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 9]>
+<html class="no-js lt-ie9" lang="fr" dir="ltr">
+   <![endif]--><!--[if gt IE 8]><!-->
+   <html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="fr" dir="ltr">
+      <!--<![endif]-->
+      <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
+         wet-boew.github.io/wet-boew/License-en.htm / wet-boew.github.io/wet-boew/Licence-fr.htm -->
+      <!-- METADATA BEGINS | DEBUT DES METADONNEES -->
+      <head prefix="dcterms: http://purl.org/dc/terms/">
+         <title>Explorateur géospatial des statistiques canadiennes Lite</title>
+         <meta charset="utf-8">
+         <!-- METADATA ENDS | FIN DES METADONNEES -->
+         <meta property="dcterms:service" content="StatCan"/>
+         <meta property="dcterms:accessRights" content="2"/>
+         <meta property="dcterms:description" content="Cette carte affichera une carte thématique en fonction de l'indicateur sélectionné. Utilisez les listes déroulantes ci-dessous pour sélectionner des membres de dimension pour chaque dimension du produit CODR actuel. Ensuite, cliquez sur le bouton 'Recharger la carte' pour afficher la carte thématique. Un tableau de données en bas contient les données affichées sur la carte."/>
+         <meta property="dcterms.creator" content="Gouvernement du Canada, Statistique Canada">
+         <!--[if gte IE 9 | !IE ]><!-->
+         <link href="./assets/favicon.ico" rel="icon" type="image/x-icon">
+         <link rel="stylesheet" href="./reference/wet-boew4b/css/wet-boew.min.css">
+         <script src="./reference/wet-boew4b/js/jquery.min.js"></script>
+         <!--<![endif]-->
+         <link rel="stylesheet" href="./reference/wet-boew4b/css/theme.min.css">
+         <link rel="stylesheet" href="./reference/wet-boew4b/css/statcan.css">
+         <!--[if lt IE 9]>
+         <link href="./wet-boew4b/assets/favicon.ico" rel="shortcut icon" />
+         <link rel="stylesheet" href="./wet-boew4b/css/ie8-wet-boew.min.css" />
+         <script src="./wet-boew4b/js/ie8-wet-boew.min.js"></script>
+         <![endif]-->
+         <noscript>
+            <link rel="stylesheet" href="./reference/wet-boew4b/css/noscript.min.css" />
+         </noscript>
+         <script src="./reference/wet-boew4b/js/jquery.tooltipster.min.js"></script>
+         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/tooltipster.css">
+         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/pubs_wet4.css">
+         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/font-awesome.min.css">
+         <link rel="stylesheet" type="text/css" href="./reference/wet-boew4b/css/datavis.css">
+		 <style>
+			#wb-bc, body {
+				background:#fff;
+				color:#000;
+			}
+		 </style>
+      </head>
+      <body vocab="http://schema.org/" typeof="WebPage">
+         <!--stopindex-->
+         <ul id="wb-tphp">
+            <li class="wb-slc">
+               <a class="wb-sl" href="#wb-cont">Passer au contenu principal</a>
+            </li>
+            <li class="wb-slc visible-sm visible-md visible-lg">
+               <a class="wb-sl" href="#wb-info">Passer &#224; &#171;&#160;&#192; propos de ce site&#160;&#187;</a>
+            </li>
+         </ul>
+         <header role="banner">
+            <div id="wb-bnr" class="container">
+               <section id="wb-lng" class="visible-md visible-lg text-right">
+                  <h2 class="wb-inv">S&#233;lection de la langue</h2>
+                  <div class="row">
+                     <div class="col-md-12">
+                        <ul class="list-inline margin-bottom-none">
+                           <li><a id="nls_link" lang="en">English</a></li>
+                        </ul>
+                     </div>
+                  </div>
+               </section>
+               <div class="row">
+                  <div class="brand col-xs-8 col-sm-9 col-md-6">
+                     <a href="https://www.statcan.gc.ca/fra/debut"><img src="./reference/wet-boew4b/assets/sig-blk-fr.svg" alt="Symbole de Statistique Canada"><span class="wb-inv">Gouvernement du Canada, Statistique Canada</span></a>
+                  </div>
+                  <section class="wb-mb-links col-xs-4 col-sm-3 visible-sm visible-xs" id="wb-glb-mn">
+                     <h2>Recherche et menus</h2>
+                     <ul class="list-inline text-right chvrn">
+                        <li><a href="#mb-pnl" title="Recherche et menus" aria-controls="mb-pnl" class="overlay-lnk" role="button"><span class="glyphicon glyphicon-search"><span class="glyphicon glyphicon-th-list"><span class="wb-inv">Recherche et menus</span></span></span></a></li>
+                     </ul>
+                     <div id="mb-pnl"></div>
+                  </section>
+                  <section id="wb-srch" class="col-xs-6 text-right visible-md visible-lg">
+                     <h2 class="wb-inv">Recherche</h2>
+                     <form action="https://www120.statcan.gc.ca/stcsr/fr/sr1/srs" method="get" name="cse-search-box" role="search" class="form-inline">
+                        <div class="form-group">
+                           <label for="wb-srch-q" class="wb-inv">Recherchez le site Web</label>
+                           <input type="hidden" name="fq" value="stclac:2" />
+                           <input id="wb-srch-q" list="wb-srch-q-ac" class="wb-srch-q form-control" name="q" type="search" value="" size="27" maxlength="150" placeholder="Rechercher dans le site Web">
+                           <datalist id="wb-srch-q-ac">
+                              <!--[if lte IE 9]>
+                              <select>
+                                 <![endif]-->
+                                 <!--[if lte IE 9]>
+                              </select>
+                              <![endif]-->
+                           </datalist>
+                        </div>
+                        <div class="form-group submit">
+                           <button type="submit" id="wb-srch-sub" class="btn btn-primary btn-small" name="wb-srch-sub"><span class="glyphicon-search glyphicon"></span><span class="wb-inv">Recherche</span></button>
+                        </div>
+                     </form>
+                  </section>
+               </div>
+            </div>
+            <nav role="navigation" id="wb-sm" class="wb-menu visible-md visible-lg" data-trgt="mb-pnl" data-ajax-replace="./reference/wet-boew4b/ajax/sitemenu-fr.html" typeof="SiteNavigationElement">
+               <h2 class="wb-inv">Menus des sujets</h2>
+               <div class="container nvbar">
+                  <div class="row">
+                     <ul class="list-inline menu">
+                        <li><a href="https://www150.statcan.gc.ca/n1/fr/sujets?MM=1">Sujets</a></li>
+                        <li><a href="https://www150.statcan.gc.ca/n1/fr/type/donnees?MM=1">Donn&eacute;es</a></li>
+                        <li><a href="https://www150.statcan.gc.ca/n1/fr/type/analyses?MM=1">Analyses</a></li>
+                        <li><a href="https://www150.statcan.gc.ca/n1/fr/type/references?MM=1">R&eacute;f&eacute;rences</a></li>
+                        <li><a href="https://www150.statcan.gc.ca/n1/fr/geo?MM=1">G&eacute;ographie</a></li>
+                        <li><a href="https://www12.statcan.gc.ca/census-recensement/index-fra.cfm?MM=1">Recensement</a></li>
+                        <li><a href="https://www.statcan.gc.ca/fra/enquetes?MM=1">Enqu&ecirc;tes et programmes statistiques</a></li>
+                        <li><a href="https://www.statcan.gc.ca/fra/apercu/statcan?MM=1">&Agrave; propos de StatCan</a></li>
+                        <li><a href="https://www.canada.ca/fr.html">Canada.ca</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </nav>
+            <nav role="navigation" id="wb-bc" class="" property="breadcrumb">
+               <div class="container">
+                  <div class="row">
+                     <!-- Breadcrumb trail -->
+                     <ol class="breadcrumb">
+                        <li><a href="/fra/debut">Accueil</a></li>
+                        <li><a href="/cgi-bin/IPS/display_f?cat_num=71-607-X" title="Catalogue en ligne : 71-607-X">71-607-X</a></li>
+                     </ol>
+                  </div>
+               </div>
+            </nav>
+         </header>
+         <main role="main" property="mainContentOfPage" class="prx container" id="wb-cont">
+            <!--startindex-->
+            <section>
+			    <iframe id='app-container' src="./main-fr.html?pid=46100049" style="border:none;width:100%;"></iframe>
+				
+				<script type="application/javascript">
+					window.addEventListener("message", ev => {
+						var data = JSON.parse(ev.data);
+						document.querySelector("#app-container").height = data.height;
+					});
+					
+					document.querySelector("#app-container").src = "./main-en.html" + location.search;
+				</script>
+            </section>
+            <section id="htu" class="mfp-hide modal-dialog modal-content overlay-def">
+				<header class="modal-header">
+					<h2 class="modal-title">Comment utiliser</h2>
+				</header>
+				<div class="modal-body">
+					<h3 class="mrgn-tp-0">Comment utiliser cette application</h3>
+					<p>Les listes déroulantes peuvent être utilisées pour sélectionner un indicateur à dessiner sur la carte. La carte sera dessinée lorsqu'un indicateur aura été sélectionné et le bouton 'recharger la carte' sera activé.
+					<p>La carte est interactive, l'utilisateur peut cliquer sur les polygones pour obtenir plus d'information sur le point de donnée correspondant.</p>
+					<p>L'utilisateur peut naviguer la carte des façons suivantes:</p>
+					<ul>
+						<li>Cliquer et glisser la carte déplacera la carte;</li>
+						<li>Défiler la molette de la souris effectuera un zoom avant ou arrière de la carte;</li>
+						<li>Cliquer le bouton 'Zoom avant' ( 
+							<span aria-hidden="true" class="esri-icon-plus" style="vertical-align: middle;"></span> 
+							) ou le bouton 'Zoom arrière' (
+							<span aria-hidden="true" class="esri-icon-minus" style="vertical-align: middle;"></span>
+							) effectuera un zoom avant ou arrière, respectivement; ou
+						</li>
+						<li>Cliquer le bouton 'Étendue initiale' (
+							<span aria-hidden="true" class="esri-icon-home" style="vertical-align: middle;"></span>
+						) retournera la carte à son étendue initiale.</li>
+					</ul>
+					<p>Le bouton 'Plein écran' ( 
+						<span class="esri-icon-zoom-out-fixed" style="vertical-align: middle;"></span>
+						) ouvrira la carte en mode plein écran.
+					</p>
+					<p>Le bouton 'Légende' (
+						<span class="esri-icon-layers" style="vertical-align: middle;"></span>
+						) basculera le widget de légende qui contient des informations à propos des catégories de couleur utilisées pour dessiner la carte.
+					</p>
+				</div>
+            </section>
+
+			<section id="moreinfo" class="modal-dialog modal-content overlay-def mfp-hide">
+				<header class="modal-header">
+					<h2 class="modal-title" id="lbx-title">Renseignements supplémentaires</h2>
+				</header>
+				<div class="modal-body">
+					<div class="pstn-rght-lg pstn-rght-md pstn-lft-md pstn-lft-sm pstn-lft-xs mrgn-lft-md mrgn-rght-sm">
+						<span class="label label-primary"></span>
+					</div>
+					<span class="clearfix"></span>
+					<h3 class="mrgn-tp-0">Note de reconnaissance</h3>
+					<p>Le succès du système statistique du Canada repose sur un partenariat bien établi entre Statistique Canada et la population, les entreprises, les administrations canadiennes et les autres organismes. Sans cette collaboration et cette bonne volonté, il serait impossible de produire des statistiques précises et actuelles.</p>
+					<h3>Normes de service à la clientèle</h3>
+					<p>Statistique Canada s'engage à fournir à ses clients des services rapides, fiables et courtois. À cet égard, notre organisme s'est doté de <a href="https://www.statcan.gc.ca/fra/apercu/service/normes">normes de service à la clientèle</a> qui doivent être observées par les employés lorsqu'ils offrent des services à la clientèle.</p>
+					<h3>Droit d'auteur</h3>
+					<p>Publication autorisée par le ministre responsable de Statistique Canada.</p>
+					<p>© Sa Majesté la Reine du chef du Canada, représentée par le ministre de l'Industrie 2021</p>
+					<p>Tous droits réservés. L'utilisation de la présente publication est assujettie aux modalités de l'<a href="https://www.statcan.gc.ca/fra/reference/licence">Entente de licence ouverte de Statistique Canada</a>.</p>
+					<p><abbr title="Numéro">N<sup>o</sup></abbr> 71-607-X au catalogue</p>
+					<p>Ottawa</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-primary pull-left popup-modal-dismiss" title="Fermer la fenêtre superposée">Fermer
+						<span class="wb-inv">Fermer la fenêtre superposée</span>
+					</button>
+				</div>
+				<button title="Fermer la fenêtre superposée (touche d'échappement)" type="button" class="mfp-close">×
+					<span class="wb-inv"> Fermer la fenêtre superposée (touche d'échappement)</span>
+				</button>
+			</section>
+			
+            <div class="pagedetails">
+               <div class="row">
+                  <div class="col-sm-6 col-lg-4 mrgn-tp-sm">
+                     <details class="brdr-0">
+                        <summary class="btn btn-default text-center">Signaler un problème sur cette page</summary>
+                        <div class="clearfix"></div>
+                        <div class="well row">
+                           <div class="gc-rprt-prblm">
+                              <div class="gc-rprt-prblm-frm gc-rprt-prblm-tggl">
+                                 <p>Quelque chose ne fonctionne pas? L'information n'est plus à jour? Vous ne trouvez pas ce que vous cherchez?</p>
+                                 <p>S'il vous plaît <a href="https://www.statcan.gc.ca/fra/reference/centreref/index?MM=RAP">contactez-nous</a> et nous informer comment nous pouvons vous aider.</p>
+                                 <p><a href="https://www.statcan.gc.ca/fra/reference/privee?MM=RAP">Avis de confidentialité</a></p>
+                              </div>
+                           </div>
+                        </div>
+                     </details>
+                  </div>
+                  <!-- Share button -->
+                  <div class="wb-share col-sm-4 col-md-3 col-sm-offset-2 col-md-offset-4 col-lg-offset-5" data-wb-share='{"lnkClass": "btn btn-default btn-block"}'></div>
+                  <!-- END Share button -->
+               </div>
+               <dl id="wb-dtmd">
+                  <dt>Date de modification&#160;:&#32;</dt>
+                  <dd><time property="dateModified">
+                     2020-04-06
+                     </time>
+                  </dd>
+               </dl>
+            </div>
+         </main>
+		 
+         <footer role="contentinfo" id="wb-info">
+            <div class="landscape">
+               <nav role="navigation" class="container wb-navcurr">
+                  <h2 class="wb-inv">À propos du gouvernement</h2>
+                  <ul class="list-unstyled colcount-sm-2 colcount-md-3">
+                     <li><a href="https://www.statcan.gc.ca/fra/reference/centreref/index?MM=1">Contactez-nous</a></li>
+                     <li><a href="https://www.canada.ca/fr/gouvernement/min.html">Ministères et organismes</a></li>
+                     <li><a href="https://www.canada.ca/fr/gouvernement/fonctionpublique.html">Fonction publique et force militaire</a></li>
+                     <li><a href="https://www.canada.ca/fr/nouvelles.html">Nouvelles</a></li>
+                     <li><a href="https://www.canada.ca/fr/gouvernement/systeme/lois.html">Traités, lois et ràglements</a></li>
+                     <li><a href="https://www.canada.ca/fr/transparence/rapports.html">Rapports à l'échelle du gouvernement</a></li>
+                     <li><a href="http://pm.gc.ca/fra">Premier ministre</a></li>
+                     <li><a href="https://www.canada.ca/fr/gouvernement/systeme.html">Comment le gouvernement fonctionne</a></li>
+                     <li><a href="http://ouvert.canada.ca/">Gouvernement ouvert</a></li>
+                  </ul>
+               </nav>
+            </div>
+            <div class="brand">
+               <div class="container">
+                  <div class="row">
+                     <nav class="col-md-10 ftr-urlt-lnk">
+                        <h2 class="wb-inv">À propos de ce site</h2>
+                        <ul>
+                           <li><a href="https://www.canada.ca/fr/sociaux.html">Médias sociaux</a></li>
+                           <li><a href="https://www.canada.ca/fr/mobile.html">Applications mobiles</a></li>
+                           <li><a href="https://www.canada.ca/fr/gouvernement/a-propos.html">À propos de Canada.ca</a></li>
+                           <li><a href="https://www.statcan.gc.ca/fra/reference/avis?MM=1">Avis</a></li>
+                           <li><a href="https://www.statcan.gc.ca/fra/reference/privee?MM=1">Confidentialité</a></li>
+                        </ul>
+                     </nav>
+                     <div class="col-xs-6 visible-sm visible-xs tofpg">
+                        <a href="#wb-cont">Haut de la page <span class="glyphicon glyphicon-chevron-up"></span></a>
+                     </div>
+                     <div class="col-xs-6 col-md-2 text-right">
+                        <img src="./reference/wet-boew4b/assets/wmms-blk.svg" alt="Symbole du gouvernement du Canada"><span class="wb-inv">Gouvernement du Canada</span>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </footer>
+		 
+         <script src="./reference/wet-boew4b/js/wet-boew.min.js"></script>
+         <script src="./reference/wet-boew4b/js/theme.min.js"></script>
+      </body>
+   </html>
