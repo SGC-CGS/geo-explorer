@@ -32,10 +32,12 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 		nls.Add("Export_Map_Layout_Type_2", "fr", "Portrait 8.5 x 11");
         nls.Add("Export_Map_MapScale", "en", "Map Scale");
 		nls.Add("Export_Map_MapScale", "fr", "Échelle de la carte");
-        nls.Add("Export_Data", "en", "Vector Data");
-		nls.Add("Export_Data", "fr", "Données vectorielles");
+        nls.Add("Export_Data", "en", "Data");
+		nls.Add("Export_Data", "fr", "Données");
         nls.Add("Export_Data_Type", "en", "Format");
 		nls.Add("Export_Data_Type", "fr", "Format");
+        nls.Add("Export_Data_Selection_Only", "en", "Selection only");
+		nls.Add("Export_Data_Selection_Only", "fr", "Sélection uniquement");
         nls.Add("Export_Data_Type_CSV", "en", "CSV (no geometries)");
 		nls.Add("Export_Data_Type_CSV", "fr", "CSV (sans géométries)");
         nls.Add("Export_Button_Export", "en", "Export");
@@ -160,6 +162,12 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 						"<div class='export-row'>" +
 							"<label>nls(Export_Data_Type)" +
 								"<div handle='sLayer' widget='Api.Components.Select'></div>" +
+							"</label>" +
+						"</div>" +
+
+						"<div class='export-row'>" +
+							"<label>nls(Export_Data_Selection_Only)" +
+								"<input type='checkbox' handle='iSelection'></div>" +
 							"</label>" +
 						"</div>" +
 					"</div>" +

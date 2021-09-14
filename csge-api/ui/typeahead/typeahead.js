@@ -343,7 +343,7 @@ export default Core.Templatable("Api.Components.Typeahead", class Typeahead exte
 	HTML() {        
 		return "<div handle='root' class='typeahead collapsed'>" +
 				 "<input handle='input' type='text' class='input' placeholder='nls(Search_Typeahead_Placeholder)' title='nls(Search_Typeahead_Title)'>" + 
-				 "<i class='typeahead-input-icon'></i>" +
+				 "<i class='fa fa-chevron-down'></i>" +
 			     "<ul handle='list' class='list'></ul>" +
 			   "</div>";
 	}

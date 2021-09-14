@@ -86,8 +86,8 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 		nls.Add("Styler_Method_Info", "fr", "Les méthodes de classification aident à organiser les données de manière thématique.");
 		nls.Add("Styler_Breaks", "en", "Number of breaks");
 		nls.Add("Styler_Breaks", "fr", "Nombre de bornes");
-		nls.Add("Styler_Breaks_Info", "en", "The number of breaks are used for dividing features in a classification.");
-		nls.Add("Styler_Breaks_Info", "fr", "Le nombre de coupures est utilisé pour diviser les entités dans une classification.");
+		nls.Add("Styler_Breaks_Info", "en", "The number of breaks are used to classify the features in different ranges of values.");
+		nls.Add("Styler_Breaks_Info", "fr", "Le nombre de coupures est utilisé pour classifier les géométries en différentes étendues de valeurs.");
 		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
 		nls.Add("Styler_Method_Equal", "fr", "Intervalles égaux");
 		nls.Add("Styler_Method_Info_Equal", "en", "Data range is divided equally between the maximum and minimum by the # of classes.");

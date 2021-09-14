@@ -238,17 +238,14 @@ abbr[data-original-title], abbr[title] {
     max-height:400px;
 }
 
-.gexp .typeahead-input-icon::before {
-    margin-left: -16px; 
-	font-family: "FontAwesome";
-    font-size: 0.8em;
-    font-style: normal;
-    font-variant: normal;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-	content: "\f078";
-	pointer-events: none;
+.gexp .typeahead i.fa {
+	position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translate(0px, -50%);
+    cursor: pointer;
     color: rgb(100, 100, 100);
+    font-size: 0.8em;
 }
 
 /* Map area of the application */
@@ -263,11 +260,13 @@ abbr[data-original-title], abbr[title] {
 	background-color:#fff;
 }
 
-.gexp .map-container .esri-ui .button-icon:hover,
-.gexp .map-container .esri-ui .button-icon.checked,
-.gexp .map-container .esri-ui .button-icon:disabled {
+.gexp .map-container .esri-ui .button-icon:hover {
     background-color: #dcdcdc;
     color: #2e2e2e;
+}
+
+.gexp .map-container .esri-ui .button-icon.checked {
+    border: solid 2px #727272;
 }
 
 .gexp .map-container .esri-ui .button-icon:disabled {
@@ -485,14 +484,9 @@ abbr[data-original-title], abbr[title] {
 	height:22px;
 	border:solid thin black;
 	border-radius:2px;
-	/* display: list-item;
-	list-style-type: none; */
 }
 
 /* Styler Widget */
-
-/* Export Widget */
-
 /* For the breaks-container table */
 .gexp .styler .break-line > *{
 	display:inline-block;
@@ -556,11 +550,15 @@ abbr[data-original-title], abbr[title] {
 	cursor: pointer;
 }
 
-/* .gexp .styler .break-container,
-.gexp .styler .other-container,
-.gexp .styler .label-name-container {
-    margin-left:20px;
-} */
+.gexp .styler .content {
+	max-height:800px;
+	transition:max-height 0.15s ease-in;
+	overflow:hidden;
+}
+
+.gexp .styler .content:not(.active) {
+	max-height:0px;
+}
 
 /* Select Data widget */
 .gexp .selector label {
@@ -714,12 +712,12 @@ abbr[data-original-title], abbr[title] {
 	margin-top:18px;
 }
 
-.gexp .table-widget table{
-	margin:10px;
-}
-
 .gexp .table-widget table {
-	display:block;
+    display: block;
+    table-layout: fixed;
+    border-collapse: initial;
+    overflow-y: scroll;
+    max-height: 300px;
 }
 
 .gexp .table-widget table thead {
@@ -742,6 +740,13 @@ abbr[data-original-title], abbr[title] {
     cursor: zoom-in;
 }
 
+.gexp .table-widget table thead th {
+	position:sticky;
+	top: 0px;
+    background: rgb(240,240,240);
+    border-bottom: double silver 4px;
+}
+
 .gexp .table-widget table thead th,
 .gexp .table-widget table tbody td {
 	font-size:1.2em;
@@ -759,7 +764,7 @@ abbr[data-original-title], abbr[title] {
 	width:320px;
 }
 
-.gexp .table-widget table tbody tr:nth-child(odd) {
+.gexp .table-widget table tbody tr:nth-child(even) {
 	background:rgb(240,240,240);
 }
 
@@ -981,15 +986,23 @@ abbr[data-original-title], abbr[title] {
 }
 
 .gexp .styler input[type=checkbox] {
-     position: relative;
+    position: relative;
 }
 /* Hide eye */
-.gexp .styler div>input[type=checkbox]:before {
+.gexp .styler div > input[type=checkbox]:before {
     position: absolute;
     background-color: #FFFFFF;
     font-family: "FontAwesome";
     content:"\f070";
+    color: #c40202;
+    font-size: 1.2em;
 }
+
+.gexp .styler div > input[type=checkbox]:checked:before {
+    color: black;
+}
+
+
 /* Show eye */
 .gexp .styler div>input[type=checkbox]:checked:before {
     content:"\f06e";
@@ -1012,4 +1025,14 @@ abbr[data-original-title], abbr[title] {
 .gexp .export .export-section-label {
 	font-size: 1.1em;
 	font-weight: bold;
+}
+
+.esri-popup .esri-popup__button {
+	display:none;
+}
+
+.esri-popup a {
+    text-decoration: none;
+    color: initial;
+    pointer-events: none;
 }

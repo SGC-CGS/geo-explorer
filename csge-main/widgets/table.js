@@ -128,7 +128,7 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 		bt.addEventListener("click", ev => {
 			ev.stopPropagation();
 			
-            ev.graphic ? this.selection.Remove(ev.graphic) : this.selection.RemoveAll();
+            g ? this.selection.Remove(g) : this.selection.RemoveAll();
 		});
 	}
 	

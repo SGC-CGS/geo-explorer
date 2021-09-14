@@ -1,4 +1,5 @@
 import Core from './core.js';
+import Renderer from './renderer.js';
 
 let _config = null;
 
@@ -140,10 +141,11 @@ export default class Requests {
 	 * @param {string} url - Rest service URL
 	 * @param {string} where - Where clause for query 
 	 * @param {boolean} returnGeometry - If true, include geometry in the feature set 
+	 * @param {string} orderBy - Field used to sort results
 	 * @returns {object} Query results
 	 */
-	static QueryTable(url, where, returnGeometry) {		
-		return Requests.QueryUrl(url, where, null, !!returnGeometry, "*", true, null);
+	static QueryTable(url, where, returnGeometry, orderBy) {		
+		return Requests.QueryUrl(url, where, null, !!returnGeometry, "*", true, orderBy);
 	}
 	
 	/**
@@ -177,7 +179,7 @@ export default class Requests {
 		
 		var where = `IndicatorThemeId = ${id}`;
 		
-		Requests.QueryTable(URLS.filter, where).then(r => {
+		Requests.QueryTable(URLS.filter, where, false, "DisplayOrder").then(r => {
 			var locale = Core.locale.toUpperCase();
 			var dimensions = [];
 				
@@ -278,127 +280,35 @@ export default class Requests {
 		return d.promise;
 	}
 	
-	/**
-	 * Setup ESRI layer
-	 * @param {object} context - Object with current indicator
-	 * @returns {promise} Promise with sublayer if resolved
-	 */
-	static Renderer(context) {
-		var meta = context.metadata;
-		
+	static Renderer(ctx) {
 		var d = Core.Defer();
 		
-		var layer = {
-			"id": 7,
-			"minScale": null,
-			"name": "dyn_layer",
-			"source": {
-				"dataSource": {
-					"type": "queryTable",
-					"workspaceId": "stcdv_dyn_service",
-					"query": meta.query,
-					"oidFields": "GeographyReferenceId",
-					"geometryType": "esriGeometryPolygon" 
-				},
-				"type":"dataLayer"
-			}, 
-			"definitionExpression":`GeographicLevelId = '${context.geography}' AND IndicatorId = ${meta.indicator}`
-		}
+		// TODO: Verify if this works for all primary queries
+		var query = `${ctx.metadata.query} WHERE (g.GeographicLevelId = '${ctx.geography}')`;
+		var dataSource = Renderer.DataSourceV1(query);
+		var layer = Renderer.Layer(dataSource);
+		var classif = Renderer.Classification(ctx.metadata.breaks, ctx.metadata.colors);
+		var data = Renderer.Data(layer, classif);
 		
-		var classif = {
-			"type": "classBreaksDef",
-			"classificationField": "Value",
-			"classificationMethod": meta.breaks.algo,
-			"breakCount": meta.breaks.n,
-			"colorRamp": {
-				"type":"algorithmic",
-				"fromColor": meta.colors.start,
-				"toColor":meta.colors.end,
-				"algorithm":"esriHSVAlgorithm"
-			}
-		};
-		
-		var data = {
-			f : "json",
-			layer: JSON.stringify(layer),
-			where: `GeographicLevelId = '${context.geography}' AND IndicatorId = ${meta.indicator}`,
-			classificationDef: JSON.stringify(classif)
-		}
-		
-		var p = ESRI.request(URLS.renderer, {
-			useProxy : true,
-			method : "POST",
+		var p = ESRI.request(URLS.renderer, { useProxy:true, method:"POST",
 			responseType  : "json",
 			query : (data)
 		});
 		
 		p.then(renderer => {
-			// For color palettes			
-			var sublayer = new ESRI.layers.support.Sublayer({ 
-				id: 7, 
-				visible: true,
-				labelsVisible: false,
-				definitionExpression: data.where,
-				renderer : ESRI.renderers.support.jsonUtils.fromJSON(renderer.data),
-				source: {
-					type: "data-layer",
-					dataSource: {
-						type: "query-table",
-						workspaceId: "stcdv_dyn_service",
-						query: meta.query,
-						geometryType: "polygon",
-						oidFields: "GeographyReferenceId"
-					}
-				},
-				labelingInfo: [{
-					labelExpression: "[DisplayNameShort_EN]",
-					labelPlacement: "always-horizontal",
-					useCodedValues: false,
-                    maxScale: 0,
-                    minScale: 0,
-                    where: null,
-					symbol: {
-					  type: "text", 
-					  color: [255, 255, 255, 255],
-					  haloColor: [0, 0, 0, 255],
-					  haloSize: 2,
-					  verticalAlignment: "bottom",
-					  horizontalAlignment: "left",
-					  rightToLeft: false,
-					  angle: 0,
-					  xoffset: 0,
-					  yoffset: 0,
-					  rotated: false,
-                      kerning: true,
-					  font: {
-						size: 9,
-						style: "normal",
-						decoration: "none",
-						weight: "normal",
-						family: "Arial"
-					  }
-					},
-					minScale: 0,
-					maxScale: 0
-				  }]
-			});
+			var dataSource = Renderer.DataSourceV2(query);
+			var labelingInfo = Renderer.LabelingInfo("[DisplayNameShort_EN]");
+			var json = Renderer.Sublayer(renderer, dataSource, labelingInfo);			
+			var sublayer = new ESRI.layers.support.Sublayer(json);
 			
-			sublayer.renderer.defaultSymbol = {
-				type: "simple-fill", 
-				color: [125,125,125, 1],
-				style: "solid",
-				outline: {  
-					color: [0, 0, 0, 1],
-					width: 1
-				}
-			}
+			sublayer.renderer.defaultSymbol = Renderer.DefaultSymbol([125,125,125, 1]);
 			
 			d.Resolve(sublayer);
 		}, error => { d.Reject(new Error(error.message)) });
 		
 		return d.promise;
 	}
-	
+		
 	/**
 	 * Retrieve data for specified geometry
 	 * @param {object} layer - Feature layer
