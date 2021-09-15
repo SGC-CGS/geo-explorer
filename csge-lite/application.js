@@ -85,6 +85,10 @@ export default class Application extends Widget {
         nls.Add("Map_Header", "fr", "Carte thématique pour ");
         nls.Add("Table_Header", "en", "Data table for ");
         nls.Add("Table_Header", "fr", "Tableau de données pour ");
+        nls.Add("Skip_Link", "en", "Skip the visual interactive dashboard and go directly to the Statistics Canada table.");
+        nls.Add("Skip_Link", "fr", "Ignorer le tableau de bord visuel interactif et aller directement au tableau de Statistique Canada.");
+        nls.Add("Skip_Link_Label", "en", "Start of visual interactive dashboard");
+        nls.Add("Skip_Link_Label", "fr", "Début du tableau de bord interactif visuel");
 
         // Local dev
         nls.Add("Nls_Link", "en", "/Dev/geo-explorer-lite/index-fr.html?pid={0}");
@@ -231,6 +235,10 @@ export default class Application extends Widget {
 
 	HTML() {		
         return  "<h1 handle='app-title' class='mrgn-tp-sm'></h1>" +
+				"<div class='text-center'>" +
+					"<a href='#bttmsec' class='wb-inv wb-show-onfocus wb-sl'>nls(Skip_Link)</a>" +
+				"</div>" +
+				"<div class='wb-inv'>nls(Skip_Link_Label)</div>" +
 				"<div handle='selector' class='selector'></div>" +
                 "<div class='text-center mrgn-tp-md'><a href='#table' class='wb-inv wb-show-onfocus wb-sl'>nls(SkipTheMapLink)</a></div>" +
 				"<h2 handle='indicator' property='name' class='indicator mrgn-tp-sm'></h2>" + 
@@ -239,7 +247,7 @@ export default class Application extends Widget {
                     "<div handle='map'></div>" +
 				"</div>" +
 				"<div>" + 
-					"<a handle='link' target='_blank'></a>" +
+					"<a id='bttmsec' handle='link' target='_blank' class='pull-left'></a>" +
                 "</div>" +
 				"<h2 handle='tableHeader' property='name' class='tableHeader mrgn-tp-lg'></h2>" +
 				"<div id='table' handle='table' class='table'></div>";
