@@ -4,7 +4,6 @@ import Core from '../../csge-api/tools/core.js';
 import Dom from '../../csge-api/tools/dom.js';
 import Requests from '../../csge-api/tools/requests.js';
 import Opacity from '../../csge-api/widgets/opacity.js';
-import LabelToggle from '../../csge-api/widgets/label-toggle.js';
 import ColorSchemes from '../../csge-api/widgets/color-schemes.js';
 import LegendEditable from '../../csge-api/widgets/legend/legend-editable.js';
 
@@ -55,20 +54,10 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 
 		this.Node("bApply").On("click", this.OnApply_Click.bind(this));
 		this.Node("bClose").On("click", this.OnClose_Click.bind(this));
-		
-		// Make into a ui component
-		this.Elem("dropdownBtn").addEventListener("click", function (ev) {
-			this.Elem("content").classList.toggle("active");
-
-			if (ev.target.className == "collapsedDropdown") ev.target.className = "expandedDropdown";
-
-			else ev.target.className = "collapsedDropdown";
-		}.bind(this));
 
 		this.Node('opacity').On("change", this.OnOpacity_Changed.bind(this));
 		this.Node('label-toggle').On("change", this.OnLabelChk_Changed.bind(this));
 		this.Node('color-schemes').On("change", this.OnColorSchemes_Changed.bind(this));
-		this.Node("styler-breaks").On("visibility", this.OnVisibility_Changed.bind(this));
 	}
 	
 	Configure(config, context) {
@@ -78,14 +67,16 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	}
 
 	Localize(nls) {
-		nls.Add("Styler_Title", "en", "Map Legend");
-		nls.Add("Styler_Title", "fr", "Légende cartographique");
+		nls.Add("Styler_Title", "en", "Change Map Style");
+		nls.Add("Styler_Title", "fr", "Styliser la carte");
 		nls.Add("Styler_Method", "en", "Classification by");
 		nls.Add("Styler_Method", "fr", "Classification par");
 		nls.Add("Styler_Method_Info", "en", "Classification methods help organize data thematically.");
 		nls.Add("Styler_Method_Info", "fr", "Les méthodes de classification aident à organiser les données de manière thématique.");
 		nls.Add("Styler_Breaks", "en", "Number of breaks");
 		nls.Add("Styler_Breaks", "fr", "Nombre de bornes");
+		nls.Add("Styler_Class_Breaks", "en", "Classification breaks definition");
+		nls.Add("Styler_Class_Breaks", "fr", "Définition des intervalles");
 		nls.Add("Styler_Breaks_Info", "en", "The number of breaks are used to classify the features in different ranges of values.");
 		nls.Add("Styler_Breaks_Info", "fr", "Le nombre de coupures est utilisé pour classifier les géométries en différentes étendues de valeurs.");
 		nls.Add("Styler_Method_Equal", "en", "Equal intervals");
@@ -100,6 +91,16 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 		nls.Add("Styler_Method_Quantile", "fr", "Quantiles");
 		nls.Add("Styler_Method_Info_Quantile", "en", "Classifies data by an equal number of units for each category.");
 		nls.Add("Styler_Method_Info_Quantile", "fr", "Classe les données par un nombre égal d'unités pour chaque catégorie.");
+		nls.Add("Styler_Color_Scheme", "en", "Color Schemes");
+		nls.Add("Styler_Color_Scheme", "fr", "Gamme de schèmas");
+		nls.Add("Legend_Opacity", "en", "Opacity");
+		nls.Add("Legend_Opacity", "fr", "Opacité");
+		nls.Add("Legend_Opacity_Info", "en", "Use the opacity bar to update the transparency of the features on the map.");
+		nls.Add("Legend_Opacity_Info", "fr", "Utilisez la barre d'opacité pour mettre à jour la transparence des entités sur la carte.");
+		nls.Add("Legend_Show_label", "en", " Show map labels");
+		nls.Add("Legend_Show_label", "fr", " Afficher les étiquettes");	
+		nls.Add("Legend_label_Info", "en", " Show labels over the features in the map");
+		nls.Add("Legend_label_Info", "fr", " Afficher des étiquettes sur les entités de la carte");	
 		nls.Add("Styler_Button_Apply", "en", "Apply");
 		nls.Add("Styler_Button_Apply", "fr", "Appliquer");		
 		nls.Add("Styler_Button_Close", "en", "Cancel");
@@ -152,13 +153,11 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	 */
 	OnColorSchemes_Changed(ev) {
 		this.changeInProgress = true;
-
 		this.scheme = ev.scheme;
 
 		this.FixRendererColors(this.renderer, this.scheme);
 
 		this.Elem("styler-breaks").Update(this.renderer);
-
 		this.Elem("styler-breaks").EnableVisibilityIcon(false);
 	}
 
@@ -209,21 +208,7 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	 * @returns {void}
 	 */
 	OnLabelChk_Changed(ev) {
-		this.Emit("LabelName", { checked:ev.checked });	
-	}
-
-	OnVisibility_Changed(ev) {
-		let breaks = this.renderer.classBreakInfos;
-
-		if (ev.breakIndex >= breaks.length) var color = this.renderer.defaultSymbol.color;
-
-		else var color = breaks[ev.breakIndex].symbol.color;
-
-		color.a = ev.checked ? 1 : 0;
-
-		this.renderer = this.renderer.clone();
-
-		this.Emit("Change", { renderer:this.renderer });
+		this.Emit("LabelName", { checked:ev.target.checked });	
 	}
 	
 	/**
@@ -282,29 +267,32 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	 * @returns {string} HTML for styler widget
 	 */	
 	HTML() {
-		return	"<div handle='styler-breaks' class='styler-breaks-widget' widget='Api.Widgets.LegendEditable'></div>" +
-				"<hr>" + 
-				"<h2 handle='collapsible' class='collapsible active'>Change Map Style" +
-					"<i handle='dropdownBtn' class='collapsedDropdown'></i>" +
-				"</h2>" +
+		return	"<label>nls(Styler_Method)" +
+					"<i class='fa fa-info-circle' title='nls(Styler_Method_Info)'></i>" +
+					"<div handle='sMethod' widget='Api.Components.Select' class='indent'></div>" +
+				"</label>" +
+				
+				"<label>nls(Styler_Breaks)" +
+					"<i class='fa fa-info-circle' title='nls(Styler_Breaks_Info)'></i>" +
+					"<input handle='iBreaks' type='number' min='3' max='8' class='indent'/>" +
+				"</label>" +
 
-				"<div handle='content' class='content'>" +
-					"<label style='display: inline;'>nls(Styler_Method)" +
-						"<i class='fa fa-info-circle' style='display: inline;'><span class='tooltipText tooltip-bottom'>nls(Styler_Method_Info)</span></i>" +
-						"<div handle='sMethod' widget='Api.Components.Select' style='display: inline; margin-left: 15px;'></div>" +
-					"</label>" +
-					
-					"<div style='margin-bottom: 15px;'></div>"+
-
-					"<label style='display: inline;'>nls(Styler_Breaks)" +
-						"<i class='fa fa-info-circle' style='display: inline;'><span class='tooltipText tooltip-bottom'>nls(Styler_Breaks_Info)</span></i>" +
-						"<input handle='iBreaks' type='number' min='3' max='8' style='display: inline; margin-left: 40px;'/>" +
-					"</label>" +
-
-					"<div handle='color-schemes' widget='Api.Widgets.ColorSchemes'></div>" +
-					"<div handle='opacity' widget='Api.Widgets.Opacity'></div>" +
-					"<div handle='label-toggle' widget='Api.Widgets.LabelToggle'></div>" +
-				"</div>"+
+				"<label>nls(Styler_Class_Breaks)</label>" +
+				"<div handle='styler-breaks' class='legend-widget indent' widget='Api.Widgets.LegendEditable'></div>" +
+			
+				"<label>nls(Styler_Color_Scheme)</label>" +
+				"<div handle='color-schemes' widget='Api.Widgets.ColorSchemes'></div>" +
+				
+				"<label>nls(Legend_Opacity)" + 
+					"<i class='fa fa-info-circle' title='nls(Legend_Opacity_Info)'></i>" +
+				"</label>" +
+				"<div handle='opacity' widget='Api.Widgets.Opacity'></div>" +
+				
+				"<label>" + 
+					"nls(Legend_Show_label)" + 
+					"<i class='fa fa-info-circle' title='nls(Legend_label_Info)'></i>" +
+					"<input handle='label-toggle' type=checkbox class='labelName-checkbox indent'>" + 
+				"</label>" + 
 
 				"<div class='button-container'>" +
 					"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +

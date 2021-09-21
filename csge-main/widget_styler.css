@@ -1,0 +1,343 @@
+.gexp .indent {
+	margin-left: 10px;
+}
+
+/* Data selector widget */
+.gexp .selector label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .selector label.sm-label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .selector label > * {
+	margin-left:5px;
+	flex:1;
+}
+
+.gexp .selector .filter-container > *,
+.gexp .selector .filter-container .filter > *,
+.gexp .selector .overlay-body > * {
+	margin-top:6px;
+}
+
+.gexp .selector select {
+	width:100%;
+}
+
+.gexp .selector .filter-container {
+    border-left:solid 0.5em #d9d9d9;
+	padding-left:5px;
+}
+
+.gexp .selector .filter-instructions {
+    font-style:italic;
+}
+
+/* Chart svg */
+.gexp .chart svg,
+.gexp .chart label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .chart label.sm-label {
+	display:flex;
+    align-items:center;
+}
+
+.gexp .chart label > * {
+	margin-left:5px;
+	flex:1;
+}
+
+.gexp .chart .filter-container > *,
+.gexp .chart .filter-container .filter > *,
+.gexp .chart .overlay-body > * {
+	margin-top:6px;
+}
+
+.gexp .chart select {
+	width:100%;
+}
+
+.gexp .chart .filter-container {
+    border-left:solid 0.5em #d9d9d9;
+	padding-left:5px;
+}
+
+.gexp .chart .filter-instructions {
+    font-style:italic;
+}
+/* Chart CSS */
+.gexp .chart rect {
+    fill: steelblue;
+}
+
+.gexp .chart .rect:hover {
+    fill: orangered ;
+}
+
+.gexp .chart text {
+    font-size: 1.15em;
+}
+
+.chart .vertical-text {
+    transform: rotate(-90.0deg);
+}
+
+.gexp .chart .axis path,
+.gexp .chart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.gexp .chart .axis-grid path, 
+.gexp .chart .axis-grid line{
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #e4e4e4;   
+}
+
+/* Style the dots by assigning a fill and stroke */
+.gexp .dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+
+/* foreignObject for pieChart */
+.svg foreignObject {
+    overflow-y: scroll;
+	position: fixed;
+}
+
+.svg foreignObject .pieLegend {
+    font-size:11px; 
+    margin-top:5px; 
+    margin-left:5px;
+}
+
+/* Map styler widget */
+.gexp .legend .overlay-body > *,
+.gexp .styler .overlay-body > * {
+	margin-top: 8px;
+    display: block;
+}
+
+.gexp .styler label {
+	font-weight: bold;
+}
+
+.gexp .styler label > * {
+	display: inline-block;
+    vertical-align: middle;
+}
+
+.gexp .styler .labelName-checkbox {
+	margin-top: 0px;
+}
+
+.gexp .styler .label-name-container label {
+	cursor: pointer;
+}
+
+/* Opacity slider widget */
+.gexp .styler .opacity-container {
+	text-align:center;
+}
+
+.gexp .styler .opacity-labels-container,
+.gexp .styler input.opacity {
+    width: 90%;
+    display: inline-block;
+    padding: 0;
+}
+
+.gexp .styler .opacity-labels-container label {
+	font-size : 0.9em;
+	font-weight : normal;
+    margin: 0;
+}
+
+.gexp .styler .opacity-labels-container label:first-child {
+	float:left;
+}
+
+.gexp .styler .opacity-labels-container label:last-child {
+	float:right;
+}
+
+/* Legend widget, good for all different legend types */
+.gexp .legend-widget .eyes {
+	padding: 0 5px 5px 0;
+}
+
+.gexp .legend-widget .eyes input[type=checkbox] {
+    position: relative;
+}
+
+.gexp .legend-widget .eyes input[type=checkbox]:before {
+    position: absolute;
+    background-color: #FFFFFF;
+    font-family: "FontAwesome";
+    content:"\f070";
+    color: #c40202;
+    font-size: 1.2em;
+}
+.gexp .legend-widget .break-line > * {
+    padding: 2px 3px;
+    vertical-align: middle;
+	display:inline-block;
+}
+
+.gexp .legend-widget .break-line button.to {
+    border: none;
+    background: none;
+    text-decoration: underline;
+    padding: 0px;
+}
+
+.gexp .legend-widget .break-line .break-color{
+	width: 22px;
+	height: 22px;
+	border: solid thin black;
+	border-radius: 2px;
+}
+
+.gexp .legend-widget .break-line .break-to-container:not(.editing) .editor,
+.gexp .legend-widget .break-line .break-to-container.editing button.to {
+	display: none;
+}
+.gexp .legend-widget .break-line .break-to-container > *,
+.gexp .legend-widget .break-line .break-to-container .editor > * {
+	display: inline-block;
+	vertical-align: middle;
+} 
+
+.gexp .legend-widget .break-line .break-to-container .editor .editor-input {
+	width: 80px;    
+	height: 24px;
+}
+
+.gexp .legend-widget .break-line .break-to-container button {
+	background: none;
+}
+
+.gexp .legend-widget .eyes input[type=checkbox]:checked:before {
+    color: black;
+    content:"\f06e";
+}
+
+/* color-schemes widget */
+.gexp .color-scheme-container {
+	overflow-x: scroll;
+	white-space: nowrap;
+}
+
+.gexp .color-schemes .palette {
+	cursor: pointer;
+	display: inline-block;
+	margin: 4px 0 4px 6.5px;
+	padding: 4px;
+	background: #fff;
+	border: solid 1px #aaa;
+}
+  
+.gexp .color-schemes .swatch {
+	display: block;
+	width: 15px;
+	height: 15px;
+}
+
+/* Table widget below the map */
+.gexp .table-widget {
+	margin-top:18px;
+}
+
+.gexp .table-widget table {
+    display: block;
+    table-layout: fixed;
+    border-collapse: initial;
+    overflow-y: scroll;
+    max-height: 300px;
+}
+
+.gexp .table-widget table thead {
+    border-top: solid thin silver;
+}
+
+.gexp .table-widget table tbody {
+	max-height:300px;
+	overflow-y:auto;
+	
+	border-bottom:solid thin silver;
+	border-top:solid thin silver;
+}
+
+.gexp .table-widget table tbody tr td:first-child {
+	cursor:pointer;
+}
+
+.gexp .table-widget table tbody tr td:not(:first-child) {
+    cursor: zoom-in;
+}
+
+.gexp .table-widget table thead th {
+	position:sticky;
+	top: 0px;
+    background: rgb(240,240,240);
+    border-bottom: double silver 4px;
+}
+
+.gexp .table-widget table thead th,
+.gexp .table-widget table tbody td {
+	font-size:1.2em;
+	width:170px;
+	padding:3px;
+}
+
+.gexp .table-widget table thead th:nth-child(1),
+.gexp .table-widget table tbody td:nth-child(1) {
+	width:36px;
+}
+
+.gexp .table-widget table thead th:nth-child(3),
+.gexp .table-widget table tbody td:nth-child(3) {
+	width:320px;
+}
+
+.gexp .table-widget table tbody tr:nth-child(even) {
+	background:rgb(240,240,240);
+}
+
+.gexp .table-widget table tbody tr:hover {
+	background: rgb(153, 217, 242);
+    color: white;
+}
+
+.gexp .table-widget h2 {
+	font-size:24px;
+}
+
+.gexp .table-widget button {
+	border:none;
+	background:none;
+}
+
+/* Waiting message */
+.gexp .waiting {
+    left: 50%;
+    transform: translate(-50%, 15px);
+}
+
+.gexp .waiting > * {
+    display:inline-block;
+}
+
+.gexp .waiting label {
+    margin-right:10px;
+}

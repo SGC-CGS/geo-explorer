@@ -29,11 +29,7 @@ export default Core.Templatable("Api.Widgets.Opacity", class wOpacity extends Wi
 		this.Node('sOpacity').On("change", this.OnOpacity_Changed.bind(this));
 	}
 
-	Localize(nls) {
-		nls.Add("Legend_Opacity", "en", "Opacity");
-		nls.Add("Legend_Opacity", "fr", "Opacité");	
-		nls.Add("Legend_Opacity_Info", "en", "Use the opacity bar to update the transparency of the features on the map.");
-		nls.Add("Legend_Opacity_Info", "fr", "Utilisez la barre d'opacité pour mettre à jour la transparence des entités sur la carte.");	
+	Localize(nls) {	
 		nls.Add("Legend_Opacity_Less", "en", "Less");
 		nls.Add("Legend_Opacity_Less", "fr", "Moins");	
 		nls.Add("Legend_Opacity_More", "en", "More");
@@ -55,8 +51,6 @@ export default Core.Templatable("Api.Widgets.Opacity", class wOpacity extends Wi
 	 */	
 	HTML() {
 		return	"<div class='opacity-slider'>" +
-					"<label>nls(Legend_Opacity)</label>" +
-					"<i class='fa fa-info-circle'><span class='tooltipText tooltip-bottom'>nls(Legend_Opacity_Info)</span></i>" +
 					"<div class='opacity-container'>" +
 						"<input handle='sOpacity' type='range' class='opacity' min=0 max=100 />" + 
 						"<div class='opacity-labels-container'>" +

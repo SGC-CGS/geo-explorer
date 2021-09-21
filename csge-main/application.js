@@ -18,7 +18,8 @@ import wTable from './widgets/table.js';
 import wSearch from './widgets/search.js';
 import wInfoPopup from './widgets/infopopup.js';
 import wSelector from './widgets/selector.js';
-import wStyler from './widgets/styler.js';
+import wStyler from './widgets/wStyler.js';
+import wLegend from './widgets/wLegend.js';
 import wChart from './widgets/wChart.js';
 import wExport from './widgets/wExport.js';
 
@@ -70,6 +71,7 @@ export default class Application extends Widget {
 		
 		this.widgets = {
 			selector: this.toolbar.AddOverlay("selector", new wSelector()),		
+			legend: this.toolbar.AddOverlay("legend", new wLegend(this.config.legend, this.context)),
 			styler: this.toolbar.AddOverlay("styler", new wStyler(this.config.styler, this.context)),
 			chart: this.toolbar.AddOverlay("chart", new wChart(this.config.chart, this.selection)),
 			export: this.toolbar.AddOverlay("export", new wExport(this.config.chart)),
@@ -97,6 +99,7 @@ export default class Application extends Widget {
 		this.HandleEvents(this.widgets.bookmarks, this.ChangeContext.bind(this));
 		this.HandleEvents(this.widgets.search, this.OnSearch_Change.bind(this));
 		this.HandleEvents(this.widgets.styler, this.OnStyler_Change.bind(this));
+		this.HandleEvents(this.widgets.legend, this.OnLegend_Change.bind(this));
 		
 		this.widgets.table.On("RowClick", this.OnTable_RowClick.bind(this));
 		this.widgets.styler.On('Opacity', this.OnStyler_Opacity.bind(this));
@@ -110,6 +113,7 @@ export default class Application extends Widget {
 			this.widgets.chart.Update(this.context);
 			this.widgets.selector.Update(this.context);
 			this.widgets.styler.Update(this.context);
+			this.widgets.legend.Update(this.context);
 			this.widgets.table.Update(this.context);
 			this.widgets.bookmarks.Update(this.context);
 
@@ -169,6 +173,7 @@ export default class Application extends Widget {
 		this.widgets.chart.Update(this.context);
 		this.widgets.bookmarks.Update(this.context);
 		this.widgets.styler.Update(this.context);
+		this.widgets.legend.Update(this.context);
 		this.widgets.table.Update(this.context);
 
         this.toolbar.Item("chart").overlay.header = this.widgets.chart.header;
@@ -183,6 +188,12 @@ export default class Application extends Widget {
 	}
 	
 	OnStyler_Change(ev) {	
+		this.context.sublayer.renderer = ev.renderer;
+		
+		this.widgets.legend.Update(this.context);
+	}
+	
+	OnLegend_Change(ev) {	
 		this.context.sublayer.renderer = ev.renderer;
 	}
 	

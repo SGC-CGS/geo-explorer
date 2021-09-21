@@ -95,5 +95,7 @@ export default Core.Templatable("Api.Widgets.LegendBreak", class wLegendBreak ex
 		nls.Add("Legend_Item", "fr", "{0} jusqu'à {1}");	
         nls.Add("Color_Arialabel", "en", "Colored square ({0}), {1} to {2} {3}");
         nls.Add("Color_Arialabel", "fr", "Carré de couleur ({0}), {1} jusqu'à {2} {3}");
+        nls.Add("Eye_Title", "en", "Hide or show this color classification break");
+        nls.Add("Eye_Title", "fr", "Cacher ou afficher cet intervalle de couleur");
 	}
 })

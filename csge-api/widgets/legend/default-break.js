@@ -51,6 +51,8 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak 
 		nls.Add("Legend_Unavailable", "fr", "Donnée non-disponible");		
         nls.Add("Color_Arialabel", "en", "Colored square ({0}), data unavailable");
         nls.Add("Color_Arialabel", "fr", "Carré de couleur ({0}), donnée non-disponible");
+        nls.Add("Eye_Title", "en", "Hide or show this color classification break");
+        nls.Add("Eye_Title", "fr", "Cacher ou afficher cet intervalle de couleur");
 	}
 
 	EnableVisibilityIcon(enabled) {
@@ -74,7 +76,7 @@ export default Core.Templatable("Api.Widgets.DefaultBreak", class wDefaultBreak 
 	HTML() {
 		return "<div handle='container' class='break-line'>" +
 				  "<div handle='visible-icon' class='eyes'>" + 
-					 "<input type='checkbox' handle='checkbox' checked>" + 
+					 "<input type='checkbox' handle='checkbox' title='nls(Eye_Title)' checked>" + 
 				  "</div>" +
 				  "<div class='break-color-container'>" + 
 					"<div handle='color' class='break-color' aria-label='color'></div>" +

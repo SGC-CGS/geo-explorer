@@ -147,8 +147,8 @@ export default Core.Templatable("App.Widgets.StylerBreak", class wLegendEditable
 					"<button handle='bTo' class='to'></button>" +	
 					"<div class='editor'>" +
 						"<input handle='eInput' class='editor-input' type='number'>" +
-						"<button handle='eApply' class='apply button-icon small-icon'></button>" +
-						"<button handle='eCancel' class='cancel button-icon small-icon'></button>" +
+						"<button handle='eApply' class='apply small-esri-icon esri-icon-check-mark'></button>" +
+						"<button handle='eCancel' class='cancel small-esri-icon esri-icon-close'></button>" +
 					"</div>" +
 				 "</div>" +
 			   "</div>";
