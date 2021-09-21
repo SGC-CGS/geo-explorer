@@ -30,8 +30,6 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 		nls.Add("Export_Map_Layout_Type_1", "fr", "Portrait 11 x 7");
         nls.Add("Export_Map_Layout_Type_2", "en", "Landscape 8.5 x 11");
 		nls.Add("Export_Map_Layout_Type_2", "fr", "Portrait 8.5 x 11");
-        nls.Add("Export_Map_MapScale", "en", "Map Scale");
-		nls.Add("Export_Map_MapScale", "fr", "Échelle de la carte");
         nls.Add("Export_Data", "en", "Data");
 		nls.Add("Export_Data", "fr", "Données");
         nls.Add("Export_Data_Type", "en", "Format");
@@ -54,19 +52,7 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 	constructor(container) {	
 		super(container);
 
-        this.sliders = [
-            {selectors: [
-                this.Elem('sLayout'),
-                this.Elem('sMapScale')
-            ]},
-            {selectors: []},
-            {selectors: [
-                this.Elem('sLayer')
-            ]}
-        ];
-
         this.SetupMapSelectors();
-
         this.SetupLayerSelectors();
 
         this.Node("bExport").On("click", this.OnExport_Click.bind(this));
@@ -80,28 +66,23 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 		this.Elem("section_2").querySelector("input").id = id_2;
 	}
 
+	Configure(map, config) {
+		this.config = config;
+		this.map = map;
+	}
+
     /**
      * Set up selectors for printing the PDF map
      * @returns {void}
      */
     SetupMapSelectors() {
-        let layoutItems = [
-            {label: this.Nls("Export_Map_Layout_Type_1"), description: null},
-            {label: this.Nls("Export_Map_Layout_Type_2"), description: null}
-        ];
+        let layoutItems = [{ label: this.Nls("Export_Map_Layout_Type_1"), description: null },
+						   { label: this.Nls("Export_Map_Layout_Type_2"), description: null }];
 
-        let mapScaleItems = [
-            {label: "1:30,000", description: null},
-            {label: "1:100,000", description: null}
-        ];
-        
         this.LoadDropDown(this.Elem('sLayout'), layoutItems);
-        this.LoadDropDown(this.Elem('sMapScale'), mapScaleItems);
 
         this.Elem('sLayout').roots[0].style.padding = 0; 
         this.Elem('sLayout').roots[0].style.verticalAlign = "text-top";
-        this.Elem('sMapScale').roots[0].style.padding = 0; 
-        this.Elem('sMapScale').roots[0].style.verticalAlign = "text-top";
     }
 
     /**
@@ -109,11 +90,9 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
      * @returns {void}
      */
     SetupLayerSelectors() {
-        let layerItems = [
-            {label: "GeoJSON", description: null},
-            {label: "Shapefile", description: null},
-            {label: this.Nls("Export_Data_Type_CSV"), description: null}
-        ];
+        let layerItems = [{label: "GeoJSON", description: null},
+						  {label: "Shapefile", description: null},
+						  {label: this.Nls("Export_Data_Type_CSV"), description: null}];
 
         this.LoadDropDown(this.Elem('sLayer'), layerItems);
 
@@ -136,16 +115,47 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 	 * @param {object} ev - Event object
 	 * @returns {void}
 	 */
-    OnExport_Click(ev) {
-        let value, radios = this.container.firstElementChild.getElementsByTagName('input');
-        for (var index = 0; index < radios.length; index++) {
-            if (radios[index].checked) {
-                // The selected radio button
-                value = radios[index].value;
-                //console.log(this.sliders[value].selectors)
-            }
-        }
+    OnExport_Click(ev) {		
+		var radio = this.Elem('export').querySelector("input[type=radio]:checked");
+		
+		if (radio.value == "print") this.Print();
+		
+		else if (radio.value == "data") this.Export();
     }
+
+	Print() {
+		debugger;
+			
+		let url = "https://www97.statcan.gc.ca/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export Web Map Task/execute";
+		let pt = new ESRI.tasks.PrintTask({ url: url });
+
+		let template = new ESRI.tasks.support.PrintTemplate({
+			format: "pdf",
+			exportOptions: {
+				dpi: 300
+			},
+			layout: "a4-portrait",
+			layoutOptions: {
+				titleText: "Warren Wilson College Trees",
+				authorText: "Sam"
+			}
+		});
+
+		let params = new ESRI.tasks.support.PrintParameters({
+			view: this.map.view,
+			template: template
+		});
+
+		pt.execute(params).then(ev => {
+			debugger;
+		}, error => {
+			debugger;
+		});
+	}
+	
+	Export() {
+		debugger;
+	}
 
     /**
 	 * Create a div for this widget
@@ -155,7 +165,7 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
         return 	"<div handle='export'>" +
 					"<div class='export-section'>" +
 						"<div handle='section_1' class='export-row'>" +
-							"<input type='radio' name='radios' value='1' checked/>" +
+							"<input type='radio' name='radios' value='data'/>" +
 							"<label class='export-section-label'>nls(Export_Data)</label>" +
 						"</div>" +
 
@@ -167,7 +177,7 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 
 						"<div class='export-row'>" +
 							"<label>nls(Export_Data_Selection_Only)" +
-								"<input type='checkbox' handle='iSelection'></div>" +
+								"<input type='checkbox' handle='iSelection' />" +
 							"</label>" +
 						"</div>" +
 					"</div>" +
@@ -175,19 +185,13 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 					
 					"<div class='export-section'>" + 
 						"<div handle='section_2' class='export-row'>" +
-							"<input type='radio' name='radios' value='2'>" +
+							"<input type='radio' name='radios' value='print'>" +
 							"<label class='export-section-label'>nls(Export_Map)</label>" +
 						"</div>" +
 
 						"<div class='export-row'>" +
 							"<label>nls(Export_Map_Layout)" +
 								"<div handle='sLayout' widget='Api.Components.Select'></div>" +
-							"</label>" +
-						"</div>" +
-							
-						"<div class='export-row'>" +
-							"<label>nls(Export_Map_MapScale)" +
-								"<div handle='sMapScale' widget='Api.Components.Select'></div>" +
 							"</label>" +
 						"</div>" +
 					"</div>" +

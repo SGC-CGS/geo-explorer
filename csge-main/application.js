@@ -74,7 +74,7 @@ export default class Application extends Widget {
 			legend: this.toolbar.AddOverlay("legend", new wLegend(this.config.legend, this.context)),
 			styler: this.toolbar.AddOverlay("styler", new wStyler(this.config.styler, this.context)),
 			chart: this.toolbar.AddOverlay("chart", new wChart(this.config.chart, this.selection)),
-			export: this.toolbar.AddOverlay("export", new wExport(this.config.chart)),
+			export: this.toolbar.AddOverlay("export", new wExport(this.map, this.config.export)),
 			fullscreen: this.navbar.AddEsriWidget("fullscreen", new ESRI.widgets.Fullscreen({ view: this.map.view })),
 			home: this.navbar.AddEsriWidget("home", new ESRI.widgets.Home({ view: this.map.view })),
 			bookmarks: this.navbar.AddOverlay("bookmarks", new wBookmarks(this.config.bookmarks, this.map, this.storage)),

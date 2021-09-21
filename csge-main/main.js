@@ -55,6 +55,9 @@ function LoadEsri() {
 				 "esri/Color", 
 				 "esri/Map", 
 				 "esri/Graphic", 
+				 "esri/tasks/PrintTask",
+				 "esri/tasks/support/PrintTemplate",
+				 "esri/tasks/support/PrintParameters",
 				 "esri/views/MapView", 
 				 "esri/views/draw/Draw",
 				 "esri/widgets/BasemapGallery", 
@@ -75,6 +78,9 @@ function LoadEsri() {
 						  Color, 
 						  Map, 
 						  Graphic, 
+						  PrintTask, 
+						  PrintTemplate, 
+						  PrintParameters, 
 						  MapView, 
 						  Draw, 
 						  BasemapGallery, 
@@ -93,6 +99,13 @@ function LoadEsri() {
 				Color : Color,
 				Map : Map,
 				Graphic : Graphic,
+				tasks: {
+					PrintTask: PrintTask,
+					support: {
+						PrintTemplate: PrintTemplate,
+						PrintParameters: PrintParameters
+					}
+				},
 				views : {
 					MapView : MapView,
 					draw : {
