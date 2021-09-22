@@ -6,7 +6,6 @@ abbr[data-original-title], abbr[title] {
 .gexp {
 	font-size:14px;
 	font-family:"Segoe UI", "Helvetica Neue", "Droid Sans", Helvetica, Arial, sans-serif;
-	font-weight:normal;
     color:#545963 !important;
 }
 
@@ -16,7 +15,7 @@ abbr[data-original-title], abbr[title] {
     margin:8px 0px;
 }
 
-.gexp label, .gexp h2 {
+.gexp, .gexp label, .gexp h2 {
 	font-weight:normal;
 }
 
@@ -35,13 +34,9 @@ abbr[data-original-title], abbr[title] {
 	padding: 3px;
 }
 
-.gexp input {
-	cursor:text;
-	padding: 3px;
-}
-
 .gexp select, .gexp button, 
 .gexp input[type=checkbox], 
+.gexp input[type=range],
 .gexp input[type=radio],
 .gexp label[for] {
 	cursor:pointer;
@@ -58,7 +53,9 @@ abbr[data-original-title], abbr[title] {
     border-bottom:solid 2px #000;
 }
 
-.gexp select, .gexp input[type=number], .gexp input[type=text] {
+.gexp select, 
+.gexp input[type=number], 
+.gexp input[type=text] {
 	padding:3px;
 	font-weight:normal;
     border:solid 1px rgb(169, 169, 169);
@@ -70,10 +67,6 @@ abbr[data-original-title], abbr[title] {
 .gexp input:disabled,
 .gexp select:disabled {
 	background:#f6f6f6;
-}
-
-.gexp input[type=range] {
-	cursor : pointer;
 }
 
 .gexp img.button-icon {
@@ -99,12 +92,7 @@ abbr[data-original-title], abbr[title] {
     border-color:transparent;
 }
 
-.gexp .inline-row > * {
-	display:inline-block;
-	vertical-align:middle;
-}
-
-/* Remove dock button */
+/*  ESRI Overwrites */
 .gexp .esri-popup {
     cursor: default;
 }
@@ -126,32 +114,11 @@ abbr[data-original-title], abbr[title] {
 	word-break:break-word;
 }
 
-/* Top area of the application, above map */
-.gexp .search > * {
-	display:inline-block;
+.gexp .map-container .esri-view {
+	height:100%;
 }
 
-/* Search place name typeahead */
-.gexp .search {
-	background: white;
-	left : 55px;
-	top : 15px;
-	padding: 2px;
-}
-
-.gexp .search .typeahead .input {
-    width: 350px;
-    border: none;
-}
-
-.gexp .search img {
-    padding: 2px;
-}
-
-.gexp .search, .gexp .menu {
-	box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px 0px;
-}
-
+/* Toolbar menus */
 .gexp .menu.navigation {
     width: 32px;
 }
@@ -178,77 +145,6 @@ abbr[data-original-title], abbr[title] {
 
 .gexp .loading .wait {
 	display:inline;
-}
-
-.gexp .typeahead.collapsed ul{
-	display:none;
-}
-
-.gexp .typeahead:not(.collapsed) ul {
-    border-bottom:solid 1px rgb(169, 169, 169);
-    border-left:solid 1px rgb(169, 169, 169);
-    border-right:solid 1px rgb(169, 169, 169);
-}
-
-.gexp .typeahead.collapsed .input {
-    border-bottom-left-radius:2px;
-    border-bottom-right-radius:2px;
-}
-
-.gexp .typeahead .input {
-	padding: 0px 16px 0px 8px;
-	
-    border-top-left-radius:2px;
-    border-top-right-radius:2px;
-}
-
-.gexp .typeahead .input,
-.gexp .typeahead ul,
-.gexp .typeahead li {
-    width: 100%;
-}
-
-.gexp .typeahead li {
-	padding:3px 8px;
-	cursor:pointer;
-}
-
-.gexp .typeahead li:not(:first-child) {
-	border-top:solid thin rgba(0, 0, 0, 0.1);
-}
-
-.gexp .typeahead li:hover,
-.gexp .typeahead li.active {
-	background-color:rgba(70,137,194,1);
-	color:#fff;
-	font-weight:bold;
-}
-
-.gexp .typeahead ul {
-    list-style-type:none;
-    padding:0;
-    margin:0;
-    background-color:white;
-	
-    border-bottom-left-radius:2px;
-    border-bottom-right-radius:2px;
-	
-    position:absolute;
-    z-index:5000;
-	
-    overflow-y:auto;
-    overflow-x:hidden;
-    max-height:400px;
-}
-
-.gexp .typeahead i.fa {
-	position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translate(0px, -50%);
-    cursor: pointer;
-    color: rgb(100, 100, 100);
-    font-size: 0.8em;
 }
 
 /* Map area of the application */
@@ -314,6 +210,10 @@ abbr[data-original-title], abbr[title] {
 	margin-bottom:0px;
 }
 
+.gexp .select-placeholder {
+	display:none;
+}
+
 /* Widgets overlaid on the map */
 .gexp .waiting,
 .gexp .overlay {
@@ -322,139 +222,7 @@ abbr[data-original-title], abbr[title] {
 	transition:opacity 125ms ease-in-out;
 }
 
-.gexp .overlay {
-    position:absolute;
-	top: 40px;
-}
-
-.gexp .overlay.bookmarks,
-.gexp .overlay.basemap {
-	top : 74px;
-	left : 40px;
-}
-
-.gexp .overlay .overlay-close {
-    position:absolute;
-    right:2px;
-    top:2px;
-    line-height: 1;
-    background:none;
-    border:none;
-    font-size:22px;
-    font-weight:700;
-    opacity:0.4;
-}
-
-.gexp .overlay .overlay-header {
-	display:inline-block;
-	margin:0;
-}
-
-/* Esri's map view */
-.gexp .map-container .esri-view {
-	height:100%;
-}
-
-/* Map Styler widget */
-.gexp .export,
-.gexp .basemap { 
-    width: 300px;
-}
-
-.gexp .basemap .overlay-body,
-.gexp .bookmarks .overlay-body {
-    max-height: 350px;
-	overflow-y: auto;
-}
-
-.gexp .bookmarks .overlay-body .esri-bookmarks__bookmark-name {
-    padding: 10px 0px;
-}
-
-.gexp .overlay .esri-widget,
-.gexp .overlay .esri-basemap-gallery {
-    background: none;
-}
-
-.gexp .chart {
-	width : 430px;
-}
-
-.gexp .legend {
-	width: 270px;
-}
-
-.gexp .styler,
-.gexp .selector,
-.gexp .bookmarks {
-	width:350px;
-}
-
-.gexp .esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
-    display: none;
-}
-
-.gexp .esri-bookmarks__authoring-actions .esri-button {
-    cursor: pointer;
-}
-
-.gexp .select-placeholder {
-	display:none;
-}
-
-/* Apply Close Buttons */
-.gexp .button-container {
-	float:right;
-	margin-top: 10px;
-}
-
-.gexp .button-container button {
-    transition:background-color 125ms ease;
-}
-
-.gexp .button-container button.button-apply {
-    margin-right:5px;
-    background:#489648;
-    border-bottom:solid 2px #325b32;
-}
-
-.gexp .button-container button:disabled {
-	opacity:0.7;
-	cursor:not-allowed;
-}
-
-.gexp .button-container button.button-apply:hover:not(:disabled) {
-	background-color:#325b32;
-}
-
-.gexp .button-container button.button-close {
-    margin-left:5px;
-    background:#ed3330;
-    border-bottom:solid 2px #80201e;
-}
-.gexp .button-container button.button-close:hover {
-	background-color:#80201e;
-}
-
-/* Tooltip */
-.gexp.tooltip {
-    background: rgba(255, 255, 255, 1);
-    border-style: solid;
-    border-width: thin;
-    box-shadow: 1px 1px #888;
-    font-size: 0.7em;
-	max-width: 300px;
-    padding: 4px;
-	transition: opacity 125ms ease-in-out;
-    user-select: none;
-}
-
-.gexp.tooltip ul {
-    list-style-type: circle;
-    padding-left: 20px;
-}
-
-.gexp .styler .legend-widget .eyes {
+.gexp .legend-container .legend-widget .eyes {
 	display:none;
 }
 
@@ -482,15 +250,6 @@ abbr[data-original-title], abbr[title] {
     margin: 4px 15px 12px;
 
     
-}
-
-/* Bookmark */
-.esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
-    display: none;
-}
-
-.esri-bookmarks__authoring-actions .esri-button {
-    cursor: pointer;
 }
 
 /* Basemap */

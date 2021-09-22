@@ -2,6 +2,75 @@
 	margin-left: 10px;
 }
 
+/* specific widget overlays */
+.gexp .export,
+.gexp .basemap { 
+    width: 300px;
+}
+
+.gexp .styler,
+.gexp .legend,
+.gexp .selector,
+.gexp .bookmarks {
+	width:350px;
+}
+
+.gexp .chart {
+	width : 430px;
+}
+
+.gexp .basemap,
+.gexp .bookmarks {
+    max-height: 350px;
+	overflow-y: auto;
+}
+
+/* Bookmarks widget */
+.gexp .bookmarks .esri-bookmarks__bookmark-name {
+    padding: 10px 0px;
+}
+
+.gexp .esri-bookmarks,
+.gexp .bookmarks .esri-widget,
+.gexp .bookmarks .esri-basemap-gallery {
+    background: none;
+}
+
+.gexp .esri-bookmarks__authoring-card .esri-bookmarks__bookmark-image-container {
+    display: none;
+}
+
+.gexp .esri-bookmarks__authoring-actions .esri-button {
+    cursor: pointer;
+}
+
+/* Search widget */
+/* Top area of the application, above map */
+.gexp .search > * {
+	display:inline-block;
+}
+
+/* Search place name typeahead */
+.gexp .search {
+	background: white;
+	left : 55px;
+	top : 15px;
+	padding: 2px;
+}
+
+.gexp .search .typeahead .input {
+    width: 350px;
+    border: none;
+}
+
+.gexp .search img {
+    padding: 2px;
+}
+
+.gexp .search, .gexp .menu {
+	box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px 0px;
+}
+
 /* Data selector widget */
 .gexp .selector label {
 	display:flex;
@@ -172,6 +241,27 @@
 }
 
 /* Legend widget, good for all different legend types */
+.gexp .legend .layer-row-title {
+    font-style: italic;
+}
+
+.gexp .legend .inner-container {
+	position: relative;
+}
+
+.gexp .legend .legend-container button {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+	border-radius:2px;
+	background: none;
+	font-size:1.2em;
+}
+
+.gexp .legend button:hover {
+	background: #eee;
+}
+
 .gexp .legend-widget .eyes {
 	padding: 0 5px 5px 0;
 }

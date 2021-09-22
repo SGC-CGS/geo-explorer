@@ -228,8 +228,10 @@ export default Core.Templatable("App.Widgets.WChart", class wChart extends Widge
 	 * @returns {string} HTML with custom div
 	 */	
     HTML() {
-      return "<div handle='ChartDescription'></div>" +
-	  		 "<div handle='ChartsContainer' width='400' height='300'></div>";
-    }
+      return "<div style='chart'>" +
+				 "<div handle='ChartDescription'></div>" +
+				 "<div handle='ChartsContainer' width='400' height='300'></div>" + 
+			 "</div>";
+	}
   }
 );

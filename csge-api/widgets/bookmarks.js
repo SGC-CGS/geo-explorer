@@ -205,6 +205,6 @@ export default Core.Templatable("Api.Widgets.Bookmarks", class wBookmarks extend
 	 * @returns {string} HTML with custom div
 	 */	
 	HTML() {
-		return "<div handle='content'></div>";
+		return "<div handle='content' class='bookmarks'></div>";
 	}
 })

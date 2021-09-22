@@ -29,13 +29,7 @@ export default class wOverlay extends Widget {
 	}
 	
 	get widget() { return this._widget; }
-	
-	/**
-	 * Set the overlay top css rule
-	 * @type {string}
-	 */
-	set css(value) { Dom.AddCss(this.roots[0], value); }
-	
+		
 	/**
 	 * Call constructor of base class and initialize overlay
 	 * @param {object} container - div.map-container and properties
@@ -54,10 +48,9 @@ export default class wOverlay extends Widget {
 	 * @param {object} config - Configuration parameters of the widget as a json object
 	 * @returns {void}
 	 */
-	Configure(config) {
-		if (config.css) this.css = config.css;		
-		if (config.widget) this.widget = config.widget;	
-		if (config.header) this.header = config.header;	
+	Configure(widget, header) {
+		this.widget = widget;	
+		if (header) this.header = header;	
 	}
 	
 	/**

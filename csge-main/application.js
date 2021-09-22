@@ -17,8 +17,7 @@ import wBasemap from '../csge-api/widgets/basemap.js';
 import wTable from './widgets/table.js';
 import wSearch from './widgets/search.js';
 import wInfoPopup from './widgets/infopopup.js';
-import wSelector from './widgets/selector.js';
-import wStyler from './widgets/wStyler.js';
+import wSelector from './widgets/wSelector.js';
 import wLegend from './widgets/wLegend.js';
 import wChart from './widgets/wChart.js';
 import wExport from './widgets/wExport.js';
@@ -34,7 +33,6 @@ export default class Application extends Widget {
 	 * Get/set context from config
 	 */
 	get context() { return this._context; }
-	
 	set context(value) { this._context = value; }
 
 	/**
@@ -69,21 +67,23 @@ export default class Application extends Widget {
 		this.toolbar = new wToolbar("tools");
 		this.navbar = new wToolbar("navigation");
 		
-		this.widgets = {
+		this.widgets = {			
 			selector: this.toolbar.AddOverlay("selector", new wSelector()),		
-			legend: this.toolbar.AddOverlay("legend", new wLegend(this.config.legend, this.context)),
-			styler: this.toolbar.AddOverlay("styler", new wStyler(this.config.styler, this.context)),
+			legend: this.toolbar.AddOverlay("legend", new wLegend(this.map, this.config.styler, this.context)),
 			chart: this.toolbar.AddOverlay("chart", new wChart(this.config.chart, this.selection)),
 			export: this.toolbar.AddOverlay("export", new wExport(this.map, this.config.export)),
 			fullscreen: this.navbar.AddEsriWidget("fullscreen", new ESRI.widgets.Fullscreen({ view: this.map.view })),
 			home: this.navbar.AddEsriWidget("home", new ESRI.widgets.Home({ view: this.map.view })),
 			bookmarks: this.navbar.AddOverlay("bookmarks", new wBookmarks(this.config.bookmarks, this.map, this.storage)),
 			basemap: this.navbar.AddOverlay("basemap", new wBasemap({ view: this.map.view })),
-			search: new wSearch(),
+			search: new wSearch(this.map),
 			waiting: new wWaiting(),
-			table: new wTable(this.config.table, this.selection),
+			table: new wTable(this.map, this.config.table, this.selection),
 			infoPopup: new wInfoPopup(this.config.infopopup, this.map, this.context)
         }
+		
+		// A bit different here because the styler is part of the legend widget now
+		this.widgets.styler = this.widgets.legend.Elem('styler');
 
         this.widgets.table.container = container;
         
@@ -97,14 +97,10 @@ export default class Application extends Widget {
 		this.HandleEvents(this.context);
 		this.HandleEvents(this.widgets.selector, this.ChangeContext.bind(this));
 		this.HandleEvents(this.widgets.bookmarks, this.ChangeContext.bind(this));
-		this.HandleEvents(this.widgets.search, this.OnSearch_Change.bind(this));
-		this.HandleEvents(this.widgets.styler, this.OnStyler_Change.bind(this));
-		this.HandleEvents(this.widgets.legend, this.OnLegend_Change.bind(this));
+		this.HandleEvents(this.widgets.search);
+		this.HandleEvents(this.widgets.styler);
+		this.HandleEvents(this.widgets.legend);
 		
-		this.widgets.table.On("RowClick", this.OnTable_RowClick.bind(this));
-		this.widgets.styler.On('Opacity', this.OnStyler_Opacity.bind(this));
-		this.widgets.styler.On('LabelName', this.onStyler_LabelName.bind(this));
-
 		this.toolbar.DisableButton("chart");
 
 		this.context.Initialize(config.context).then(d => {	
@@ -112,7 +108,6 @@ export default class Application extends Widget {
 
 			this.widgets.chart.Update(this.context);
 			this.widgets.selector.Update(this.context);
-			this.widgets.styler.Update(this.context);
 			this.widgets.legend.Update(this.context);
 			this.widgets.table.Update(this.context);
 			this.widgets.bookmarks.Update(this.context);
@@ -156,8 +151,8 @@ export default class Application extends Widget {
 	HandleEvents(node, changeHandler) {
 		if (changeHandler) node.On('Change', changeHandler);
 		
-		node.On('Busy', this.OnWidget_Busy.bind(this));
-		node.On('Idle', this.OnWidget_Idle.bind(this));
+		node.On('Busy', ev => this.widgets.waiting.Show());
+		node.On('Idle', ev => this.widgets.waiting.Hide());
 		node.On('Error', ev => this.OnApplication_Error(ev.error));
 	}
 
@@ -172,7 +167,6 @@ export default class Application extends Widget {
 
 		this.widgets.chart.Update(this.context);
 		this.widgets.bookmarks.Update(this.context);
-		this.widgets.styler.Update(this.context);
 		this.widgets.legend.Update(this.context);
 		this.widgets.table.Update(this.context);
 
@@ -182,43 +176,13 @@ export default class Application extends Widget {
 	}
 	
 	OnSelection_Change(ev) {
-		if (ev.graphics.length > 0) this.toolbar.EnableButton("chart");
-
-		else this.toolbar.DisableButton("chart");
+		ev.graphics.length > 0 ? this.toolbar.EnableButton("chart") : this.toolbar.DisableButton("chart");
 	}
 	
-	OnStyler_Change(ev) {	
-		this.context.sublayer.renderer = ev.renderer;
+	OnApplication_Error(error) {
+		alert(error.message);
 		
-		this.widgets.legend.Update(this.context);
-	}
-	
-	OnLegend_Change(ev) {	
-		this.context.sublayer.renderer = ev.renderer;
-	}
-	
-	OnStyler_Opacity(ev) {
-		this.map.Layer('main').opacity = ev.opacity;
-	}
-	
-	onStyler_LabelName(ev) {
-		this.context.sublayer.labelsVisible = ev.checked;
-	}
-
-	OnSearch_Change(ev) {		
-		this.map.GoTo(ev.feature.geometry);
-	}
-	
-	OnTable_RowClick(ev) {
-		this.map.GoTo(ev.feature.geometry);
-	}
-		
-	OnWidget_Busy(ev) {
-		this.widgets.waiting.Show();
-	}
-	
-	OnWidget_Idle(ev) {
-		this.widgets.waiting.Hide();
+		console.error(error);
 	}
 
 	OnDocument_KeyUpDown(isClick, ev) {
@@ -227,12 +191,6 @@ export default class Application extends Widget {
 		this.map.Behavior("click").SetActive(isClick);
 		this.map.Behavior("hover").SetActive(isClick);
 		this.map.Behavior("drag").SetActive(!isClick);
-	}
-	
-	OnApplication_Error(error) {
-		alert(error.message);
-		
-		console.error(error);
 	}
 
 	/**

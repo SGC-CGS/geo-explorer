@@ -24,6 +24,10 @@ export default Core.Templatable("App.Widgets.Search", class wSearch extends Widg
 		this.Elem("typeahead").On("Change", this.OnTypeahead_Change.bind(this));
 	}
 	
+	Configure(map) {
+		this.map = map;
+	}
+	
 	/**
 	 * Add specified language strings to the nls object
 	 * @param {object} nls - Existing nls object
@@ -43,6 +47,8 @@ export default Core.Templatable("App.Widgets.Search", class wSearch extends Widg
 		this.Emit("Busy");
 		
 		Requests.Placename(ev.item.id, ev.item.label).then(feature => {
+			this.map.GoTo(feature.geometry);
+			
 			this.Emit("Idle");
 			this.Emit("Change", { feature:feature });
 		}, error => {

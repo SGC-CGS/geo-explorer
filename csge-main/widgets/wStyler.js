@@ -58,9 +58,12 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 		this.Node('opacity').On("change", this.OnOpacity_Changed.bind(this));
 		this.Node('label-toggle').On("change", this.OnLabelChk_Changed.bind(this));
 		this.Node('color-schemes').On("change", this.OnColorSchemes_Changed.bind(this));
+		
+		this.Node("styler-breaks").On("visibility", this.OnVisibility_Changed.bind(this));
 	}
 	
-	Configure(config, context) {
+	Configure(map, config, context) {
+		this.map = map;
 		this.context = context;
 		
 		this.Elem('opacity').value = config.opacity;
@@ -176,6 +179,8 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 		this.Elem("styler-breaks").EnableVisibilityIcon(true);
 
 		this.changeInProgress = false;
+
+		this.context.sublayer.renderer = this.renderer;
 		
 		this.Emit("Change", { renderer:this.renderer });
 	}
@@ -199,6 +204,8 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	 * @returns {void}
 	 */
 	OnOpacity_Changed(ev) {
+		this.map.Layer('main').opacity = ev.opacity;
+		
 		this.Emit("Opacity", { opacity:ev.opacity });
 	}
 
@@ -208,6 +215,8 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	 * @returns {void}
 	 */
 	OnLabelChk_Changed(ev) {
+		this.context.sublayer.labelsVisible = ev.target.checked;
+		
 		this.Emit("LabelName", { checked:ev.target.checked });	
 	}
 	
@@ -253,6 +262,18 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 		});
 	}
 
+	OnVisibility_Changed(ev) {
+		let breaks = this.renderer.classBreakInfos;
+
+		if (ev.breakIndex >= breaks.length) var color = this.renderer.defaultSymbol.color;
+
+		else var color = breaks[ev.breakIndex].symbol.color;
+
+		color.a = ev.checked ? 1 : 0;
+
+		this.renderer = this.renderer.clone();
+	}
+
 	/**
 	 * Emits error when there is a problem loading class breaks
 	 * @param {object} error - Error object
@@ -267,36 +288,38 @@ export default Core.Templatable("App.Widgets.Styler", class wStyler extends Widg
 	 * @returns {string} HTML for styler widget
 	 */	
 	HTML() {
-		return	"<label>nls(Styler_Method)" +
-					"<i class='fa fa-info-circle' title='nls(Styler_Method_Info)'></i>" +
-					"<div handle='sMethod' widget='Api.Components.Select' class='indent'></div>" +
-				"</label>" +
-				
-				"<label>nls(Styler_Breaks)" +
-					"<i class='fa fa-info-circle' title='nls(Styler_Breaks_Info)'></i>" +
-					"<input handle='iBreaks' type='number' min='3' max='8' class='indent'/>" +
-				"</label>" +
+		return	"<div class='styler'>" +
+					"<label>nls(Styler_Method)" +
+						"<i class='fa fa-info-circle' title='nls(Styler_Method_Info)'></i>" +
+						"<div handle='sMethod' widget='Api.Components.Select' class='indent'></div>" +
+					"</label>" +
+					
+					"<label>nls(Styler_Breaks)" +
+						"<i class='fa fa-info-circle' title='nls(Styler_Breaks_Info)'></i>" +
+						"<input handle='iBreaks' type='number' min='3' max='8' class='indent'/>" +
+					"</label>" +
 
-				"<label>nls(Styler_Class_Breaks)</label>" +
-				"<div handle='styler-breaks' class='legend-widget indent' widget='Api.Widgets.LegendEditable'></div>" +
-			
-				"<label>nls(Styler_Color_Scheme)</label>" +
-				"<div handle='color-schemes' widget='Api.Widgets.ColorSchemes'></div>" +
+					"<label>nls(Styler_Class_Breaks)</label>" +
+					"<div handle='styler-breaks' class='legend-widget indent' widget='Api.Widgets.LegendEditable'></div>" +
 				
-				"<label>nls(Legend_Opacity)" + 
-					"<i class='fa fa-info-circle' title='nls(Legend_Opacity_Info)'></i>" +
-				"</label>" +
-				"<div handle='opacity' widget='Api.Widgets.Opacity'></div>" +
-				
-				"<label>" + 
-					"nls(Legend_Show_label)" + 
-					"<i class='fa fa-info-circle' title='nls(Legend_label_Info)'></i>" +
-					"<input handle='label-toggle' type=checkbox class='labelName-checkbox indent'>" + 
-				"</label>" + 
+					"<label>nls(Styler_Color_Scheme)</label>" +
+					"<div handle='color-schemes' widget='Api.Widgets.ColorSchemes'></div>" +
+					
+					"<label>nls(Legend_Opacity)" + 
+						"<i class='fa fa-info-circle' title='nls(Legend_Opacity_Info)'></i>" +
+					"</label>" +
+					"<div handle='opacity' widget='Api.Widgets.Opacity'></div>" +
+					
+					"<label>" + 
+						"nls(Legend_Show_label)" + 
+						"<i class='fa fa-info-circle' title='nls(Legend_label_Info)'></i>" +
+						"<input handle='label-toggle' type=checkbox class='labelName-checkbox indent'>" + 
+					"</label>" + 
 
-				"<div class='button-container'>" +
-					"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
-					"<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +
+					"<div class='button-container'>" +
+						"<button handle='bApply' class='button-label button-apply'>nls(Styler_Button_Apply)</button>" +
+						"<button handle='bClose' class='button-label button-close'>nls(Styler_Button_Close)</button>" +
+					"</div>" +
 				"</div>";
 	}
 })

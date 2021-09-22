@@ -2,6 +2,7 @@ import BaseLegend from '../../csge-api/widgets/legend/legend.js';
 import Core from '../../csge-api/tools/core.js';
 import Dom from '../../csge-api/tools/dom.js';
 import Legend from '../../csge-api/widgets/legend/legend.js';
+import wStyler from './wStyler.js';
 
 /**
  * Legend widget module
@@ -23,7 +24,21 @@ export default Core.Templatable("App.Widgets.Legend", class wLegend extends Base
 	constructor(...config) {	
 		super(...config);
 		
-		this.Node("styler-breaks").On("visibility", this.OnVisibility_Changed.bind(this));
+		this.Elem('btn-styler').addEventListener('click', this.ShowStyler.bind(this));
+		
+		this.Elem('styler').On('Close', this.ShowLegend.bind(this));
+		this.Elem('styler').On('Change', this.ShowLegend.bind(this));
+		this.Elem('styler').On('Change', ev => this.Update(this.context));
+	}
+	
+	ShowLegend() {
+		Dom.RemoveCss(this.Elem('legend-container'), 'hidden');
+		Dom.AddCss(this.Elem('styler-container'), 'hidden');
+	}
+	
+	ShowStyler() {
+		Dom.RemoveCss(this.Elem('styler-container'), 'hidden');
+		Dom.AddCss(this.Elem('legend-container'), 'hidden');
 	}
 	
 	/**
@@ -31,8 +46,11 @@ export default Core.Templatable("App.Widgets.Legend", class wLegend extends Base
 	 * @param {object} config - Configuration parameters of the widget as a json object
 	 * @returns {void}
 	 */
-	Configure(config, context) {
+	Configure(map, config, context) {
+		this.map = map;
 		this.context = context;
+		
+		this.Elem("styler").Configure(map, config, context);
 	}
 	
 	/**
@@ -41,8 +59,12 @@ export default Core.Templatable("App.Widgets.Legend", class wLegend extends Base
 	 * @returns {void}
 	 */
 	Localize(nls) {
-		nls.Add("Legend_Title", "en", "Map legend");
-		nls.Add("Legend_Title", "fr", "Légende de la carte");	
+		nls.Add("Legend_Title", "en", "Table of contents");
+		nls.Add("Legend_Title", "fr", "Table de contenu");	
+		nls.Add("Layer_Config_Title", "en", "Click to modify layer style");	
+		nls.Add("Layer_Config_Title", "fr", "Cliquer pour modifier le style de la couche");	
+		nls.Add("Thematic_Layer", "fr", "Couche thématique");	
+		nls.Add("Thematic_Layer", "en", "Thematic layer");	
 	}
 
 	/**
@@ -50,27 +72,14 @@ export default Core.Templatable("App.Widgets.Legend", class wLegend extends Base
 	 * @param {object} context - Context object
 	 * @returns {void}
 	 */	
-	Update(context) {
+	Update(context) {		
 		this.context = context;
 		
-		// Create a deep clone of the renderer
-		this.renderer = context.sublayer.renderer.clone();
+		this.renderer = context.sublayer.renderer;
 		
+		this.Elem("indicators-label").innerHTML = context.IndicatorsLabel();
 		this.Elem("styler-breaks").Update(this.renderer);
-	}
-
-	OnVisibility_Changed(ev) {
-		let breaks = this.renderer.classBreakInfos;
-
-		if (ev.breakIndex >= breaks.length) var color = this.renderer.defaultSymbol.color;
-
-		else var color = breaks[ev.breakIndex].symbol.color;
-
-		color.a = ev.checked ? 1 : 0;
-
-		this.renderer = this.renderer.clone();
-
-		this.Emit("Change", { renderer:this.renderer });
+		this.Elem("styler").Update(this.context);
 	}
 	
 	/**
@@ -78,6 +87,17 @@ export default Core.Templatable("App.Widgets.Legend", class wLegend extends Base
 	 * @returns {string} HTML for legend widget
 	 */	
 	HTML() {
-		return	"<div handle='styler-breaks' class='legend-widget indent' widget='Api.Widgets.Legend'></div>";
+		return	"<div class='legend'>" +
+					"<div handle='legend-container' class='legend-container'>" +
+						"<label handle='indicators-label' class='layer-row-title'></label>" + 
+						"<div class='inner-container'>" + 
+							"<div handle='styler-breaks' class='legend-widget indent' widget='Api.Widgets.Legend'></div>" +
+							"<button handle='btn-styler' class='small-esri-icon esri-icon-settings2' title='nls(Layer_Config_Title)'></button>" + 
+						"</div>" +
+					"</div>" +
+					"<div handle='styler-container' class='styler-container hidden'>" +
+						"<div handle='styler' class='styler-widget' widget='App.Widgets.Styler'></div>" +
+					"</div>" +
+				"</div>";
 	}
 })

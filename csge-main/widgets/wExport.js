@@ -162,7 +162,7 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 	 * @returns {string} HTML with custom div
 	 */	
      HTML() {
-        return 	"<div handle='export'>" +
+        return 	"<div handle='export' class='export'>" +
 					"<div class='export-section'>" +
 						"<div handle='section_1' class='export-row'>" +
 							"<input type='radio' name='radios' value='data'/>" +
@@ -195,10 +195,10 @@ export default Core.Templatable("App.Widgets.Export", class Export extends Widge
 							"</label>" +
 						"</div>" +
 					"</div>" +
-				"</div>" +
 
-                "<div class='button-container'>" +
-                    "<button handle='bExport' class='button-label button-apply'>nls(Export_Button_Export)</button>" +
-                "</div>";
+					"<div class='button-container'>" +
+						"<button handle='bExport' class='button-label button-apply'>nls(Export_Button_Export)</button>" +
+					"</div>";
+				"</div>";
       }
 })

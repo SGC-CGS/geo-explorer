@@ -121,4 +121,8 @@ export default class Evented {
 	Off(type, callback) {
 		this.removeEventListener(type, callback);
 	}
+	
+	Bubble(elem, event) {
+		elem.On(event, ev => this.Emit(event, ev));
+	}
 }

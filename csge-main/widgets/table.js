@@ -32,7 +32,9 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 	 * @param {object} config - Configuration parameters of the widget as a json object
 	 * @returns {void}
 	 */
-	Configure(config, selection) {
+	Configure(map, config, selection) {
+		this.map = map;
+		
 		this.config.headers = config.headers.map(h => {
 			return {
 				id: h.id[Core.locale],
@@ -107,7 +109,11 @@ export default Core.Templatable("App.Widgets.Table", class wTable extends Widget
 			
 			tr.title = this.Nls("Table_Row_Title", [name]);
 			
-			tr.addEventListener("click", ev => this.Emit("RowClick", { feature:g }));
+			tr.addEventListener("click", ev => {
+				this.map.GoTo(g.geometry);
+				
+				this.Emit("RowClick", { feature:g })
+			});
 		});
 		
 		this.UpdateTableVisibility();

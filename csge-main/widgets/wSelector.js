@@ -329,25 +329,27 @@ export default Core.Templatable("App.Widgets.Selector", class wSelector extends 
 	 * @returns {string} HTML for selector widget
 	 */
 	HTML() {
-		return	"<label class='sm-label'>nls(Selector_Subject)</label>" + 
-				"<div handle='sSubject' widget='Api.Components.StaticTypeahead'></div>" +
-				"<label class='sm-label'>nls(Selector_Theme)</label>" + 
-				"<div handle='sTheme' widget='Api.Components.StaticTypeahead'></div>" +
-				"<label>nls(Selector_Category)</label>" +
-				"<div handle='sCategory' widget='Api.Components.StaticTypeahead'></div>" +
+		return	"<div class='selector'>" + 
+					"<label class='sm-label'>nls(Selector_Subject)</label>" + 
+					"<div handle='sSubject' widget='Api.Components.StaticTypeahead'></div>" +
+					"<label class='sm-label'>nls(Selector_Theme)</label>" + 
+					"<div handle='sTheme' widget='Api.Components.StaticTypeahead'></div>" +
+					"<label>nls(Selector_Category)</label>" +
+					"<div handle='sCategory' widget='Api.Components.StaticTypeahead'></div>" +
 
-				"<div class='filter-container'>" + 
-					"<label>nls(Selector_Filter_Label)</label>" +
-					"<div handle='instructions' class='filter-instructions'>nls(Selector_Filter_Instructions)</div>" +
-					"<div handle='filter' class='filter'></div>" +
-				"</div>" +
-				"<label>nls(Selector_Value)</label>" +
-				"<div handle='sValue' widget='Api.Components.StaticTypeahead'></div>" +
-				"<label>nls(Selector_Geography)</label>" +
-				"<div handle='sGeography' widget='Api.Components.StaticTypeahead'></div>" +
-				"<div class='button-container'>" + 
-					"<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
-					"<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
+					"<div class='filter-container'>" + 
+						"<label>nls(Selector_Filter_Label)</label>" +
+						"<div handle='instructions' class='filter-instructions'>nls(Selector_Filter_Instructions)</div>" +
+						"<div handle='filter' class='filter'></div>" +
+					"</div>" +
+					"<label>nls(Selector_Value)</label>" +
+					"<div handle='sValue' widget='Api.Components.StaticTypeahead'></div>" +
+					"<label>nls(Selector_Geography)</label>" +
+					"<div handle='sGeography' widget='Api.Components.StaticTypeahead'></div>" +
+					"<div class='button-container'>" + 
+						"<button handle='bApply' class='button-label button-apply'>nls(Selector_Button_Apply)</button>" +
+						"<button handle='bClose' class='button-label button-close'>nls(Selector_Button_Close)</button>" +
+					"</div>" +
 				"</div>";
 	}
 })

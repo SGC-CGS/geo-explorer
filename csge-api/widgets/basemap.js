@@ -41,6 +41,6 @@ export default Core.Templatable("Api.Widgets.Basemap", class wBasemap extends Wi
 	 * @returns {string} HTML with custom div
 	 */
 	HTML() {
-		return "<div handle='content'></div>";
+		return "<div handle='content' class='basemap'></div>";
 	}
 })

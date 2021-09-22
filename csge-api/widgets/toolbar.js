@@ -104,17 +104,16 @@ export default Core.Templatable("Api.Widgets.Toolbar", class wToolbar extends Wi
 	 * @param {object} overlay - Overlay object with all properties
 	 * @returns {void}
 	 */
-	AddOverlay(id, widget, position) {
-		var overlay = new Overlay({ widget:widget, header:widget.title, css:id, position:position });
-		
+	AddOverlay(id, widget) {		
+		var overlay = new Overlay(widget, widget.title);
 		var opt = { title:widget.title, className:`button-icon large-icon ${id}` };
 		var btn = Dom.Create("button", opt, this.Elem("menu"));
-		var item = { button:btn, overlay:overlay, widget:widget, title:widget.title, };
+		var item = { button:btn, overlay:overlay/*, widget:overlay.widget*/, title:widget.title, };
 		
 		btn.addEventListener("click", this.OnMenuButton_Click.bind(this, item));
 		
-		widget.On("Close", this.OnOverlay_Hide.bind(this, item));
-		overlay.On("Close", this.OnOverlay_Hide.bind(this, item));
+		widget.On("Close", this.OnOverlay_Hide.bind(this, id));
+		overlay.On("Close", this.OnOverlay_Hide.bind(this, id));
 		
 		this.AddItem(id, item);
 		
@@ -128,6 +127,15 @@ export default Core.Templatable("Api.Widgets.Toolbar", class wToolbar extends Wi
 	 */
 	Item(id) {
 		return this.items[id];
+	}
+	
+	/**
+	 * Gets overlay object from items for specified id
+	 * @param {string} id - Overlay ID
+	 * @returns {object} overlay object
+	 */
+	Overlay(id) {
+		return this.Item(id).overlay;
 	}
 	
 	/**
@@ -227,8 +235,8 @@ export default Core.Templatable("Api.Widgets.Toolbar", class wToolbar extends Wi
 	 * @param {object} ev - event
 	 * @returns {void}
 	 */
-	OnOverlay_Hide(item, ev) {
-		this.HideOverlay(item);
+	OnOverlay_Hide(id, ev) {
+		this.HideOverlay(this.Item(id));
 		
 		this.current = null;
 	}
